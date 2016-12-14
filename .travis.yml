@@ -4,7 +4,7 @@ python:
   - "3.5"
 
 install:
-  - "pip install .[dev]"
+  - "pip install --upgrade .[dev]"
 
 cache: "pip"
 
