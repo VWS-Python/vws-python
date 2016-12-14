@@ -7,6 +7,4 @@ python:
 install:
   - pip install .[dev]
 
-script: pytest
-
 cache: pip
