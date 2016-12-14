@@ -1,2 +1,5 @@
+from vws import example
+
+
 def test_example():
-    pass
+    example()
