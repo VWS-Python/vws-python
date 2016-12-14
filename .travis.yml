@@ -11,5 +11,6 @@ cache: "pip"
 before_script:
     - "flake8 ."
     - "prospector --strictness veryhigh"
+    - "mypy src"
 
 script: "echo"
