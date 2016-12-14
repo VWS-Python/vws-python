@@ -13,4 +13,5 @@ before_script:
     - "prospector --strictness veryhigh"
     - "mypy src"
 
-script: "echo"
+script:
+    - "pytest --cov=src"
