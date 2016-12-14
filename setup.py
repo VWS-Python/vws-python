@@ -21,6 +21,7 @@ setup(
     long_description=long_description,
     license='MIT',
     packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     install_requires=install_requires,
     extras_require={
         "dev": dev_requires,
