@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/adamtheturtle/vws-python.svg?token=5Z1yBzcubq5VdUYahDwj&branch=master)](https://travis-ci.com/adamtheturtle/vws-python)
+[![Build Status](https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master)](https://travis-ci.com/adamtheturtle/vws-python)
+[![Coverage Status](https://coveralls.io/repos/github/adamtheturtle/vws-python/badge.svg)](https://coveralls.io/github/adamtheturtle/vws-python)
 
 # vws-python
 Python wrapper for Vuforia Web Services (VWS) API

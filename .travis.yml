@@ -4,7 +4,7 @@ python:
   - "3.5"
 
 install:
-  - "pip install .[dev]"
+  - "pip install --upgrade --editable .[dev]"
 
 cache: "pip"
 
@@ -13,4 +13,8 @@ before_script:
     - "prospector --strictness veryhigh"
     - "mypy src"
 
-script: "echo"
+script:
+    - "pytest --cov=src"
+
+after_success:
+    - "coveralls"

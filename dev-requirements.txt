@@ -1,5 +1,7 @@
-pytest==3.0.5
-flake8==3.2.1
-mypy-lang==0.4.6
-pylint==1.6.4
-prospector==0.12.4
+pytest # Test runners
+flake8 # Lint
+mypy-lang # Type checking
+pylint # Lint
+prospector # Various linting tools collated
+pytest-cov # Measure code coverage
+coveralls # Upload coverage data
