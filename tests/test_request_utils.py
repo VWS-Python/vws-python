@@ -31,8 +31,8 @@ class TestComputeHmacBase64:
 
 class TestAuthorizationHeaderForRequest:
     """
-        TODO
-        """
+    Tests for `authorization_header_for_request`.
+    """
 
     @given(
         access_key=text(),
@@ -43,8 +43,13 @@ class TestAuthorizationHeaderForRequest:
         date=text(),
         request_path=text(),
     )
-    def test_example(self, access_key, secret_key, method, content,
-                     content_type, date, request_path):
+    def test_authorization_header(self, access_key, secret_key, method,
+                                  content, content_type, date, request_path):
+        """
+        This is mostly a reimplimentation of the header creation. The real
+        test is that the header works. This exists to make refactoring easier
+        as we can check that the output is as expected.
+        """
         hashed = hashlib.md5()
         hashed.update(content)
         content_hex = hashed.hexdigest()
