@@ -17,7 +17,7 @@ from vws._request_utils import (
 
 class TestComputeHmacBase64:
     """
-    TODO
+    Test for `compute_hmac_base64`.
     """
 
     @given(key=binary(), data=binary())
