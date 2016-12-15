@@ -79,3 +79,38 @@ def authorization_header(  # pylint: disable=too-many-arguments
         signature=signature,
     )
     return auth_header
+
+
+def foo():
+    # TODO I had to create a database, document that
+
+    http_method = 'GET'
+    date = rfc_1123_date()
+    content_type = 'application/json'
+    path = "/targets"
+
+    # The body of the request is JSON and contains one attribute, the instance
+    # ID of the VuMark
+    import json
+    content = {}
+    request_body = bytes(json.dumps(content), encoding='utf-8')
+
+    # Sign the request and get the Authorization header
+    auth_header = authorization_header(access_key, secret_key, http_method,
+                                       request_body, content_type, date, path)
+    output_format = ''
+    request_headers = {
+        'Accept': output_format,
+        'Authorization': auth_header,
+        'Content-Type': content_type,
+        'Date': date
+    }
+
+    import requests
+    url = 'http://vws.vuforia.com/targets'
+    resp = requests.request(http_method, url, headers=request_headers, data=content)
+    import pdb; pdb.set_trace()
+
+    # Make the request over HTTPS on port 443
+    # http = httplib.HTTPSConnection(VWS_HOSTNAME, 443)
+    # http.request(http_method, path, request_body, request_headers)

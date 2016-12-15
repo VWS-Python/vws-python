@@ -15,6 +15,7 @@ from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
     rfc_1123_date,
+    foo,
 )
 
 
@@ -110,3 +111,9 @@ class TestAuthorizationHeader:
         )
 
         assert result == expected
+
+
+class TestFoo:
+
+    def test_foo(self):
+        foo()
