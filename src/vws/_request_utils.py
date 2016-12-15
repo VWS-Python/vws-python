@@ -16,10 +16,15 @@ def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
     return base64.b64encode(s=hashed.digest())
 
 
-def authorization_header_for_request(access_key: str, secret_key: bytes,
-                                     method: str, content: bytes,
-                                     content_type: str, date: str,
-                                     request_path: str) -> str:
+def authorization_header_for_request(
+    access_key: str,
+    secret_key: bytes,
+    method: str,
+    content: bytes,
+    content_type: str,
+    date: str,
+    request_path: str
+) -> str:
     """Return the value of the Authorization header for the request parameters
 
     TODO Args, Return
@@ -39,7 +44,10 @@ def authorization_header_for_request(access_key: str, secret_key: bytes,
     string_to_sign = "\n".join(components_to_sign)
     signature = compute_hmac_base64(
         key=secret_key,
-        data=bytes(string_to_sign, encoding='utf-8'),
+        data=bytes(
+            string=string_to_sign,
+            encoding='utf-8',
+        ),
     )
     auth_header = "VWS {access_key}:{signature}".format(
         access_key=access_key,

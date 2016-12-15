@@ -54,15 +54,15 @@ class TestAuthorizationHeaderForRequest:
         hashed.update(content)
         content_hex = hashed.hexdigest()
 
-        string = bytes(method, encoding='utf-8')
+        string = bytes(string=method, encoding='utf-8')
         string += b'\n'
-        string += bytes(content_hex, encoding='utf-8')
+        string += bytes(string=content_hex, encoding='utf-8')
         string += b'\n'
-        string += bytes(content_type, encoding='utf-8')
+        string += bytes(string=content_type, encoding='utf-8')
         string += b'\n'
-        string += bytes(date, encoding='utf-8')
+        string += bytes(string=date, encoding='utf-8')
         string += b'\n'
-        string += bytes(request_path, encoding='utf-8')
+        string += bytes(string=request_path, encoding='utf-8')
 
         signature = compute_hmac_base64(key=secret_key, data=string)
 
