@@ -36,7 +36,7 @@ def authorization_header_for_request(access_key: str, secret_key: bytes,
         date,
         request_path,
     ]
-    string_to_sign = "\n".join(components_to_sign)
+    string_to_sign = b"\n".join(components_to_sign)
     signature = compute_hmac_base64(
         key=secret_key,
         data=bytes(string_to_sign, encoding='utf-8'),
