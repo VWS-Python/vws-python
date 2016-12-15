@@ -2,7 +2,23 @@
 Tests for `vws._request_utils`.
 """
 
-from vws._request_utils import authorization_header_for_request
+from vws._request_utils import (
+    authorization_header_for_request,
+    compute_hmac_base64,
+)
+
+
+class TestComputeMd5Hex:
+    """
+    TODO
+    """
+
+    def test_compute_md5_base64(self):
+        key = b'a'
+        data = b'b'
+
+        expected = 'plop'
+        assert compute_hmac_base64(key=key, data=data) == expected
 
 
 class TestAuthorizationHeaderForRequest:
