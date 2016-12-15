@@ -11,6 +11,7 @@ cache: "pip"
 before_script:
     - "flake8 ."
     - "prospector --strictness veryhigh"
+    - "pylint src/vws"
     - "mypy src"
 
 script:
