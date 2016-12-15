@@ -38,8 +38,10 @@ def authorization_header_for_request(access_key: str, secret_key: bytes,
     components_to_sign.append(str(date))
     components_to_sign.append(str(request_path))
     string_to_sign = "\n".join(components_to_sign)
-    string_to_sign = bytes(string_to_sign, encoding='ascii')
-    signature = compute_hmac_base64(key=secret_key, data=string_to_sign)
+    signature = compute_hmac_base64(
+        key=secret_key,
+        data=bytes(string_to_sign, encoding='ascii'),
+    )
     auth_header = "VWS {access_key}:{signature}".format(
         access_key=access_key,
         signature=signature,
