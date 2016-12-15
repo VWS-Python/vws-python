@@ -2,9 +2,12 @@
 Tests for `vws._request_utils`.
 """
 
+import datetime
 import base64
 import hmac
 import hashlib
+
+from freezegun import freeze_time
 
 from hypothesis import given
 from hypothesis.strategies import binary, text
@@ -12,6 +15,7 @@ from hypothesis.strategies import binary, text
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
+    rfc_1123_date,
 )
 
 
@@ -22,11 +26,39 @@ class TestComputeHmacBase64:
 
     @given(key=binary(), data=binary())
     def test_compute_hmac_base64(self, key, data):
+        """
+        This is mostly a reimplementation of the hash computation. The real
+        test is that making requests works. This exists to make refactoring
+        easier as we can check that the output is as expected.
+        """
         result = compute_hmac_base64(key=key, data=data)
         decoded_result = base64.b64decode(s=result)
         hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
         hashed.update(msg=data)
         assert decoded_result == hashed.digest()
+
+
+class TestRfc1123FormatDate:
+    """
+    Tests for ``rfc_1123_date``.
+    """
+
+    def test_rfc_1123_date(self):
+        """
+        ``rfc_1123_date`` returns the date formatted as required by Vuforia.
+        This test matches the example date set at
+        https://library.vuforia.com/articles/Training/Using-the-VWS-API.
+        """
+        date = datetime.datetime(
+            day=22,
+            month=4,
+            year=2012,
+            hour=8,
+            minute=49,
+            second=37,
+        )
+        with freeze_time(date):
+            assert rfc_1123_date() == 'Sun, 22 Apr 2012 08:49:37 GMT'
 
 
 class TestAuthorizationHeader:

@@ -7,6 +7,7 @@ Based on Python examples from https://developer.vuforia.com/downloads/samples.
 import hashlib
 import hmac
 import base64
+import email.utils
 
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
@@ -17,6 +18,15 @@ def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
     hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
     hashed.update(msg=data)
     return base64.b64encode(s=hashed.digest())
+
+
+def rfc_1123_date() -> str:
+    """
+    Return the date formatted as per RFC 2616, section 3.3.1, rfc1123-date, as
+    described in
+    https://library.vuforia.com/articles/Training/Using-the-VWS-API.
+    """
+    return email.utils.formatdate(None, localtime=False, usegmt=True)
 
 
 def authorization_header(  # pylint: disable=too-many-arguments
