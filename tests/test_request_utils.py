@@ -2,6 +2,10 @@
 Tests for `vws._request_utils`.
 """
 
+import base64
+import hmac
+import hashlib
+
 from vws._request_utils import (
     authorization_header_for_request,
     compute_hmac_base64,
@@ -17,8 +21,12 @@ class TestComputeMd5Hex:
         key = b'a'
         data = b'b'
 
-        expected = 'plop'
-        assert compute_hmac_base64(key=key, data=data) == expected
+        result = compute_hmac_base64(key=key, data=data)
+
+        decoded_result = base64.b64decode(s=result)
+        hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
+        hashed.update(msg=data)
+        assert decoded_result == hashed.digest()
 
 
 class TestAuthorizationHeaderForRequest:
@@ -27,9 +35,6 @@ class TestAuthorizationHeaderForRequest:
         """
 
     def test_example(self):
-        expected = (
-            "X"
-        )
 
         access_key = 'a'
         secret_key = b'b'
@@ -39,7 +44,25 @@ class TestAuthorizationHeaderForRequest:
         date = 'date'
         request_path = 'rp'
 
-        assert authorization_header_for_request(
+        hashed = hashlib.md5()
+        hashed.update(content)
+        content_hex = hashed.hexdigest()
+
+        string = bytes(method, encoding='ascii')
+        string += b'\n'
+        string = bytes(content_hex, encoding='ascii')
+        string += b'\n'
+        string += bytes(content_type, encoding='ascii')
+        string += b'\n'
+        string += bytes(date, encoding='ascii')
+        string += b'\n'
+        string += bytes(request_path, encoding='ascii')
+
+        signature = compute_hmac_base64(key=secret_key, data=string)
+
+        expected = 'VWS ' + access_key + ':' + str(signature)
+
+        result = authorization_header_for_request(
             access_key=access_key,
             secret_key=secret_key,
             method=method,
@@ -47,4 +70,6 @@ class TestAuthorizationHeaderForRequest:
             content_type=content_type,
             date=date,
             request_path=request_path,
-        ) == expected
+        )
+
+        assert result == expected
