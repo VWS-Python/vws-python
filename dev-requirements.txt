@@ -6,3 +6,4 @@ prospector # Various linting tools collated
 pytest-cov # Measure code coverage
 coveralls # Upload coverage data
 hypothesis # Generate test cases
+pytest-envfiles # Use files for environment variables for tests

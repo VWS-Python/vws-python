@@ -5,3 +5,21 @@
 
 # vws-python
 Python wrapper for Vuforia Web Services (VWS) API
+
+# Tests
+
+To run the tests, first install the dependencies:
+
+    pip install -e .[dev]
+
+Then run `pytest`:
+
+    pytest
+
+# Connecting to Vuforia
+
+Set the `VWS_LICENSE` environment variable.
+
+For integration which use Vuforia tests, create a file `vuforia_secrets.env` with the format:
+
+    VWS_LICENSE=<APPLICATION_LICENSE_KEY> 
