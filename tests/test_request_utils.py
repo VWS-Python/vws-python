@@ -2,13 +2,12 @@
 Tests for `vws._request_utils`.
 """
 
-import datetime
 import base64
-import hmac
+import datetime
 import hashlib
+import hmac
 
 from freezegun import freeze_time
-
 from hypothesis import given
 from hypothesis.strategies import binary, text
 

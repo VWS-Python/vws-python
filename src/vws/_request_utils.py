@@ -4,10 +4,10 @@ Utilities for making requests to Vuforia.
 Based on Python examples from https://developer.vuforia.com/downloads/samples.
 """
 
-import hashlib
-import hmac
 import base64
 import email.utils
+import hashlib
+import hmac
 
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
