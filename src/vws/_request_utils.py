@@ -9,13 +9,6 @@ import hmac
 import base64
 
 
-def compute_md5_hex(data: bytes) -> str:
-    """Return the hex MD5 of the data"""
-    hashed = hashlib.md5()
-    hashed.update(data)
-    return hashed.hexdigest()
-
-
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
     """Return the Base64 encoded HMAC-SHA1 using the provide key"""
     hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
@@ -31,9 +24,14 @@ def authorization_header_for_request(access_key: str, secret_key: bytes,
 
     TODO Args, Return
     """
+
+    hashed = hashlib.md5()
+    hashed.update(content)
+    content_md5_hex = hashed.hexdigest()
+
     components_to_sign = list()
     components_to_sign.append(method)
-    components_to_sign.append(str(compute_md5_hex(content)))
+    components_to_sign.append(str(content_md5_hex))
     components_to_sign.append(str(content_type))
     components_to_sign.append(str(date))
     components_to_sign.append(str(request_path))
