@@ -8,9 +8,14 @@ Python wrapper for Vuforia Web Services (VWS) API
 
 # Tests
 
+
 To run the tests, first install the dependencies:
 
     pip install -e .[dev]
+
+Create an environment variable file:
+
+    touch vuforia_secrets.env
 
 Then run `pytest`:
 

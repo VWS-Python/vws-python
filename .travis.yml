@@ -9,10 +9,14 @@ install:
 cache: "pip"
 
 before_script:
+    # Run linters
     - "flake8 ."
     - "prospector --strictness veryhigh"
     - "pylint src/vws"
     - "mypy src"
+    # Create an environment file used by pytest-envfiles
+    - "echo VWS_LICENSE=$VWS_LICENSE >> vuforia_secrets.env"
+
 
 script:
     - "pytest --cov=src"
