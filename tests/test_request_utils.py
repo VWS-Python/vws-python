@@ -10,7 +10,7 @@ from hypothesis import given
 from hypothesis.strategies import binary, text
 
 from vws._request_utils import (
-    authorization_header_for_request,
+    authorization_header,
     compute_hmac_base64,
 )
 
@@ -29,9 +29,9 @@ class TestComputeHmacBase64:
         assert decoded_result == hashed.digest()
 
 
-class TestAuthorizationHeaderForRequest:
+class TestAuthorizationHeader:
     """
-    Tests for `authorization_header_for_request`.
+    Tests for `authorization_header`.
     """
 
     @given(
@@ -54,21 +54,21 @@ class TestAuthorizationHeaderForRequest:
         hashed.update(content)
         content_hex = hashed.hexdigest()
 
-        string = bytes(string=method, encoding='utf-8')
+        string = bytes(method, encoding='utf-8')
         string += b'\n'
-        string += bytes(string=content_hex, encoding='utf-8')
+        string += bytes(content_hex, encoding='utf-8')
         string += b'\n'
-        string += bytes(string=content_type, encoding='utf-8')
+        string += bytes(content_type, encoding='utf-8')
         string += b'\n'
-        string += bytes(string=date, encoding='utf-8')
+        string += bytes(date, encoding='utf-8')
         string += b'\n'
-        string += bytes(string=request_path, encoding='utf-8')
+        string += bytes(request_path, encoding='utf-8')
 
         signature = compute_hmac_base64(key=secret_key, data=string)
 
         expected = 'VWS ' + access_key + ':' + str(signature)
 
-        result = authorization_header_for_request(
+        result = authorization_header(
             access_key=access_key,
             secret_key=secret_key,
             method=method,

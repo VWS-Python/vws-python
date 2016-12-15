@@ -16,14 +16,15 @@ def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
     return base64.b64encode(s=hashed.digest())
 
 
-def authorization_header_for_request(
-    access_key: str,
-    secret_key: bytes,
-    method: str,
-    content: bytes,
-    content_type: str,
-    date: str,
-    request_path: str
+def authorization_header(  # pylint: disable=too-many-arguments
+
+        access_key: str,
+        secret_key: bytes,
+        method: str,
+        content: bytes,
+        content_type: str,
+        date: str,
+        request_path: str
 ) -> str:
     """Return the value of the Authorization header for the request parameters
 
@@ -45,7 +46,7 @@ def authorization_header_for_request(
     signature = compute_hmac_base64(
         key=secret_key,
         data=bytes(
-            string=string_to_sign,
+            string_to_sign,
             encoding='utf-8',
         ),
     )
