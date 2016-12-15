@@ -29,12 +29,13 @@ def authorization_header_for_request(access_key: str, secret_key: bytes,
     hashed.update(content)
     content_md5_hex = hashed.hexdigest()
 
-    components_to_sign = list()
-    components_to_sign.append(method)
-    components_to_sign.append(str(content_md5_hex))
-    components_to_sign.append(str(content_type))
-    components_to_sign.append(str(date))
-    components_to_sign.append(str(request_path))
+    components_to_sign = [
+        method,
+        content_md5_hex,
+        content_type,
+        date,
+        request_path,
+    ]
     string_to_sign = "\n".join(components_to_sign)
     signature = compute_hmac_base64(
         key=secret_key,
