@@ -7,7 +7,7 @@ import hmac
 import hashlib
 
 from hypothesis import given
-from hypothesis.strategies import binary
+from hypothesis.strategies import binary, text
 
 from vws._request_utils import (
     authorization_header_for_request,
@@ -34,29 +34,30 @@ class TestAuthorizationHeaderForRequest:
         TODO
         """
 
-    def test_example(self):
-
-        access_key = 'a'
-        secret_key = b'b'
-        method = 'c'
-        content = b'content'
-        content_type = 'application/json'
-        date = 'date'
-        request_path = 'rp'
-
+    @given(
+        access_key=text(),
+        secret_key=binary(),
+        method=text(),
+        content=binary(),
+        content_type=text(),
+        date=text(),
+        request_path=text(),
+    )
+    def test_example(self, access_key, secret_key, method, content,
+                     content_type, date, request_path):
         hashed = hashlib.md5()
         hashed.update(content)
         content_hex = hashed.hexdigest()
 
-        string = bytes(method, encoding='ascii')
+        string = bytes(method, encoding='utf-8')
         string += b'\n'
-        string += bytes(content_hex, encoding='ascii')
+        string += bytes(content_hex, encoding='utf-8')
         string += b'\n'
-        string += bytes(content_type, encoding='ascii')
+        string += bytes(content_type, encoding='utf-8')
         string += b'\n'
-        string += bytes(date, encoding='ascii')
+        string += bytes(date, encoding='utf-8')
         string += b'\n'
-        string += bytes(request_path, encoding='ascii')
+        string += bytes(request_path, encoding='utf-8')
 
         signature = compute_hmac_base64(key=secret_key, data=string)
 
