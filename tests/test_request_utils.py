@@ -6,23 +6,23 @@ import base64
 import hmac
 import hashlib
 
+from hypothesis import given
+from hypothesis.strategies import binary
+
 from vws._request_utils import (
     authorization_header_for_request,
     compute_hmac_base64,
 )
 
 
-class TestComputeMd5Hex:
+class TestComputeHmacBase64:
     """
     TODO
     """
 
-    def test_compute_md5_base64(self):
-        key = b'a'
-        data = b'b'
-
+    @given(key=binary(), data=binary())
+    def test_compute_hmac_base64(self, key, data):
         result = compute_hmac_base64(key=key, data=data)
-
         decoded_result = base64.b64decode(s=result)
         hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
         hashed.update(msg=data)
