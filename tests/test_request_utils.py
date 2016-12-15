@@ -50,7 +50,7 @@ class TestAuthorizationHeaderForRequest:
 
         string = bytes(method, encoding='ascii')
         string += b'\n'
-        string = bytes(content_hex, encoding='ascii')
+        string += bytes(content_hex, encoding='ascii')
         string += b'\n'
         string += bytes(content_type, encoding='ascii')
         string += b'\n'
