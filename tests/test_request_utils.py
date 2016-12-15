@@ -22,6 +22,11 @@ class TestComputeHmacBase64:
 
     @given(key=binary(), data=binary())
     def test_compute_hmac_base64(self, key, data):
+        """
+        This is mostly a reimplementation of the hash computation. The real
+        test is that making requests works. This exists to make refactoring
+        easier as we can check that the output is as expected.
+        """
         result = compute_hmac_base64(key=key, data=data)
         decoded_result = base64.b64decode(s=result)
         hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
