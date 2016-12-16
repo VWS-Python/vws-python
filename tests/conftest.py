@@ -16,8 +16,9 @@ class VuforiaServerCredentials:
         self.secret_key = bytes(secret_key, encoding='utf-8')
 
 
-@pytest.fixture()
-def vuforia_server_credentials() -> VuforiaServerCredentials:
+@pytest.fixture(params=[True, False], ids=['real_vuforia', 'fake_vuforia'])
+def vuforia_server_credentials(request) -> VuforiaServerCredentials:
+    use_real_vuforia = request.param
     # This should be parametrized and either use credentials
     # or mock the Vuforia instance
     # If the credentials aren't available in the environment,
@@ -32,8 +33,14 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
     #
     # To handle the new env vars
     # Finalizer: Delete all targets
-    vuforia_server_access_key = os.getenv('VUFORIA_SERVER_ACCESS_KEY')
-    vuforia_server_secret_key = os.getenv('VUFORIA_SERVER_SECRET_KEY')
+    if use_real_vuforia:
+        vuforia_server_access_key = os.getenv('VUFORIA_SERVER_ACCESS_KEY')
+        vuforia_server_secret_key = os.getenv('VUFORIA_SERVER_SECRET_KEY')
+    else:
+        fake_vuforia = FakeVuforiaAPI()
+        vuforia_server_access_key = fake_vuforia.access_key
+        vuforia_server_secret_key = fake_vuforia.secret_key
+
     if not all([vuforia_server_access_key, vuforia_server_secret_key]):
         pytest.skip("Vuforia integration tests need creds")
 
@@ -42,6 +49,7 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
         secret_key=vuforia_server_secret_key,
     )
     return credentials
+
 
 # vuforia = VuforiaMock()
 # vuforia = Vuforia(access_key='a', secret_key='a')
