@@ -16,6 +16,16 @@ class VuforiaServerCredentials:
         self.secret_key = bytes(secret_key, encoding='utf-8')
 
 
+class FakeVuforiaAPI:
+    """
+    TODO
+    """
+
+    def __init__(self):
+        self.access_key = 'blah_access_key'
+        self.secret_key = 'blah_secret_key'
+
+
 @pytest.fixture(params=[True, False], ids=['real_vuforia', 'fake_vuforia'])
 def vuforia_server_credentials(request) -> VuforiaServerCredentials:
     use_real_vuforia = request.param
@@ -34,9 +44,12 @@ def vuforia_server_credentials(request) -> VuforiaServerCredentials:
     # To handle the new env vars
     # Finalizer: Delete all targets
     if use_real_vuforia:
+        # TODO Check marker to not use this
         vuforia_server_access_key = os.getenv('VUFORIA_SERVER_ACCESS_KEY')
         vuforia_server_secret_key = os.getenv('VUFORIA_SERVER_SECRET_KEY')
     else:
+        # TODO In this case use mock
+        pytest.skip()
         fake_vuforia = FakeVuforiaAPI()
         vuforia_server_access_key = fake_vuforia.access_key
         vuforia_server_secret_key = fake_vuforia.secret_key
