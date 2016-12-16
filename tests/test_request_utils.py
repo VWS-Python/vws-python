@@ -141,18 +141,15 @@ class TestAuthorizationHeader:
 
 class TestTargetAPIRequest:
 
-    def test_success(self):
-        access_key = b''
-        secret_key = b''
-
+    def test_success(self, vuforia_server_credentials):
         method = 'GET'
         content = b''
         content_type = 'application/json'
         request_path = "/summary"
 
         response = target_api_request(
-            access_key=vuforia_credentials.server_access_key,
-            secret_key=vuforia_credentials.server_secret_key,
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
             method=method,
             content=content,
             content_type=content_type,

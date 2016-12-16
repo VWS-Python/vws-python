@@ -1,4 +1,4 @@
-import pytest  # type: ignore. There are no stubs for pytest
+import pytest
 
 import os
 
@@ -9,12 +9,15 @@ class VuforiaServerCredentials:
     """
 
     def __init__(self, access_key: str, secret_key: str) -> None:
-        self.access_key = access_key
-        self.secret_key = secret_key
+        """
+        TODO, Args, Ivar
+        """
+        self.access_key = bytes(access_key, encoding='utf-8')
+        self.secret_key = bytes(secret_key, encoding='utf-8')
 
 
 @pytest.fixture()
-def vuforia_credentials() -> None:
+def vuforia_server_credentials() -> VuforiaServerCredentials:
     # This should be parametrized and either use credentials
     # or mock the Vuforia instance
     # If the credentials aren't available in the environment,
@@ -38,6 +41,7 @@ def vuforia_credentials() -> None:
         access_key=vuforia_server_access_key,
         secret_key=vuforia_server_secret_key,
     )
+    return credentials
 
 # vuforia = VuforiaMock()
 # vuforia = Vuforia(access_key='a', secret_key='a')
