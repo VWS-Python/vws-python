@@ -114,6 +114,22 @@ class TestAuthorizationHeader:
 
         assert result == expected
 
+    def test_example(self):
+        """
+        Test a successful example of creating an Authorization header.
+        """
+        result = authorization_header(
+            access_key=b'my_access_key',
+            secret_key=b'my_secret_key',
+            method='GET',
+            content=b'{"something": "other"}',
+            content_type='text/example',
+            date='Sun, 22 Apr 2012 08:49:37 GMT.',
+            request_path='/example_path',
+        )
+
+        assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
+
 
 class TestFoo:
 
