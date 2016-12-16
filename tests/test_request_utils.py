@@ -151,8 +151,8 @@ class TestTargetAPIRequest:
         request_path = "/summary"
 
         response = target_api_request(
-            access_key=access_key,
-            secret_key=secret_key,
+            access_key=vuforia_credentials.server_access_key,
+            secret_key=vuforia_credentials.server_secret_key,
             method=method,
             content=content,
             content_type=content_type,

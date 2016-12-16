@@ -13,8 +13,6 @@ from urllib.parse import urljoin
 
 import requests
 
-from requests import codes
-
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
     """
