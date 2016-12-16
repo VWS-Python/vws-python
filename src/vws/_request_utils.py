@@ -31,7 +31,7 @@ def rfc_1123_date() -> str:
 
 def authorization_header(  # pylint: disable=too-many-arguments
 
-        access_key: str,
+        access_key: bytes,
         secret_key: bytes,
         method: str,
         content: bytes,
@@ -74,8 +74,5 @@ def authorization_header(  # pylint: disable=too-many-arguments
             encoding='utf-8',
         ),
     )
-    auth_header = "VWS {access_key}:{signature}".format(
-        access_key=access_key,
-        signature=signature,
-    )
+    auth_header = b"VWS %s:%s" % (access_key, signature)
     return auth_header
