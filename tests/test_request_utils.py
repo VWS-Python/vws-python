@@ -145,14 +145,17 @@ import requests_mock
 
 @wrapt.decorator
 def mock_vuforia(wrapped, instance, args, kwargs):
-    # with requests_mock.Mocker(real_http=True) as req:
+    # TODO Make this available as a context manager, then use
+    # https://pypi.python.org/pypi/conditional to use both in test
+
+    # TODO Use HTTPretty so that this works not just with requests
+    # TODO with requests_mock.Mocker(real_http=True) as req:
     with requests_mock.Mocker() as req:
-        import pdb; pdb.set_trace()
         req.register_uri(
             'GET',
             'https://vws.vuforia.com/summary',
             text='in MOCK!',
-            status_code=codes.OK,
+            status_code=codes.INTERNAL_SERVER_ERROR,
         )
         return wrapped(*args, **kwargs)
 
@@ -194,5 +197,5 @@ class TestTargetAPIRequest:
             content_type=content_type,
             request_path=request_path
         )
-        assert response.text == 'foo'
+        assert response.text == 'in MOCK!'
         assert response.status_code == codes.INTERNAL_SERVER_ERROR
