@@ -95,6 +95,7 @@ def target_api_request(
     """
     XXX
     """
+    # TODO Make this take strings for access keys
     # TODO I had to create a database, document that
     date = rfc_1123_date()
 
@@ -124,4 +125,6 @@ def target_api_request(
         headers=headers,
         data=content,
     )
+
+    # TODO Use constantly for HTTP request handling, not str
     return resp
