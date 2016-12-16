@@ -38,6 +38,13 @@ class TestComputeHmacBase64:
         hashed.update(msg=data)
         assert decoded_result == hashed.digest()
 
+    def test_example(self):
+        """
+        A know example is hashed to the expected value.
+        """
+        result = compute_hmac_base64(key=b'my_key', data=b'my_data')
+        assert result == b'nUa8YOjTBsRCXNk0UgPHS3sq+w0='
+
 
 class TestRfc1123FormatDate:
     """
