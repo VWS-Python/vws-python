@@ -10,12 +10,13 @@ import hmac
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
+from requests import codes
 
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
     rfc_1123_date,
-    foo,
+    target_api_request,
 )
 
 
@@ -131,7 +132,23 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
-class TestFoo:
+class TestTargetAPIRequest:
 
-    def test_foo(self):
-        foo()
+    def test_success(self):
+        access_key = b''
+        secret_key = b''
+
+        method = 'GET'
+        content = b''
+        content_type = 'application/json'
+        request_path = "/summary"
+
+        response = target_api_request(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            content_type=content_type,
+            request_path=request_path
+        )
+        assert response.status_code == codes.OK

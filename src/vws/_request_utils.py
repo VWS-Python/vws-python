@@ -11,6 +11,10 @@ import hmac
 
 from urllib.parse import urljoin
 
+import requests
+
+from requests import codes
+
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
     """
@@ -40,7 +44,7 @@ def authorization_header(  # pylint: disable=too-many-arguments
         content_type: str,
         date: str,
         request_path: str
-) -> str:
+) -> bytes:
     """
     Return an `Authorization` header which can be used for a request made to
     the VWS API with the given attributes.
@@ -80,34 +84,38 @@ def authorization_header(  # pylint: disable=too-many-arguments
     return auth_header
 
 
-def foo():
+def target_api_request(
+        access_key: bytes,
+        secret_key: bytes,
+        method: str,
+        content: bytes,
+        content_type: str,
+        request_path: str
+) -> requests.Response:
+    """
+    XXX
+    """
     # TODO I had to create a database, document that
-
-    access_key = b''
-    secret_key = b''
-
-    http_method = 'GET'
     date = rfc_1123_date()
-    content_type = 'application/json'
-    path = "/summary"
-
-    method = http_method
-    request_path = path
-    content = b''
 
     signature_string = authorization_header(
-        access_key, secret_key,
-        method, content, content_type, date, request_path
+        access_key=access_key,
+        secret_key=secret_key,
+        method=method,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
     )
 
     headers = {
         "Authorization": signature_string,
         "Date": date,
+        # TODO What if content_type is empty?
         "Content-Type": content_type
     }
 
     vws_endpoint = 'https://vws.vuforia.com'
     url = urljoin(vws_endpoint, request_path)
-    import requests
     resp = requests.request(method, url, headers=headers, data=content)
-    assert resp.status_code == 200
+    return resp
