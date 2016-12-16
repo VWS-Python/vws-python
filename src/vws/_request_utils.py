@@ -117,5 +117,11 @@ def target_api_request(
 
     vws_endpoint = 'https://vws.vuforia.com'
     url = urljoin(vws_endpoint, request_path)
-    resp = requests.request(method, url, headers=headers, data=content)
+
+    resp = requests.request(
+        method=method,
+        url=url,
+        headers=headers,
+        data=content,
+    )
     return resp
