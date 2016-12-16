@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 # We use requirements.txt instead of just declaring the requirements here
 # because this helps with Docker package caching.
