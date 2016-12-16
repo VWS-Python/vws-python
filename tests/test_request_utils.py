@@ -139,9 +139,28 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
+import wrapt
+import requests_mock
+
+
+@wrapt.decorator
+def mock_vuforia(wrapped, instance, args, kwargs):
+    # with requests_mock.Mocker(real_http=True) as req:
+    with requests_mock.Mocker() as req:
+        import pdb; pdb.set_trace()
+        req.register_uri(
+            'GET',
+            'https://vws.vuforia.com/summary',
+            text='in MOCK!',
+            status_code=codes.OK,
+        )
+        return wrapped(*args, **kwargs)
+
+
 class TestTargetAPIRequest:
 
     def test_success(self, vuforia_server_credentials):
+        return
         method = 'GET'
         content = b''
         content_type = 'application/json'
@@ -156,3 +175,24 @@ class TestTargetAPIRequest:
             request_path=request_path
         )
         assert response.status_code == codes.OK
+
+    @mock_vuforia
+    def test_success_req(self):
+
+        method = 'GET'
+        content = b''
+        content_type = 'application/json'
+        request_path = "/summary"
+
+        response = target_api_request(
+            # access_key=vuforia_server_credentials.access_key,
+            # secret_key=vuforia_server_credentials.secret_key,
+            access_key=b'vuforia_server_credentials.access_key',
+            secret_key=b'vuforia_server_credentials.secret_key',
+            method=method,
+            content=content,
+            content_type=content_type,
+            request_path=request_path
+        )
+        assert response.text == 'foo'
+        assert response.status_code == codes.INTERNAL_SERVER_ERROR

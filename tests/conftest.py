@@ -26,7 +26,8 @@ class FakeVuforiaAPI:
         self.secret_key = 'blah_secret_key'
 
 
-@pytest.fixture(params=[True, False], ids=['real_vuforia', 'fake_vuforia'])
+# @pytest.fixture(params=[True, False], ids=['real_vuforia', 'fake_vuforia'])
+@pytest.fixture(params=[True], ids=['real_vuforia'])
 def vuforia_server_credentials(request) -> VuforiaServerCredentials:
     use_real_vuforia = request.param
     # This should be parametrized and either use credentials
@@ -50,9 +51,9 @@ def vuforia_server_credentials(request) -> VuforiaServerCredentials:
     else:
         # TODO In this case use mock
         pytest.skip()
-        fake_vuforia = FakeVuforiaAPI()
-        vuforia_server_access_key = fake_vuforia.access_key
-        vuforia_server_secret_key = fake_vuforia.secret_key
+        vuforia_test_client = fake_vuforia.test_client()
+        vuforia_server_access_key = vuforia_test_client.config['access_key']
+        vuforia_server_secret_key = vuforia_test_client.config['secret_key']
 
     if not all([vuforia_server_access_key, vuforia_server_secret_key]):
         pytest.skip("Vuforia integration tests need creds")
