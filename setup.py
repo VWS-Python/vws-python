@@ -1,3 +1,5 @@
+"""Setup script for VWS Python, a wrapper for Vuforia's Web Services APIs."""
+
 from setuptools import find_packages, setup
 
 # We use requirements.txt instead of just declaring the requirements here
