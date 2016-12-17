@@ -94,6 +94,7 @@ def target_api_request(
     XXX
     """
     # TODO I had to create a database, document that
+    # TODO Are they all 'application/json' and therefore that can be hardcoded?
     date = rfc_1123_date()
 
     signature_string = authorization_header(
