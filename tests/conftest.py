@@ -20,19 +20,6 @@ class VuforiaServerCredentials:
         self.secret_key = bytes(secret_key, encoding='utf-8')
 
 
-class FakeVuforiaAPI:
-    """
-    TODO
-    """
-
-    def __init__(self):
-        """
-        TODO
-        """
-        self.access_key = 'blah_access_key'
-        self.secret_key = 'blah_secret_key'
-
-
 @pytest.fixture()
 def vuforia_server_credentials() -> VuforiaServerCredentials:
     """
