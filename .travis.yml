@@ -26,6 +26,8 @@ before_script:
     # Create an environment file used by `pytest-envfiles`.
     # We don't add to this because we have environment variables set in the CI
     # config.
+    - "ls"
+    - "cat .pydocstyle"
     - "touch vuforia_secrets.env"
 
 script:
