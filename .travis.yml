@@ -18,8 +18,11 @@ before_script:
     - "pylint --rcfile=tests-pylintrc tests"
     - "mypy src tests"
     - "markdownlint --config .markdownlint.json README.md"
+    # Check for uploaded secrets
+    - "dodgy"
     # Make sure that imports are sorted as expected.
     - "isort --recursive --check-only"
+    - "pydocstyle"
     # Create an environment file used by `pytest-envfiles`.
     # We don't add to this because we have environment variables set in the CI
     # config.
