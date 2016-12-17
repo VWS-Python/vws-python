@@ -3,7 +3,6 @@
 [![Code Health](https://landscape.io/github/adamtheturtle/vws-python/master/landscape.svg?style=flat)](https://landscape.io/github/adamtheturtle/vws-python/master)
 [![Requirements Status](https://requires.io/github/adamtheturtle/vws-python/requirements.svg?branch=master)](https://requires.io/github/adamtheturtle/vws-python/requirements/?branch=master)
 
-
 # vws-python
 
 Python wrapper for Vuforia Web Services (VWS) API
@@ -28,7 +27,8 @@ Then run `pytest`:
 
 ## Connecting to Vuforia
 
-To connect to Vuforia, a Vuforia target database must be created via the Vuforia Web UI.
+To connect to Vuforia,
+a Vuforia target database must be created via the Vuforia Web UI.
 Then, secret keys must be set as environment variables.
 
 The test infrastructure allows those keys to be set in the file `vuforia_secrets.env`.
