@@ -6,6 +6,10 @@ import base64
 import datetime
 import hashlib
 import hmac
+import re
+
+from typing import Pattern
+from urllib.parse import urljoin
 
 import wrapt
 import requests_mock
@@ -143,10 +147,24 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
-class FakeVuforiaAPI:
+def _endpoint_pattern(path_pattern: str) -> Pattern:
+    """Given a path pattern, return a regex which will match URLs to
+    patch.
+
+    Args:
+        TODO
+    """
+    base = 'https://vws.vuforia.com/'
+    joined = urljoin(base=base, url=path_pattern)
+    return re.compile(joined)
+
+
+class FakeVuforia:
     """
     TODO
     """
+
+    DATABASE_SUMMARY_URL = _endpoint_pattern(path_pattern='summary')
 
     def __init__(self, access_key: str, secret_key: str) -> None:
         """
@@ -178,11 +196,11 @@ def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
     # Create a mock which verifies the signature
     # TODO This should have the same access and secrets as the env vars, so
     # they need to be set.
-    fake_vuforia = FakeVuforiaAPI(access_key='access', secret_key='secret')
+    fake_vuforia = FakeVuforia(access_key='access', secret_key='secret')
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
             method=GET,
-            url='https://vws.vuforia.com/summary',
+            url=fake_vuforia.DATABASE_SUMMARY_URL,
             text=fake_vuforia.database_summary,
             status_code=codes.INTERNAL_SERVER_ERROR,
         )
