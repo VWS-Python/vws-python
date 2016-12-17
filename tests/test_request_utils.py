@@ -149,6 +149,8 @@ def mock_vuforia(wrapped, instance, args, kwargs):
     """
     # TODO Document args, types
     # Create a mock which verifies the signature
+    # TODO This should have the same access and secrets as the env vars, so
+    # they need to be set.
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
             'GET',
