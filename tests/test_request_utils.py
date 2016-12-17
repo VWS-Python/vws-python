@@ -14,6 +14,7 @@ from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
 from requests import codes
+from requests_mock import GET
 
 from vws._request_utils import (
     authorization_header,
@@ -180,7 +181,7 @@ def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
     fake_vuforia = FakeVuforiaAPI(access_key='access', secret_key='secret')
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
-            method='GET',
+            method=GET,
             url='https://vws.vuforia.com/summary',
             text=fake_vuforia.database_summary,
             status_code=codes.INTERNAL_SERVER_ERROR,
