@@ -13,7 +13,7 @@ before_script:
     - "flake8 ."
     - "prospector --strictness veryhigh"
     - "pylint src/vws"
-    - "mypy src"
+    - "mypy src tests"
     # Make sure that imports are sorted as expected
     - "isort --recursive --check-only"
     # Create an environment file used by pytest-envfiles
