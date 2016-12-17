@@ -164,7 +164,10 @@ def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
 
 class TestTargetAPIRequest:
 
+    """TODO"""
+
     def test_success(self, vuforia_server_credentials):
+        """TODO"""
         method = 'GET'
         content = b''
         content_type = 'application/json'
@@ -182,7 +185,7 @@ class TestTargetAPIRequest:
 
     @mock_vuforia
     def test_success_req(self):
-
+        """TODO"""
         # TODO Use constantly for HTTP request handling,
         # not str
         method = 'GET'
