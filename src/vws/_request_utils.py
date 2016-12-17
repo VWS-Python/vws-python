@@ -87,15 +87,13 @@ def target_api_request(
         secret_key: bytes,
         method: str,
         content: bytes,
-        content_type: str,
         request_path: str
 ) -> requests.Response:
     """
-    XXX
+    Make a request to the Vuforia Target API.
     """
-    # TODO I had to create a database, document that
-    # TODO Are they all 'application/json' and therefore that can be hardcoded?
     date = rfc_1123_date()
+    content_type = 'application/json'
 
     signature_string = authorization_header(
         access_key=access_key,
@@ -110,8 +108,7 @@ def target_api_request(
     headers = {
         "Authorization": signature_string,
         "Date": date,
-        # TODO What if content_type is empty?
-        "Content-Type": content_type
+        "Content-Type": content_type,
     }
 
     url = urljoin(base='https://vws.vuforia.com', url=request_path)

@@ -147,24 +147,31 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
-def _endpoint_pattern(path_pattern: str) -> Pattern:
+def _target_endpoint_pattern(path_pattern: str) -> Pattern:
     """Given a path pattern, return a regex which will match URLs to
-    patch.
+    patch for the Target API.
 
     Args:
-        TODO
+        path_pattern: A part of the url which can be matched for endpoints.
+            For example `https://vws.vuforia.com/<this-part>`. This is
+            compiled to be a regular expression, so it may be `/foo` or
+            `/foo/.+` for example.
     """
     base = 'https://vws.vuforia.com/'
     joined = urljoin(base=base, url=path_pattern)
     return re.compile(joined)
 
 
-class FakeVuforia:
+class FakeVuforiaTargetAPI:
     """
-    TODO
+    A fake implementation of the Vuforia Target API.
+
+    This implementation is tied to the implementation of `requests_mock`.
+
+    TODO: Vefify the signature in the mock
     """
 
-    DATABASE_SUMMARY_URL = _endpoint_pattern(path_pattern='summary')
+    DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')
 
     def __init__(self, access_key: str, secret_key: str) -> None:
         """
@@ -176,14 +183,14 @@ class FakeVuforia:
             access_key: A VWS access key.
             secret_key: A VWS secret key.
         """
-        self.access_key = 'blah_access_key'  # type: str
-        self.secret_key = 'blah_secret_key'  # type: str
+        self.access_key = access_key  # type: str
+        self.secret_key = access_key  # type: str
 
     def database_summary(self, request, context):
         """
-        TODO
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
-        # Assert against requests.headers
         return "in Mock"
 
 
@@ -197,12 +204,15 @@ def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
     # Create a mock which verifies the signature
     # TODO This should have the same access and secrets as the env vars, so
     # they need to be set.
-    fake_vuforia = FakeVuforia(access_key='access', secret_key='secret')
+    target_api = FakeVuforiaTargetAPI(
+        access_key='access',
+        secret_key='secret',
+    )
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
             method=GET,
-            url=fake_vuforia.DATABASE_SUMMARY_URL,
-            text=fake_vuforia.database_summary,
+            url=target_api.DATABASE_SUMMARY_URL,
+            text=target_api.database_summary,
             status_code=codes.INTERNAL_SERVER_ERROR,
         )
         return wrapped(*args, **kwargs)
@@ -212,11 +222,13 @@ class TestTargetAPIRequest:
 
     """TODO"""
 
+    import pytest
+
+    @pytest.mark.skip
     def test_success(self, vuforia_server_credentials):
         """TODO"""
         method = 'GET'
         content = b''
-        content_type = 'application/json'
         request_path = "/summary"
 
         response = target_api_request(
@@ -224,7 +236,6 @@ class TestTargetAPIRequest:
             secret_key=vuforia_server_credentials.secret_key,
             method=method,
             content=content,
-            content_type=content_type,
             request_path=request_path
         )
         assert response.status_code == codes.OK
@@ -236,7 +247,6 @@ class TestTargetAPIRequest:
         # not str
         method = 'GET'
         content = b''
-        content_type = 'application/json'
         request_path = "/summary"
 
         response = target_api_request(
@@ -244,7 +254,6 @@ class TestTargetAPIRequest:
             secret_key=b'vuforia_server_credentials.secret_key',
             method=method,
             content=content,
-            content_type=content_type,
             request_path=request_path
         )
         assert response.text == 'in Mock'
