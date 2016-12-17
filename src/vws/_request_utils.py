@@ -8,7 +8,6 @@ import base64
 import email.utils
 import hashlib
 import hmac
-
 from urllib.parse import urljoin
 
 import requests

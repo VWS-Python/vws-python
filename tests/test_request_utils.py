@@ -7,13 +7,11 @@ import datetime
 import hashlib
 import hmac
 import re
-
 from typing import Pattern
 from urllib.parse import urljoin
 
-import wrapt
 import requests_mock
-
+import wrapt
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
@@ -137,7 +135,7 @@ class TestAuthorizationHeader:
         result = authorization_header(
             access_key=b'my_access_key',
             secret_key=b'my_secret_key',
-            method='GET',
+            method=GET,
             content=b'{"something": "other"}',
             content_type='text/example',
             date='Sun, 22 Apr 2012 08:49:37 GMT.',
@@ -162,7 +160,7 @@ def _target_endpoint_pattern(path_pattern: str) -> Pattern:
     return re.compile(joined)
 
 
-class FakeVuforiaTargetAPI:
+class FakeVuforiaTargetAPI:  # pylint: disable=unused-argument
     """
     A fake implementation of the Vuforia Target API.
 

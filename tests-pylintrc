@@ -71,6 +71,8 @@ disable=
     too-few-public-methods,
     too-many-arguments,
     no-member,
+    # Let isort handle imports
+    ungrouped-imports,
 
 [REPORTS]
 
