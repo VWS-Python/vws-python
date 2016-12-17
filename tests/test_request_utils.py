@@ -160,6 +160,12 @@ class FakeVuforiaAPI:
         self.access_key = 'blah_access_key'  # type: str
         self.secret_key = 'blah_secret_key'  # type: str
 
+    def database_summary(self, request, context):
+        """
+        TODO
+        """
+        return "in Mock"
+
 
 @wrapt.decorator
 def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
@@ -171,11 +177,12 @@ def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
     # Create a mock which verifies the signature
     # TODO This should have the same access and secrets as the env vars, so
     # they need to be set.
+    fake_vuforia = FakeVuforiaAPI(access_key='access', secret_key='secret')
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
-            'GET',
-            'https://vws.vuforia.com/summary',
-            text='in MOCK!',
+            method='GET',
+            url='https://vws.vuforia.com/summary',
+            text=fake_vuforia.database_summary,
             status_code=codes.INTERNAL_SERVER_ERROR,
         )
         return wrapped(*args, **kwargs)
@@ -220,5 +227,5 @@ class TestTargetAPIRequest:
             content_type=content_type,
             request_path=request_path
         )
-        assert response.text == 'in MOCK!'
+        assert response.text == 'in Mock'
         assert response.status_code == codes.INTERNAL_SERVER_ERROR
