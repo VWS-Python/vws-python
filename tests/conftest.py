@@ -26,6 +26,7 @@ class FakeVuforiaAPI:
         self.secret_key = 'blah_secret_key'
 
 
+@pytest.fixture()
 def vuforia_server_credentials(request) -> VuforiaServerCredentials:
     vuforia_server_access_key = os.getenv('VUFORIA_SERVER_ACCESS_KEY')
     vuforia_server_secret_key = os.getenv('VUFORIA_SERVER_SECRET_KEY')
