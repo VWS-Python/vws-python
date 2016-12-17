@@ -5,6 +5,7 @@ python:
 
 install:
   - "pip install --upgrade --editable .[dev]"
+  - "npm install -g markdownlint-cli"
 
 cache: "pip"
 
@@ -13,15 +14,19 @@ before_script:
     - "flake8 ."
     - "prospector --strictness veryhigh"
     - "pylint src/vws"
-    - "mypy src"
-    # Make sure that imports are sorted as expected
+    # Less strict linting for tests.
+    - "pylint --rcfile=tests-pylintrc tests"
+    - "mypy src tests"
+    - "markdownlint --config .markdownlint.json README.md"
+    # Make sure that imports are sorted as expected.
     - "isort --recursive --check-only"
-    # Create an environment file used by pytest-envfiles
-    - "echo VWS_LICENSE=$VWS_LICENSE >> vuforia_secrets.env"
-
+    # Create an environment file used by `pytest-envfiles`.
+    # We don't add to this because we have environment variables set in the CI
+    # config.
+    - "touch vuforia_secrets.env"
 
 script:
-    - "pytest --cov=src"
+    - "pytest --cov=src --cov=tests"
 
 after_success:
     - "coveralls"
