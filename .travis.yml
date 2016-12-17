@@ -14,6 +14,8 @@ before_script:
     - "flake8 ."
     - "prospector --strictness veryhigh"
     - "pylint src/vws"
+    # Less strict linting for tests.
+    - "pylint --rcfile=tests-pylintrc tests"
     - "mypy src tests"
     - "markdownlint --config .markdownlint.json README.md"
     # Make sure that imports are sorted as expected.
