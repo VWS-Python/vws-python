@@ -5,27 +5,37 @@
 
 
 # vws-python
+
 Python wrapper for Vuforia Web Services (VWS) API
 
 # Tests
-
 
 To run the tests, first install the dependencies:
 
     pip install -e .[dev]
 
-Create an environment variable file:
+Create an environment variable file for secrets:
 
-    touch vuforia_secrets.env
+    cp vuforia_secrets.env.example vuforia_secrets.env
+
+Some tests require Vuforia credentials.
+To run these tests, add the Vuforia credentials to the file `vuforia_secrets.env`.
+See "Connecting to Vuforia".
 
 Then run `pytest`:
 
     pytest
 
-# Connecting to Vuforia
+## Connecting to Vuforia
 
-Set the `VWS_LICENSE` environment variable.
+To connect to Vuforia, a Vuforia target database must be created via the Vuforia Web UI.
+Then, secret keys must be set as environment variables.
 
-For integration which use Vuforia tests, create a file `vuforia_secrets.env` with the format:
+The test infrastructure allows those keys to be set in the file `vuforia_secrets.env`.
+See `vuforia_secrets.env.example` for the environment variables to set.
 
-    VWS_LICENSE=<APPLICATION_LICENSE_KEY> 
+To create a target database, first create a license key in the [License Manager](https://developer.vuforia.com/targetmanager/licenseManager/licenseListing).
+Then, add a database from the [Target Manager](https://developer.vuforia.com/targetmanager).
+
+To find the environment variables to set in the `vuforia_secrets.env` file,
+visit the Target Database in the Target Manager and view the "Database Access Keys".
