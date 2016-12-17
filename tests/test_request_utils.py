@@ -7,6 +7,9 @@ import datetime
 import hashlib
 import hmac
 
+import wrapt
+import requests_mock
+
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
@@ -139,16 +142,13 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
-import wrapt
-import requests_mock
-
-
 @wrapt.decorator
 def mock_vuforia(wrapped, instance, args, kwargs):
-    # TODO Make this available as a context manager, then use
-    # https://pypi.python.org/pypi/conditional to use both in test
-
-    # TODO Use HTTPretty so that this works not just with requests
+    """
+    Route requests to Vuforia's Web Service APIs to fakes of those APIs.
+    """
+    # TODO Document args, types
+    # Create a mock which verifies the signature
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
             'GET',

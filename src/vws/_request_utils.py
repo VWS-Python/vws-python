@@ -93,7 +93,6 @@ def target_api_request(
     """
     XXX
     """
-    # TODO Make this take strings for access keys
     # TODO I had to create a database, document that
     date = rfc_1123_date()
 
