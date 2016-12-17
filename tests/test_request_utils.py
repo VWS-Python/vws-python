@@ -149,8 +149,7 @@ def mock_vuforia(wrapped, instance, args, kwargs):
     # https://pypi.python.org/pypi/conditional to use both in test
 
     # TODO Use HTTPretty so that this works not just with requests
-    # TODO with requests_mock.Mocker(real_http=True) as req:
-    with requests_mock.Mocker() as req:
+    with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
             'GET',
             'https://vws.vuforia.com/summary',
@@ -163,7 +162,6 @@ def mock_vuforia(wrapped, instance, args, kwargs):
 class TestTargetAPIRequest:
 
     def test_success(self, vuforia_server_credentials):
-        return
         method = 'GET'
         content = b''
         content_type = 'application/json'
@@ -182,14 +180,14 @@ class TestTargetAPIRequest:
     @mock_vuforia
     def test_success_req(self):
 
+        # TODO Use constantly for HTTP request handling,
+        # not str
         method = 'GET'
         content = b''
         content_type = 'application/json'
         request_path = "/summary"
 
         response = target_api_request(
-            # access_key=vuforia_server_credentials.access_key,
-            # secret_key=vuforia_server_credentials.secret_key,
             access_key=b'vuforia_server_credentials.access_key',
             secret_key=b'vuforia_server_credentials.secret_key',
             method=method,

@@ -114,8 +114,7 @@ def target_api_request(
         "Content-Type": content_type
     }
 
-    vws_endpoint = 'https://vws.vuforia.com'
-    url = urljoin(vws_endpoint, request_path)
+    url = urljoin(base='https://vws.vuforia.com', url=request_path)
 
     resp = requests.request(
         method=method,
@@ -124,5 +123,4 @@ def target_api_request(
         data=content,
     )
 
-    # TODO Use constantly for HTTP request handling, not str
     return resp
