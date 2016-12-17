@@ -8,3 +8,5 @@ coveralls # Upload coverage data
 hypothesis # Generate test cases
 pytest-envfiles # Use files for environment variables for tests
 freezegun # Freeze time in tests
+isort # Lint imports
+dodgy # Look for uploaded secrets
