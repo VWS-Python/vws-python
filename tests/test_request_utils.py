@@ -183,6 +183,7 @@ class FakeVuforia:
         """
         TODO
         """
+        # Assert against requests.headers
         return "in Mock"
 
 
