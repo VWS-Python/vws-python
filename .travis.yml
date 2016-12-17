@@ -15,7 +15,7 @@ before_script:
     - "prospector --strictness veryhigh"
     - "pylint src/vws"
     - "mypy src tests"
-    - "markdownlint README.md"
+    - "markdownlint --config .markdownlint.json README.md"
     # Make sure that imports are sorted as expected.
     - "isort --recursive --check-only"
     # Create an environment file used by `pytest-envfiles`.
