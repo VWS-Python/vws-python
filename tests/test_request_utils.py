@@ -143,7 +143,8 @@ class TestAuthorizationHeader:
 
 
 @wrapt.decorator
-def mock_vuforia(wrapped, instance, args, kwargs):
+def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
+                 kwargs):
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """

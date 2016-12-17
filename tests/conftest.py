@@ -1,6 +1,10 @@
-import pytest
+"""
+TODO
+"""
 
 import os
+
+import pytest
 
 
 class VuforiaServerCredentials:
@@ -22,12 +26,18 @@ class FakeVuforiaAPI:
     """
 
     def __init__(self):
+        """
+        TODO
+        """
         self.access_key = 'blah_access_key'
         self.secret_key = 'blah_secret_key'
 
 
 @pytest.fixture()
-def vuforia_server_credentials(request) -> VuforiaServerCredentials:
+def vuforia_server_credentials() -> VuforiaServerCredentials:
+    """
+    TODO
+    """
     vuforia_server_access_key = os.getenv('VUFORIA_SERVER_ACCESS_KEY')
     vuforia_server_secret_key = os.getenv('VUFORIA_SERVER_SECRET_KEY')
 

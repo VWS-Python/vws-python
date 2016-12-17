@@ -69,7 +69,8 @@ confidence=
 disable=
     no-self-use,
     too-few-public-methods,
-    too-many-arguments
+    too-many-arguments,
+    no-member,
 
 [REPORTS]
 
