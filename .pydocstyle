@@ -1,3 +1,10 @@
 [pydocstyle]
 # No summary lines
-ignore = D400,D205,D200,D212
+#   - D200
+#   - D205
+#   - D400
+# We don't want blank lines before class docstrings
+#   - D203
+# We don't need docstrings to start at the first line
+#   - D212
+ignore = D200,D203,D205,D212,D400
