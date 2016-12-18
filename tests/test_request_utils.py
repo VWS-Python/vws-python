@@ -160,6 +160,7 @@ def _target_endpoint_pattern(path_pattern: str) -> Pattern:
     return re.compile(joined)
 
 
+# TODO Remove pylint disable when summary is done
 class FakeVuforiaTargetAPI:  # pylint: disable=unused-argument
     """
     A fake implementation of the Vuforia Target API.
