@@ -185,7 +185,7 @@ class FakeVuforiaTargetAPI:
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-    def database_summary(self, request, # pylint: disable=unused-argument
+    def database_summary(self, request,  # pylint: disable=unused-argument
                          context) -> None:
         """
         Fake implementation of
