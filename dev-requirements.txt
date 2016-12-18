@@ -1,14 +1,15 @@
-pytest # Test runners
-flake8 # Lint
-mypy-lang # Type checking
-pylint # Lint
-prospector # Various linting tools collated
-pytest-cov # Measure code coverage
-coveralls # Upload coverage data
-hypothesis # Generate test cases
-pytest-envfiles # Use files for environment variables for tests
-freezegun # Freeze time in tests
-isort # Lint imports
-dodgy # Look for uploaded secrets
-pydocstyle # Lint docstrings
-requests-mock # Mock `requests`
+pytest  # Test runners
+flake8  # Lint
+mypy-lang  # Type checking
+pylint  # Lint
+prospector  # Various linting tools collated
+pytest-cov  # Measure code coverage
+coveralls  # Upload coverage data
+hypothesis  # Generate test cases
+pytest-envfiles  # Use files for environment variables for tests
+freezegun  # Freeze time in tests
+isort  # Lint imports
+dodgy  # Look for uploaded secrets
+pydocstyle  # Lint docstrings
+requests-mock  # Mock `requests`
+doc8  # Lint docs
