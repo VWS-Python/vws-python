@@ -8,6 +8,9 @@ import base64
 import email.utils
 import hashlib
 import hmac
+from urllib.parse import urljoin
+
+import requests
 
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
@@ -76,3 +79,44 @@ def authorization_header(  # pylint: disable=too-many-arguments
     )
     auth_header = b"VWS %s:%s" % (access_key, signature)
     return auth_header
+
+
+def target_api_request(
+        access_key: bytes,
+        secret_key: bytes,
+        method: str,
+        content: bytes,
+        request_path: str
+) -> requests.Response:
+    """
+    Make a request to the Vuforia Target API.
+    """
+    date = rfc_1123_date()
+    content_type = 'application/json'
+
+    signature_string = authorization_header(
+        access_key=access_key,
+        secret_key=secret_key,
+        method=method,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        "Authorization": signature_string,
+        "Date": date,
+        "Content-Type": content_type,
+    }
+
+    url = urljoin(base='https://vws.vuforia.com', url=request_path)
+
+    resp = requests.request(
+        method=method,
+        url=url,
+        headers=headers,
+        data=content,
+    )
+
+    return resp
