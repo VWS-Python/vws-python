@@ -223,7 +223,9 @@ class TestTargetAPIRequest:
 
     """Tests for `target_api_request`."""
 
-    def test_success(self, vuforia_server_credentials: VuforiaServerCredentials) -> None:
+    def test_success(self,
+                     vuforia_server_credentials: VuforiaServerCredentials,
+                     ) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
@@ -236,7 +238,9 @@ class TestTargetAPIRequest:
         assert response.status_code == codes.OK
 
     @mock_vuforia
-    def test_success_req(self, vuforia_server_credentials: VuforiaServerCredentials) -> None:
+    def test_success_req(self,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         ) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
