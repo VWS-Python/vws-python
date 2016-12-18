@@ -6,6 +6,7 @@ import base64
 import datetime
 import hashlib
 import hmac
+import os
 import re
 from typing import Pattern
 from urllib.parse import urljoin
@@ -190,6 +191,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=unused-argument
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
+        context.status_code = codes.INTERNAL_SERVER_ERROR
         return "in Mock"
 
 
@@ -199,20 +201,15 @@ def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """
-    # TODO Document args, types
-    # Create a mock which verifies the signature
-    # TODO This should have the same access and secrets as the env vars, so
-    # they need to be set.
     target_api = FakeVuforiaTargetAPI(
-        access_key='access',
-        secret_key='secret',
+        access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
+        secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     )
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
             method=GET,
             url=target_api.DATABASE_SUMMARY_URL,
             text=target_api.database_summary,
-            status_code=codes.INTERNAL_SERVER_ERROR,
         )
         return wrapped(*args, **kwargs)
 
@@ -232,22 +229,17 @@ class TestTargetAPIRequest:
             request_path='/summary',
         )
         assert response.status_code == codes.OK
-        
-    @mock_vuforia
-    def test_success_req(self):
-        """TODO"""
-        # TODO Use constantly for HTTP request handling,
-        # not str
-        method = 'GET'
-        content = b''
-        request_path = "/summary"
 
+    @mock_vuforia
+    def test_success_req(self, vuforia_server_credentials):
+        """It is possible to get a success response from a VWS endpoint which
+        requires authorization."""
         response = target_api_request(
-            access_key=b'vuforia_server_credentials.access_key',
-            secret_key=b'vuforia_server_credentials.secret_key',
-            method=method,
-            content=content,
-            request_path=request_path
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/summary',
         )
         assert response.text == 'in Mock'
         assert response.status_code == codes.INTERNAL_SERVER_ERROR
