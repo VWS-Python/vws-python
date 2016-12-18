@@ -160,7 +160,7 @@ def _target_endpoint_pattern(path_pattern: str) -> Pattern:
             compiled to be a regular expression, so it may be `/foo` or
             `/foo/.+` for example.
     """
-    base = 'https://vws.vuforia.com/'
+    base = 'https://vws.vuforia.com/'  # type: str
     joined = urljoin(base=base, url=path_pattern)
     return re.compile(joined)
 
