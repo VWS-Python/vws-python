@@ -73,6 +73,9 @@ disable=
     no-member,
     # Let isort handle imports
     ungrouped-imports,
+    protected-access,
+    # Let flake8 handle indentation
+    bad-continuation,
 
 [REPORTS]
 
