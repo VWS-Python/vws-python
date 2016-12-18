@@ -6,12 +6,7 @@ import base64
 import datetime
 import hashlib
 import hmac
-import re
-from typing import Pattern
-from urllib.parse import urljoin
 
-import requests_mock
-import wrapt
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
