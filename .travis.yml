@@ -22,7 +22,7 @@ before_script:
     - "dodgy"
     # Make sure that imports are sorted as expected.
     - "isort --recursive --check-only"
-    - "doc8"
+    - "doc8 --config doc8.ini"
     - "pydocstyle"
     # Create an environment file used by `pytest-envfiles`.
     # We don't add to this because we have environment variables set in the CI
