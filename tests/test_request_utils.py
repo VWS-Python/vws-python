@@ -186,7 +186,7 @@ class FakeVuforiaTargetAPI:
         self.secret_key = secret_key  # type: str
 
     def database_summary(self, request,  # pylint: disable=unused-argument
-                         context) -> None:
+                         context) -> str:
         """
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
