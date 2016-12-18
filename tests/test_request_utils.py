@@ -147,15 +147,11 @@ class TestTargetAPIRequest:
     def test_success(self, vuforia_server_credentials):
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
-        method = GET
-        content = b''
-        request_path = "/summary"
-
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=method,
-            content=content,
-            request_path=request_path
+            method=GET,
+            content=b'',
+            request_path='/summary',
         )
         assert response.status_code == codes.OK

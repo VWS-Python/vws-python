@@ -92,6 +92,7 @@ def target_api_request(
     Make a request to the Vuforia Target API.
 
     This uses `requests` to make a request against https://vws.vuforia.com.
+    The content type of the request will be `application/json`
 
     Args:
         access_key: A VWS access key.
@@ -125,11 +126,11 @@ def target_api_request(
 
     url = urljoin(base='https://vws.vuforia.com', url=request_path)
 
-    resp = requests.request(
+    response = requests.request(
         method=method,
         url=url,
         headers=headers,
         data=content,
     )
 
-    return resp
+    return response
