@@ -26,6 +26,8 @@ from vws._request_utils import (
     target_api_request,
 )
 
+from tests.conftest import VuforiaServerCredentials
+
 
 class TestComputeHmacBase64:
     """
@@ -185,8 +187,9 @@ class FakeVuforiaTargetAPI:
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-    def database_summary(self, request,  # noqa pylint: disable=unused-argument
-                         context) -> str:
+    def database_summary(self,
+                         request: requests_mock.request._RequestObjectProxy,  # noqa pylint: disable=unused-argument
+                         context: requests_mock.response._Context) -> str:
         """
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
@@ -196,8 +199,10 @@ class FakeVuforiaTargetAPI:
 
 
 @wrapt.decorator
-def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
-                 kwargs) -> Callable:
+def mock_vuforia(wrapped: Callable,
+                 instance: object,  # pylint: disable=unused-argument
+                 args: tuple,
+                 kwargs: dict) -> Callable:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """
@@ -218,7 +223,7 @@ class TestTargetAPIRequest:
 
     """Tests for `target_api_request`."""
 
-    def test_success(self, vuforia_server_credentials) -> None:
+    def test_success(self, vuforia_server_credentials: VuforiaServerCredentials) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
@@ -231,7 +236,7 @@ class TestTargetAPIRequest:
         assert response.status_code == codes.OK
 
     @mock_vuforia
-    def test_success_req(self, vuforia_server_credentials) -> None:
+    def test_success_req(self, vuforia_server_credentials: VuforiaServerCredentials) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
