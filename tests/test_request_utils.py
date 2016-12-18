@@ -19,14 +19,13 @@ from hypothesis.strategies import binary, text
 from requests import codes
 from requests_mock import GET
 
+from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
     rfc_1123_date,
     target_api_request,
 )
-
-from tests.conftest import VuforiaServerCredentials
 
 
 class TestComputeHmacBase64:
