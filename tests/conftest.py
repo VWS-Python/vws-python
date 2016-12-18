@@ -34,5 +34,5 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
     credentials = VuforiaServerCredentials(
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
-    )
+    )  # type: VuforiaServerCredentials
     return credentials
