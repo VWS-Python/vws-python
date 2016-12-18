@@ -90,6 +90,19 @@ def target_api_request(
 ) -> requests.Response:
     """
     Make a request to the Vuforia Target API.
+
+    This uses `requests` to make a request against https://vws.vuforia.com.
+
+    Args:
+        access_key: A VWS access key.
+        secret_key: A VWS secret key.
+        method: The HTTP method which will be used in the request.
+        content: The request body which will be used in the request.
+        request_path: The path to the endpoint which will be used in the
+            request.
+
+    Returns:
+        The response to the request made by `requests`.
     """
     date = rfc_1123_date()
     content_type = 'application/json'
