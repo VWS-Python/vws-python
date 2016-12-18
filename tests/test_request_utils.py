@@ -8,7 +8,7 @@ import hashlib
 import hmac
 import os
 import re
-from typing import Pattern
+from typing import Callable, Pattern
 from urllib.parse import urljoin
 
 import requests_mock
@@ -197,7 +197,7 @@ class FakeVuforiaTargetAPI:
 
 @wrapt.decorator
 def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
-                 kwargs):
+                 kwargs) -> Callable:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """
@@ -218,7 +218,7 @@ class TestTargetAPIRequest:
 
     """Tests for `target_api_request`."""
 
-    def test_success(self, vuforia_server_credentials):
+    def test_success(self, vuforia_server_credentials) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
@@ -231,7 +231,7 @@ class TestTargetAPIRequest:
         assert response.status_code == codes.OK
 
     @mock_vuforia
-    def test_success_req(self, vuforia_server_credentials):
+    def test_success_req(self, vuforia_server_credentials) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
