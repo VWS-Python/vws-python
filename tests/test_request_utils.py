@@ -219,26 +219,20 @@ def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
 
 class TestTargetAPIRequest:
 
-    """TODO"""
+    """Tests for `target_api_request`."""
 
-    import pytest
-
-    @pytest.mark.skip
     def test_success(self, vuforia_server_credentials):
-        """TODO"""
-        method = 'GET'
-        content = b''
-        request_path = "/summary"
-
+        """It is possible to get a success response from a VWS endpoint which
+        requires authorization."""
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=method,
-            content=content,
-            request_path=request_path
+            method=GET,
+            content=b'',
+            request_path='/summary',
         )
         assert response.status_code == codes.OK
-
+        
     @mock_vuforia
     def test_success_req(self):
         """TODO"""
