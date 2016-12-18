@@ -161,8 +161,7 @@ def _target_endpoint_pattern(path_pattern: str) -> Pattern:
     return re.compile(joined)
 
 
-# TODO Remove pylint disable when summary is done
-class FakeVuforiaTargetAPI:  # pylint: disable=unused-argument
+class FakeVuforiaTargetAPI:
     """
     A fake implementation of the Vuforia Target API.
 
@@ -186,13 +185,14 @@ class FakeVuforiaTargetAPI:  # pylint: disable=unused-argument
         self.access_key = access_key  # type: str
         self.secret_key = access_key  # type: str
 
-    def database_summary(self, request, context):
+    def database_summary(self, request,
+                         context) -> None:  # pylint: disable=unused-argument
         """
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
         context.status_code = codes.INTERNAL_SERVER_ERROR
-        return "in Mock"
+        return 'in Mock'
 
 
 @wrapt.decorator
