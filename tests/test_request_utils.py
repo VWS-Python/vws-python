@@ -10,11 +10,14 @@ import hmac
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
+from requests import codes
+from requests_mock import GET
 
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
     rfc_1123_date,
+    target_api_request,
 )
 
 
@@ -127,7 +130,7 @@ class TestAuthorizationHeader:
         result = authorization_header(
             access_key=b'my_access_key',
             secret_key=b'my_secret_key',
-            method='GET',
+            method=GET,
             content=b'{"something": "other"}',
             content_type='text/example',
             date='Sun, 22 Apr 2012 08:49:37 GMT.',
@@ -135,3 +138,20 @@ class TestAuthorizationHeader:
         )
 
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
+
+
+class TestTargetAPIRequest:
+
+    """Tests for `target_api_request`."""
+
+    def test_success(self, vuforia_server_credentials):
+        """It is possible to get a success response from a VWS endpoint which
+        requires authorization."""
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/summary',
+        )
+        assert response.status_code == codes.OK
