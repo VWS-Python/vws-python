@@ -166,8 +166,6 @@ class FakeVuforiaTargetAPI:
     A fake implementation of the Vuforia Target API.
 
     This implementation is tied to the implementation of `requests_mock`.
-
-    TODO: Vefify the signature in the mock
     """
 
     DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')
@@ -191,8 +189,8 @@ class FakeVuforiaTargetAPI:
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
-        context.status_code = codes.INTERNAL_SERVER_ERROR
-        return 'in Mock'
+        context.status_code = codes.OK
+        return '{}'
 
 
 @wrapt.decorator
@@ -241,5 +239,4 @@ class TestTargetAPIRequest:
             content=b'',
             request_path='/summary',
         )
-        assert response.text == 'in Mock'
-        assert response.status_code == codes.INTERNAL_SERVER_ERROR
+        assert response.status_code == codes.OK
