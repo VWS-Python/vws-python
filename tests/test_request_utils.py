@@ -8,7 +8,7 @@ import hashlib
 import hmac
 import os
 import re
-from typing import Pattern
+from typing import Callable, Pattern
 from urllib.parse import urljoin
 
 import requests_mock
@@ -19,6 +19,7 @@ from hypothesis.strategies import binary, text
 from requests import codes
 from requests_mock import GET
 
+from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
@@ -33,7 +34,7 @@ class TestComputeHmacBase64:
     """
 
     @given(key=binary(), data=binary())
-    def test_compute_hmac_base64(self, key, data):
+    def test_compute_hmac_base64(self, key: bytes, data: bytes) -> None:
         """
         This is mostly a reimplementation of the hash computation. The real
         test is that making requests works. This exists to make refactoring
@@ -45,7 +46,7 @@ class TestComputeHmacBase64:
         hashed.update(msg=data)
         assert decoded_result == hashed.digest()
 
-    def test_example(self):
+    def test_example(self) -> None:
         """
         A know example is hashed to the expected value.
         """
@@ -58,7 +59,7 @@ class TestRfc1123FormatDate:
     Tests for ``rfc_1123_date``.
     """
 
-    def test_rfc_1123_date(self):
+    def test_rfc_1123_date(self) -> None:
         """
         ``rfc_1123_date`` returns the date formatted as required by Vuforia.
         This test matches the example date set at
@@ -90,8 +91,10 @@ class TestAuthorizationHeader:
         date=text(),
         request_path=text(),
     )
-    def test_authorization_header(self, access_key, secret_key, method,
-                                  content, content_type, date, request_path):
+    def test_authorization_header(self, access_key: bytes, secret_key: bytes,
+                                  method: str, content: bytes,
+                                  content_type: str, date: str,
+                                  request_path: str) -> None:
         """
         This is mostly a reimplimentation of the header creation. The real
         test is that the header works. This exists to make refactoring easier
@@ -129,7 +132,7 @@ class TestAuthorizationHeader:
 
         assert result == expected
 
-    def test_example(self):
+    def test_example(self) -> None:
         """
         Test a successful example of creating an Authorization header.
         """
@@ -146,7 +149,7 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
-def _target_endpoint_pattern(path_pattern: str) -> Pattern:
+def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     """Given a path pattern, return a regex which will match URLs to
     patch for the Target API.
 
@@ -156,7 +159,7 @@ def _target_endpoint_pattern(path_pattern: str) -> Pattern:
             compiled to be a regular expression, so it may be `/foo` or
             `/foo/.+` for example.
     """
-    base = 'https://vws.vuforia.com/'
+    base = 'https://vws.vuforia.com/'  # type: str
     joined = urljoin(base=base, url=path_pattern)
     return re.compile(joined)
 
@@ -168,7 +171,7 @@ class FakeVuforiaTargetAPI:
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')
+    DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')  # noqa type: Pattern[str]
 
     def __init__(self, access_key: str, secret_key: str) -> None:
         """
@@ -183,8 +186,9 @@ class FakeVuforiaTargetAPI:
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-    def database_summary(self, request,  # pylint: disable=unused-argument
-                         context) -> str:
+    def database_summary(self,
+                         request: requests_mock.request._RequestObjectProxy,  # noqa pylint: disable=unused-argument
+                         context: requests_mock.response._Context) -> str:
         """
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
@@ -194,8 +198,10 @@ class FakeVuforiaTargetAPI:
 
 
 @wrapt.decorator
-def mock_vuforia(wrapped, instance, args,  # pylint: disable=unused-argument
-                 kwargs):
+def mock_vuforia(wrapped: Callable[..., None],
+                 instance: object,  # pylint: disable=unused-argument
+                 args: tuple,
+                 kwargs: dict) -> None:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """
@@ -216,7 +222,9 @@ class TestTargetAPIRequest:
 
     """Tests for `target_api_request`."""
 
-    def test_success(self, vuforia_server_credentials):
+    def test_success(self,
+                     vuforia_server_credentials: VuforiaServerCredentials,
+                     ) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
@@ -229,7 +237,9 @@ class TestTargetAPIRequest:
         assert response.status_code == codes.OK
 
     @mock_vuforia
-    def test_success_req(self, vuforia_server_credentials):
+    def test_success_req(self,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         ) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
