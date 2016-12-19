@@ -8,6 +8,7 @@ import hashlib
 import hmac
 import os
 import re
+from contextlib import contextmanager
 from typing import Callable, Pattern
 from urllib.parse import urljoin
 
@@ -194,6 +195,7 @@ class FakeVuforiaTargetAPI:
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
         context.status_code = codes.OK
+        context.status_code = 1
         return '{}'
 
 
@@ -209,13 +211,19 @@ def mock_vuforia(wrapped: Callable[..., None],
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     )
+    with mock_vuforia_context(target_api):
+        return wrapped(*args, **kwargs)
+
+
+@contextmanager
+def mock_vuforia_context(fake_target_api):
     with requests_mock.Mocker(real_http=True) as req:
         req.register_uri(
             method=GET,
-            url=target_api.DATABASE_SUMMARY_URL,
-            text=target_api.database_summary,
+            url=fake_target_api.DATABASE_SUMMARY_URL,
+            text=fake_target_api.database_summary,
         )
-        return wrapped(*args, **kwargs)
+        yield
 
 
 class TestTargetAPIRequest:
