@@ -16,9 +16,8 @@ from hypothesis.strategies import binary, text
 from requests import codes
 from requests_mock import GET
 
-from tests.conftest import VuforiaServerCredentials
 from mock_vws import mock_vws
-
+from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
