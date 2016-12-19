@@ -1,5 +1,5 @@
 """
-XXX
+Tools for using a fake implementation of Vuforia.
 """
 
 import os
@@ -16,7 +16,8 @@ from requests import codes
 
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
-    """Given a path pattern, return a regex which will match URLs to
+    """
+    Given a path pattern, return a regex which will match URLs to
     patch for the Target API.
 
     Args:
