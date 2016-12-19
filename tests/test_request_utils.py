@@ -6,14 +6,9 @@ import base64
 import datetime
 import hashlib
 import hmac
-import os
-import re
-from contextlib import contextmanager
-from typing import Generator, Iterator, Pattern
-from urllib.parse import urljoin
+from typing import Generator
 
 import pytest
-import requests_mock
 from _pytest.fixtures import SubRequest
 from freezegun import freeze_time
 from hypothesis import given
