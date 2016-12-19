@@ -16,7 +16,7 @@ before_script:
     - "pylint src/vws"
     # Less strict linting for tests.
     - "pylint --rcfile=tests-pylintrc tests"
-    - "mypy --linecoverage-report mypy src tests"
+    - "mypy src tests"
     - "markdownlint --config .markdownlint.json README.md"
     # Check for uploaded secrets
     - "dodgy"
@@ -33,4 +33,4 @@ script:
     - "pytest --cov=src --cov=tests"
 
 after_success:
-    - "coveralls --merge mypy/coverage.json"
+    - "coveralls"
