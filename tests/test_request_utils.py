@@ -8,11 +8,13 @@ import hashlib
 import hmac
 import os
 import re
-from typing import Callable, Pattern
+from contextlib import contextmanager
+from typing import Generator, Iterator, Pattern
 from urllib.parse import urljoin
 
+import pytest
 import requests_mock
-import wrapt
+from _pytest.fixtures import SubRequest
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
@@ -197,49 +199,72 @@ class FakeVuforiaTargetAPI:
         return '{}'
 
 
-@wrapt.decorator
-def mock_vuforia(wrapped: Callable[..., None],
-                 instance: object,  # pylint: disable=unused-argument
-                 args: tuple,
-                 kwargs: dict) -> None:
+@contextmanager
+def mock_vuforia(real_http: bool=False) -> Iterator[object]:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
+
+    This creates a mock which uses access keys from the environment.
+    See the README to find which secrets to set.
+
+    Args:
+        real_http: Whether or not to forward requests to the real server if
+            they are not handled by the mock.
+            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests  # noqa
+
+    This can be used as a context manager or as a decorator.
+
+    Examples:
+
+        >>> @mock_vuforia
+        ... def test_vuforia_example():
+        ...     pass
+
+        or
+
+        >>> def test_vuforia_example():
+        ...     with mock_vuforia():
+        ...         pass
     """
-    target_api = FakeVuforiaTargetAPI(
+    fake_target_api = FakeVuforiaTargetAPI(
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     )
-    with requests_mock.Mocker(real_http=True) as req:
+    real_http = False
+    with requests_mock.Mocker(real_http=real_http) as req:
         req.register_uri(
             method=GET,
-            url=target_api.DATABASE_SUMMARY_URL,
-            text=target_api.database_summary,
+            url=fake_target_api.DATABASE_SUMMARY_URL,
+            text=fake_target_api.database_summary,
         )
-        return wrapped(*args, **kwargs)
+        # We need to yield an iterator to satisfy `mypy`.
+        yield []
+
+
+@pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
+def verify_mock_vuforia(request: SubRequest) -> Generator:
+    """
+    Tests run with this fixture are run twice. Once with the real Vuforia,
+    and once with the mock.
+
+    This is useful for verifying the mockRun the tests.
+    """
+    use_real_vuforia = request.param
+    if use_real_vuforia:
+        yield
+    else:
+        with mock_vuforia():
+            yield
 
 
 class TestTargetAPIRequest:
 
     """Tests for `target_api_request`."""
 
+    @pytest.mark.usefixtures('verify_mock_vuforia')
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      ) -> None:
-        """It is possible to get a success response from a VWS endpoint which
-        requires authorization."""
-        response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary',
-        )
-        assert response.status_code == codes.OK
-
-    @mock_vuforia
-    def test_success_req(self,
-                         vuforia_server_credentials: VuforiaServerCredentials,
-                         ) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
