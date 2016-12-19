@@ -14,10 +14,10 @@ from urllib.parse import urljoin
 
 import pytest
 import requests_mock
+from _pytest.fixtures import SubRequest
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
-from _pytest.fixtures import SubRequest
 from requests import codes
 from requests_mock import GET
 
