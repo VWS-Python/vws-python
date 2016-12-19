@@ -8,7 +8,7 @@ import hashlib
 import hmac
 import os
 import re
-from typing import Any, Callable, Pattern
+from typing import Callable, Pattern
 from urllib.parse import urljoin
 
 import requests_mock
@@ -198,10 +198,10 @@ class FakeVuforiaTargetAPI:
 
 
 @wrapt.decorator
-def mock_vuforia(wrapped: Callable[..., Any],
+def mock_vuforia(wrapped: Callable[..., None],
                  instance: object,  # pylint: disable=unused-argument
                  args: tuple,
-                 kwargs: dict) -> Callable:
+                 kwargs: dict) -> None:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """
