@@ -8,7 +8,7 @@ import hashlib
 import hmac
 import os
 import re
-from typing import Callable, Pattern
+from typing import Any, Callable, Pattern
 from urllib.parse import urljoin
 
 import requests_mock
@@ -198,7 +198,7 @@ class FakeVuforiaTargetAPI:
 
 
 @wrapt.decorator
-def mock_vuforia(wrapped: Callable,
+def mock_vuforia(wrapped: Callable[..., Any],
                  instance: object,  # pylint: disable=unused-argument
                  args: tuple,
                  kwargs: dict) -> Callable:
