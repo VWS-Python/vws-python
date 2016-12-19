@@ -12,6 +12,7 @@ from contextlib import contextmanager
 from typing import Callable, Pattern
 from urllib.parse import urljoin
 
+import pytest
 import requests_mock
 import wrapt
 from freezegun import freeze_time
@@ -195,7 +196,6 @@ class FakeVuforiaTargetAPI:
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
         context.status_code = codes.OK
-        context.status_code = 1
         return '{}'
 
 
@@ -207,11 +207,11 @@ def mock_vuforia(wrapped: Callable[..., None],
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """
-    target_api = FakeVuforiaTargetAPI(
+    fake_target_api = FakeVuforiaTargetAPI(
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     )
-    with mock_vuforia_context(target_api):
+    with mock_vuforia_context(fake_target_api):
         return wrapped(*args, **kwargs)
 
 
@@ -226,28 +226,28 @@ def mock_vuforia_context(fake_target_api):
         yield
 
 
+@pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
+def verify_mock_vuforia(request):
+    fake_target_api = FakeVuforiaTargetAPI(
+        access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
+        secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
+    )
+    use_real_vuforia = request.param
+    if use_real_vuforia:
+        yield
+    else:
+        with mock_vuforia_context(fake_target_api=fake_target_api):
+            yield
+
+
 class TestTargetAPIRequest:
 
     """Tests for `target_api_request`."""
 
+    @pytest.mark.usefixtures('verify_mock_vuforia')
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      ) -> None:
-        """It is possible to get a success response from a VWS endpoint which
-        requires authorization."""
-        response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary',
-        )
-        assert response.status_code == codes.OK
-
-    @mock_vuforia
-    def test_success_req(self,
-                         vuforia_server_credentials: VuforiaServerCredentials,
-                         ) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
