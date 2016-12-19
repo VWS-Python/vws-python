@@ -153,15 +153,13 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
-
-
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(request: SubRequest) -> Generator:
     """
     Tests run with this fixture are run twice. Once with the real Vuforia,
     and once with the mock.
 
-    This is useful for verifying the mockRun the tests.
+    This is useful for verifying the mock.
     """
     use_real_vuforia = request.param
     if use_real_vuforia:
