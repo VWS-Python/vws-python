@@ -9,15 +9,15 @@ import hmac
 import os
 import re
 from contextlib import contextmanager
-from typing import Callable, Pattern
+from typing import Generator, Iterator, Pattern
 from urllib.parse import urljoin
 
 import pytest
 import requests_mock
-import wrapt
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
+from _pytest.fixtures import SubRequest
 from requests import codes
 from requests_mock import GET
 
@@ -196,14 +196,15 @@ class FakeVuforiaTargetAPI:
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
         context.status_code = codes.OK
-        context.status_code = 1
         return '{}'
 
 
 @contextmanager
-def mock_vuforia(real_http: bool=False) -> None:
+def mock_vuforia(real_http: bool=False) -> Iterator[object]:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
+
+    # TODO: Can be used as context manager OR as decorator
     """
     fake_target_api = FakeVuforiaTargetAPI(
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
@@ -216,11 +217,12 @@ def mock_vuforia(real_http: bool=False) -> None:
             url=fake_target_api.DATABASE_SUMMARY_URL,
             text=fake_target_api.database_summary,
         )
-        yield
+        # We need to yield an iterator to satisfy `mypy`.
+        yield []
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-def verify_mock_vuforia(request):
+def verify_mock_vuforia(request: SubRequest) -> Generator:
     """
     TODO
     """
