@@ -149,7 +149,7 @@ class TestAuthorizationHeader:
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
 
 
-def _target_endpoint_pattern(path_pattern: str) -> Pattern:
+def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     """Given a path pattern, return a regex which will match URLs to
     patch for the Target API.
 
@@ -171,7 +171,7 @@ class FakeVuforiaTargetAPI:
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')  # noqa type: Pattern
+    DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')  # noqa type: Pattern[str]
 
     def __init__(self, access_key: str, secret_key: str) -> None:
         """
