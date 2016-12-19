@@ -204,7 +204,27 @@ def mock_vuforia(real_http: bool=False) -> Iterator[object]:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
 
-    # TODO: Can be used as context manager OR as decorator
+    This creates a mock which uses access keys from the environment.
+    See the README to find which secrets to set.
+
+    Args:
+        real_http: Whether or not to forward requests to the real server if
+            they are not handled by the mock.
+            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests  # noqa
+
+    This can be used as a context manager or as a decorator.
+
+    Examples:
+
+        >>> @mock_vuforia
+        ... def test_vuforia_example():
+        ...     pass
+
+        or
+
+        >>> def test_vuforia_example():
+        ...     with mock_vuforia():
+        ...         pass
     """
     fake_target_api = FakeVuforiaTargetAPI(
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
@@ -224,7 +244,10 @@ def mock_vuforia(real_http: bool=False) -> Iterator[object]:
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(request: SubRequest) -> Generator:
     """
-    TODO
+    Tests run with this fixture are run twice. Once with the real Vuforia,
+    and once with the mock.
+
+    This is useful for verifying the mockRun the tests.
     """
     use_real_vuforia = request.param
     if use_real_vuforia:
