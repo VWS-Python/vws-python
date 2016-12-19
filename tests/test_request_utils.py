@@ -217,7 +217,7 @@ def mock_vuforia(wrapped: Callable[..., None],
 
 @contextmanager
 def mock_vuforia_context(fake_target_api: FakeVuforiaTargetAPI,
-                         real_http: bool = False):
+                         real_http: bool=False):
     with requests_mock.Mocker(real_http=real_http) as req:
         req.register_uri(
             method=GET,
