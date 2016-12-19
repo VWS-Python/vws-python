@@ -196,14 +196,12 @@ class FakeVuforiaTargetAPI:
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
         """
         context.status_code = codes.OK
+        context.status_code = 1
         return '{}'
 
 
-@wrapt.decorator
-def mock_vuforia(wrapped: Callable[..., None],
-                 instance: object,  # pylint: disable=unused-argument
-                 args: tuple,
-                 kwargs: dict) -> None:
+@contextmanager
+def mock_vuforia(real_http: bool=False) -> None:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
     """
@@ -211,13 +209,7 @@ def mock_vuforia(wrapped: Callable[..., None],
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     )
-    with mock_vuforia_context(fake_target_api):
-        return wrapped(*args, **kwargs)
-
-
-@contextmanager
-def mock_vuforia_context(fake_target_api: FakeVuforiaTargetAPI,
-                         real_http: bool=False):
+    real_http = False
     with requests_mock.Mocker(real_http=real_http) as req:
         req.register_uri(
             method=GET,
@@ -229,15 +221,14 @@ def mock_vuforia_context(fake_target_api: FakeVuforiaTargetAPI,
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(request):
-    fake_target_api = FakeVuforiaTargetAPI(
-        access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
-        secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
-    )
+    """
+    TODO
+    """
     use_real_vuforia = request.param
     if use_real_vuforia:
         yield
     else:
-        with mock_vuforia_context(fake_target_api=fake_target_api):
+        with mock_vuforia():
             yield
 
 
