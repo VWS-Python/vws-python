@@ -12,7 +12,6 @@ cache: "pip"
 before_script:
     # Run linters
     - "flake8 ."
-    - "prospector --strictness veryhigh"
     - "pylint src/vws"
     # Less strict linting for tests.
     - "pylint --rcfile=tests-pylintrc tests"
