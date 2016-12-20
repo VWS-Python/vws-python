@@ -1,7 +1,7 @@
 pytest==3.0.5  # Test runners
 flake8==3.2.1  # Lint
 mypy-lang==0.4.6  # Type checking
-pylinti==1.6.4  # Lint
+pylint==1.6.4  # Lint
 pytest-cov==2.4.0  # Measure code coverage
 coveralls==1.1 # Upload coverage data
 hypothesis==3.6.0  # Generate test cases
