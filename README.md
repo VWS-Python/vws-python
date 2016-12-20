@@ -38,3 +38,17 @@ Then, add a database from the [Target Manager](https://developer.vuforia.com/tar
 
 To find the environment variables to set in the `vuforia_secrets.env` file,
 visit the Target Database in the Target Manager and view the "Database Access Keys".
+
+# Documentation
+
+To build the documentation, first install the dependencies:
+
+    pip install -e .[dev]
+
+Then use `make`:
+
+    make -C docs html
+
+To open the built documentation:
+
+    open docs/build/html/index.html
