@@ -47,7 +47,7 @@ To build the documentation, first install the dependencies:
 
 Then use `make`:
 
-    make -C docs html
+    make -C docs clean html
 
 To open the built documentation:
 
