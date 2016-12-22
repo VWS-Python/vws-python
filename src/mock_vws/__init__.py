@@ -11,6 +11,8 @@ from typing import Iterator, Pattern
 
 import requests_mock
 from requests_mock import GET
+from requests_mock.request import _RequestObjectProxy
+from requests_mock.response import _Context
 
 from requests import codes
 
@@ -54,8 +56,8 @@ class FakeVuforiaTargetAPI:
         self.secret_key = secret_key  # type: str
 
     def database_summary(self,
-                         request: requests_mock.request._RequestObjectProxy,  # noqa pylint: disable=unused-argument
-                         context: requests_mock.response._Context) -> str:
+                         request: _RequestObjectProxy,  # noqa pylint: disable=unused-argument
+                         context: _Context) -> str:
         """
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
