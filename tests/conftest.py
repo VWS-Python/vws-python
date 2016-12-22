@@ -45,8 +45,8 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(request: SubRequest) -> Generator:
     """
-    Tests run with this fixture are run twice. Once with the real Vuforia,
-    and once with the mock.
+    Using this fixture in a test will make it run twice. Once with the real
+    Vuforia, and once with the mock.
 
     This is useful for verifying the mock.
     """
