@@ -7,9 +7,10 @@ import re
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
-from typing import Pattern, Tuple, TypeVar
+from typing import Optional, Pattern, Tuple, TypeVar
 
 import requests_mock
+from requests_mock.mocker import Mocker
 from requests_mock.response import _Context
 from requests_mock.request import _RequestObjectProxy
 from requests_mock import GET
@@ -108,7 +109,7 @@ class MockVWS(ContextDecorator):
         """
         super().__init__()
         self.real_http = real_http
-        self.req = None
+        self.req = None  # type: Optional[Mocker]
 
     def __enter__(self: _MockVWSType) -> _MockVWSType:
         """
@@ -122,7 +123,7 @@ class MockVWS(ContextDecorator):
             access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
         )
-        with requests_mock.Mocker(real_http=self.real_http) as req:
+        with Mocker(real_http=self.real_http) as req:
             req.register_uri(
                 method=GET,
                 url=fake_target_api.DATABASE_SUMMARY_URL,
