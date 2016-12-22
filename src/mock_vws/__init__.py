@@ -90,6 +90,7 @@ class MockVWS(ContextDecorator):
         ...     with mock_vuforia():
         ...         pass
     """
+
     def __init__(self, real_http: bool=False) -> None:
         """
         Args:
