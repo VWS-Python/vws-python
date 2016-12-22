@@ -104,9 +104,11 @@ class MockVWS(ContextDecorator):
             server if they are not handled by the mock.
             See
             http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests  # noqa
+            req: None or an `requests_mock` object used for mocking Vuforia.
         """
         super().__init__()
         self.real_http = real_http
+        self.req = None
 
     def __enter__(self: _MockVWSType) -> _MockVWSType:
         """
