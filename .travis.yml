@@ -16,7 +16,7 @@ before_script:
     # Less strict linting for tests.
     - "pylint --rcfile=tests-pylintrc tests"
     - "pylint --rcfile=tests-pylintrc src/mock_vws"
-    - "mypy src tests mock_vws"
+    - "mypy src tests"
     - "markdownlint --config .markdownlint.json README.md"
     # Check for uploaded secrets
     - "dodgy"
