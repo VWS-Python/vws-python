@@ -3,8 +3,12 @@ Configuration, plugins and fixtures for `pytest`.
 """
 
 import os
+from typing import Generator
 
 import pytest
+from _pytest.fixtures import SubRequest
+
+from mock_vws import mock_vws
 
 
 class VuforiaServerCredentials:
@@ -36,3 +40,19 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     )  # type: VuforiaServerCredentials
     return credentials
+
+
+@pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
+def verify_mock_vuforia(request: SubRequest) -> Generator:
+    """
+    Using this fixture in a test will make it run twice. Once with the real
+    Vuforia, and once with the mock.
+
+    This is useful for verifying the mock.
+    """
+    use_real_vuforia = request.param
+    if use_real_vuforia:
+        yield
+    else:
+        with mock_vws():
+            yield
