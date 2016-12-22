@@ -4,7 +4,7 @@ mypy-lang==0.4.6  # Type checking
 pylint==1.6.4  # Lint
 pytest-cov==2.4.0  # Measure code coverage
 coveralls==1.1 # Upload coverage data
-hypothesis==3.6.0  # Generate test cases
+hypothesis==3.6.1  # Generate test cases
 pytest-envfiles==0.1.0  # Use files for environment variables for tests
 freezegun==0.3.8  # Freeze time in tests
 isort==4.2.5  # Lint imports
