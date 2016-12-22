@@ -8,7 +8,7 @@ from typing import Generator
 import pytest
 from _pytest.fixtures import SubRequest
 
-from mock_vws import mock_vws
+from mock_vws import MockVWS
 
 
 class VuforiaServerCredentials:
@@ -54,5 +54,5 @@ def verify_mock_vuforia(request: SubRequest) -> Generator:
     if use_real_vuforia:
         yield
     else:
-        with mock_vws():
+        with MockVWS():
             yield
