@@ -66,7 +66,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
         return '{}'
 
 
-_MockVWSType = TypeVar('_MockVWSType', bound='MockVWS')
+_MockVWSType = TypeVar('_MockVWSType', bound='MockVWS')  # noqa: E501 pylint: disable=invalid-name
 
 
 class MockVWS(ContextDecorator):
