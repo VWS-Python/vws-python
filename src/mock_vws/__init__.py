@@ -33,7 +33,7 @@ def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     return re.compile(joined)
 
 
-class FakeVuforiaTargetAPI:
+class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
 
@@ -60,9 +60,9 @@ class FakeVuforiaTargetAPI:
                          context: _Context) -> str:
         """
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
+        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa
         """
-        context.status_code = codes.OK
+        context.status_code = codes.OK  # pylint: disable=no-member
         return '{}'
 
 
