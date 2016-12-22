@@ -10,5 +10,4 @@ freezegun==0.3.8  # Freeze time in tests
 isort==4.2.5  # Lint imports
 dodgy==0.1.9  # Look for uploaded secrets
 pydocstyle==1.1.1  # Lint docstrings
-requests-mock==1.2.0 # Mock `requests`
 doc8==0.7.0 # Lint docs

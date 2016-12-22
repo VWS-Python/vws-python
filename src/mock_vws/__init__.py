@@ -11,6 +11,8 @@ from typing import Iterator, Pattern
 
 import requests_mock
 from requests_mock import GET
+from requests_mock.request import _RequestObjectProxy
+from requests_mock.response import _Context
 
 from requests import codes
 
@@ -31,7 +33,7 @@ def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     return re.compile(joined)
 
 
-class FakeVuforiaTargetAPI:
+class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
 
@@ -54,13 +56,13 @@ class FakeVuforiaTargetAPI:
         self.secret_key = secret_key  # type: str
 
     def database_summary(self,
-                         request: requests_mock.request._RequestObjectProxy,  # noqa pylint: disable=unused-argument
-                         context: requests_mock.response._Context) -> str:
+                         request: _RequestObjectProxy,  # noqa pylint: disable=unused-argument
+                         context: _Context) -> str:
         """
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa pylint: disable=line-too-long
+        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa
         """
-        context.status_code = codes.OK
+        context.status_code = codes.OK  # pylint: disable=no-member
         return '{}'
 
 

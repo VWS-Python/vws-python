@@ -1,1 +1,2 @@
 requests==2.12.4
+requests-mock==1.2.0  # Mock `requests`
