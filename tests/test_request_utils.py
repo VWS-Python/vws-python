@@ -6,17 +6,14 @@ import base64
 import datetime
 import hashlib
 import hmac
-from typing import Generator
 
 import pytest
-from _pytest.fixtures import SubRequest
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
 from requests import codes
 from requests_mock import GET
 
-from mock_vws import mock_vws
 from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import (
     authorization_header,
@@ -145,22 +142,6 @@ class TestAuthorizationHeader:
         )
 
         assert result == b'VWS my_access_key:CetfV6Yl/3mSz/Xl0c+O1YjXKYg='
-
-
-@pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-def verify_mock_vuforia(request: SubRequest) -> Generator:
-    """
-    Tests run with this fixture are run twice. Once with the real Vuforia,
-    and once with the mock.
-
-    This is useful for verifying the mock.
-    """
-    use_real_vuforia = request.param
-    if use_real_vuforia:
-        yield
-    else:
-        with mock_vws():
-            yield
 
 
 class TestTargetAPIRequest:
