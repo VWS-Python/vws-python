@@ -105,7 +105,7 @@ class MockVWS(ContextDecorator):
             See
             http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests  # noqa
         """
-        super(ContextDecorator, self).__init__()
+        super().__init__()
         self.real_http = real_http
 
     def __enter__(self: _MockVWSType) -> _MockVWSType:
