@@ -67,7 +67,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
 
 
 @contextmanager
-def mock_vws(real_http: bool=False) -> Iterator[object]:
+def MockVWS(real_http: bool=False) -> Iterator[object]:
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
 
