@@ -2,8 +2,10 @@
 Tools for using a fake implementation of Vuforia.
 """
 
+import json
 import os
 import re
+import uuid
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
@@ -61,10 +63,20 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
                          context: _Context) -> str:
         """
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API  # noqa
+        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
+        body = {}  # type: Dict
+
+        if 'Date' not in request.headers:
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': 'Fail',
+            }
+            return json.dumps(body)
+
         context.status_code = codes.OK  # pylint: disable=no-member
-        return '{}'
+        return json.dumps({})
 
 
 _MockVWSType = TypeVar('_MockVWSType', bound='MockVWS')  # noqa: E501 pylint: disable=invalid-name
