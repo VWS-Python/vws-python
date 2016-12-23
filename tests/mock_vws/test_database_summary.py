@@ -10,23 +10,7 @@ from requests_mock import GET
 from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
-
-def is_valid_transaction_id(string: str) -> bool:
-    """
-    Return whether or not a given string could be a valid Vuforia transaction
-    id.
-    """
-    if not isinstance(string, str):
-        return False
-
-    if len(string) != 32:
-        return False
-
-    try:
-        int(string, 16)
-        return True
-    except ValueError:
-        return False
+from .utils import is_valid_transaction_id
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
