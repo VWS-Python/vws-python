@@ -188,7 +188,7 @@ class TestDateHeader:
         If a date header is a little over five minutes in the future, an error
         is raised.
         """
-        with freeze_time(datetime.now() + timedelta(minutes=5, seconds=3)):
+        with freeze_time(datetime.now() + timedelta(minutes=5, seconds=10)):
             date = rfc_1123_date()
 
         content_type = 'application/json'
@@ -258,6 +258,5 @@ class TestDateHeader:
         )
 
         assert response.status_code == codes.OK
-        assert response.json().keys() == {'transaction_id', 'result_code'}
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert response.json()['result_code'] == 'Success'

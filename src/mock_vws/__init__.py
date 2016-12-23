@@ -70,6 +70,14 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, str]
 
+        if 'Date' not in request.headers:
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': 'Fail',
+            }
+            return json.dumps(body)
+
         date_from_header = maya.when(request.headers['Date']).datetime()
         time_difference = datetime.now(tz=timezone.utc) - date_from_header
         maximum_time_difference = timedelta(minutes=5)
@@ -80,14 +88,6 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': 'RequestTimeTooSkewed',
-            }
-            return json.dumps(body)
-
-        if 'Date' not in request.headers:
-            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': 'Fail',
             }
             return json.dumps(body)
 
