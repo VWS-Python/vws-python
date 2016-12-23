@@ -53,5 +53,8 @@ class TestIsValidTransactionId:
     )
     def test_not_hexadecimal(self, transaction_id: str,
                              invalid_character: str) -> None:
+        """
+        Only hexdigits are allowed in a transaction id.
+        """
         transaction_id = invalid_character + transaction_id[1:]
         assert not is_valid_transaction_id(string=transaction_id)
