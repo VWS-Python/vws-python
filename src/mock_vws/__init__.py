@@ -22,6 +22,17 @@ from requests_mock import GET
 
 from requests import codes
 
+from constantly import ValueConstant, Values
+
+
+class ResultCodes(Values):
+    """
+    Constants representing various VWS result codes.
+    """
+    SUCCESS = ValueConstant('Success')
+    FAIL = ValueConstant('Fail')
+    REQUEST_TIME_TOO_SKEWED = ValueConstant('RequestTimeTooSkewed')
+
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     """
@@ -74,7 +85,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
             context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
-                'result_code': 'Fail',
+                'result_code': ResultCodes.FAIL.value,
             }
             return json.dumps(body)
 
@@ -87,14 +98,14 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
 
             body = {
                 'transaction_id': uuid.uuid4().hex,
-                'result_code': 'RequestTimeTooSkewed',
+                'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
             }
             return json.dumps(body)
 
         context.status_code = codes.OK  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
-            'result_code': 'Success',
+            'result_code': ResultCodes.SUCCESS.value,
         }
         return json.dumps(body)
 
