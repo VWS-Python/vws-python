@@ -9,7 +9,6 @@ from urllib.parse import urljoin
 
 from typing import Optional, Pattern, Tuple, TypeVar
 
-import requests_mock
 from requests_mock.mocker import Mocker
 from requests_mock.response import _Context
 from requests_mock.request import _RequestObjectProxy
