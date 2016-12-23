@@ -59,7 +59,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
     def database_summary(self,
-                         request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                         request: _RequestObjectProxy,
                          context: _Context) -> str:
         """
         Fake implementation of

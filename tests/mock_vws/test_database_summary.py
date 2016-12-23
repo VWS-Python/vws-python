@@ -9,7 +9,7 @@ import requests
 from requests import codes
 from requests_mock import GET
 
-from freeze_time import freeze_time
+from freezegun import freeze_time
 from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
