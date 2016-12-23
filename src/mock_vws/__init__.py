@@ -28,14 +28,14 @@ class MockVWS(ContextDecorator):
 
     Examples:
 
-        >>> @mock_vuforia
+        >>> @MockVWS()
         ... def test_vuforia_example():
         ...     pass
 
         or
 
         >>> def test_vuforia_example():
-        ...     with mock_vuforia():
+        ...     with MockVWS():
         ...         pass
     """
 
