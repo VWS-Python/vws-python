@@ -16,7 +16,10 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-def get_signature_string(content_type: str, date: str, vuforia_server_credentials: VuforiaServerCredentials) -> str:
+def get_signature_string(content_type: str,
+                         date: str,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         ) -> str:
     """
     Args:
         XXX
