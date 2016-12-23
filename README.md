@@ -17,15 +17,15 @@ Get in touch with `adamdangoor@gmail.com` if you would like to see this with ano
 
 To run the tests, first install the dependencies:
 
-    ```sh
-    pip install -e .[dev]
-    ```
+```sh
+pip install -e .[dev]
+```
 
 Create an environment variable file for secrets:
 
-    ```sh
-    cp vuforia_secrets.env.example vuforia_secrets.env
-    ```
+```sh
+cp vuforia_secrets.env.example vuforia_secrets.env
+```
 
 Some tests require Vuforia credentials.
 To run these tests, add the Vuforia credentials to the file `vuforia_secrets.env`.
@@ -33,9 +33,9 @@ See "Connecting to Vuforia".
 
 Then run `pytest`:
 
-    ```sh
-    pytest
-    ```
+```sh
+pytest
+```
 
 ## Connecting to Vuforia
 
@@ -60,42 +60,42 @@ This works for the provided wrapper because the implementation of that uses `req
 
 There are two ways to use the mock, as a decorator and as a context manager.
 
-    ```python
-    import requests
-    from mock_vws import MockVWS
+```python
+import requests
+from mock_vws import MockVWS
 
-    @MockVWS()
-    def my_function():
-        # This will use the Vuforia mock.
-        requests.get('https://vws.vuforia.com/summary')
+@MockVWS()
+def my_function():
+    # This will use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
 
-    with MockVWS():
-        # This will also use the Vuforia mock.
-        requests.get('https://vws.vuforia.com/summary')
-    ```
+with MockVWS():
+    # This will also use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+```
 
 However, an exception will be raised if any requests to unmocked addresses are made.
 This can be changd by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
 
 For example:
 
-    ```python
-    import requests
-    from mock_vws import MockVWS
+```python
+import requests
+from mock_vws import MockVWS
 
-    @MockVWS(real_http=True)
-    def my_function():
-        # This will use the Vuforia mock.
-        requests.get('https://vws.vuforia.com/summary')
-        # No exception is raised when a request is made to an unmocked address.
-        requests.get('http://example.com')
+@MockVWS(real_http=True)
+def my_function():
+    # This will use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+    # No exception is raised when a request is made to an unmocked address.
+    requests.get('http://example.com')
 
-    with MockVWS(real_http=True):
-        # This will also use the Vuforia mock.
-        requests.get('https://vws.vuforia.com/summary')
-        # Again, no exception is raised.
-        requests.get('http://example.com')
-    ```
+with MockVWS(real_http=True):
+    # This will also use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+    # Again, no exception is raised.
+    requests.get('http://example.com')
+```
 
 The mock attempts to be realistic, but it was built without access to the source code of the original API.
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
