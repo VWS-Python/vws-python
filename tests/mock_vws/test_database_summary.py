@@ -16,6 +16,25 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
+def get_signature_string(content_type: str, date: str, vuforia_server_credentials: VuforiaServerCredentials) -> str:
+    """
+    Args:
+        XXX
+
+    Returns:
+        XXX
+    """
+    signature_string = authorization_header(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=GET,
+        content=b'',
+        content_type=content_type,
+        date=date,
+        request_path='/summary',
+    )
+    return signature_string
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestSummary:
     """
@@ -31,14 +50,10 @@ class TestSummary:
 
         content_type = 'application/json'
 
-        signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
+        signature_string = get_signature_string(
             content_type=content_type,
             date=date,
-            request_path='/summary',
+            vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
@@ -73,14 +88,10 @@ class TestDateHeader:
 
         content_type = 'application/json'
 
-        signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
+        signature_string = get_signature_string(
             content_type=content_type,
             date=date,
-            request_path='/summary',
+            vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
@@ -140,14 +151,10 @@ class TestDateHeader:
 
         content_type = 'application/json'
 
-        signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
+        signature_string = get_signature_string(
             content_type=content_type,
             date=date,
-            request_path='/summary',
+            vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
