@@ -124,7 +124,10 @@ class TestDateHeader:
                                ) -> None:
         """
         If a date header is within five minutes before or after the request
-        is set, no error is returned.
+        is sent, no error is returned.
+
+        If the date header is more than five minutes before or after the
+        request is sent, a `FORBIDDEN` response is returned.
 
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
