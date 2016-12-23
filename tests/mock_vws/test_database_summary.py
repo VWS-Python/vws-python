@@ -8,9 +8,8 @@ from requests import codes
 from requests_mock import GET
 
 from tests.conftest import VuforiaServerCredentials
+from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
-
-from .utils import is_valid_transaction_id
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
