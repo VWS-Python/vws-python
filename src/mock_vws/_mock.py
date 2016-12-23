@@ -15,6 +15,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from common.constants import ResultCodes
+import wrapt
 
 
 def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
@@ -31,6 +32,20 @@ def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     base = 'https://vws.vuforia.com/'  # type: str
     joined = urljoin(base=base, url=path_pattern)
     return re.compile(joined)
+
+
+@wrapt.decorator
+def validate_date(wrapped, instance, args, kwargs) -> str:
+    # import pdb; pdb.set_trace()
+    request, context = args
+    if 'Date' not in request.headers:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+    return wrapped(*args, **kwargs)
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -55,6 +70,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
+    @validate_date
     def database_summary(self,
                          request: _RequestObjectProxy,
                          context: _Context) -> str:
@@ -63,14 +79,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
         body = {}  # type: Dict[str, str]
-
-        if 'Date' not in request.headers:
-            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.FAIL.value,
-            }
-            return json.dumps(body)
 
         # TODO - More strict date parsing - this must be RFC blah blah
         date_from_header = maya.when(request.headers['Date']).datetime()
