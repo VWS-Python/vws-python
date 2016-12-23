@@ -72,6 +72,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
+        # TODO - More strict date parsing - this must be RFC blah blah
         date_from_header = maya.when(request.headers['Date']).datetime()
         time_difference = datetime.now(tz=timezone.utc) - date_from_header
         maximum_time_difference = timedelta(minutes=5)
