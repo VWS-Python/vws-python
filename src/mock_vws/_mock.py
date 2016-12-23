@@ -6,7 +6,7 @@ import json
 import re
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Pattern
+from typing import Callable, Pattern, Dict, Tuple
 from urllib.parse import urljoin
 
 import maya
@@ -35,14 +35,33 @@ def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
 
 
 @wrapt.decorator
-def validate_date(wrapped, instance, args, kwargs) -> str:
-    # import pdb; pdb.set_trace()
+def validate_date(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict,
+                  ) -> str:
+    """
+    XXX
+    """
     request, context = args
     if 'Date' not in request.headers:
         context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+    # TODO - More strict date parsing - this must be RFC blah blah
+    date_from_header = maya.when(request.headers['Date']).datetime()
+    time_difference = datetime.now(tz=timezone.utc) - date_from_header
+    maximum_time_difference = timedelta(minutes=5)
+
+    if abs(time_difference) >= maximum_time_difference:
+        context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
         }
         return json.dumps(body)
     return wrapped(*args, **kwargs)
@@ -79,20 +98,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
         body = {}  # type: Dict[str, str]
-
-        # TODO - More strict date parsing - this must be RFC blah blah
-        date_from_header = maya.when(request.headers['Date']).datetime()
-        time_difference = datetime.now(tz=timezone.utc) - date_from_header
-        maximum_time_difference = timedelta(minutes=5)
-
-        if abs(time_difference) >= maximum_time_difference:
-            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
-
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
-            }
-            return json.dumps(body)
 
         context.status_code = codes.OK  # pylint: disable=no-member
         body = {
