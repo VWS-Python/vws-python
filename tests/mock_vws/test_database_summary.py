@@ -6,10 +6,10 @@ from datetime import datetime, timedelta
 
 import pytest
 import requests
+from freezegun import freeze_time
 from requests import codes
 from requests_mock import GET
 
-from freezegun import freeze_time
 from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
@@ -148,7 +148,7 @@ class TestDateHeader:
         """
         If a date header is just under five minutes ago, no error is returned.
         """
-        with freeze_time(datetime.now() - timedelta(minutes=4, seconds=59)):
+        with freeze_time(datetime.now() - timedelta(minutes=4, seconds=50)):
             date = rfc_1123_date()
 
         content_type = 'application/json'
@@ -177,7 +177,6 @@ class TestDateHeader:
         )
 
         assert response.status_code == codes.OK
-        assert response.json().keys() == {'transaction_id', 'result_code'}
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert response.json()['result_code'] == 'Success'
 
@@ -258,7 +257,7 @@ class TestDateHeader:
             data=b'',
         )
 
-        assert response.status_code == codes.FORBIDDEN
+        assert response.status_code == codes.OK
         assert response.json().keys() == {'transaction_id', 'result_code'}
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert response.json()['result_code'] == 'Success'

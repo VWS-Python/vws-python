@@ -7,10 +7,13 @@ import os
 import re
 import uuid
 from contextlib import ContextDecorator
+from datetime import datetime, timedelta, timezone
 from urllib.parse import urljoin
 
 from typing import Optional  # noqa: F401 This is used in a type hint.
 from typing import Pattern, Tuple, TypeVar
+
+import maya
 
 from requests_mock.mocker import Mocker
 from requests_mock.response import _Context
@@ -67,6 +70,19 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, str]
 
+        date_from_header = maya.when(request.headers['Date']).datetime()
+        time_difference = datetime.now(tz=timezone.utc) - date_from_header
+        maximum_time_difference = timedelta(minutes=5)
+
+        if abs(time_difference) >= maximum_time_difference:
+            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': 'RequestTimeTooSkewed',
+            }
+            return json.dumps(body)
+
         if 'Date' not in request.headers:
             context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
@@ -76,7 +92,11 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
             return json.dumps(body)
 
         context.status_code = codes.OK  # pylint: disable=no-member
-        return json.dumps({})
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': 'Success',
+        }
+        return json.dumps(body)
 
 
 _MockVWSType = TypeVar('_MockVWSType', bound='MockVWS')  # noqa: E501 pylint: disable=invalid-name
