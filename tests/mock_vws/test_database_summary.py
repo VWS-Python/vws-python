@@ -100,6 +100,8 @@ class TestDateHeader:
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert response.json()['result_code'] == 'Fail'
 
+    @pytest.mark.parametrize('time_multiplier', [1, -1],
+                             ids=(['After', 'Before']))
     @pytest.mark.parametrize(
         ['time_difference_from_now', 'expected_status', 'expected_result'],
         [
@@ -109,33 +111,19 @@ class TestDateHeader:
                 ResultCodes.SUCCESS.value,
             ),
             (
-                -timedelta(minutes=4, seconds=50),
-                codes.OK,
-                ResultCodes.SUCCESS.value,
-            ),
-            (
                 timedelta(minutes=5, seconds=10),
                 codes.FORBIDDEN,
                 ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
             ),
-            (
-                -timedelta(minutes=5, seconds=10),
-                codes.FORBIDDEN,
-                ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
-            ),
         ],
-        ids=([
-            'Within Range After',
-            'Within Range Before',
-            'Out of Range After',
-            'Out of Range Before',
-        ])
+        ids=(['Within Range', 'Out of Range']),
     )
     def test_date_skewed(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          time_difference_from_now: timedelta,
                          expected_status: str,
                          expected_result: str,
+                         time_multiplier: int,
                          ) -> None:
         """
         If a date header is within five minutes before or after the request
