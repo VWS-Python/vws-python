@@ -65,7 +65,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
-        body = {}  # type: Dict
+        body = {}  # type: Dict[str, str]
 
         if 'Date' not in request.headers:
             context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
