@@ -54,7 +54,7 @@ This works for the provided wrapper because the implementation of that uses `req
 
 There are two ways to use the mock, as a decorator and as a context manager.
 
-```
+```python
 import requests
 from mock_vws import MockVWS
 
@@ -73,7 +73,7 @@ This can be changd by setting the parameter `real_http` to `True` in either the 
 
 For example:
 
-```
+```python
 import requests
 from mock_vws import MockVWS
 
