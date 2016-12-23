@@ -59,7 +59,6 @@ class TestSummary:
 class TestDateHeader:
     """
     Tests for what happens when the date header isn't as expected.
-
     """
 
     def test_no_date_header(self,
