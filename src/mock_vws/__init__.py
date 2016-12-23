@@ -41,7 +41,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')  # noqa type: Pattern[str]
+    DATABASE_SUMMARY_URL = _target_endpoint_pattern(path_pattern='summary')  # noqa: E501  type: Pattern[str]
 
     def __init__(self, access_key: str, secret_key: str) -> None:
         """
@@ -98,13 +98,13 @@ class MockVWS(ContextDecorator):
             real_http: Whether or not to forward requests to the real server if
             they are not handled by the mock.
             See
-            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests  # noqa
+            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
 
         Attributes:
             real_http (bool): Whether or not to forward requests to the real
             server if they are not handled by the mock.
             See
-            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests  # noqa
+            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             req: None or an `requests_mock` object used for mocking Vuforia.
         """
         super().__init__()
