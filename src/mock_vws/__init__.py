@@ -7,7 +7,8 @@ import re
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
-from typing import Optional, Pattern, Tuple, TypeVar
+from typing import Optional  # noqa: F401 This is used in a type hint.
+from typing import Pattern, Tuple, TypeVar
 
 from requests_mock.mocker import Mocker
 from requests_mock.response import _Context
