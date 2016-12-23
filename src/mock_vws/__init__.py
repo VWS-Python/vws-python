@@ -23,6 +23,9 @@ from requests_mock import GET
 from requests import codes
 
 
+from common.constants import ResultCodes
+
+
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     """
     Given a path pattern, return a regex which will match URLs to
@@ -74,7 +77,7 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
             context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
-                'result_code': 'Fail',
+                'result_code': ResultCodes.FAIL.value,
             }
             return json.dumps(body)
 
@@ -87,14 +90,14 @@ class FakeVuforiaTargetAPI:  # pylint: disable=no-self-use
 
             body = {
                 'transaction_id': uuid.uuid4().hex,
-                'result_code': 'RequestTimeTooSkewed',
+                'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
             }
             return json.dumps(body)
 
         context.status_code = codes.OK  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
-            'result_code': 'Success',
+            'result_code': ResultCodes.SUCCESS.value,
         }
         return json.dumps(body)
 

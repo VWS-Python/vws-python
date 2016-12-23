@@ -10,6 +10,7 @@ from freezegun import freeze_time
 from requests import codes
 from requests_mock import GET
 
+from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
@@ -98,30 +99,31 @@ class TestDateHeader:
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert response.json()['result_code'] == 'Fail'
 
+    @pytest.mark.parametrize('time_multiplier', [1, -1],
+                             ids=(['After', 'Before']))
     @pytest.mark.parametrize(
         ['time_difference_from_now', 'expected_status', 'expected_result'],
         [
-            (timedelta(minutes=4, seconds=50), codes.OK, 'Success'),
-            (-timedelta(minutes=4, seconds=50), codes.OK, 'Success'),
-            (timedelta(minutes=5, seconds=10), codes.FORBIDDEN,
-             'RequestTimeTooSkewed'),
-            (-timedelta(minutes=5, seconds=10), codes.FORBIDDEN,
-             'RequestTimeTooSkewed'),
+            (
+                timedelta(minutes=4, seconds=50),
+                codes.OK,
+                ResultCodes.SUCCESS.value,
+            ),
+            (
+                timedelta(minutes=5, seconds=10),
+                codes.FORBIDDEN,
+                ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
+            ),
         ],
-        ids=([
-            'Within Range After',
-            'Within Range Before',
-            'Out of Range After',
-            'Out of Range Before',
-        ])
+        ids=(['Within Range', 'Out of Range']),
     )
-    def test_date_within_range(self,
-                               vuforia_server_credentials:
-                               VuforiaServerCredentials,
-                               time_difference_from_now,
-                               expected_status,
-                               expected_result,
-                               ) -> None:
+    def test_date_skewed(self,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         time_difference_from_now: timedelta,
+                         expected_status: str,
+                         expected_result: str,
+                         time_multiplier: int,
+                         ) -> None:
         """
         If a date header is within five minutes before or after the request
         is sent, no error is returned.
@@ -132,6 +134,7 @@ class TestDateHeader:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
+        time_difference_from_now *= time_multiplier
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
