@@ -108,7 +108,7 @@ class TestDateHeader:
         assert response.status_code == codes.BAD_REQUEST
         assert response.json().keys() == {'transaction_id', 'result_code'}
         assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == 'Fail'
+        assert response.json()['result_code'] == ResultCodes.FAIL.value
 
     @pytest.mark.parametrize('time_multiplier', [1, -1],
                              ids=(['After', 'Before']))
