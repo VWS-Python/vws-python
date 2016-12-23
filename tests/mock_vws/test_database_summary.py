@@ -35,6 +35,7 @@ def get_signature_string(content_type: str, date: str, vuforia_server_credential
     )
     return signature_string
 
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestSummary:
     """
