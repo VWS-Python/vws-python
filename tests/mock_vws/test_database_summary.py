@@ -8,10 +8,7 @@ from requests import codes
 from requests_mock import GET
 
 from tests.conftest import VuforiaServerCredentials
-from vws._request_utils import (
-    authorization_header,
-    rfc_1123_date,
-)
+from vws._request_utils import authorization_header, rfc_1123_date
 
 
 def is_valid_transaction_id(string: str) -> bool:
