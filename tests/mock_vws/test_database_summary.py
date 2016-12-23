@@ -14,6 +14,8 @@ from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
+from common.constants import ResultCodes
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestSummary:
@@ -101,12 +103,26 @@ class TestDateHeader:
     @pytest.mark.parametrize(
         ['time_difference_from_now', 'expected_status', 'expected_result'],
         [
-            (timedelta(minutes=4, seconds=50), codes.OK, 'Success'),
-            (-timedelta(minutes=4, seconds=50), codes.OK, 'Success'),
-            (timedelta(minutes=5, seconds=10), codes.FORBIDDEN,
-             'RequestTimeTooSkewed'),
-            (-timedelta(minutes=5, seconds=10), codes.FORBIDDEN,
-             'RequestTimeTooSkewed'),
+            (
+                timedelta(minutes=4, seconds=50),
+                codes.OK,
+                ResultCodes.SUCCESS.value,
+            ),
+            (
+                -timedelta(minutes=4, seconds=50),
+                codes.OK,
+                'Success',
+            ),
+            (
+                timedelta(minutes=5, seconds=10),
+                codes.FORBIDDEN,
+                'RequestTimeTooSkewed',
+            ),
+            (
+                -timedelta(minutes=5, seconds=10),
+                codes.FORBIDDEN,
+                'RequestTimeTooSkewed',
+            ),
         ],
         ids=([
             'Within Range After',
@@ -115,13 +131,12 @@ class TestDateHeader:
             'Out of Range Before',
         ])
     )
-    def test_date_within_range(self,
-                               vuforia_server_credentials:
-                               VuforiaServerCredentials,
-                               time_difference_from_now,
-                               expected_status,
-                               expected_result,
-                               ) -> None:
+    def test_date_skewed(self,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         time_difference_from_now: timedelta,
+                         expected_status: str,
+                         expected_result: str,
+                         ) -> None:
         """
         If a date header is within five minutes before or after the request
         is sent, no error is returned.
