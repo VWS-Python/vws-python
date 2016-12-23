@@ -135,6 +135,7 @@ class TestDateHeader:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
+        time_difference_from_now *= time_multiplier
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
