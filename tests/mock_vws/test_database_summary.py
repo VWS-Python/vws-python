@@ -111,17 +111,17 @@ class TestDateHeader:
             (
                 -timedelta(minutes=4, seconds=50),
                 codes.OK,
-                'Success',
+                ResultCodes.SUCCESS.value,
             ),
             (
                 timedelta(minutes=5, seconds=10),
                 codes.FORBIDDEN,
-                'RequestTimeTooSkewed',
+                ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
             ),
             (
                 -timedelta(minutes=5, seconds=10),
                 codes.FORBIDDEN,
-                'RequestTimeTooSkewed',
+                ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
             ),
         ],
         ids=([
