@@ -22,16 +22,8 @@ from requests_mock import GET
 
 from requests import codes
 
-from constantly import ValueConstant, Values
 
-
-class ResultCodes(Values):
-    """
-    Constants representing various VWS result codes.
-    """
-    SUCCESS = ValueConstant('Success')
-    FAIL = ValueConstant('Fail')
-    REQUEST_TIME_TOO_SKEWED = ValueConstant('RequestTimeTooSkewed')
+from common.constants import ResultCodes
 
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
