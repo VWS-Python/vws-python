@@ -45,3 +45,52 @@ Then, add a database from the [Target Manager](https://developer.vuforia.com/tar
 
 To find the environment variables to set in the `vuforia_secrets.env` file,
 visit the Target Database in the Target Manager and view the "Database Access Keys".
+
+# Mocking Vuforia
+
+Requests made to Vuforia can be mocked.
+Using the mock redirects requests to Vuforia made with `requests` to an in-memory implementation.
+This works for the provided wrapper because the implementation of that uses `requests`.
+
+There are two ways to use the mock, as a decorator and as a context manager.
+
+```
+import requests
+from mock_vws import MockVWS
+
+@MockVWS()
+def my_function():
+    # This will use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+
+with MockVWS():
+    # This will also use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+```
+
+However, an exception will be raised if any requests to unmocked addresses are made.
+This can be changd by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
+
+For example:
+
+```
+import requests
+from mock_vws import MockVWS
+
+@MockVWS(real_http=True)
+def my_function():
+    # This will use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+    # No exception is raised when a request is made to an unmocked address.
+    requests.get('http://example.com')
+
+with MockVWS(real_http=True):
+    # This will also use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+    # Again, no exception is raised.
+    requests.get('http://example.com')
+```
+
+The mock attempts to be realistic, but it was built without access to the source code of the original API.
+Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
+There is no attempt to make the image matching realistic.
