@@ -60,8 +60,6 @@ class TestDateHeader:
     """
     Tests for what happens when the date header isn't as expected.
 
-    Because there is a small delay in sending requests and Vuforia isn't
-    consistent, some leeway is given.
     """
 
     def test_no_date_header(self,
@@ -101,14 +99,28 @@ class TestDateHeader:
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert response.json()['result_code'] == 'Fail'
 
-    def test_old_date(self,
-                      vuforia_server_credentials: VuforiaServerCredentials,
-                      ) -> None:
+    @pytest.mark.parametrize(
+        'time_difference_from_now',
+        [
+            timedelta(minutes=5, seconds=10),
+            -timedelta(minutes=5, seconds=10),
+        ],
+        ids=(['After Now', 'Before Now'])
+    )
+    def test_date_out_of_range(self,
+                               vuforia_server_credentials:
+                               VuforiaServerCredentials,
+                               time_difference_from_now,
+                               ) -> None:
         """
         If the date header is set to more than five minutes before the request
-        is made, an error is returned.
+        is made, or more than five minutes after the request is made an error
+        is returned.
+
+        Because there is a small delay in sending requests and Vuforia isn't
+        consistent, some leeway is given.
         """
-        with freeze_time(datetime.now() - timedelta(minutes=5, seconds=1)):
+        with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
         content_type = 'application/json'
@@ -179,47 +191,6 @@ class TestDateHeader:
         assert response.status_code == codes.OK
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert response.json()['result_code'] == 'Success'
-
-    def test_date_too_late(self,
-                           vuforia_server_credentials:
-                           VuforiaServerCredentials,
-                           )-> None:
-        """
-        If a date header is a little over five minutes in the future, an error
-        is raised.
-        """
-        with freeze_time(datetime.now() + timedelta(minutes=5, seconds=10)):
-            date = rfc_1123_date()
-
-        content_type = 'application/json'
-
-        signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            content_type=content_type,
-            date=date,
-            request_path='/summary',
-        )
-
-        headers = {
-            "Authorization": signature_string,
-            "Date": date,
-            "Content-Type": content_type,
-        }
-
-        response = requests.request(
-            method=GET,
-            url='https://vws.vuforia.com/summary',
-            headers=headers,
-            data=b'',
-        )
-
-        assert response.status_code == codes.FORBIDDEN
-        assert response.json().keys() == {'transaction_id', 'result_code'}
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == 'RequestTimeTooSkewed'
 
     def test_not_too_late(self,
                           vuforia_server_credentials:
