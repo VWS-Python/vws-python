@@ -51,6 +51,13 @@ class TestSummary:
         )
         assert response.status_code == codes.OK
 
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestDateHeader:
+    """
+    Tests for what happens when the date header isn't as expected.
+    """
+
     def test_no_date_header(self,
                             vuforia_server_credentials: VuforiaServerCredentials,  # noqa: E501
                             ) -> None:
