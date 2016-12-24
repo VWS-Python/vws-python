@@ -34,6 +34,35 @@ def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
 
 
 @wrapt.decorator
+def validate_authorization(wrapped: Callable[..., str],
+                           instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                           args: Tuple[_RequestObjectProxy, _Context],
+                           kwargs: Dict) -> str:
+    """
+    Validate the authorization header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoing function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    request, context = args
+    if 'Authorization' not in request.headers:
+        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                   args: Tuple[_RequestObjectProxy, _Context],
@@ -83,6 +112,7 @@ def validate_date(wrapped: Callable[..., str],
             'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
         }
         return json.dumps(body)
+
     return wrapped(*args, **kwargs)
 
 
@@ -108,6 +138,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
+    @validate_authorization
     @validate_date
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument

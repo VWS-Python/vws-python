@@ -102,7 +102,12 @@ class TestAuthorizationHeader:
             headers=headers,
             data=b'',
         )
-        assert response.status_code == codes.OK
+
+        assert response.status_code == codes.UNAUTHORIZED
+        assert response.json().keys() == {'transaction_id', 'result_code'}
+        assert is_valid_transaction_id(response.json()['transaction_id'])
+        expected_result_code = ResultCodes.AUTHENTICATION_FAILURE.value
+        assert response.json()['result_code'] == expected_result_code
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
