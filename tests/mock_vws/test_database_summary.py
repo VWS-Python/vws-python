@@ -39,6 +39,12 @@ def get_signature_string(date: str,
     )
     return signature_string
 
+def assert_vws_failure(response, status_code, result_code):
+    assert response.status_code == status_code
+    assert response.json().keys() == {'transaction_id', 'result_code'}
+    assert is_valid_transaction_id(response.json()['transaction_id'])
+    assert response.json()['result_code'] == result_code
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestSummary:
@@ -90,10 +96,8 @@ class TestAuthorizationHeader:
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
         """
-        date = rfc_1123_date()
-
         headers = {
-            "Date": date,
+            "Date": rfc_1123_date(),
         }
 
         response = requests.request(
@@ -103,12 +107,11 @@ class TestAuthorizationHeader:
             data=b'',
         )
 
-        assert response.status_code == codes.UNAUTHORIZED
-        assert response.json().keys() == {'transaction_id', 'result_code'}
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        expected_result_code = ResultCodes.AUTHENTICATION_FAILURE.value
-        assert response.json()['result_code'] == expected_result_code
-
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNAUTHORIZED,
+            result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
+        )
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestDateHeader:
