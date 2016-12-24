@@ -16,13 +16,11 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-def get_signature_string(content_type: str,
-                         date: str,
+def get_signature_string(date: str,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          ) -> str:
     """
     Args:
-        content_type: The `Content-Type` header to be given in the request.
         date: The `Date` header to be given in the request.
         vuforia_server_credentials: The credentials to authenticate with the
             VWS server.
@@ -35,7 +33,7 @@ def get_signature_string(content_type: str,
         secret_key=vuforia_server_credentials.secret_key,
         method=GET,
         content=b'',
-        content_type=content_type,
+        content_type='',
         date=date,
         request_path='/summary',
     )
@@ -55,10 +53,7 @@ class TestSummary:
         requires authorization."""
         date = rfc_1123_date()
 
-        content_type = 'application/json'
-
         signature_string = get_signature_string(
-            content_type=content_type,
             date=date,
             vuforia_server_credentials=vuforia_server_credentials,
         )
@@ -66,7 +61,6 @@ class TestSummary:
         headers = {
             "Authorization": signature_string,
             "Date": date,
-            "Content-Type": content_type,
         }
 
         response = requests.request(
@@ -84,42 +78,6 @@ class TestHeaders:
     XXX
     """
 
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestContentTypeHeader:
-    """
-    Tests for what happens when the `Content-Type` header isn't as expected.
-    """
-
-    def test_missing(self, vuforia_server_credentials):
-        """
-        XXX
-        """
-        date = rfc_1123_date()
-
-        content_type = ''
-
-        signature_string = get_signature_string(
-            content_type=content_type,
-            date=date,
-            vuforia_server_credentials=vuforia_server_credentials,
-        )
-
-        headers = {
-            "Authorization": signature_string,
-            "Date": date,
-        }
-
-        response = requests.request(
-            method=GET,
-            url='https://vws.vuforia.com/summary',
-            headers=headers,
-            data=b'',
-        )
-        assert response.status_code == codes.BAD_REQUEST
-        assert response.json().keys() == {'transaction_id', 'result_code'}
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == ResultCodes.FAIL.value
-
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAuthorizationHeader:
@@ -133,11 +91,9 @@ class TestAuthorizationHeader:
         is given.
         """
         date = rfc_1123_date()
-        content_type = 'application/json'
 
         headers = {
             "Date": date,
-            "Content-Type": content_type,
         }
 
         response = requests.request(
@@ -169,17 +125,13 @@ class TestDateHeader:
         """
         date = rfc_1123_date()
 
-        content_type = 'application/json'
-
         signature_string = get_signature_string(
-            content_type=content_type,
             date=date,
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
             "Authorization": signature_string,
-            "Content-Type": content_type,
         }
 
         response = requests.request(
@@ -203,17 +155,13 @@ class TestDateHeader:
         date = rfc_1123_date()
         date_incorrect_format = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
 
-        content_type = 'application/json'
-
         signature_string = get_signature_string(
-            content_type=content_type,
             date=date,
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
             "Authorization": signature_string,
-            "Content-Type": content_type,
             "Date": date_incorrect_format,
         }
 
@@ -267,10 +215,7 @@ class TestDateHeader:
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
-        content_type = 'application/json'
-
         signature_string = get_signature_string(
-            content_type=content_type,
             date=date,
             vuforia_server_credentials=vuforia_server_credentials,
         )
@@ -278,7 +223,6 @@ class TestDateHeader:
         headers = {
             "Authorization": signature_string,
             "Date": date,
-            "Content-Type": content_type,
         }
 
         response = requests.request(
