@@ -143,10 +143,12 @@ class TestDateHeader:
             headers=headers,
             data=b'',
         )
-        assert response.status_code == codes.BAD_REQUEST
-        assert response.json().keys() == {'transaction_id', 'result_code'}
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == ResultCodes.FAIL.value
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL.value,
+        )
 
     def test_incorrect_date_format(self,
                                    vuforia_server_credentials:
@@ -155,8 +157,9 @@ class TestDateHeader:
         A `BAD_REQUEST` response is returned when the date given in the date
         header is not in the expected format (RFC 1123).
         """
-        date = rfc_1123_date()
-        date_incorrect_format = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
+        with freeze_time(datetime.now()):
+            date = rfc_1123_date()
+            date_incorrect_format = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
 
         signature_string = get_signature_string(
             date=date,
@@ -174,10 +177,11 @@ class TestDateHeader:
             headers=headers,
             data=b'',
         )
-        assert response.status_code == codes.BAD_REQUEST
-        assert response.json().keys() == {'transaction_id', 'result_code'}
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == ResultCodes.FAIL.value
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL.value,
+        )
 
     @pytest.mark.parametrize('time_multiplier', [1, -1],
                              ids=(['After', 'Before']))
