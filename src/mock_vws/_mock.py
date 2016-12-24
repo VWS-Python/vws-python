@@ -41,7 +41,16 @@ def validate_date(wrapped: Callable[..., str],
                   kwargs: Dict,
                   ) -> str:
     """
-    XXX
+    Validate the date header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoing function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
     """
     request, context = args
     if 'Date' not in request.headers:
@@ -51,7 +60,7 @@ def validate_date(wrapped: Callable[..., str],
             'result_code': ResultCodes.FAIL.value,
         }
         return json.dumps(body)
-    # TODO - More strict date parsing - this must be RFC blah blah
+
     date_from_header = maya.when(request.headers['Date']).datetime()
     time_difference = datetime.now(tz=timezone.utc) - date_from_header
     maximum_time_difference = timedelta(minutes=5)

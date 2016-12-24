@@ -22,10 +22,13 @@ def get_signature_string(content_type: str,
                          ) -> str:
     """
     Args:
-        XXX
+        content_type: The `Content-Type` header to be given in the request.
+        date: The `Date` header to be given in the request.
+        vuforia_server_credentials: The credentials to authenticate with the
+            VWS server.
 
     Returns:
-        XXX
+        The signature to use as the `Authorization` header to the request.
     """
     signature_string = authorization_header(
         access_key=vuforia_server_credentials.access_key,
