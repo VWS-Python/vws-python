@@ -79,6 +79,38 @@ class TestSummary:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
+class TestAuthorizationHeader:
+    """
+    Tests for what happens when the date header isn't as expected.
+    """
+
+    def test_missing(self):
+        """
+        A `BAD_REQUEST` response is returned when no date header is given.
+        """
+        date = rfc_1123_date()
+        content_type = 'application/json'
+
+        headers = {
+            "Date": date,
+            "Content-Type": content_type,
+        }
+
+        response = requests.request(
+            method=GET,
+            url='https://vws.vuforia.com/summary',
+            headers=headers,
+            data=b'',
+        )
+
+        assert response.status_code == codes.UNAUTHORIZED
+        assert response.json().keys() == {'transaction_id', 'result_code'}
+        assert is_valid_transaction_id(response.json()['transaction_id'])
+        expected_result_code = ResultCodes.AUTHENTICATION_FAILURE.value
+        assert response.json()['result_code'] == expected_result_code
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestDateHeader:
     """
     Tests for what happens when the date header isn't as expected.
