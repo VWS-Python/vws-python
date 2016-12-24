@@ -20,6 +20,9 @@ def get_signature_string(date: str,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          ) -> str:
     """
+    Return a string to be used in the `Authorization` header to for a request
+    to the database summary endpoint.
+
     Args:
         date: The `Date` header to be given in the request.
         vuforia_server_credentials: The credentials to authenticate with the
@@ -28,7 +31,7 @@ def get_signature_string(date: str,
     Returns:
         The signature to use as the `Authorization` header to the request.
     """
-    signature_string = authorization_header(
+    return authorization_header(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=GET,
@@ -37,7 +40,6 @@ def get_signature_string(date: str,
         date=date,
         request_path='/summary',
     )
-    return signature_string
 
 def assert_vws_failure(response, status_code, result_code):
     assert response.status_code == status_code
