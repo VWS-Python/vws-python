@@ -36,10 +36,9 @@ def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
 
 @wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
-                  instance: 'MockVuforiaTargetAPI',
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                   args: Tuple[_RequestObjectProxy, _Context],
-                  kwargs: Dict,
-                  ) -> str:
+                  kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
 
@@ -100,7 +99,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     @validate_date
     def database_summary(self,
-                         request: _RequestObjectProxy,
+                         request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
         """
         Fake implementation of
