@@ -6,10 +6,11 @@ import json
 import re
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Pattern
+from typing import Callable, Dict, Pattern, Tuple
 from urllib.parse import urljoin
 
 import maya
+import wrapt
 from requests import codes
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
@@ -31,6 +32,47 @@ def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     base = 'https://vws.vuforia.com/'  # type: str
     joined = urljoin(base=base, url=path_pattern)
     return re.compile(joined)
+
+
+@wrapt.decorator
+def validate_date(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict) -> str:
+    """
+    Validate the date header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoing function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    request, context = args
+    if 'Date' not in request.headers:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    date_from_header = maya.when(request.headers['Date']).datetime()
+    time_difference = datetime.now(tz=timezone.utc) - date_from_header
+    maximum_time_difference = timedelta(minutes=5)
+
+    if abs(time_difference) >= maximum_time_difference:
+        context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
+        }
+        return json.dumps(body)
+    return wrapped(*args, **kwargs)
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -55,35 +97,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
+    @validate_date
     def database_summary(self,
-                         request: _RequestObjectProxy,
+                         request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
         """
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
         body = {}  # type: Dict[str, str]
-
-        if 'Date' not in request.headers:
-            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.FAIL.value,
-            }
-            return json.dumps(body)
-
-        date_from_header = maya.when(request.headers['Date']).datetime()
-        time_difference = datetime.now(tz=timezone.utc) - date_from_header
-        maximum_time_difference = timedelta(minutes=5)
-
-        if abs(time_difference) >= maximum_time_difference:
-            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
-
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
-            }
-            return json.dumps(body)
 
         context.status_code = codes.OK  # pylint: disable=no-member
         body = {

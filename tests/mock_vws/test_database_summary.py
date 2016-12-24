@@ -16,6 +16,32 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
+def get_signature_string(content_type: str,
+                         date: str,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         ) -> str:
+    """
+    Args:
+        content_type: The `Content-Type` header to be given in the request.
+        date: The `Date` header to be given in the request.
+        vuforia_server_credentials: The credentials to authenticate with the
+            VWS server.
+
+    Returns:
+        The signature to use as the `Authorization` header to the request.
+    """
+    signature_string = authorization_header(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=GET,
+        content=b'',
+        content_type=content_type,
+        date=date,
+        request_path='/summary',
+    )
+    return signature_string
+
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestSummary:
     """
@@ -31,14 +57,10 @@ class TestSummary:
 
         content_type = 'application/json'
 
-        signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
+        signature_string = get_signature_string(
             content_type=content_type,
             date=date,
-            request_path='/summary',
+            vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
@@ -73,14 +95,10 @@ class TestDateHeader:
 
         content_type = 'application/json'
 
-        signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
+        signature_string = get_signature_string(
             content_type=content_type,
             date=date,
-            request_path='/summary',
+            vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
@@ -97,7 +115,7 @@ class TestDateHeader:
         assert response.status_code == codes.BAD_REQUEST
         assert response.json().keys() == {'transaction_id', 'result_code'}
         assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == 'Fail'
+        assert response.json()['result_code'] == ResultCodes.FAIL.value
 
     @pytest.mark.parametrize('time_multiplier', [1, -1],
                              ids=(['After', 'Before']))
@@ -140,14 +158,10 @@ class TestDateHeader:
 
         content_type = 'application/json'
 
-        signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
+        signature_string = get_signature_string(
             content_type=content_type,
             date=date,
-            request_path='/summary',
+            vuforia_server_credentials=vuforia_server_credentials,
         )
 
         headers = {
