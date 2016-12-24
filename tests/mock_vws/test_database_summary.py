@@ -16,17 +16,18 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-def get_signature_string(content_type: str='',
-                         date: str,
+def get_signature_string(date: str,
                          vuforia_server_credentials: VuforiaServerCredentials,
+                         content_type: str='',
                          ) -> str:
     """
     Return a string to be used in the `Authorization` header to for a request
     to the database summary endpoint.
 
     Args:
-        # TODO: Document content_type
-        date: The `Date` header to be given in the request.
+        content_type: The `content_type` to be encoded in the `Authentication`
+            header.
+        date: The `Date` header to be encoded in the `Authorization` header.
         vuforia_server_credentials: The credentials to authenticate with the
             VWS server.
 
@@ -42,6 +43,7 @@ def get_signature_string(content_type: str='',
         date=date,
         request_path='/summary',
     )
+
 
 def assert_vws_failure(response, status_code, result_code) -> None:
     """
@@ -145,6 +147,7 @@ class TestAuthorizationHeader:
             result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
         )
 
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestDateHeader:
     """
@@ -191,7 +194,8 @@ class TestDateHeader:
         """
         with freeze_time(datetime.now()):
             date = rfc_1123_date()
-            date_incorrect_format = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
+            date_incorrect_format = datetime.now().strftime(
+                "%a %b %d %H:%M:%S %Y")
 
         signature_string = get_signature_string(
             date=date,
