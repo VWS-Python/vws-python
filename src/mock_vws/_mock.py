@@ -5,11 +5,10 @@ A fake implementation of VWS.
 import json
 import re
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Callable, Dict, Pattern, Tuple
 from urllib.parse import urljoin
 
-import maya
 import wrapt
 from requests import codes
 from requests_mock.request import _RequestObjectProxy
@@ -60,8 +59,20 @@ def validate_date(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
-    date_from_header = maya.when(request.headers['Date']).datetime()
-    time_difference = datetime.now(tz=timezone.utc) - date_from_header
+    try:
+        date_from_header = datetime.strptime(
+            request.headers['Date'],
+            '%a, %d %b %Y %H:%M:%S GMT',
+        )
+    except ValueError:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    time_difference = datetime.now() - date_from_header
     maximum_time_difference = timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:
