@@ -41,7 +41,13 @@ def get_signature_string(date: str,
         request_path='/summary',
     )
 
-def assert_vws_failure(response, status_code, result_code):
+def assert_vws_failure(response, status_code, result_code) -> None:
+    """
+    TODO
+
+    Args:
+        XXX
+    """
     assert response.status_code == status_code
     assert response.json().keys() == {'transaction_id', 'result_code'}
     assert is_valid_transaction_id(response.json()['transaction_id'])
