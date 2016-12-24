@@ -16,7 +16,8 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-def get_signature_string(date: str,
+def get_signature_string(content_type: str='',
+                         date: str,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          ) -> str:
     """
@@ -24,6 +25,7 @@ def get_signature_string(date: str,
     to the database summary endpoint.
 
     Args:
+        # TODO: Document content_type
         date: The `Date` header to be given in the request.
         vuforia_server_credentials: The credentials to authenticate with the
             VWS server.
@@ -43,10 +45,16 @@ def get_signature_string(date: str,
 
 def assert_vws_failure(response, status_code, result_code) -> None:
     """
-    TODO
+    Assert that a VWS failure response is as expected.
 
     Args:
-        XXX
+        response: The response returned by a request to VWS.
+        status_code: X,
+        result_code
+
+    Raises:
+        AssertionError: The response is not in the expected VWS error format
+        for the given codes.
     """
     assert response.status_code == status_code
     assert response.json().keys() == {'transaction_id', 'result_code'}
@@ -89,10 +97,13 @@ class TestSummary:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestHeaders:
     """
-    XXX
+    Tests for what happens when the headers are not as expected.
     """
 
     def test_empty(self):
+        """
+        When no headers are given, an `UNAUTHORIZED` response is returned.
+        """
         response = requests.request(
             method=GET,
             url='https://vws.vuforia.com/summary',
