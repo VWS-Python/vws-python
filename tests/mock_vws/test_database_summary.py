@@ -79,14 +79,58 @@ class TestSummary:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
+class TestHeaders:
+    """
+    XXX
+    """
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestContentTypeHeader:
+    """
+    Tests for what happens when the `Content-Type` header isn't as expected.
+    """
+
+    def test_missing(self, vuforia_server_credentials):
+        """
+        XXX
+        """
+        date = rfc_1123_date()
+
+        content_type = ''
+
+        signature_string = get_signature_string(
+            content_type=content_type,
+            date=date,
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
+
+        headers = {
+            "Authorization": signature_string,
+            "Date": date,
+        }
+
+        response = requests.request(
+            method=GET,
+            url='https://vws.vuforia.com/summary',
+            headers=headers,
+            data=b'',
+        )
+        assert response.status_code == codes.BAD_REQUEST
+        assert response.json().keys() == {'transaction_id', 'result_code'}
+        assert is_valid_transaction_id(response.json()['transaction_id'])
+        assert response.json()['result_code'] == ResultCodes.FAIL.value
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAuthorizationHeader:
     """
-    Tests for what happens when the date header isn't as expected.
+    Tests for what happens when the `Authorization` header isn't as expected.
     """
 
     def test_missing(self):
         """
-        A `BAD_REQUEST` response is returned when no date header is given.
+        An `UNAUTHORIZED` response is returned when no `Authorization` header
+        is given.
         """
         date = rfc_1123_date()
         content_type = 'application/json'
@@ -113,7 +157,7 @@ class TestAuthorizationHeader:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestDateHeader:
     """
-    Tests for what happens when the date header isn't as expected.
+    Tests for what happens when the `Date` header isn't as expected.
     """
 
     def test_no_date_header(self,
@@ -121,7 +165,7 @@ class TestDateHeader:
                             VuforiaServerCredentials,
                             ) -> None:
         """
-        A `BAD_REQUEST` response is returned when no date header is given.
+        A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
         date = rfc_1123_date()
 
