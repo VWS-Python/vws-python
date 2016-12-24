@@ -6,16 +6,16 @@ import json
 import re
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Callable, Pattern, Dict, Tuple
+from typing import Callable, Dict, Pattern, Tuple
 from urllib.parse import urljoin
 
 import maya
+import wrapt
 from requests import codes
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from common.constants import ResultCodes
-import wrapt
 
 
 def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
