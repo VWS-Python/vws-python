@@ -84,6 +84,19 @@ class TestHeaders:
     XXX
     """
 
+    def test_empty(self):
+        response = requests.request(
+            method=GET,
+            url='https://vws.vuforia.com/summary',
+            headers={},
+            data=b'',
+        )
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNAUTHORIZED,
+            result_code='AuthenticationFailure'
+        )
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAuthorizationHeader:
