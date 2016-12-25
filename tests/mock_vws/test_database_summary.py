@@ -115,7 +115,7 @@ class TestHeaders:
         assert_vws_failure(
             response=response,
             status_code=codes.UNAUTHORIZED,
-            result_code='AuthenticationFailure'
+            result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
         )
 
 
