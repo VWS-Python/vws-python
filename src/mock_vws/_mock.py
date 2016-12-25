@@ -80,20 +80,13 @@ def validate_date(wrapped: Callable[..., str],
         The result of calling the endpoint.
     """
     request, context = args
-    if 'Date' not in request.headers:
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json.dumps(body)
 
     try:
         date_from_header = datetime.strptime(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
-    except ValueError:
+    except (KeyError, ValueError):
         context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
