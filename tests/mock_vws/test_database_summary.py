@@ -149,18 +149,11 @@ class TestAuthorizationHeader:
 
     def test_incorrect(self) -> None:
         """
-        XXX
+        If an incorrect `Authorization` header is given, a `BAD_REQUEST`
+        response is given.
         """
         date = rfc_1123_date()
-
-        incorrect_credentials = VuforiaServerCredentials(
-            access_key='incorrect_access_key',
-            secret_key='incorrect_secret_key',
-        )
-        signature_string = get_signature_string(
-            date=date,
-            vuforia_server_credentials=incorrect_credentials,
-        )
+        signature_string = 'gibberish'
 
         headers = {
             "Authorization": signature_string,
