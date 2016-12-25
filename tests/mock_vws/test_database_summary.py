@@ -19,15 +19,12 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 def get_signature_string(date: str,
                          vuforia_server_credentials: VuforiaServerCredentials,
-                         content_type: str='',
                          ) -> str:
     """
     Return a string to be used in the `Authorization` header to for a request
     to the database summary endpoint.
 
     Args:
-        content_type: The `content_type` to be encoded in the `Authentication`
-            header.
         date: The `Date` header to be encoded in the `Authorization` header.
         vuforia_server_credentials: The credentials to authenticate with the
             VWS server.

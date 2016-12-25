@@ -14,6 +14,7 @@ from requests import codes
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
+from vws._request_utils import authorization_header
 from common.constants import ResultCodes
 
 
@@ -35,7 +36,7 @@ def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
 
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
-                           instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                           instance: 'MockVuforiaTargetAPI',
                            args: Tuple[_RequestObjectProxy, _Context],
                            kwargs: Dict) -> str:
     """
@@ -56,6 +57,24 @@ def validate_authorization(wrapped: Callable[..., str],
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+        }
+        return json.dumps(body)
+
+    expected_authorization_header = authorization_header(
+        access_key=bytes(instance.access_key, encoding='utf-8'),
+        secret_key=bytes(instance.secret_key, encoding='utf-8'),
+        method=request.method,
+        content=bytes(request.query, encoding='utf-8'),
+        content_type=request.headers.get('Content-Type', ''),
+        date=request.headers.get('Date', ''),
+        request_path=request.path,
+    )
+
+    if request.headers['Authorization'] != expected_authorization_header:
+        context.status_code = codes.BAD_REQUEST
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
         }
         return json.dumps(body)
 
