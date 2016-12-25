@@ -150,6 +150,39 @@ class TestAuthorizationHeader:
             result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
         )
 
+    def test_incorrect(self) -> None:
+        """
+        XXX
+        """
+        date = rfc_1123_date()
+
+        incorrect_credentials = VuforiaServerCredentials(
+            access_key='incorrect_access_key',
+            secret_key='incorrect_secret_key',
+        )
+        signature_string = get_signature_string(
+            date=date,
+            vuforia_server_credentials=incorrect_credentials,
+        )
+
+        headers = {
+            "Authorization": signature_string,
+            "Date": date,
+        }
+
+        response = requests.request(
+            method=GET,
+            url='https://vws.vuforia.com/summary',
+            headers=headers,
+            data=b'',
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL.value,
+        )
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestDateHeader:
