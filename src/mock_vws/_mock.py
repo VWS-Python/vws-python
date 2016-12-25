@@ -14,8 +14,8 @@ from requests import codes
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from vws._request_utils import authorization_header
 from common.constants import ResultCodes
+from vws._request_utils import authorization_header
 
 
 def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
