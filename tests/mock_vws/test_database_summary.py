@@ -102,7 +102,7 @@ class TestHeaders:
     Tests for what happens when the headers are not as expected.
     """
 
-    def test_empty(self):
+    def test_empty(self) -> None:
         """
         When no headers are given, an `UNAUTHORIZED` response is returned.
         """
@@ -125,7 +125,7 @@ class TestAuthorizationHeader:
     Tests for what happens when the `Authorization` header isn't as expected.
     """
 
-    def test_missing(self):
+    def test_missing(self) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
