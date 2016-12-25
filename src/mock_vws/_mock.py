@@ -71,7 +71,7 @@ def validate_authorization(wrapped: Callable[..., str],
     )
 
     if request.headers['Authorization'] != expected_authorization_header:
-        context.status_code = codes.BAD_REQUEST
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
