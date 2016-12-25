@@ -8,6 +8,7 @@ import pytest
 import requests
 from freezegun import freeze_time
 from requests import codes
+from requests.models import Response
 from requests_mock import GET
 
 from common.constants import ResultCodes
@@ -45,14 +46,16 @@ def get_signature_string(date: str,
     )
 
 
-def assert_vws_failure(response, status_code, result_code) -> None:
+def assert_vws_failure(response: Response,
+                       status_code: int,
+                       result_code: str) -> None:
     """
     Assert that a VWS failure response is as expected.
 
     Args:
         response: The response returned by a request to VWS.
-        status_code: X,
-        result_code
+        status_code: The expected status code of the response.
+        result_code: The expected result code of the response.
 
     Raises:
         AssertionError: The response is not in the expected VWS error format
