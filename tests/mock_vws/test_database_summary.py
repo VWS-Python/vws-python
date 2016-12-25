@@ -187,10 +187,8 @@ class TestDateHeader:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
-        date = rfc_1123_date()
-
         signature_string = get_signature_string(
-            date=date,
+            date='',
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
@@ -219,12 +217,11 @@ class TestDateHeader:
         header is not in the expected format (RFC 1123).
         """
         with freeze_time(datetime.now()):
-            date = rfc_1123_date()
             date_incorrect_format = datetime.now().strftime(
                 "%a %b %d %H:%M:%S %Y")
 
         signature_string = get_signature_string(
-            date=date,
+            date=date_incorrect_format,
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
