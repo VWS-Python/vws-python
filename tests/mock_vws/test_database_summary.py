@@ -19,15 +19,12 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 def get_signature_string(date: str,
                          vuforia_server_credentials: VuforiaServerCredentials,
-                         content_type: str='',
                          ) -> str:
     """
     Return a string to be used in the `Authorization` header to for a request
     to the database summary endpoint.
 
     Args:
-        content_type: The `content_type` to be encoded in the `Authentication`
-            header.
         date: The `Date` header to be encoded in the `Authorization` header.
         vuforia_server_credentials: The credentials to authenticate with the
             VWS server.
@@ -150,6 +147,32 @@ class TestAuthorizationHeader:
             result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
         )
 
+    def test_incorrect(self) -> None:
+        """
+        If an incorrect `Authorization` header is given, a `BAD_REQUEST`
+        response is given.
+        """
+        date = rfc_1123_date()
+        signature_string = 'gibberish'
+
+        headers = {
+            "Authorization": signature_string,
+            "Date": date,
+        }
+
+        response = requests.request(
+            method=GET,
+            url='https://vws.vuforia.com/summary',
+            headers=headers,
+            data=b'',
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL.value,
+        )
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestDateHeader:
@@ -164,10 +187,8 @@ class TestDateHeader:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
-        date = rfc_1123_date()
-
         signature_string = get_signature_string(
-            date=date,
+            date='',
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
@@ -196,12 +217,11 @@ class TestDateHeader:
         header is not in the expected format (RFC 1123).
         """
         with freeze_time(datetime.now()):
-            date = rfc_1123_date()
             date_incorrect_format = datetime.now().strftime(
                 "%a %b %d %H:%M:%S %Y")
 
         signature_string = get_signature_string(
-            date=date,
+            date=date_incorrect_format,
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
