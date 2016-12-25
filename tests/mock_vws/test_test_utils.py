@@ -15,7 +15,7 @@ class TestIsValidTransactionId:
     Tests for `is_valid_transaction_id`.
     """
 
-    def test_example(self):
+    def test_example(self) -> None:
         """
         A known test example is considered valid.
         """
