@@ -76,6 +76,12 @@ class MockVWS(ContextDecorator):
                 url=fake_target_api.DATABASE_SUMMARY_URL,
                 text=fake_target_api.database_summary,
             )
+
+            req.register_uri(
+                method=GET,
+                url=fake_target_api.TARGET_LIST_URL,
+                text=fake_target_api.database_summary,
+            )
         self.req = req
         self.req.start()
         return self

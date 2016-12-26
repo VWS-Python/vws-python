@@ -136,6 +136,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
 
     DATABASE_SUMMARY_URL = target_endpoint_pattern(path_pattern='summary')  # noqa: E501  type: Pattern[str]
+    TARGET_LIST_URL = target_endpoint_pattern(path_pattern='targets')  # noqa: E501  type: Pattern[str]
 
     def __init__(self, access_key: str, secret_key: str) -> None:
         """
