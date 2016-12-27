@@ -1,5 +1,5 @@
 """
-Tests for the mock of the database summary endpoint.
+Tests for the mock of the target list endpoint.
 """
 
 import pytest
@@ -12,7 +12,7 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestSummary:
+class TestTargetList:
     """
     Tests for the mock of the database summary endpoint at `/summary`.
     """
@@ -30,7 +30,7 @@ class TestSummary:
             content=b'',
             content_type='',
             date=date,
-            request_path='/summary',
+            request_path='/targets',
         )
 
         headers = {
@@ -40,7 +40,7 @@ class TestSummary:
 
         response = requests.request(
             method=GET,
-            url='https://vws.vuforia.com/summary',
+            url='https://vws.vuforia.com/targets',
             headers=headers,
             data=b'',
         )
