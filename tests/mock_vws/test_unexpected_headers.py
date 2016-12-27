@@ -19,12 +19,18 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
+class Route:
+    def __init__(self, path, method):
+        self.path = path
+        self.method = method
+
+
 class ROUTES(Values):
     """
     Routes to test headers for.
     """
-    DATABASE_SUMMARY = ValueConstant('/summary')
-    TARGET_LIST = ValueConstant('/targets')
+    DATABASE_SUMMARY = ValueConstant(Route(path='/summary', method=GET))
+    TARGET_LIST = ValueConstant(Route(path='/targets', method=GET))
 
 
 def assert_vws_failure(response: Response,
@@ -51,7 +57,7 @@ def assert_vws_failure(response: Response,
 @pytest.mark.usefixtures('verify_mock_vuforia')
 @pytest.mark.parametrize(
     'endpoint,method',
-    [(route.value, GET) for route in ROUTES.iterconstants()],
+    [(route.value.path, GET) for route in ROUTES.iterconstants()],
 )
 class TestHeaders:
     """
@@ -78,7 +84,7 @@ class TestHeaders:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 @pytest.mark.parametrize(
     'endpoint,method',
-    [(route.value, GET) for route in ROUTES.iterconstants()],
+    [(route.value.path, GET) for route in ROUTES.iterconstants()],
 )
 class TestAuthorizationHeader:
     """
@@ -137,7 +143,7 @@ class TestAuthorizationHeader:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 @pytest.mark.parametrize(
     'endpoint,method',
-    [(route.value, GET) for route in ROUTES.iterconstants()],
+    [(route.value.path, GET) for route in ROUTES.iterconstants()],
 )
 class TestDateHeader:
     """
