@@ -126,10 +126,10 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     def decorator(method: Callable[..., str]) -> Callable[
             ..., str]:
         @functools.wraps(method)
-        def route_function(*args: 'MockVuforiaTargetAPI', **kwargs: Dict) -> str:
+        def route_function(*args: Tuple, **kwargs: Dict) -> str:
             return method(*args, **kwargs)
-        route_function.path_pattern = path_pattern
-        route_function.methods = methods
+        setattr(route_function, 'path_pattern', path_pattern)
+        setattr(route_function, 'methods', methods)
         return route_function
     return decorator
 
