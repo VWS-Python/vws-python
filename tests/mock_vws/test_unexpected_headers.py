@@ -27,9 +27,6 @@ class ROUTES(Values):
     TARGET_LIST = ValueConstant('/targets')
 
 
-ENDPOINTS = [route.value for route in ROUTES.iterconstants()]
-
-
 def assert_vws_failure(response: Response,
                        status_code: int,
                        result_code: str) -> None:
@@ -52,13 +49,16 @@ def assert_vws_failure(response: Response,
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ENDPOINTS)
+@pytest.mark.parametrize(
+    'endpoint,method',
+    [(route.value, GET) for route in ROUTES.iterconstants()],
+)
 class TestHeaders:
     """
     Tests for what happens when the headers are not as expected.
     """
 
-    def test_empty(self, endpoint: str) -> None:
+    def test_empty(self, endpoint: str, method) -> None:
         """
         When no headers are given, an `UNAUTHORIZED` response is returned.
         """
@@ -76,13 +76,16 @@ class TestHeaders:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ENDPOINTS)
+@pytest.mark.parametrize(
+    'endpoint,method',
+    [(route.value, GET) for route in ROUTES.iterconstants()],
+)
 class TestAuthorizationHeader:
     """
     Tests for what happens when the `Authorization` header isn't as expected.
     """
 
-    def test_missing(self, endpoint: str) -> None:
+    def test_missing(self, endpoint: str, method) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
@@ -104,7 +107,7 @@ class TestAuthorizationHeader:
             result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
         )
 
-    def test_incorrect(self, endpoint: str) -> None:
+    def test_incorrect(self, endpoint: str, method) -> None:
         """
         If an incorrect `Authorization` header is given, a `BAD_REQUEST`
         response is given.
@@ -132,7 +135,10 @@ class TestAuthorizationHeader:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ENDPOINTS)
+@pytest.mark.parametrize(
+    'endpoint,method',
+    [(route.value, GET) for route in ROUTES.iterconstants()],
+)
 class TestDateHeader:
     """
     Tests for what happens when the `Date` header isn't as expected.
@@ -141,7 +147,7 @@ class TestDateHeader:
     def test_no_date_header(self,
                             vuforia_server_credentials:
                             VuforiaServerCredentials,
-                            endpoint: str,
+                            endpoint: str, method,
                             ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
@@ -176,7 +182,7 @@ class TestDateHeader:
     def test_incorrect_date_format(self,
                                    vuforia_server_credentials:
                                    VuforiaServerCredentials,
-                                   endpoint: str) -> None:
+                                   endpoint: str, method) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
         header is not in the expected format (RFC 1123).
@@ -236,7 +242,7 @@ class TestDateHeader:
                          expected_status: str,
                          expected_result: str,
                          time_multiplier: int,
-                         endpoint: str,
+                         endpoint: str, method,
                          ) -> None:
         """
         If a date header is within five minutes before or after the request
