@@ -125,12 +125,19 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     """
     def decorator(method: Callable[..., str]) -> Callable[
             ..., str]:
-        @functools.wraps(method)
-        def route_function(*args: Tuple, **kwargs: Dict) -> str:
-            return method(*args, **kwargs)
-        setattr(route_function, 'path_pattern', path_pattern)
-        setattr(route_function, 'methods', methods)
-        return route_function
+        """
+        Set properties on a decorated method so that it can be recognized as a
+        route.
+
+        Args:
+            method: Method to add attributes to.
+
+        Returns:
+            Method with attributes added to it.
+        """
+        setattr(method, 'path_pattern', path_pattern)
+        setattr(method, 'methods', methods)
+        return method
     return decorator
 
 
