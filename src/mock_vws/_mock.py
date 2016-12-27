@@ -6,7 +6,7 @@ import functools
 import json
 import uuid
 from datetime import datetime, timedelta
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple, Union
 
 import wrapt
 from requests import codes
@@ -131,7 +131,10 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                                         str
                                     ]:
         @functools.wraps(method)
-        def f(*args, **kwargs) -> str:
+        def f(*args: List[
+                     'MockVuforiaTargetAPI',
+                     _RequestObjectProxy,
+                     _Context], **kwargs: Dict) -> str:
             return method(*args, **kwargs)
         f.path_pattern = path_pattern
         f.methods = methods
