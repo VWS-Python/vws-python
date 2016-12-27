@@ -18,32 +18,6 @@ from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-def get_signature_string(date: str,
-                         vuforia_server_credentials: VuforiaServerCredentials,
-                         ) -> bytes:
-    """
-    Return a string to be used in the `Authorization` header to for a request
-    to the database summary endpoint.
-
-    Args:
-        date: The `Date` header to be encoded in the `Authorization` header.
-        vuforia_server_credentials: The credentials to authenticate with the
-            VWS server.
-
-    Returns:
-        The signature to use as the `Authorization` header to the request.
-    """
-    return authorization_header(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
-        method=GET,
-        content=b'',
-        content_type='',
-        date=date,
-        request_path='/summary',
-    )
-
-
 def assert_vws_failure(response: Response,
                        status_code: int,
                        result_code: str) -> None:
@@ -160,9 +134,14 @@ class TestDateHeader:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
-        signature_string = get_signature_string(
+        signature_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            content_type='',
             date='',
-            vuforia_server_credentials=vuforia_server_credentials,
+            request_path='/summary',
         )
 
         headers = {
@@ -194,13 +173,18 @@ class TestDateHeader:
             date_incorrect_format = datetime.now().strftime(
                 "%a %b %d %H:%M:%S %Y")
 
-        signature_string = get_signature_string(
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            content_type='',
             date=date_incorrect_format,
-            vuforia_server_credentials=vuforia_server_credentials,
+            request_path='/summary',
         )
 
         headers = {
-            "Authorization": signature_string,
+            "Authorization": authorization_string,
             "Date": date_incorrect_format,
         }
 
@@ -256,13 +240,18 @@ class TestDateHeader:
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
-        signature_string = get_signature_string(
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            content_type='',
             date=date,
-            vuforia_server_credentials=vuforia_server_credentials,
+            request_path='/summary',
         )
 
         headers = {
-            "Authorization": signature_string,
+            "Authorization": authorization_string,
             "Date": date,
         }
 
