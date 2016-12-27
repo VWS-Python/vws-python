@@ -5,8 +5,8 @@ A fake implementation of VWS.
 import json
 import uuid
 from datetime import datetime, timedelta
-from typing import Callable, Dict, List, Tuple
 from typing import Union  # noqa F401
+from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
