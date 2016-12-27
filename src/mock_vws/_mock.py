@@ -21,8 +21,7 @@ from vws._request_utils import authorization_header
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
-                           args: Tuple['MockVuforiaTargetAPI',
-                                       _RequestObjectProxy, _Context],
+                           args: Tuple,
                            kwargs: Dict) -> str:
     """
     Validate the authorization header given to a VWS endpoint.
@@ -71,7 +70,7 @@ def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                   args: Tuple['MockVuforiaTargetAPI', _RequestObjectProxy,
                               _Context],
-                  kwargs: Dict):
+                  kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
 
@@ -124,18 +123,10 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         `/targets/.+`.
         methods: HTTP methods that map to the route function.
     """
-    def decorator(method: Callable[['MockVuforiaTargetAPI',
-                                    _RequestObjectProxy,
-                                    _Context], str]) -> Callable[
-                                        ['MockVuforiaTargetAPI',
-                                         _RequestObjectProxy,
-                                         _Context],
-                                        str
-                                    ]:
+    def decorator(method: Callable[..., str]) -> Callable[
+            ..., str]:
         @functools.wraps(method)
-        def route_function(*args: List['MockVuforiaTargetAPI',
-                                       _RequestObjectProxy,
-                                       _Context], **kwargs: Dict) -> str:
+        def route_function(*args: 'MockVuforiaTargetAPI', **kwargs: Dict) -> str:
             return method(*args, **kwargs)
         route_function.path_pattern = path_pattern
         route_function.methods = methods
