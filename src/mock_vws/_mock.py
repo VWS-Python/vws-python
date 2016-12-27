@@ -4,11 +4,9 @@ A fake implementation of VWS.
 
 import functools
 import json
-import re
 import uuid
 from datetime import datetime, timedelta
-from typing import Callable, Dict, Pattern, Tuple, List
-from urllib.parse import urljoin
+from typing import Callable, Dict, List, Pattern, Tuple
 
 import wrapt
 from requests import codes

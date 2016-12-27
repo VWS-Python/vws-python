@@ -1,5 +1,6 @@
 
 from datetime import datetime, timedelta
+from urllib.parse import urljoin
 
 import pytest
 import requests
@@ -11,7 +12,6 @@ from requests_mock import GET
 from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import is_valid_transaction_id
-from urllib.parse import urljoin
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
