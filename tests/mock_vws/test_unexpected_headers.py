@@ -57,7 +57,8 @@ def assert_vws_failure(response: Response,
 @pytest.mark.usefixtures('verify_mock_vuforia')
 @pytest.mark.parametrize(
     'endpoint,method',
-    [(route.value.path, GET) for route in ROUTES.iterconstants()],
+    [(route.value.path, route.value.method) for route in
+     ROUTES.iterconstants()],
 )
 class TestHeaders:
     """
@@ -84,7 +85,8 @@ class TestHeaders:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 @pytest.mark.parametrize(
     'endpoint,method',
-    [(route.value.path, GET) for route in ROUTES.iterconstants()],
+    [(route.value.path, route.value.method) for route in
+     ROUTES.iterconstants()],
 )
 class TestAuthorizationHeader:
     """
@@ -143,7 +145,8 @@ class TestAuthorizationHeader:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 @pytest.mark.parametrize(
     'endpoint,method',
-    [(route.value.path, GET) for route in ROUTES.iterconstants()],
+    [(route.value.path, route.value.method) for route in
+     ROUTES.iterconstants()],
 )
 class TestDateHeader:
     """
