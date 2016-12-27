@@ -3,18 +3,36 @@ Tools for using a fake implementation of Vuforia.
 """
 
 import os
+import re
 from contextlib import ContextDecorator
+from functools import partial
+from urllib.parse import urljoin
 
 from typing import Optional  # noqa: F401 This is used in a type hint.
-from typing import Tuple, TypeVar
+from typing import Tuple, TypeVar, Pattern
 
 from requests_mock.mocker import Mocker
-from requests_mock import GET
 
 from ._mock import MockVuforiaTargetAPI
 
 
 _MockVWSType = TypeVar('_MockVWSType', bound='MockVWS')  # noqa: E501 pylint: disable=invalid-name
+
+
+def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
+    """
+    Given a path pattern, return a regex which will match URLs to
+    patch for the Target API.
+
+    Args:
+        path_pattern: A part of the url which can be matched for endpoints.
+            For example `https://vws.vuforia.com/<this-part>`. This is
+            compiled to be a regular expression, so it may be `/foo` or
+            `/foo/.+` for example.
+    """
+    base = 'https://vws.vuforia.com/'  # type: str
+    joined = urljoin(base=base, url=path_pattern)
+    return re.compile(joined)
 
 
 class MockVWS(ContextDecorator):
@@ -70,12 +88,15 @@ class MockVWS(ContextDecorator):
             access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
         )
+
         with Mocker(real_http=self.real_http) as req:
-            req.register_uri(
-                method=GET,
-                url=fake_target_api.DATABASE_SUMMARY_URL,
-                text=fake_target_api.database_summary,
-            )
+            for route in fake_target_api.routes:
+                for http_method in route.methods:
+                    req.register_uri(
+                        method=http_method,
+                        url=_target_endpoint_pattern(route.path_pattern),
+                        text=partial(route, fake_target_api),
+                    )
         self.req = req
         self.req.start()
         return self
