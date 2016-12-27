@@ -178,8 +178,20 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         context.status_code = codes.OK  # pylint: disable=no-member
         body = {
-            'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
+            'transaction_id': uuid.uuid4().hex,
+            'name': '',
+            'active_images': '',
+            'inactive_images': '',
+            'failed_images': '',
+            'target_quota': '',
+            'total_recos': '',
+            'current_month_recos': '',
+            'previous_month_recos': '',
+            'processing_images': '',
+            'reco_threshold': '',
+            'request_quota': '',
+            'request_usage': '',
         }
         return json.dumps(body)
 
