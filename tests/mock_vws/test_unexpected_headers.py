@@ -11,7 +11,7 @@ from constantly import ValueConstant, Values
 from freezegun import freeze_time
 from requests import codes
 from requests.models import Response
-from requests_mock import GET
+from requests_mock import GET, POST
 
 from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
@@ -29,6 +29,7 @@ class ROUTES(Values):
     """
     Routes to test headers for.
     """
+    # ADD_TARGET = ValueConstant(Route(path='/targets', method=POST))
     DATABASE_SUMMARY = ValueConstant(Route(path='/summary', method=GET))
     TARGET_LIST = ValueConstant(Route(path='/targets', method=GET))
 
@@ -70,7 +71,7 @@ class TestHeaders:
         When no headers are given, an `UNAUTHORIZED` response is returned.
         """
         response = requests.request(
-            method=GET,
+            method=method,
             url=urljoin('https://vws.vuforia.com/', endpoint),
             headers={},
             data=b'',
@@ -103,7 +104,7 @@ class TestAuthorizationHeader:
         }
 
         response = requests.request(
-            method=GET,
+            method=method,
             url=urljoin('https://vws.vuforia.com/', endpoint),
             headers=headers,
             data=b'',
@@ -129,7 +130,7 @@ class TestAuthorizationHeader:
         }
 
         response = requests.request(
-            method=GET,
+            method=method,
             url=urljoin('https://vws.vuforia.com/', endpoint),
             headers=headers,
             data=b'',
@@ -164,7 +165,7 @@ class TestDateHeader:
         signature_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
+            method=method,
             content=b'',
             content_type='',
             date='',
@@ -176,7 +177,7 @@ class TestDateHeader:
         }
 
         response = requests.request(
-            method=GET,
+            method=method,
             url=urljoin('https://vws.vuforia.com', endpoint),
             headers=headers,
             data=b'',
@@ -203,7 +204,7 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
+            method=method,
             content=b'',
             content_type='',
             date=date_incorrect_format,
@@ -216,7 +217,7 @@ class TestDateHeader:
         }
 
         response = requests.request(
-            method=GET,
+            method=method,
             url=urljoin('https://vws.vuforia.com/', endpoint),
             headers=headers,
             data=b'',
@@ -270,7 +271,7 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
+            method=method,
             content=b'',
             content_type='',
             date=date,
@@ -283,7 +284,7 @@ class TestDateHeader:
         }
 
         response = requests.request(
-            method=GET,
+            method=method,
             url=urljoin('https://vws.vuforia.com/', endpoint),
             headers=headers,
             data=b'',
