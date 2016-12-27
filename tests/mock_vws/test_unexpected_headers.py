@@ -21,7 +21,8 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 class ROUTES(Values):
     DATABASE_SUMMARY = ValueConstant('/summary')
-    # TARGET_LIST = ValueConstant('/targets')
+    TARGET_LIST = ValueConstant('/targets')
+
 
 ENDPOINTS = [route.value for route in ROUTES.iterconstants()]
 
@@ -149,7 +150,7 @@ class TestDateHeader:
             content=b'',
             content_type='',
             date='',
-            request_path='/summary',
+            request_path=endpoint,
         )
 
         headers = {
@@ -188,7 +189,7 @@ class TestDateHeader:
             content=b'',
             content_type='',
             date=date_incorrect_format,
-            request_path='/summary',
+            request_path=endpoint,
         )
 
         headers = {
@@ -255,7 +256,7 @@ class TestDateHeader:
             content=b'',
             content_type='',
             date=date,
-            request_path='/summary',
+            request_path=endpoint,
         )
 
         headers = {

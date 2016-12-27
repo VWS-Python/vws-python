@@ -182,6 +182,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
+    @validate_authorization
+    @validate_date
+    @route(path_pattern='/targets', methods=[GET])
     def target_list(self,
                     request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                     context: _Context) -> str:
@@ -189,3 +192,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
         """
+        body = {}  # type: Dict[str, str]
+
+        context.status_code = codes.OK  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.SUCCESS.value,
+        }
+        return json.dumps(body)
