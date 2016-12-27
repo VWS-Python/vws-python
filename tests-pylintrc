@@ -79,6 +79,7 @@ disable=
     bad-continuation,
     # Let flake8 handle long lines
     line-too-long,
+    duplicate-code,
 
 [REPORTS]
 
