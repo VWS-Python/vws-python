@@ -136,8 +136,6 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         f.path_pattern = path_pattern
         f.methods = methods
         return f
-    decorator.path_pattern = path_pattern
-    decorator.methods = methods
     return decorator
 
 
