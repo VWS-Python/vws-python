@@ -164,6 +164,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.routes = [method for method in self.__class__.__dict__.values()
                        if hasattr(method, 'path_pattern')]
 
+    def add_target(self,
+                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   context: _Context) -> str:
+        """
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
+        """
+
+
     @validate_authorization
     @validate_date
     @route(path_pattern='/summary', methods=[GET])
