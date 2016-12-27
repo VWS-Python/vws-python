@@ -6,7 +6,7 @@ import functools
 import json
 import uuid
 from datetime import datetime, timedelta
-from typing import Callable, Dict, List, Pattern, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
