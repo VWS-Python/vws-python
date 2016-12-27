@@ -29,7 +29,7 @@ class ROUTES(Values):
     """
     Routes to test headers for.
     """
-    # ADD_TARGET = ValueConstant(Route(path='/targets', method=POST))
+    ADD_TARGET = ValueConstant(Route(path='/targets', method=POST))
     DATABASE_SUMMARY = ValueConstant(Route(path='/summary', method=GET))
     TARGET_LIST = ValueConstant(Route(path='/targets', method=GET))
 
