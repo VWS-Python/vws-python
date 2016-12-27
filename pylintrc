@@ -69,6 +69,8 @@ confidence=
 disable=line-too-long,
         too-few-public-methods,
         locally-disabled,
+        # Let flake8 handle unused imports
+        unused-import,
 
 [REPORTS]
 
