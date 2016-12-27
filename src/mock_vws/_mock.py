@@ -131,10 +131,8 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                                         str
                                     ]:
         @functools.wraps(method)
-        def f(*args: List[
-                     'MockVuforiaTargetAPI',
-                     _RequestObjectProxy,
-                     _Context], **kwargs: Dict) -> str:
+        def f(*args: List['MockVuforiaTargetAPI', _RequestObjectProxy,
+                          _Context], **kwargs: Dict) -> str:
             return method(*args, **kwargs)
         f.path_pattern = path_pattern
         f.methods = methods
