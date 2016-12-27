@@ -2,16 +2,12 @@
 Tests for the mock of the database summary endpoint.
 """
 
-from datetime import datetime, timedelta
-
 import pytest
 import requests
-from freezegun import freeze_time
 from requests import codes
 from requests.models import Response
 from requests_mock import GET
 
-from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date

@@ -11,7 +11,7 @@ from typing import Optional  # noqa: F401 This is used in a type hint.
 from typing import Tuple, TypeVar, Pattern
 
 from requests_mock.mocker import Mocker
-from requests_mock import GET
+from functools import partial
 
 from ._mock import MockVuforiaTargetAPI
 
@@ -88,10 +88,8 @@ class MockVWS(ContextDecorator):
             access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
         )
-        from functools import partial
 
         with Mocker(real_http=self.real_http) as req:
-            # import pdb; pdb.set_trace()
             for route in fake_target_api.routes:
                 for http_method in route.methods:
                     req.register_uri(

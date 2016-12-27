@@ -1,3 +1,6 @@
+"""
+Tests for when endpoints are called with unexpected header data.
+"""
 
 from datetime import datetime, timedelta
 from urllib.parse import urljoin
@@ -168,7 +171,7 @@ class TestDateHeader:
 
         response = requests.request(
             method=GET,
-            url='https://vws.vuforia.com/summary',
+            url=urljoin('https://vws.vuforia.com', endpoint),
             headers=headers,
             data=b'',
         )

@@ -6,10 +6,11 @@ import functools
 import json
 import uuid
 from datetime import datetime, timedelta
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, Tuple
 
 import wrapt
 from requests import codes
+from requests_mock import GET
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
@@ -20,7 +21,8 @@ from vws._request_utils import authorization_header
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
-                           args: Tuple[_RequestObjectProxy, _Context],
+                           args: Tuple['MockVuforiaTargetAPI',
+                                       _RequestObjectProxy, _Context],
                            kwargs: Dict) -> str:
     """
     Validate the authorization header given to a VWS endpoint.
@@ -66,8 +68,9 @@ def validate_authorization(wrapped: Callable[..., str],
 
 @wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
-                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple[_RequestObjectProxy, _Context],
+                  instance: 'MockVuforiaTargetAPI',
+                  args: Tuple['MockVuforiaTargetAPI', _RequestObjectProxy,
+                              _Context],
                   kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
@@ -151,7 +154,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     @validate_authorization
     @validate_date
-    @route(path_pattern='/summary', methods=['GET'])
+    @route(path_pattern='/summary', methods=[GET])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
