@@ -7,7 +7,7 @@ import json
 import re
 import uuid
 from datetime import datetime, timedelta
-from typing import Callable, Dict, Pattern, Tuple
+from typing import Callable, Dict, Pattern, Tuple, List
 from urllib.parse import urljoin
 
 import wrapt
@@ -17,22 +17,6 @@ from requests_mock.response import _Context
 
 from common.constants import ResultCodes
 from vws._request_utils import authorization_header
-
-
-def target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
-    """
-    Given a path pattern, return a regex which will match URLs to
-    patch for the Target API.
-
-    Args:
-        path_pattern: A part of the url which can be matched for endpoints.
-            For example `https://vws.vuforia.com/<this-part>`. This is
-            compiled to be a regular expression, so it may be `/foo` or
-            `/foo/.+` for example.
-    """
-    base = 'https://vws.vuforia.com/'  # type: str
-    joined = urljoin(base=base, url=path_pattern)
-    return re.compile(joined)
 
 
 @wrapt.decorator
@@ -129,13 +113,13 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
-def route(path, methods):
-    def decorator(method):
+def route(path: str, methods: List[str]) -> Callable:
+    def decorator(method: Callable) -> Callable:
         @functools.wraps(method)
-        def f(*args, **kwargs):
+        def f(*args, **kwargs) -> str:
             return method(*args, **kwargs)
         f.methods = methods
-        f.path = path
+        f.path_pattern = path
         return f
     return decorator
 
@@ -146,9 +130,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     This implementation is tied to the implementation of `requests_mock`.
     """
-
-    DATABASE_SUMMARY_URL = target_endpoint_pattern(path_pattern='summary')  # noqa: E501  type: Pattern[str]
-    TARGET_LIST_URL = target_endpoint_pattern(path_pattern='targets')  # noqa: E501  type: Pattern[str]
 
     def __init__(self, access_key: str, secret_key: str) -> None:
         """
@@ -162,9 +143,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
-        # methods = [method for method in dir(self) if method]
-
-        import pdb; pdb.set_trace()
+        self.routes = [method for method in self.__class__.__dict__.values()
+                       if hasattr(method, 'path_pattern')]
 
     @validate_authorization
     @validate_date
