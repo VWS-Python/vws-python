@@ -20,6 +20,9 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 
 class ROUTES(Values):
+    """
+    Routes to test headers for.
+    """
     DATABASE_SUMMARY = ValueConstant('/summary')
     TARGET_LIST = ValueConstant('/targets')
 
