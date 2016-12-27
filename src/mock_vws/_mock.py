@@ -111,15 +111,12 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
-def route(path: str, methods: List[str]) -> Callable:
-    def decorator(method: Callable) -> Callable:
-        @functools.wraps(method)
-        def f(*args, **kwargs) -> str:
-            return method(*args, **kwargs)
-        f.methods = methods
-        f.path_pattern = path
-        return f
-    return decorator
+class Route:
+
+    def __init__(self, route, path_pattern, methods):
+        self.route = route
+        self.path_pattern = path_pattern
+        self.methods = methods
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -141,12 +138,23 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
-        self.routes = [method for method in self.__class__.__dict__.values()
-                       if hasattr(method, 'path_pattern')]
+
+        self.routes = [
+            Route(
+                route=self.database_summary,
+                path_pattern='summary',
+                methods=['GET'],
+            ),
+            Route(
+                route=self.target_list,
+                path_pattern='targets',
+                methods=['GET'],
+            ),
+
+        ]
 
     @validate_authorization
     @validate_date
-    @route('summary', methods=['GET'])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
@@ -163,7 +171,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route('targets', methods=['GET'])
     def target_list(self,
                     request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                     context: _Context) -> str:
