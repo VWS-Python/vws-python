@@ -61,8 +61,28 @@ def validate_authorization(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
-    # import pdb; pdb.set_trace()
-    # return 'adam1'
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_date(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict) -> str:
+    """
+    Validate the date header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoing function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    instance, request, context = args
+
     try:
         date_from_header = datetime.strptime(
             request.headers['Date'],
@@ -88,42 +108,7 @@ def validate_authorization(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
-    return wrapped.route(*args, **kwargs)
-
-
-@wrapt.decorator
-def validate_date(wrapped: Callable[..., str],
-                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple[_RequestObjectProxy, _Context],
-                  kwargs: Dict) -> str:
-    """
-    Validate the date header given to a VWS endpoint.
-
-    Args:
-        wrapped: An endpoing function for `requests_mock`.
-        instance: The class that the endpoint function is in.
-        args: The arguments given to the endpoint function.
-        kwargs: The keyword arguments given to the endpoint function.
-
-    Returns:
-        The result of calling the endpoint.
-    """
-    import pdb; pdb.set_trace()
-    instance, request, context = args
-
-    # return 'adam'
-    # return wrapped.route(request, context)
-
-class Foo:
-    def __init__(self, path_pattern):
-        self.path_pattern = path_pattern
-
-class Route:
-
-    def __init__(self, route, path_pattern, methods):
-        self.route = route
-        self.path_pattern = path_pattern
-        self.methods = methods
+    return wrapped(*args, **kwargs)
 
 
 def route(path_pattern, methods):
@@ -134,8 +119,6 @@ def route(path_pattern, methods):
             return method(self=instance, request=request, context=context)
         f.path_pattern = path_pattern
         f.methods = methods
-        adam = Route(f, path_pattern, methods)
-        return adam
         return f
     decorator.path_pattern = path_pattern
     decorator.methods = methods
@@ -165,19 +148,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.routes = [method for method in self.__class__.__dict__.values()
                        if hasattr(method, 'path_pattern')]
         assert len(self.routes)
-        # self.routes = [
-        #     Route(
-        #         route=self.database_summary,
-        #         path_pattern='summary',
-        #         methods=['GET'],
-        #     ),
-        #     Route(
-        #         route=self.target_list,
-        #         path_pattern='targets',
-        #         methods=['GET'],
-        #     ),
-        #
-        # ]
 
     @validate_authorization
     @validate_date
