@@ -3,15 +3,15 @@ Tools for using a fake implementation of Vuforia.
 """
 
 import os
-from contextlib import ContextDecorator
-from urllib.parse import urljoin
 import re
+from contextlib import ContextDecorator
+from functools import partial
+from urllib.parse import urljoin
 
 from typing import Optional  # noqa: F401 This is used in a type hint.
 from typing import Tuple, TypeVar, Pattern
 
 from requests_mock.mocker import Mocker
-from functools import partial
 
 from ._mock import MockVuforiaTargetAPI
 

@@ -6,7 +6,7 @@ import functools
 import json
 import uuid
 from datetime import datetime, timedelta
-from typing import Callable, Dict, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
@@ -68,7 +68,7 @@ def validate_authorization(wrapped: Callable[..., str],
 
 @wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
-                  instance: 'MockVuforiaTargetAPI',
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                   args: Tuple['MockVuforiaTargetAPI', _RequestObjectProxy,
                               _Context],
                   kwargs: Dict) -> str:
@@ -114,12 +114,25 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
-def route(path_pattern, methods):
-    def decorator(method):
+def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
+    """
+    Set properties on a decorated method so that it can be recognized as a
+    route.
+
+    Args:
+        XXX
+    """
+    def decorator(method: Callable[['MockVuforiaTargetAPI',
+                                    _RequestObjectProxy,
+                                    _Context], str]) -> Callable[
+                                        ['MockVuforiaTargetAPI',
+                                         _RequestObjectProxy,
+                                         _Context],
+                                        str
+                                    ]:
         @functools.wraps(method)
-        def f(*args, **kwargs):
-            instance, request, context = args
-            return method(self=instance, request=request, context=context)
+        def f(*args, **kwargs) -> str:
+            return method(*args, **kwargs)
         f.path_pattern = path_pattern
         f.methods = methods
         return f
