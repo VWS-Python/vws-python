@@ -71,7 +71,7 @@ def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                   args: Tuple['MockVuforiaTargetAPI', _RequestObjectProxy,
                               _Context],
-                  kwargs: Dict) -> str:
+                  kwargs: Dict):
     """
     Validate the date header given to a VWS endpoint.
 
@@ -120,7 +120,9 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     route.
 
     Args:
-        XXX
+        path_pattern: The end part of a URL pattern. E.g. `/targets` or
+        `/targets/.+`.
+        methods: HTTP methods that map to the route function.
     """
     def decorator(method: Callable[['MockVuforiaTargetAPI',
                                     _RequestObjectProxy,
