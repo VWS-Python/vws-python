@@ -20,8 +20,7 @@ class TestSummary:
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      ) -> None:
-        """It is possible to get a success response from a VWS endpoint which
-        requires authorization."""
+        """It is possible to get a success response."""
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
