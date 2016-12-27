@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from constantly import ValueConstant, Values
 from freezegun import freeze_time
 from requests import codes
 from requests.models import Response
@@ -16,6 +17,13 @@ from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
+
+
+class ROUTES(Values):
+    DATABASE_SUMMARY = ValueConstant('/summary')
+    # TARGET_LIST = ValueConstant('/targets')
+
+ENDPOINTS = [route.value for route in ROUTES.iterconstants()]
 
 
 def assert_vws_failure(response: Response,
@@ -40,7 +48,7 @@ def assert_vws_failure(response: Response,
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ['/summary'])
+@pytest.mark.parametrize('endpoint', ENDPOINTS)
 class TestHeaders:
     """
     Tests for what happens when the headers are not as expected.
@@ -64,7 +72,7 @@ class TestHeaders:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ['/summary'])
+@pytest.mark.parametrize('endpoint', ENDPOINTS)
 class TestAuthorizationHeader:
     """
     Tests for what happens when the `Authorization` header isn't as expected.
@@ -120,7 +128,7 @@ class TestAuthorizationHeader:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ['/summary'])
+@pytest.mark.parametrize('endpoint', ENDPOINTS)
 class TestDateHeader:
     """
     Tests for what happens when the `Date` header isn't as expected.
