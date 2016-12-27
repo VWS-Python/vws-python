@@ -2,6 +2,7 @@
 A fake implementation of VWS.
 """
 
+import functools
 import json
 import re
 import uuid
@@ -128,6 +129,17 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
+def route(path, methods):
+    def decorator(method):
+        @functools.wraps(method)
+        def f(*args, **kwargs):
+            return method(*args, **kwargs)
+        f.methods = methods
+        f.path = path
+        return f
+    return decorator
+
+
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
@@ -150,9 +162,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
+        # methods = [method for method in dir(self) if method]
+
+        import pdb; pdb.set_trace()
 
     @validate_authorization
     @validate_date
+    @route('summary', methods=['GET'])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
@@ -169,6 +185,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
+    @route('targets', methods=['GET'])
     def target_list(self,
                     request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                     context: _Context) -> str:
