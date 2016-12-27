@@ -88,13 +88,15 @@ class MockVWS(ContextDecorator):
             access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
         )
+        from functools import partial
+
         with Mocker(real_http=self.real_http) as req:
             for route in fake_target_api.routes:
                 for http_method in route.methods:
                     req.register_uri(
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
-                        text=route.route,
+                        text=partial(route.route, fake_target_api),
                     )
         self.req = req
         self.req.start()

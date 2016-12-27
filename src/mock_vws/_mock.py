@@ -34,7 +34,7 @@ def validate_authorization(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    request, context = args
+    instance, request, context = args
     if 'Authorization' not in request.headers:
         context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
         body = {
@@ -81,7 +81,7 @@ def validate_date(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    request, context = args
+    instance, request, context = args
 
     try:
         date_from_header = datetime.strptime(
@@ -108,7 +108,7 @@ def validate_date(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
-    return wrapped(*args, **kwargs)
+    return wrapped(request, context)
 
 
 class Route:
