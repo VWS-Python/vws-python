@@ -45,3 +45,6 @@ class TestTargetList:
             data=b'',
         )
         assert response.status_code == codes.OK
+        expected_keys = {'result_code', 'transaction_id', 'results'}
+        assert response.json().keys() == expected_keys
+        assert response.json()['results'] == []

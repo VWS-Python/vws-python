@@ -5,6 +5,7 @@ A fake implementation of VWS.
 import json
 import uuid
 from datetime import datetime, timedelta
+from typing import Union  # noqa F401
 from typing import Callable, Dict, List, Tuple
 
 import wrapt
@@ -192,11 +193,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, str]
+        body = {}  # type: Dict[str, Union[str, List[object]]]
 
         context.status_code = codes.OK  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
+            'results': [],
         }
         return json.dumps(body)
