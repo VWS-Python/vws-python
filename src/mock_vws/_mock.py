@@ -162,6 +162,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
+        import pdb; pdb.set_trace()
         body = {}  # type: Dict[str, str]
 
         context.status_code = codes.OK  # pylint: disable=no-member
