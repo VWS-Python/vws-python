@@ -2,7 +2,6 @@
 A fake implementation of VWS.
 """
 
-import functools
 import json
 import uuid
 from datetime import datetime, timedelta
