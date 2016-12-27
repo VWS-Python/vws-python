@@ -61,28 +61,8 @@ def validate_authorization(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
-    return wrapped(*args, **kwargs)
-
-
-@wrapt.decorator
-def validate_date(wrapped: Callable[..., str],
-                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple[_RequestObjectProxy, _Context],
-                  kwargs: Dict) -> str:
-    """
-    Validate the date header given to a VWS endpoint.
-
-    Args:
-        wrapped: An endpoing function for `requests_mock`.
-        instance: The class that the endpoint function is in.
-        args: The arguments given to the endpoint function.
-        kwargs: The keyword arguments given to the endpoint function.
-
-    Returns:
-        The result of calling the endpoint.
-    """
-    instance, request, context = args
-
+    # import pdb; pdb.set_trace()
+    # return 'adam1'
     try:
         date_from_header = datetime.strptime(
             request.headers['Date'],
@@ -108,8 +88,35 @@ def validate_date(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
-    return wrapped(request, context)
+    return wrapped.route(*args, **kwargs)
 
+
+@wrapt.decorator
+def validate_date(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict) -> str:
+    """
+    Validate the date header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoing function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    import pdb; pdb.set_trace()
+    instance, request, context = args
+
+    # return 'adam'
+    # return wrapped.route(request, context)
+
+class Foo:
+    def __init__(self, path_pattern):
+        self.path_pattern = path_pattern
 
 class Route:
 
@@ -117,6 +124,22 @@ class Route:
         self.route = route
         self.path_pattern = path_pattern
         self.methods = methods
+
+
+def route(path_pattern, methods):
+    def decorator(method):
+        @functools.wraps(method)
+        def f(*args, **kwargs):
+            instance, request, context = args
+            return method(self=instance, request=request, context=context)
+        f.path_pattern = path_pattern
+        f.methods = methods
+        adam = Route(f, path_pattern, methods)
+        return adam
+        return f
+    decorator.path_pattern = path_pattern
+    decorator.methods = methods
+    return decorator
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -139,22 +162,26 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-        self.routes = [
-            Route(
-                route=self.database_summary,
-                path_pattern='summary',
-                methods=['GET'],
-            ),
-            Route(
-                route=self.target_list,
-                path_pattern='targets',
-                methods=['GET'],
-            ),
-
-        ]
+        self.routes = [method for method in self.__class__.__dict__.values()
+                       if hasattr(method, 'path_pattern')]
+        assert len(self.routes)
+        # self.routes = [
+        #     Route(
+        #         route=self.database_summary,
+        #         path_pattern='summary',
+        #         methods=['GET'],
+        #     ),
+        #     Route(
+        #         route=self.target_list,
+        #         path_pattern='targets',
+        #         methods=['GET'],
+        #     ),
+        #
+        # ]
 
     @validate_authorization
     @validate_date
+    @route(path_pattern='/summary', methods=['GET'])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
@@ -162,7 +189,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
-        import pdb; pdb.set_trace()
         body = {}  # type: Dict[str, str]
 
         context.status_code = codes.OK  # pylint: disable=no-member
