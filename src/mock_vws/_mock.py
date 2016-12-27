@@ -163,7 +163,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         self.routes = [method for method in self.__class__.__dict__.values()
                        if hasattr(method, 'path_pattern')]
-        assert len(self.routes)
 
     @validate_authorization
     @validate_date
