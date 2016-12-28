@@ -35,7 +35,7 @@ def validate_authorization(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    instance, request, context = args
+    request, context = args
     if 'Authorization' not in request.headers:
         context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
         body = {
@@ -83,7 +83,7 @@ def validate_date(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    instance, request, context = args
+    request, context = args
 
     try:
         date_from_header = datetime.strptime(
@@ -113,6 +113,16 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
+class Route:
+    def __init__(self, route_name, path_pattern, methods):
+        self.route_name = route_name
+        self.path_pattern = path_pattern
+        self.methods = methods
+
+
+ROUTES = set([])
+
+
 def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     """
     Set properties on a decorated method so that it can be recognized as a
@@ -135,8 +145,12 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         Returns:
             Method with attributes added to it.
         """
-        setattr(method, 'path_pattern', path_pattern)
-        setattr(method, 'methods', methods)
+        route = Route(
+            route_name=method.__name__,
+            path_pattern=path_pattern,
+            methods=methods,
+        )
+        ROUTES.add(route)
         return method
     return decorator
 
@@ -161,8 +175,10 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-        self.routes = [method for method in self.__class__.__dict__.values()
-                       if hasattr(method, 'path_pattern')]
+        self.routes = []
+        for route in ROUTES:
+            route.endpoint = getattr(self, route.route_name)
+            self.routes.append(route)
 
     @validate_authorization
     @validate_date
