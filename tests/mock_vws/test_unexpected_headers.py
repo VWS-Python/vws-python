@@ -34,7 +34,7 @@ def add_target():
         path='/targets',
         method=POST,
         content_type='application/json',
-        content=json.dumps(data),
+        content=bytes(json.dumps(data), encoding='utf-8'),
     )
     return route
 
@@ -46,7 +46,7 @@ def target_list():
         path='/targets',
         method=GET,
         content_type=None,
-        content=json.dumps(data),
+        content=bytes(json.dumps(data), encoding='utf-8'),
     )
     return route
 
@@ -58,7 +58,7 @@ def database_summary():
         path='/summary',
         method=GET,
         content_type=None,
-        content=json.dumps(data),
+        content=bytes(json.dumps(data), encoding='utf-8'),
     )
     return route
 
@@ -109,7 +109,7 @@ i       """
             method=route.method,
             url=urljoin('https://vws.vuforia.com/', route.path),
             headers={},
-            data=b'',
+            data=route.content,
         )
         assert_vws_failure(
             response=response,
@@ -140,7 +140,7 @@ class TestAuthorizationHeader:
             method=route.method,
             url=urljoin('https://vws.vuforia.com/', route.path),
             headers=headers,
-            data=b'',
+            data=route.content,
         )
 
         assert_vws_failure(
@@ -169,7 +169,7 @@ class TestAuthorizationHeader:
             method=route.method,
             url=urljoin('https://vws.vuforia.com/', route.path),
             headers=headers,
-            data=b'',
+            data=route.content,
         )
 
         assert_vws_failure(
@@ -197,8 +197,8 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=route.method,
-            content=b'',
-            content_type='',
+            content=route.content,
+            content_type=route.content_type,
             date='',
             request_path=route.path,
         )
@@ -214,7 +214,7 @@ class TestDateHeader:
             method=route.method,
             url=urljoin('https://vws.vuforia.com', route.path),
             headers=headers,
-            data=b'',
+            data=route.content,
         )
 
         assert_vws_failure(
@@ -239,8 +239,8 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=route.method,
-            content=b'',
-            content_type='',
+            content=route.content,
+            content_type=route.content_type,
             date=date_incorrect_format,
             request_path=route.path,
         )
@@ -309,8 +309,8 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=route.method,
-            content=b'',
-            content_type='',
+            content=route.content,
+            content_type=route.content_type,
             date=date,
             request_path=route.path,
         )
@@ -327,7 +327,7 @@ class TestDateHeader:
             method=route.method,
             url=urljoin('https://vws.vuforia.com/', route.path),
             headers=headers,
-            data=b'',
+            data=route.content,
         )
 
         assert response.status_code == expected_status
