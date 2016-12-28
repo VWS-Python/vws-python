@@ -133,6 +133,9 @@ class TestAuthorizationHeader:
             "Date": rfc_1123_date(),
         }
 
+        if route.content_type:
+            headers['Content-Type'] = route.content_type
+
         response = requests.request(
             method=route.method,
             url=urljoin('https://vws.vuforia.com/', route.path),
@@ -158,6 +161,9 @@ class TestAuthorizationHeader:
             "Authorization": signature_string,
             "Date": date,
         }
+
+        if route.content_type:
+            headers['Content-Type'] = route.content_type
 
         response = requests.request(
             method=route.method,
@@ -201,6 +207,9 @@ class TestDateHeader:
             "Authorization": signature_string,
         }
 
+        if route.content_type:
+            headers['Content-Type'] = route.content_type
+
         response = requests.request(
             method=route.method,
             url=urljoin('https://vws.vuforia.com', route.path),
@@ -240,6 +249,9 @@ class TestDateHeader:
             "Authorization": authorization_string,
             "Date": date_incorrect_format,
         }
+
+        if route.content_type:
+            headers['Content-Type'] = route.content_type
 
         response = requests.request(
             method=route.method,
@@ -307,6 +319,9 @@ class TestDateHeader:
             "Authorization": authorization_string,
             "Date": date,
         }
+
+        if route.content_type:
+            headers['Content-Type'] = route.content_type
 
         response = requests.request(
             method=route.method,
