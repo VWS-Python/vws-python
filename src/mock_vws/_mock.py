@@ -21,7 +21,7 @@ from vws._request_utils import authorization_header
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
-                           args: Tuple,
+                           args: Tuple[_RequestObjectProxy, _Context],
                            kwargs: Dict) -> str:
     """
     Validate the authorization header given to a VWS endpoint.
@@ -68,8 +68,7 @@ def validate_authorization(wrapped: Callable[..., str],
 @wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple['MockVuforiaTargetAPI', _RequestObjectProxy,
-                              _Context],
+                  args: Tuple[_RequestObjectProxy, _Context],
                   kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
@@ -175,7 +174,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-        self.routes = []
+        self.routes = []  # type: List[Route]
         for route in ROUTES:
             route.endpoint = getattr(self, route.route_name)
             self.routes.append(route)
