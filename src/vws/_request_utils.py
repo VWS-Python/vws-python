@@ -9,6 +9,7 @@ import email.utils
 import hashlib
 import hmac
 from urllib.parse import urljoin
+from typing import Optional
 
 import requests
 
@@ -38,7 +39,7 @@ def authorization_header(  # pylint: disable=too-many-arguments
         secret_key: bytes,
         method: str,
         content: bytes,
-        content_type: str,
+        content_type: Optional[str],
         date: str,
         request_path: str
 ) -> bytes:
@@ -62,13 +63,15 @@ def authorization_header(  # pylint: disable=too-many-arguments
     hashed.update(content)
     content_md5_hex = hashed.hexdigest()
 
-    components_to_sign = [
-        method,
-        content_md5_hex,
-        content_type,
-        date,
-        request_path,
-    ]
+    components_to_sign = []
+    components_to_sign.append(method)
+    components_to_sign.append(content_md5_hex)
+    if content_type is None:
+        components_to_sign.append('')
+    else:
+        components_to_sign.append(content_type)
+    components_to_sign.append(date)
+    components_to_sign.append(request_path)
     string_to_sign = "\n".join(components_to_sign)
     signature = compute_hmac_base64(
         key=secret_key,
