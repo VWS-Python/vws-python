@@ -32,7 +32,7 @@ class Route:
 
 
 @pytest.fixture
-def png_file():
+def png_file() -> io.BytesIO:
     image_buffer = io.BytesIO()
 
     red = random.randint(0, 255)

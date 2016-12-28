@@ -141,6 +141,27 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     return decorator
 
 
+class Target:
+    """
+    XXX
+    """
+
+    def __init__(self,
+                 name,
+                 width,
+                 image,
+                 active_flag,
+                 application_metadata) -> None:
+        """
+        XXX
+        """
+        self.name = name
+        self.width = width
+        self.image = image
+        self.active_flag = active_flag
+        self.application_metadata = application_metadata
+
+
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
@@ -162,7 +183,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
         self.routes = [method for method in self.__class__.__dict__.values()
+                       # TODO - instead have a list of route names
                        if hasattr(method, 'path_pattern')]
+        self.targets = []  # type: List[Target]
 
     @validate_authorization
     @validate_date
@@ -176,7 +199,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
+        target = Target(
+            name='a',
+            width=1,
+            image=b'a',
+            active_flag=True,
+            application_metadata=b'x',
+        )
+        self.targets.append(target)
 
+    # TODO: This should pass the existing target to the endpoint
+    # or return a NOT_FOUND error.
+    @existing_target
     @validate_authorization
     @validate_date
     @route(path_pattern='/targets', methods=[DELETE])
@@ -189,6 +223,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
         """
+        target_id = request.path_url.split('/')[-1]
+        self.targets_from_id(target_id=target_id)
 
     @validate_authorization
     @validate_date
