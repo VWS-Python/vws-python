@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
-from requests_mock import GET
+from requests_mock import GET, POST
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
@@ -164,6 +164,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.routes = [method for method in self.__class__.__dict__.values()
                        if hasattr(method, 'path_pattern')]
 
+    @validate_authorization
+    @validate_date
+    @route(path_pattern='/targets', methods=[POST])
     def add_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                    context: _Context) -> str:
@@ -171,7 +174,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-
 
     @validate_authorization
     @validate_date

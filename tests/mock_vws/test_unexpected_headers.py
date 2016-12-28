@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
-from constantly import ValueConstant, Values
+# from constantly import ValueConstant, Values
 from freezegun import freeze_time
 from requests import codes
 from requests.models import Response
@@ -25,13 +25,20 @@ class Route:
         self.method = method
 
 
-class ROUTES(Values):
-    """
-    Routes to test headers for.
-    """
-    ADD_TARGET = ValueConstant(Route(path='/targets', method=POST))
-    DATABASE_SUMMARY = ValueConstant(Route(path='/summary', method=GET))
-    TARGET_LIST = ValueConstant(Route(path='/targets', method=GET))
+# class ROUTES(Values):
+#     """
+#     Routes to test headers for.
+#     """
+#     # ADD_TARGET = ValueConstant(Route(path='/targets', method=POST))
+#     DATABASE_SUMMARY = ValueConstant(Route(path='/summary', method=GET))
+#     TARGET_LIST = ValueConstant(Route(path='/targets', method=GET))
+
+@pytest.fixture(params=[
+    Route(path='/summary', method=GET),
+    Route(path='/targets', method=GET),
+])
+def route(request):
+    return request.param
 
 
 def assert_vws_failure(response: Response,
@@ -56,23 +63,18 @@ def assert_vws_failure(response: Response,
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize(
-    'endpoint,method',
-    [(route.value.path, route.value.method) for route in
-     ROUTES.iterconstants()],
-)
 class TestHeaders:
     """
     Tests for what happens when the headers are not as expected.
     """
 
-    def test_empty(self, endpoint: str, method) -> None:
+    def test_empty(self, route) -> None:
         """
         When no headers are given, an `UNAUTHORIZED` response is returned.
         """
         response = requests.request(
-            method=method,
-            url=urljoin('https://vws.vuforia.com/', endpoint),
+            method=route.method,
+            url=urljoin('https://vws.vuforia.com/', route.path),
             headers={},
             data=b'',
         )
@@ -84,17 +86,12 @@ class TestHeaders:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize(
-    'endpoint,method',
-    [(route.value.path, route.value.method) for route in
-     ROUTES.iterconstants()],
-)
 class TestAuthorizationHeader:
     """
     Tests for what happens when the `Authorization` header isn't as expected.
     """
 
-    def test_missing(self, endpoint: str, method) -> None:
+    def test_missing(self, route) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
@@ -104,8 +101,8 @@ class TestAuthorizationHeader:
         }
 
         response = requests.request(
-            method=method,
-            url=urljoin('https://vws.vuforia.com/', endpoint),
+            method=route.method,
+            url=urljoin('https://vws.vuforia.com/', route.path),
             headers=headers,
             data=b'',
         )
@@ -116,7 +113,7 @@ class TestAuthorizationHeader:
             result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
         )
 
-    def test_incorrect(self, endpoint: str, method) -> None:
+    def test_incorrect(self, route) -> None:
         """
         If an incorrect `Authorization` header is given, a `BAD_REQUEST`
         response is given.
@@ -130,8 +127,8 @@ class TestAuthorizationHeader:
         }
 
         response = requests.request(
-            method=method,
-            url=urljoin('https://vws.vuforia.com/', endpoint),
+            method=route.method,
+            url=urljoin('https://vws.vuforia.com/', route.path),
             headers=headers,
             data=b'',
         )
@@ -144,11 +141,6 @@ class TestAuthorizationHeader:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize(
-    'endpoint,method',
-    [(route.value.path, route.value.method) for route in
-     ROUTES.iterconstants()],
-)
 class TestDateHeader:
     """
     Tests for what happens when the `Date` header isn't as expected.
@@ -157,7 +149,7 @@ class TestDateHeader:
     def test_no_date_header(self,
                             vuforia_server_credentials:
                             VuforiaServerCredentials,
-                            endpoint: str, method,
+                            route,
                             ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
@@ -165,11 +157,11 @@ class TestDateHeader:
         signature_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=method,
+            method=route.method,
             content=b'',
             content_type='',
             date='',
-            request_path=endpoint,
+            request_path=route.path,
         )
 
         headers = {
@@ -177,8 +169,8 @@ class TestDateHeader:
         }
 
         response = requests.request(
-            method=method,
-            url=urljoin('https://vws.vuforia.com', endpoint),
+            method=route.method,
+            url=urljoin('https://vws.vuforia.com', route.path),
             headers=headers,
             data=b'',
         )
@@ -192,7 +184,7 @@ class TestDateHeader:
     def test_incorrect_date_format(self,
                                    vuforia_server_credentials:
                                    VuforiaServerCredentials,
-                                   endpoint: str, method) -> None:
+                                   route) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
         header is not in the expected format (RFC 1123).
@@ -204,11 +196,11 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=method,
+            method=route.method,
             content=b'',
             content_type='',
             date=date_incorrect_format,
-            request_path=endpoint,
+            request_path=route.path,
         )
 
         headers = {
@@ -217,8 +209,8 @@ class TestDateHeader:
         }
 
         response = requests.request(
-            method=method,
-            url=urljoin('https://vws.vuforia.com/', endpoint),
+            method=route.method,
+            url=urljoin('https://vws.vuforia.com/', route.path),
             headers=headers,
             data=b'',
         )
@@ -252,7 +244,7 @@ class TestDateHeader:
                          expected_status: str,
                          expected_result: str,
                          time_multiplier: int,
-                         endpoint: str, method,
+                         route,
                          ) -> None:
         """
         If a date header is within five minutes before or after the request
@@ -271,11 +263,11 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=method,
+            method=route.method,
             content=b'',
             content_type='',
             date=date,
-            request_path=endpoint,
+            request_path=route.path,
         )
 
         headers = {
@@ -284,8 +276,8 @@ class TestDateHeader:
         }
 
         response = requests.request(
-            method=method,
-            url=urljoin('https://vws.vuforia.com/', endpoint),
+            method=route.method,
+            url=urljoin('https://vws.vuforia.com/', route.path),
             headers=headers,
             data=b'',
         )
