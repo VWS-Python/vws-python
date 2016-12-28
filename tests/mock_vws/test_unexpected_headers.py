@@ -2,12 +2,12 @@
 Tests for when endpoints are called with unexpected header data.
 """
 
+import json
 from datetime import datetime, timedelta
 from urllib.parse import urljoin
 
 import pytest
 import requests
-# from constantly import ValueConstant, Values
 from freezegun import freeze_time
 from requests import codes
 from requests.models import Response
@@ -20,33 +20,58 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 
 class Route:
-    def __init__(self, path, method):
+    def __init__(self, path, method, content_type, content):
         self.path = path
         self.method = method
+        self.content_type = content_type
+        self.content = content
 
 
-# class ROUTES(Values):
-#     """
-#     Routes to test headers for.
-#     """
-#     # ADD_TARGET = ValueConstant(Route(path='/targets', method=POST))
-#     DATABASE_SUMMARY = ValueConstant(Route(path='/summary', method=GET))
-#     TARGET_LIST = ValueConstant(Route(path='/targets', method=GET))
+@pytest.fixture
+def add_target():
+    data = {}
+    route = Route(
+        path='/targets',
+        method=POST,
+        content_type='application/json',
+        content=json.dumps(data),
+    )
+    return route
+
+
+@pytest.fixture
+def target_list():
+    data = {}
+    route = Route(
+        path='/targets',
+        method=GET,
+        content_type=None,
+        content=json.dumps(data),
+    )
+    return route
+
+
+@pytest.fixture
+def database_summary():
+    data = {}
+    route = Route(
+        path='/summary',
+        method=GET,
+        content_type=None,
+        content=json.dumps(data),
+    )
+    return route
+
 
 @pytest.fixture(
     params=[
-        Route(path='/summary', method=GET),
-        Route(path='/targets', method=GET),
-        Route(path='/targets', method=POST),
-    ],
-    ids=[
-        'database_summary',
-        'target_list',
         'add_target',
+        'target_list',
+        'database_summary',
     ],
 )
 def route(request):
-    return request.param
+    return request.getfixturevalue(request.param)
 
 
 def assert_vws_failure(response: Response,
@@ -79,7 +104,7 @@ class TestHeaders:
     def test_empty(self, route) -> None:
         """
         When no headers are given, an `UNAUTHORIZED` response is returned.
-        """
+i       """
         response = requests.request(
             method=route.method,
             url=urljoin('https://vws.vuforia.com/', route.path),
