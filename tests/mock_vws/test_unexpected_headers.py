@@ -33,10 +33,18 @@ class Route:
 #     DATABASE_SUMMARY = ValueConstant(Route(path='/summary', method=GET))
 #     TARGET_LIST = ValueConstant(Route(path='/targets', method=GET))
 
-@pytest.fixture(params=[
-    Route(path='/summary', method=GET),
-    Route(path='/targets', method=GET),
-])
+@pytest.fixture(
+    params=[
+        Route(path='/summary', method=GET),
+        Route(path='/targets', method=GET),
+        Route(path='/targets', method=POST),
+    ],
+    ids=[
+        'database_summary',
+        'target_list',
+        'add_target',
+    ],
+)
 def route(request):
     return request.param
 
