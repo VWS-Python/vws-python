@@ -26,10 +26,37 @@ class Route:
         self.content_type = content_type
         self.content = content
 
+import io
+import random
+from PIL import Image
+import base64
 
 @pytest.fixture
-def add_target():
-    data = {}
+def png_file():
+    image_buffer = io.BytesIO()
+
+    red = random.randint(0, 255)
+    green = random.randint(0, 255)
+    blue = random.randint(0, 255)
+
+    width = 1
+    height = 1
+
+    image = Image.new('RGB', (width, height), color=(red, green, blue))
+    image.save(image_buffer, 'PNG')
+    image_buffer.seek(0)
+    return image_buffer
+
+@pytest.fixture
+def add_target(png_file):
+    image_data = png_file.read()
+    image_data = base64.b64encode(image_data).decode('ascii')
+    data = {
+        'name': 'example_name',
+        'width': 1,
+        'image': image_data,
+
+    }
     route = Route(
         path='/targets',
         method=POST,
