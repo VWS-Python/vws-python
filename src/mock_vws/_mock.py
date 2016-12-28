@@ -171,6 +171,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                    context: _Context) -> str:
         """
+        Add a target.
+
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
@@ -182,6 +184,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                       context: _Context) -> str:
         """
+        Delete a target.
+
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
         """
@@ -193,6 +197,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
         """
+        Get a database summary report.
+
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
@@ -224,6 +230,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                     request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                     context: _Context) -> str:
         """
+        Get a list of all targets.
+
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
         """
