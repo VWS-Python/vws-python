@@ -2,13 +2,17 @@
 Tests for when endpoints are called with unexpected header data.
 """
 
+import base64
+import io
 import json
+import random
 from datetime import datetime, timedelta
 from urllib.parse import urljoin
 
 import pytest
 import requests
 from freezegun import freeze_time
+from PIL import Image
 from requests import codes
 from requests.models import Response
 from requests_mock import GET, POST
@@ -26,10 +30,6 @@ class Route:
         self.content_type = content_type
         self.content = content
 
-import io
-import random
-from PIL import Image
-import base64
 
 @pytest.fixture
 def png_file():
@@ -46,6 +46,7 @@ def png_file():
     image.save(image_buffer, 'PNG')
     image_buffer.seek(0)
     return image_buffer
+
 
 @pytest.fixture
 def add_target(png_file):
