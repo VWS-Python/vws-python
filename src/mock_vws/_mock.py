@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
-from requests_mock import GET, POST
+from requests_mock import GET, POST, DELETE
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
@@ -173,6 +173,17 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
+        """
+
+    @validate_authorization
+    @validate_date
+    @route(path_pattern='/targets', methods=[DELETE])
+    def delete_target(self,
+                      request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                      context: _Context) -> str:
+        """
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
         """
 
     @validate_authorization
