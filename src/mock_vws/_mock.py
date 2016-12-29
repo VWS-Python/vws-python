@@ -39,7 +39,9 @@ def existing_target(wrapped, instance, args, kwargs):
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
-                           args: Tuple[_RequestObjectProxy, _Context],
+                           args: Union[
+                               Tuple[_RequestObjectProxy, _Context],
+                               Tuple[_RequestObjectProxy, _Context, str]],
                            kwargs: Dict) -> str:
     """
     Validate the authorization header given to a VWS endpoint.
@@ -53,7 +55,9 @@ def validate_authorization(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    request, context = args
+    request = args[0]
+    context = args[1]
+
     if 'Authorization' not in request.headers:
         context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
         body = {
@@ -86,7 +90,9 @@ def validate_authorization(wrapped: Callable[..., str],
 @wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple[_RequestObjectProxy, _Context],
+                   args: Union[
+                       Tuple[_RequestObjectProxy, _Context],
+                       Tuple[_RequestObjectProxy, _Context, str]],
                   kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
@@ -100,7 +106,8 @@ def validate_date(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    request, context = args
+    request = args[0]
+    context = args[1]
 
     try:
         date_from_header = datetime.strptime(
