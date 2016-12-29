@@ -14,7 +14,7 @@ from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
-from tests.mock_vws.utils import is_valid_transaction_id, assert_vws_failure
+from tests.mock_vws.utils import assert_vws_failure, is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
