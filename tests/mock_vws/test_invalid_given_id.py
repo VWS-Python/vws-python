@@ -1,5 +1,5 @@
 """
-XXX
+Tests for passing invalid endpoints which require a target ID to be given.
 """
 
 import uuid
@@ -14,16 +14,19 @@ from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-endpoints = ['/targets']
+ENDPOINTS = [
+    '/targets',
+]
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestInvalidGivenId:
+class TestInvalidGivenID:
     """
-    XXX
+    Tests for giving an invalid ID to endpoints which require a target ID to
+    be given.
     """
 
-    @pytest.mark.parametrize('endpoint', endpoints)
+    @pytest.mark.parametrize('endpoint', ENDPOINTS)
     def test_not_done(self, endpoint: str,
                       vuforia_server_credentials: VuforiaServerCredentials,
                       ) -> None:
