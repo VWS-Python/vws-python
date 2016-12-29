@@ -249,3 +249,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'results': [],
         }
         return json.dumps(body)
+
+    def get_target(self,
+                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   context: _Context) -> str:
+        """
+        XXX
+        """
+

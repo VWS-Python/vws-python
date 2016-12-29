@@ -12,10 +12,11 @@ from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-endpoints = ['/summary']
+endpoints = ['/targets']
 
 # TODO: /summary/gibberish gives a different response
 # on the mock
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidGivenId:
@@ -24,7 +25,9 @@ class TestInvalidGivenId:
     """
 
     @pytest.mark.parametrize('endpoint', endpoints)
-    def test_not_done(self, endpoint, vuforia_server_credentials: VuforiaServerCredentials) -> None:
+    def test_not_done(self, endpoint: str,
+                      vuforia_server_credentials: VuforiaServerCredentials,
+                      ) -> None:
         endpoint = endpoint + '/gibberish'
         date = rfc_1123_date()
 
