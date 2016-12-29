@@ -6,6 +6,8 @@ from string import hexdigits
 
 from requests.models import Response
 
+from common.constants import ResultCodes
+
 
 def is_valid_transaction_id(string: str) -> bool:
     """
@@ -30,7 +32,7 @@ def is_valid_transaction_id(string: str) -> bool:
 
 def assert_vws_failure(response: Response,
                        status_code: int,
-                       result_code: str) -> None:
+                       result_code: ResultCodes) -> None:
     """
     Assert that a VWS failure response is as expected.
 
@@ -46,4 +48,4 @@ def assert_vws_failure(response: Response,
     assert response.status_code == status_code
     assert response.json().keys() == {'transaction_id', 'result_code'}
     assert is_valid_transaction_id(response.json()['transaction_id'])
-    assert response.json()['result_code'] == result_code
+    assert response.json()['result_code'] == result_code.value
