@@ -2,6 +2,8 @@
 XXX
 """
 
+import uuid
+
 import pytest
 import requests
 from requests import codes
@@ -25,7 +27,7 @@ class TestInvalidGivenId:
     def test_not_done(self, endpoint: str,
                       vuforia_server_credentials: VuforiaServerCredentials,
                       ) -> None:
-        endpoint = endpoint + '/gibberish'
+        endpoint = endpoint + '/' + uuid.uuid4().hex
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
@@ -51,3 +53,4 @@ class TestInvalidGivenId:
             data=b'',
         )
         assert response.status_code == codes.NOT_FOUND
+        # TODO Assert vws failure... unknown target
