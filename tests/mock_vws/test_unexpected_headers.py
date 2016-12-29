@@ -10,12 +10,11 @@ import requests
 from constantly import ValueConstant, Values
 from freezegun import freeze_time
 from requests import codes
-from requests.models import Response
 from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
-from tests.mock_vws.utils import is_valid_transaction_id
+from tests.mock_vws.utils import assert_vws_failure, is_valid_transaction_id
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -28,27 +27,6 @@ class ROUTES(Values):
 
 
 ENDPOINTS = [route.value for route in ROUTES.iterconstants()]
-
-
-def assert_vws_failure(response: Response,
-                       status_code: int,
-                       result_code: str) -> None:
-    """
-    Assert that a VWS failure response is as expected.
-
-    Args:
-        response: The response returned by a request to VWS.
-        status_code: The expected status code of the response.
-        result_code: The expected result code of the response.
-
-    Raises:
-        AssertionError: The response is not in the expected VWS error format
-        for the given codes.
-    """
-    assert response.status_code == status_code
-    assert response.json().keys() == {'transaction_id', 'result_code'}
-    assert is_valid_transaction_id(response.json()['transaction_id'])
-    assert response.json()['result_code'] == result_code
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
