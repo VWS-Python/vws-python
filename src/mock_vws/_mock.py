@@ -192,6 +192,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Attributes:
             access_key: A VWS access key.
             secret_key: A VWS secret key.
+            routes: The `Route`s to be used in the mock.
         """
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
