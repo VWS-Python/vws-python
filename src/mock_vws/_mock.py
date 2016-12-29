@@ -70,6 +70,7 @@ def validate_authorization(wrapped: Callable[..., str],
 
 
 @wrapt.decorator
+# TODO Validate headers of all routes
 def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                   args: Union[
