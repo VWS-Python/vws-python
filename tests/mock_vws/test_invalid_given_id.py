@@ -27,9 +27,13 @@ class TestInvalidGivenID:
     """
 
     @pytest.mark.parametrize('endpoint', ENDPOINTS)
-    def test_not_done(self, endpoint: str,
-                      vuforia_server_credentials: VuforiaServerCredentials,
-                      ) -> None:
+    def test_not_real_id(self, endpoint: str,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         ) -> None:
+        """
+        A `NOT_FOUND` error is returned when an endpoint is given a target ID
+        of a target which does not exist.
+        """
         endpoint = endpoint + '/' + uuid.uuid4().hex
         date = rfc_1123_date()
 
