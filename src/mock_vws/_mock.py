@@ -18,7 +18,6 @@ from common.constants import ResultCodes
 from vws._request_utils import authorization_header
 
 
-
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
@@ -154,18 +153,21 @@ ROUTES = set([])
 
 
 @wrapt.decorator(adapter=lambda request, context, target_id: None)
-def existing_target(wrapped: Callable[..., str],
-                    instance: 'MockVuforiaTargetAPI',
-                    args: Union[
-                        Tuple[_RequestObjectProxy, _Context],
-                        Tuple[_RequestObjectProxy, _Context, str]],
-                    kwargs: Dict) -> str:
+def parse_path(wrapped: Callable[..., str],
+               instance: 'MockVuforiaTargetAPI',
+               args: Union[
+                   Tuple[_RequestObjectProxy, _Context],
+                   Tuple[_RequestObjectProxy, _Context, str]],
+               kwargs: Dict) -> str:
     def _execute(request: _RequestObjectProxy,
                  context: _Context,
                  *_args: Tuple,
                  **_kwargs: Dict) -> str:
 
-        empty, main_path, target_id = request.path.split('/')
+        try:
+            empty, main_path, target_id = request.path.split('/')
+        except ValueError:
+            return wrapped(request, context, *_args, **_kwargs)
 
         cloud_target_ids = set(
             [target.target_id for target in instance.targets])
@@ -206,11 +208,7 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                 methods=methods,
             )
         )
-
-        @wrapt.decorator
-        def wrapped_method(wrapped, instance, args, kwargs):
-            return wrapped(*args, **kwargs)
-        return wrapped_method(method)
+        return parse_path(method)
     return decorator
 
 
@@ -289,7 +287,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @existing_target
     @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
