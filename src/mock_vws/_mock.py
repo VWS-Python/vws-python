@@ -165,7 +165,7 @@ def parse_path(wrapped: Callable[..., str],
                  **_kwargs: Dict) -> str:
 
         try:
-            empty, main_path, target_id = request.path.split('/')
+            _, _, target_id = request.path.split('/')
         except ValueError:
             return wrapped(request, context, *_args, **_kwargs)
 
