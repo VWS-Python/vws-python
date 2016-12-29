@@ -209,7 +209,9 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                 methods=methods,
             )
         )
-        return parse_path(method)
+        # pylint is not very good with decorators
+        # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
+        return parse_path(method)  # pylint: disable=no-value-for-parameter
     return decorator
 
 
