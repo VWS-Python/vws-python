@@ -20,7 +20,7 @@ endpoints = ['/targets']
 # on the mock
 
 
-# @pytest.mark.usefixtures('verify_mock_vuforia')
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidGivenId:
     """
     XXX
@@ -32,39 +32,6 @@ class TestInvalidGivenId:
                       vuforia_server_credentials: VuforiaServerCredentials,
                       ) -> None:
         endpoint = endpoint + '/gibberish'
-        date = rfc_1123_date()
-
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            content_type='',
-            date=date,
-            request_path=endpoint,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-        }
-
-        url = urljoin('https://vws.vuforia.com/', endpoint)
-        response = requests.request(
-            method=GET,
-            url=url,
-            headers=headers,
-            data=b'',
-        )
-        assert response.status_code == 1
-
-
-    @pytest.mark.parametrize('endpoint', endpoints)
-    @MockVWS()
-    def test_not_done_2(self, endpoint: str,
-                      vuforia_server_credentials: VuforiaServerCredentials,
-                      ) -> None:
-        endpoint = endpoint + '/gibberish2'
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
