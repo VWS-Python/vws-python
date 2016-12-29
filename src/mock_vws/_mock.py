@@ -124,12 +124,18 @@ class Route:
                  methods: List[str]) -> None:
         """
         Args:
-            route_name: X
-            path_pattern: X
-            methods: X
+            route_name: The name of the method.
+            path_pattern: The end part of a URL pattern. E.g. `/targets` or
+                `/targets/.+`.
+            methods: HTTP methods that map to the route function.
 
         Attributes:
-            XXX
+            route_name: The name of the method.
+            path_pattern: The end part of a URL pattern. E.g. `/targets` or
+                `/targets/.+`.
+            methods: HTTP methods that map to the route function.
+            endpoint: The method `requests_mock` should call when the endpoint
+                is requested.
         """
         self.route_name = route_name
         self.path_pattern = path_pattern
@@ -142,26 +148,23 @@ ROUTES = set([])
 
 def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     """
-    TODO: No longer adds attributes
-    Set properties on a decorated method so that it can be recognized as a
-    route.
+    Register a decorated method so that it can be recognized as a route.
 
     Args:
         path_pattern: The end part of a URL pattern. E.g. `/targets` or
-        `/targets/.+`.
+            `/targets/.+`.
         methods: HTTP methods that map to the route function.
     """
     def decorator(method: Callable[..., str]) -> Callable[
             ..., str]:
         """
-        Set properties on a decorated method so that it can be recognized as a
-        route.
+        Register a decorated method so that it can be recognized as a route.
 
         Args:
-            method: Method to add attributes to.
+            method: Method to register.
 
         Returns:
-            Method with attributes added to it.
+            The given `method` with no changes.
         """
         ROUTES.add(
             Route(
