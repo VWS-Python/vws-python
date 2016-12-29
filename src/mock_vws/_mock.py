@@ -173,7 +173,8 @@ def parse_path(wrapped: Callable[..., str],
             [target.target_id for target in instance.targets])
 
         if target_id not in cloud_target_ids:
-            context.status_code = codes.NOT_FOUND
+            context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
+
             body = {}  # type: Dict[str, str]
             return json.dumps(body)
         return wrapped(request, context, target_id, *_args, **_kwargs)
