@@ -19,8 +19,16 @@ from vws._request_utils import authorization_header
 
 
 @wrapt.decorator(adapter=lambda request, context, target_id: None)
-def existing_target(wrapped, instance, args, kwargs):
-    def _execute(request, context, *_args, **_kwargs):
+def existing_target(wrapped: Callable[..., str],
+                    instance: 'MockVuforiaTargetAPI',
+                    args: Union[
+                        Tuple[_RequestObjectProxy, _Context],
+                        Tuple[_RequestObjectProxy, _Context, str]],
+                    kwargs: Dict) -> str:
+    def _execute(request: _RequestObjectProxy,
+                 context: _Context,
+                 *_args: Tuple,
+                 **_kwargs: Dict) -> str:
 
         empty, main_path, target_id = request.path.split('/')
 
@@ -29,7 +37,7 @@ def existing_target(wrapped, instance, args, kwargs):
 
         if target_id not in cloud_target_ids:
             context.status_code = codes.NOT_FOUND
-            body = {}
+            body = {}  # type: Dict[str, str]
             return json.dumps(body)
         return wrapped(request, context, target_id, *_args, **_kwargs)
 
@@ -281,7 +289,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                    context: _Context,
-                   target_id) -> str:
+                   target_id: str) -> str:
         """
         XXX
         """
