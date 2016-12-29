@@ -18,11 +18,7 @@ from common.constants import ResultCodes
 from vws._request_utils import authorization_header
 
 
-def requires_target_id_prototype(request, context, target_id) -> None:
-    pass
-
-
-@wrapt.decorator(adapter=requires_target_id_prototype)
+@wrapt.decorator(adapter=lambda request, context, target_id: None)
 def existing_target(wrapped, instance, args, kwargs):
     def _execute(request, context, *_args, **_kwargs):
 
