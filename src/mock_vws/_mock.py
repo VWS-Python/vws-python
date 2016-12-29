@@ -18,31 +18,6 @@ from common.constants import ResultCodes
 from vws._request_utils import authorization_header
 
 
-@wrapt.decorator(adapter=lambda request, context, target_id: None)
-def existing_target(wrapped: Callable[..., str],
-                    instance: 'MockVuforiaTargetAPI',
-                    args: Union[
-                        Tuple[_RequestObjectProxy, _Context],
-                        Tuple[_RequestObjectProxy, _Context, str]],
-                    kwargs: Dict) -> str:
-    def _execute(request: _RequestObjectProxy,
-                 context: _Context,
-                 *_args: Tuple,
-                 **_kwargs: Dict) -> str:
-
-        empty, main_path, target_id = request.path.split('/')
-
-        cloud_target_ids = set(
-            [target.target_id for target in instance.targets])
-
-        if target_id not in cloud_target_ids:
-            context.status_code = codes.NOT_FOUND
-            body = {}  # type: Dict[str, str]
-            return json.dumps(body)
-        return wrapped(request, context, target_id, *_args, **_kwargs)
-
-    return _execute(*args, **kwargs)
-
 
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
@@ -178,6 +153,32 @@ class Route:
 ROUTES = set([])
 
 
+@wrapt.decorator(adapter=lambda request, context, target_id: None)
+def existing_target(wrapped: Callable[..., str],
+                    instance: 'MockVuforiaTargetAPI',
+                    args: Union[
+                        Tuple[_RequestObjectProxy, _Context],
+                        Tuple[_RequestObjectProxy, _Context, str]],
+                    kwargs: Dict) -> str:
+    def _execute(request: _RequestObjectProxy,
+                 context: _Context,
+                 *_args: Tuple,
+                 **_kwargs: Dict) -> str:
+
+        empty, main_path, target_id = request.path.split('/')
+
+        cloud_target_ids = set(
+            [target.target_id for target in instance.targets])
+
+        if target_id not in cloud_target_ids:
+            context.status_code = codes.NOT_FOUND
+            body = {}  # type: Dict[str, str]
+            return json.dumps(body)
+        return wrapped(request, context, target_id, *_args, **_kwargs)
+
+    return _execute(*args, **kwargs)
+
+
 def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
@@ -205,7 +206,11 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                 methods=methods,
             )
         )
-        return method
+
+        @wrapt.decorator
+        def wrapped_method(wrapped, instance, args, kwargs):
+            return wrapped(*args, **kwargs)
+        return wrapped_method(method)
     return decorator
 
 
