@@ -10,7 +10,9 @@ from requests import codes
 from requests_mock import GET
 from urllib.parse import urljoin
 
+from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
+from tests.mock_vws.utils import assert_vws_failure
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -59,5 +61,9 @@ class TestInvalidGivenID:
             headers=headers,
             data=b'',
         )
-        assert response.status_code == codes.NOT_FOUND
-        # TODO Assert vws failure... unknown target
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.NOT_FOUND,
+            result_code=ResultCodes.UNKNOWN_TARGET.value,
+        )

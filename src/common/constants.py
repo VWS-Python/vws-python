@@ -11,6 +11,7 @@ class ResultCodes(Values):
     """
 
     AUTHENTICATION_FAILURE = ValueConstant('AuthenticationFailure')
-    SUCCESS = ValueConstant('Success')
     FAIL = ValueConstant('Fail')
     REQUEST_TIME_TOO_SKEWED = ValueConstant('RequestTimeTooSkewed')
+    SUCCESS = ValueConstant('Success')
+    UNKNOWN_TARGET = ValueConstant('UnknownTarget')
