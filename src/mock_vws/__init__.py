@@ -94,7 +94,7 @@ class MockVWS(ContextDecorator):
                     req.register_uri(
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
-                        text=route.endpoint,
+                        text=getattr(fake_target_api, route.route_name),
                     )
         self.req = req
         self.req.start()

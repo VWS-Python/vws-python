@@ -140,7 +140,6 @@ class Route:
         self.route_name = route_name
         self.path_pattern = path_pattern
         self.methods = methods
-        self.endpoint = None
 
 
 ROUTES = set([])
@@ -197,10 +196,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-        self.routes = []  # type: List[Route]
-        for mock_route in ROUTES:
-            mock_route.endpoint = getattr(self, mock_route.route_name)
-            self.routes.append(mock_route)
+        self.routes = ROUTES  # type: Set[Route]
 
     @validate_authorization
     @validate_date
