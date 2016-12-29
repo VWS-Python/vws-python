@@ -11,8 +11,6 @@ from urllib.parse import urljoin
 from tests.conftest import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
-from mock_vws import MockVWS
-
 
 endpoints = ['/targets']
 
