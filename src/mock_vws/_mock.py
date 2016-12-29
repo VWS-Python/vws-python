@@ -152,7 +152,7 @@ class Route:
 ROUTES = set([])
 
 
-@wrapt.decorator(adapter=lambda request, context, target_id: None)
+@wrapt.decorator
 def parse_path(wrapped: Callable[..., str],
                instance: 'MockVuforiaTargetAPI',
                args: Union[
