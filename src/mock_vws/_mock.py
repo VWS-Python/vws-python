@@ -113,10 +113,28 @@ def validate_date(wrapped: Callable[..., str],
 
 
 class Route:
-    def __init__(self, route_name, path_pattern, methods):
+    """
+    A container for the route details which `requests_mock` needs.
+
+    We register routes with names, and when we have an instance to work with
+    later.
+    """
+
+    def __init__(self, route_name: str, path_pattern: str,
+                 methods: List[str]) -> None:
+        """
+        Args:
+            route_name: X
+            path_pattern: X
+            methods: X
+
+        Attributes:
+            XXX
+        """
         self.route_name = route_name
         self.path_pattern = path_pattern
         self.methods = methods
+        self.endpoint = None
 
 
 ROUTES = set([])
@@ -124,6 +142,7 @@ ROUTES = set([])
 
 def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     """
+    TODO: No longer adds attributes
     Set properties on a decorated method so that it can be recognized as a
     route.
 
@@ -144,12 +163,13 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         Returns:
             Method with attributes added to it.
         """
-        route = Route(
-            route_name=method.__name__,
-            path_pattern=path_pattern,
-            methods=methods,
+        ROUTES.add(
+            Route(
+                route_name=method.__name__,
+                path_pattern=path_pattern,
+                methods=methods,
+            )
         )
-        ROUTES.add(route)
         return method
     return decorator
 
@@ -175,9 +195,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
         self.routes = []  # type: List[Route]
-        for route in ROUTES:
-            route.endpoint = getattr(self, route.route_name)
-            self.routes.append(route)
+        for mock_route in ROUTES:
+            mock_route.endpoint = getattr(self, mock_route.route_name)
+            self.routes.append(mock_route)
 
     @validate_authorization
     @validate_date
