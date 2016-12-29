@@ -72,9 +72,9 @@ def validate_authorization(wrapped: Callable[..., str],
 @wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                   args: Union[
-                       Tuple[_RequestObjectProxy, _Context],
-                       Tuple[_RequestObjectProxy, _Context, str]],
+                  args: Union[
+                      Tuple[_RequestObjectProxy, _Context],
+                      Tuple[_RequestObjectProxy, _Context, str]],
                   kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
