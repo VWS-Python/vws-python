@@ -49,7 +49,7 @@ class TestHeaders:
         assert_vws_failure(
             response=response,
             status_code=codes.UNAUTHORIZED,
-            result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
+            result_code=ResultCodes.AUTHENTICATION_FAILURE,
         )
 
 
@@ -79,7 +79,7 @@ class TestAuthorizationHeader:
         assert_vws_failure(
             response=response,
             status_code=codes.UNAUTHORIZED,
-            result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
+            result_code=ResultCodes.AUTHENTICATION_FAILURE,
         )
 
     def test_incorrect(self, endpoint: str) -> None:
@@ -105,7 +105,7 @@ class TestAuthorizationHeader:
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL.value,
+            result_code=ResultCodes.FAIL,
         )
 
 
@@ -148,7 +148,7 @@ class TestDateHeader:
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL.value,
+            result_code=ResultCodes.FAIL,
         )
 
     def test_incorrect_date_format(self,
@@ -187,7 +187,7 @@ class TestDateHeader:
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL.value,
+            result_code=ResultCodes.FAIL,
         )
 
     @pytest.mark.parametrize('time_multiplier', [1, -1],
@@ -198,12 +198,12 @@ class TestDateHeader:
             (
                 timedelta(minutes=4, seconds=50),
                 codes.OK,
-                ResultCodes.SUCCESS.value,
+                ResultCodes.SUCCESS,
             ),
             (
                 timedelta(minutes=5, seconds=10),
                 codes.FORBIDDEN,
-                ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
+                ResultCodes.REQUEST_TIME_TOO_SKEWED,
             ),
         ],
         ids=(['Within Range', 'Out of Range']),
@@ -212,7 +212,7 @@ class TestDateHeader:
                          vuforia_server_credentials: VuforiaServerCredentials,
                          time_difference_from_now: timedelta,
                          expected_status: str,
-                         expected_result: str,
+                         expected_result: ResultCodes,
                          time_multiplier: int,
                          endpoint: str,
                          ) -> None:
@@ -254,4 +254,4 @@ class TestDateHeader:
 
         assert response.status_code == expected_status
         assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == expected_result
+        assert response.json()['result_code'] == expected_result.value
