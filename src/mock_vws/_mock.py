@@ -30,7 +30,8 @@ def existing_target(wrapped, instance, args, kwargs):
         target_id = request.path.split('/')[-1]
 
         cloud_target_ids = set(
-            [target.target_id] for target in instance.targets)
+            [target.target_id for target in instance.targets])
+
         if target_id not in cloud_target_ids:
             context.status_code = codes.NOT_FOUND
             body = {}
@@ -198,6 +199,11 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     return decorator
 
 
+class Target:
+    def __init__(self) -> None:
+        self.target_id = 'gibberish'
+
+
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
@@ -220,7 +226,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
         self.routes = ROUTES  # type: Set[Route]
-        self.targets = []
+        self.targets = [Target()]
 
     @validate_authorization
     @validate_date
@@ -282,4 +288,5 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         XXX
         """
+
         context.status_code = 1
