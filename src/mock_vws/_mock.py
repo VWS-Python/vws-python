@@ -18,6 +18,28 @@ from common.constants import ResultCodes
 from vws._request_utils import authorization_header
 
 
+def requires_target_id_prototype(request, context, target_id) -> None:
+    pass
+
+
+@wrapt.decorator(adapter=requires_target_id_prototype)
+def existing_target(wrapped, instance, args, kwargs):
+    def _execute(request, context, *_args, **_kwargs):
+
+        # TODO handle if this isn't given
+        target_id = request.path.split('/')[-1]
+
+        cloud_target_ids = set(
+            [target.target_id] for target in instance.targets)
+        if target_id not in cloud_target_ids:
+            context.status_code = codes.NOT_FOUND
+            body = {}
+            return json.dumps(body)
+        return wrapped(request, context, target_id, *_args, **_kwargs)
+
+    return _execute(*args, **kwargs)
+
+
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
@@ -198,6 +220,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
         self.routes = ROUTES  # type: Set[Route]
+        self.targets = []
 
     @validate_authorization
     @validate_date
@@ -250,10 +273,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
+    @existing_target
+    @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                   context: _Context) -> str:
+                   context: _Context,
+                   target_id) -> str:
         """
         XXX
         """
-
+        context.status_code = 1

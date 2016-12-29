@@ -53,4 +53,4 @@ class TestInvalidGivenId:
             headers=headers,
             data=b'',
         )
-        assert response.status_code == codes.UNAUTHORIZED
+        assert response.status_code == codes.NOT_FOUND
