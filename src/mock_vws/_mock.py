@@ -159,10 +159,30 @@ def parse_path(wrapped: Callable[..., str],
                    Tuple[_RequestObjectProxy, _Context],
                    Tuple[_RequestObjectProxy, _Context, str]],
                kwargs: Dict) -> str:
+    """Give the decorated function a "target_id" parameter if given.
+
+    If a path has multiple parts (e.g. `/summary/thing`) then the only thing
+    which the VWS API accepts as a final part is a target's id.
+
+    Therefore, if there is an extra part on the end of the path, validate this
+    path, and give it to the route method as a parameter.
+
+    Args:
+        wrapped: An endpoing function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
     def _execute(request: _RequestObjectProxy,
                  context: _Context,
                  *_args: Tuple,
                  **_kwargs: Dict) -> str:
+        """
+        See `path_pattern`.
+        """
 
         try:
             _, _, target_id = request.path.split('/')
