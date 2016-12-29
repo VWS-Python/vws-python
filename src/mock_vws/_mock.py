@@ -21,7 +21,7 @@ from vws._request_utils import authorization_header
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
-                           args: Tuple,
+                           args: Tuple[_RequestObjectProxy, _Context],
                            kwargs: Dict) -> str:
     """
     Validate the authorization header given to a VWS endpoint.
@@ -35,7 +35,7 @@ def validate_authorization(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    instance, request, context = args
+    request, context = args
     if 'Authorization' not in request.headers:
         context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
         body = {
@@ -68,8 +68,7 @@ def validate_authorization(wrapped: Callable[..., str],
 @wrapt.decorator
 def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple['MockVuforiaTargetAPI', _RequestObjectProxy,
-                              _Context],
+                  args: Tuple[_RequestObjectProxy, _Context],
                   kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
@@ -83,7 +82,7 @@ def validate_date(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
     """
-    instance, request, context = args
+    request, context = args
 
     try:
         date_from_header = datetime.strptime(
@@ -113,30 +112,66 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
+class Route:
+    """
+    A container for the route details which `requests_mock` needs.
+
+    We register routes with names, and when we have an instance to work with
+    later.
+    """
+
+    def __init__(self, route_name: str, path_pattern: str,
+                 methods: List[str]) -> None:
+        """
+        Args:
+            route_name: The name of the method.
+            path_pattern: The end part of a URL pattern. E.g. `/targets` or
+                `/targets/.+`.
+            methods: HTTP methods that map to the route function.
+
+        Attributes:
+            route_name: The name of the method.
+            path_pattern: The end part of a URL pattern. E.g. `/targets` or
+                `/targets/.+`.
+            methods: HTTP methods that map to the route function.
+            endpoint: The method `requests_mock` should call when the endpoint
+                is requested.
+        """
+        self.route_name = route_name
+        self.path_pattern = path_pattern
+        self.methods = methods
+
+
+ROUTES = set([])
+
+
 def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
     """
-    Set properties on a decorated method so that it can be recognized as a
-    route.
+    Register a decorated method so that it can be recognized as a route.
 
     Args:
         path_pattern: The end part of a URL pattern. E.g. `/targets` or
-        `/targets/.+`.
+            `/targets/.+`.
         methods: HTTP methods that map to the route function.
     """
     def decorator(method: Callable[..., str]) -> Callable[
             ..., str]:
         """
-        Set properties on a decorated method so that it can be recognized as a
-        route.
+        Register a decorated method so that it can be recognized as a route.
 
         Args:
-            method: Method to add attributes to.
+            method: Method to register.
 
         Returns:
-            Method with attributes added to it.
+            The given `method` with no changes.
         """
-        setattr(method, 'path_pattern', path_pattern)
-        setattr(method, 'methods', methods)
+        ROUTES.add(
+            Route(
+                route_name=method.__name__,
+                path_pattern=path_pattern,
+                methods=methods,
+            )
+        )
         return method
     return decorator
 
@@ -157,12 +192,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Attributes:
             access_key: A VWS access key.
             secret_key: A VWS secret key.
+            routes: The `Route`s to be used in the mock.
         """
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-        self.routes = [method for method in self.__class__.__dict__.values()
-                       if hasattr(method, 'path_pattern')]
+        self.routes = ROUTES  # type: Set[Route]
 
     @validate_authorization
     @validate_date

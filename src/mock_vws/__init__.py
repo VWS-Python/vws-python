@@ -5,7 +5,6 @@ Tools for using a fake implementation of Vuforia.
 import os
 import re
 from contextlib import ContextDecorator
-from functools import partial
 from urllib.parse import urljoin
 
 from typing import Optional  # noqa: F401 This is used in a type hint.
@@ -95,7 +94,7 @@ class MockVWS(ContextDecorator):
                     req.register_uri(
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
-                        text=partial(route, fake_target_api),
+                        text=getattr(fake_target_api, route.route_name),
                     )
         self.req = req
         self.req.start()
