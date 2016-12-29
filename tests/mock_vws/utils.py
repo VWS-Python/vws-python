@@ -36,6 +36,13 @@ def assert_vws_failure(response: Response,
     """
     Assert that a VWS failure response is as expected.
 
+    https://library.vuforia.com/articles/Solution/How-To-Interperete-VWS-API-Result-Codes
+    implies that the expected status code can be worked out from the result
+    code. However, this is not the case as the real results differ from the
+    documentation.
+
+    For example, it is possible to get a "Fail" result code and a 400 error.
+
     Args:
         response: The response returned by a request to VWS.
         status_code: The expected status code of the response.
