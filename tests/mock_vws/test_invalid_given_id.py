@@ -24,7 +24,6 @@ class TestInvalidGivenId:
     """
 
     @pytest.mark.parametrize('endpoint', endpoints)
-    @MockVWS()
     def test_not_done(self, endpoint: str,
                       vuforia_server_credentials: VuforiaServerCredentials,
                       ) -> None:
