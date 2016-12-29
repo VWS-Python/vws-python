@@ -16,9 +16,6 @@ from mock_vws import MockVWS
 
 endpoints = ['/targets']
 
-# TODO: /summary/gibberish gives a different response
-# on the mock
-
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidGivenId:
