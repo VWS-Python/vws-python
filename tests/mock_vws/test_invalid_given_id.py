@@ -14,6 +14,8 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 endpoints = ['/summary']
 
+# TODO: /summary/gibberish gives a different response
+# on the mock
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidGivenId:
@@ -23,6 +25,7 @@ class TestInvalidGivenId:
 
     @pytest.mark.parametrize('endpoint', endpoints)
     def test_not_done(self, endpoint, vuforia_server_credentials: VuforiaServerCredentials) -> None:
+        endpoint = endpoint + '/gibberish'
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
@@ -40,10 +43,11 @@ class TestInvalidGivenId:
             "Date": date,
         }
 
+        url = urljoin('https://vws.vuforia.com/', endpoint)
         response = requests.request(
             method=GET,
-            url=urljoin('https://vws.vuforia.com/', endpoint, '/gibberish_id'),
+            url=url,
             headers=headers,
             data=b'',
         )
-        assert response.status_code == codes.OK
+        assert response.status_code == codes.UNAUTHORIZED
