@@ -65,5 +65,6 @@ class TestInvalidGivenID:
         assert_vws_failure(
             response=response,
             status_code=codes.NOT_FOUND,
+            # TODO Send the result code *object* not value
             result_code=ResultCodes.UNKNOWN_TARGET.value,
         )
