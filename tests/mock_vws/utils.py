@@ -19,6 +19,10 @@ class Endpoint:
         Args:
             path: The path for the endpoint.
             method: The HTTP method for the endpoint.
+
+        Attributes:
+            path: The path for the endpoint.
+            method: The HTTP method for the endpoint.
         """
         self.path = path
         self.method = method
