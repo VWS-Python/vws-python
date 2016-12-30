@@ -1,4 +1,3 @@
-
 """
 Configuration, plugins and fixtures for `pytest`.
 """

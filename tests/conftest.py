@@ -1,3 +1,7 @@
+"""
+Configuration, plugins and fixtures for `pytest`.
+"""
+
 import os
 
 import pytest
