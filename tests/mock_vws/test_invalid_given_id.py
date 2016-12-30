@@ -28,12 +28,6 @@ class Endpoint:
         self.method = method
 
 
-# ENDPOINTS = [
-#     endpoint(path='/targets', method=get),
-#     endpoint(path='/duplicates', method=get),
-# ]
-
-
 @pytest.fixture()
 def target_list():
     return Endpoint(path='/targets', method=GET)
@@ -58,7 +52,7 @@ class TestInvalidGivenID:
 
     def test_not_real_id(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
-                         endpoint,
+                         endpoint: Endpoint,
                          ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
