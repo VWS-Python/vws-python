@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from tests.mock_vws.utils import VuforiaServerCredentials
+from tests.utils import VuforiaServerCredentials
 
 
 @pytest.fixture()

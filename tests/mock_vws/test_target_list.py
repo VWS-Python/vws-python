@@ -9,7 +9,7 @@ from requests_mock import GET
 
 from vws._request_utils import authorization_header, rfc_1123_date
 
-from tests.mock_vws.utils import VuforiaServerCredentials
+from tests.utils import VuforiaServerCredentials
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

@@ -21,7 +21,7 @@ from vws._request_utils import (
     target_api_request,
 )
 
-from tests.mock_vws.utils import VuforiaServerCredentials
+from tests.utils import VuforiaServerCredentials
 
 
 class TestComputeHmacBase64:

@@ -12,12 +12,9 @@ from requests import codes
 from requests_mock import GET
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import (
-    assert_vws_failure,
-    Endpoint,
-    VuforiaServerCredentials,
-)
+from tests.mock_vws.utils import assert_vws_failure, Endpoint
 from vws._request_utils import authorization_header, rfc_1123_date
+from tests.utils import VuforiaServerCredentials
 
 
 @pytest.fixture()
