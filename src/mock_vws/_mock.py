@@ -44,11 +44,16 @@ def validate_authorization(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
+    if request.text is None:
+        content = b''
+    else:
+        content = bytes(request.text, encoding='utf-8')
+
     expected_authorization_header = authorization_header(
         access_key=bytes(instance.access_key, encoding='utf-8'),
         secret_key=bytes(instance.secret_key, encoding='utf-8'),
         method=request.method,
-        content=bytes(request.query, encoding='utf-8'),
+        content=content,
         content_type=request.headers.get('Content-Type', ''),
         date=request.headers.get('Date', ''),
         request_path=request.path,
@@ -211,6 +216,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
+        context.status_code = codes.BAD_REQUEST
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }  # type: Dict[str, str]
+        return json.dumps(body)
 
     @validate_authorization
     @validate_date
