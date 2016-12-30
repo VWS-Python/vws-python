@@ -7,7 +7,7 @@ import requests
 from requests import codes
 from requests_mock import GET
 
-from tests.conftest import VuforiaServerCredentials
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 

@@ -9,6 +9,25 @@ from requests.models import Response
 from common.constants import ResultCodes
 
 
+class Endpoint:
+    """
+    Details of endpoints to be called in tests.
+    """
+
+    def __init__(self, path: str, method: str) -> None:
+        """
+        Args:
+            path: The path for the endpoint.
+            method: The HTTP method for the endpoint.
+
+        Attributes:
+            path: The path for the endpoint.
+            method: The HTTP method for the endpoint.
+        """
+        self.path = path
+        self.method = method
+
+
 def is_valid_transaction_id(string: str) -> bool:
     """
     Return whether or not a given string could be a valid Vuforia transaction
