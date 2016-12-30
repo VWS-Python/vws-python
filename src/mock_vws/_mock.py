@@ -224,8 +224,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
         """
-        target_id = request.path_url.split('/')[-1]
-        self.targets_from_id(target_id=target_id)
 
     @validate_authorization
     @validate_date
