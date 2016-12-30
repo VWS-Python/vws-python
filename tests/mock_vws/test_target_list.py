@@ -28,7 +28,7 @@ class TestTargetList:
             secret_key=vuforia_server_credentials.secret_key,
             method=GET,
             content=b'',
-            content_type=endpoint.content_type or '',
+            content_type='',
             date=date,
             request_path='/targets',
         )

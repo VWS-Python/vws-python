@@ -37,7 +37,7 @@ class TestInvalidGivenID:
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint_which_takes_target_id.method,
             content=b'',
-            content_type=endpoint.content_type or '',
+            content_type=endpoint_which_takes_target_id.content_type or '',
             date=date,
             request_path=request_path,
         )
