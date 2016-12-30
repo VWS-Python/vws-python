@@ -3,6 +3,8 @@ Tests for when endpoints are called with unexpected header data.
 """
 
 from datetime import datetime, timedelta
+# This is used in a type hint which linters not pick up on.
+from typing import Union  # noqa: F401 pylint: disable=unused-import
 from urllib.parse import urljoin
 
 import pytest
@@ -128,7 +130,7 @@ class TestDateHeader:
 
         headers = {
             "Authorization": signature_string,
-        }
+        }  # type: Dict[str, Union[bytes, str]]
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
 
