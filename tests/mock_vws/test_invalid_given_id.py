@@ -2,14 +2,11 @@
 Tests for passing invalid endpoints which require a target ID to be given.
 """
 
-import uuid
 from urllib.parse import urljoin
 
 import pytest
 import requests
-from _pytest.fixtures import SubRequest
 from requests import codes
-from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import Endpoint, assert_vws_failure

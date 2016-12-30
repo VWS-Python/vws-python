@@ -9,7 +9,6 @@ import pytest
 import requests
 from freezegun import freeze_time
 from requests import codes
-from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import (
