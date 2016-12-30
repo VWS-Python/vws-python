@@ -201,6 +201,19 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     @validate_authorization
     @validate_date
+    @route(path_pattern='/targets', methods=[POST])
+    def add_target(self,
+                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   context: _Context) -> str:
+        """
+        Add a target.
+
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
+        """
+
+    @validate_authorization
+    @validate_date
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
