@@ -257,6 +257,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         XXX
         """
-        body = {}  # type: Dict[str, str]
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
         context.status_code = codes.NOT_FOUND
         return json.dumps(body)
