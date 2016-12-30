@@ -3,6 +3,8 @@ Configuration, plugins and fixtures for `pytest`.
 """
 
 import uuid
+# This is used in a type hint which flake8 does not pick up on.
+from typing import Any  # noqa: F401
 from typing import Generator
 
 import pytest
@@ -36,13 +38,16 @@ def add_target() -> Endpoint:
     """
     Return details of the endpoint for adding a target.
     """
+    data = {}  # type: Dict[str, Any]
     return Endpoint(
         example_path='/targets',
         method=POST,
-        successful_headers_status_code=codes.CREATED,
-        successful_headers_result_code=ResultCodes.TARGET_CREATED,
+        # We expect a bad request error because we have not given the required
+        # JSON body elements.
+        successful_headers_status_code=codes.BAD_REQUEST,
+        successful_headers_result_code=ResultCodes.FAIL,
         content_type='application/json',
-        content=b'',
+        content=bytes(str(data), encoding='utf-8'),
     )
 
 
