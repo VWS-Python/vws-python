@@ -254,6 +254,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
+    @validate_authorization
+    @validate_date
     @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -272,6 +274,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         return json.dumps(body)
 
+    @validate_authorization
+    @validate_date
     @route(path_pattern='/duplicates/.+', methods=[GET])
     def get_duplicates(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
