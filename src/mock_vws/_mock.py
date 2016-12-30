@@ -249,3 +249,19 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'results': [],
         }
         return json.dumps(body)
+
+    @route(path_pattern='/targets/.+', methods=[GET])
+    def get_target(self,
+                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   context: _Context) -> str:
+        """
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
