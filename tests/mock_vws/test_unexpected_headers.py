@@ -34,7 +34,7 @@ class TestHeaders:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers={},
-            data=b'',
+            data=endpoint.content,
         )
         assert_vws_failure(
             response=response,
@@ -64,7 +64,7 @@ class TestAuthorizationHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -92,7 +92,7 @@ class TestAuthorizationHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -120,7 +120,7 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
+            content=endpoint.content,
             content_type=endpoint.content_type or '',
             date='',
             request_path=endpoint.example_path
@@ -136,7 +136,7 @@ class TestDateHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -161,7 +161,7 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
+            content=endpoint.content,
             content_type=endpoint.content_type or '',
             date=date_incorrect_format,
             request_path=endpoint.example_path
@@ -178,7 +178,7 @@ class TestDateHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
         assert_vws_failure(
             response=response,
@@ -210,7 +210,7 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
+            content=endpoint.content,
             content_type=endpoint.content_type or '',
             date=date,
             request_path=endpoint.example_path,
@@ -227,7 +227,7 @@ class TestDateHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -263,7 +263,7 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
+            content=endpoint.content,
             content_type=endpoint.content_type or '',
             date=date,
             request_path=endpoint.example_path,
@@ -280,7 +280,7 @@ class TestDateHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert response.status_code == endpoint.successful_headers_status_code
