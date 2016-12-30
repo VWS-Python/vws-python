@@ -255,7 +255,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                    context: _Context) -> str:
         """
-        XXX
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
         """
         body = {
             'transaction_id': uuid.uuid4().hex,
