@@ -47,7 +47,6 @@ class TestInvalidGivenID:
             "Date": date,
         }
 
-        # TODO: Set this url in the Endpoint
         url = urljoin('https://vws.vuforia.com/', request_path)
         response = requests.request(
             method=endpoint_which_takes_target_id.method,

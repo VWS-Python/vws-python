@@ -3,8 +3,8 @@ Configuration, plugins and fixtures for `pytest`.
 """
 
 import uuid
-# This is used in a type hint which flake8 does not pick up on.
-from typing import Any  # noqa: F401
+# This is used in a type hint which linters not pick up on.
+from typing import Any  # noqa: F401 pylint: disable=unused-import
 from typing import Generator
 
 import pytest
