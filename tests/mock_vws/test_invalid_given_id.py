@@ -49,7 +49,7 @@ def get_duplicates() -> Endpoint:
 
 
 @pytest.fixture(params=['target_list', 'get_duplicates'])
-def endpoint(request: SubRequest) -> Endpoint:
+def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
     """
@@ -65,13 +65,14 @@ class TestInvalidGivenID:
 
     def test_not_real_id(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
-                         endpoint: Endpoint,
+                         endpoint_which_takes_target_id: Endpoint,
                          ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
-        request_path = endpoint.path + '/' + uuid.uuid4().hex
+        request_path = (endpoint_which_takes_target_id.path + '/' +
+                        uuid.uuid4().hex)
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
