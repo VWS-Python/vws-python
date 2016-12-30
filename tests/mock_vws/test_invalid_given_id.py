@@ -15,8 +15,21 @@ from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import assert_vws_failure
 from vws._request_utils import authorization_header, rfc_1123_date
 
+
+class Endpoint:
+    """
+    XXX
+    """
+
+    def __init__(self, path: str, method: int) -> None:
+        """
+        """
+        self.path = path
+        self.method = method
+
+
 ENDPOINTS = [
-    '/targets',
+    Endpoint(path='/targets', method=GET),
 ]
 
 
@@ -28,14 +41,14 @@ class TestInvalidGivenID:
     be given.
     """
 
-    def test_not_real_id(self, endpoint: str,
+    def test_not_real_id(self, endpoint: Endpoint,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
-        endpoint = endpoint + '/' + uuid.uuid4().hex
+        request_path = endpoint.path + '/' + uuid.uuid4().hex
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
@@ -45,7 +58,7 @@ class TestInvalidGivenID:
             content=b'',
             content_type='',
             date=date,
-            request_path=endpoint,
+            request_path=request_path,
         )
 
         headers = {
@@ -53,7 +66,7 @@ class TestInvalidGivenID:
             "Date": date,
         }
 
-        url = urljoin('https://vws.vuforia.com/', endpoint)
+        url = urljoin('https://vws.vuforia.com/', request_path)
         response = requests.request(
             method=GET,
             url=url,
