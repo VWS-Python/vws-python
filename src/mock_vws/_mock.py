@@ -277,7 +277,10 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                        context: _Context) -> str:
         """
-        XXX
+        Get targets which may be considered duplicates of a given target.
+
+        Fake implemetation of
+        https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
         body = {
             'transaction_id': uuid.uuid4().hex,
