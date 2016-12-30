@@ -3,7 +3,6 @@ Configuration, plugins and fixtures for `pytest`.
 """
 
 import uuid
-
 from typing import Generator
 
 import pytest

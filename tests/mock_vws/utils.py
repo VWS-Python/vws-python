@@ -15,20 +15,24 @@ class Endpoint:
     """
 
     def __init__(self, example_path: str, method: str,
-                 successful_headers_result_code,
-                 successful_headers_status_code) -> None:
+                 successful_headers_result_code: ResultCodes,
+                 successful_headers_status_code: int) -> None:
         """
         Args:
             example_path: An example path for calling the endpoint.
             method: The HTTP method for the endpoint.
-            XXX
-            XXX
+            successful_headers_result_code: The expected result code if the
+                example path is requested with the method.
+            successful_headers_status_code: The expected status code if the
+                example path is requested with the method.
 
         Attributes:
             example_path: An example path for calling the endpoint.
             method: The HTTP method for the endpoint.
-            XXX
-            XXX
+            successful_headers_result_code: The expected result code if the
+                example path is requested with the method.
+            successful_headers_status_code: The expected status code if the
+                example path is requested with the method.
         """
         self.example_path = example_path
         self.method = method
