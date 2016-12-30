@@ -78,7 +78,7 @@ class TestInvalidGivenID:
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
+            method=endpoint_which_takes_target_id.method,
             content=b'',
             content_type='',
             date=date,
@@ -92,7 +92,7 @@ class TestInvalidGivenID:
 
         url = urljoin('https://vws.vuforia.com/', request_path)
         response = requests.request(
-            method=GET,
+            method=endpoint_which_takes_target_id.method,
             url=url,
             headers=headers,
             data=b'',
