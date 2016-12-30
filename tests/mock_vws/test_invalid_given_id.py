@@ -33,8 +33,7 @@ class TestInvalidGivenID:
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
-        request_path = (endpoint_which_takes_target_id.path + '/' +
-                        uuid.uuid4().hex)
+        request_path = endpoint_which_takes_target_id.example_path
         date = rfc_1123_date()
 
         authorization_string = authorization_header(

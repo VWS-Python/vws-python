@@ -2,12 +2,16 @@
 Configuration, plugins and fixtures for `pytest`.
 """
 
+import uuid
+
 from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
+from requests import codes
 from requests_mock import GET
 
+from common.constants import ResultCodes
 from mock_vws import MockVWS
 from tests.mock_vws.utils import Endpoint
 
@@ -29,30 +33,61 @@ def verify_mock_vuforia(request: SubRequest) -> Generator:
 
 
 @pytest.fixture()
-def target_list() -> Endpoint:
+def database_summary() -> Endpoint:
     """
-    Return details of the endpoint for getting a list of targets.
+    Return details of the endpoint for getting details about the database.
     """
-    return Endpoint(path='/targets', method=GET)
+    return Endpoint(
+        example_path='/summary',
+        method=GET,
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
+    )
 
 
 @pytest.fixture()
 def get_duplicates() -> Endpoint:
     """
-    Return details of the endpoint for getting details of a target.
+    Return details of the endpoint for getting potential duplicates of a
+    target.
     """
-    return Endpoint(path='/duplicates', method=GET)
+    example_path = '/duplicates/{target_id}'.format(target_id=uuid.uuid4().hex)
+    return Endpoint(
+        example_path=example_path,
+        method=GET,
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+    )
 
 
 @pytest.fixture()
-def database_summary() -> Endpoint:
+def get_target() -> Endpoint:
     """
-    Return details of the endpoint for getting details about the database.
+    Return details of the endpoint for getting details of a target.
     """
-    return Endpoint(path='/summary', method=GET)
+    example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    return Endpoint(
+        example_path=example_path,
+        method=GET,
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+    )
 
 
-@pytest.fixture(params=['target_list', 'get_duplicates'])
+@pytest.fixture()
+def target_list() -> Endpoint:
+    """
+    Return details of the endpoint for getting a list of targets.
+    """
+    return Endpoint(
+        example_path='/targets',
+        method=GET,
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
+    )
+
+
+@pytest.fixture(params=['get_target', 'get_duplicates'])
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
@@ -60,7 +95,12 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     return request.getfixturevalue(request.param)
 
 
-@pytest.fixture(params=['target_list', 'get_duplicates', 'database_summary'])
+@pytest.fixture(params=[
+    'database_summary',
+    'get_duplicates',
+    'get_target',
+    'target_list',
+])
 def endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint.

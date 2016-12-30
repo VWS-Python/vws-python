@@ -14,18 +14,26 @@ class Endpoint:
     Details of endpoints to be called in tests.
     """
 
-    def __init__(self, path: str, method: str) -> None:
+    def __init__(self, example_path: str, method: str,
+                 successful_headers_result_code,
+                 successful_headers_status_code) -> None:
         """
         Args:
-            path: The path for the endpoint.
+            example_path: An example path for calling the endpoint.
             method: The HTTP method for the endpoint.
+            XXX
+            XXX
 
         Attributes:
-            path: The path for the endpoint.
+            example_path: An example path for calling the endpoint.
             method: The HTTP method for the endpoint.
+            XXX
+            XXX
         """
-        self.path = path
+        self.example_path = example_path
         self.method = method
+        self.successful_headers_status_code = successful_headers_status_code
+        self.successful_headers_result_code = successful_headers_result_code
 
 
 def is_valid_transaction_id(string: str) -> bool:
