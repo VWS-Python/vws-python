@@ -28,22 +28,37 @@ class Endpoint:
         self.method = method
 
 
-ENDPOINTS = [
-    Endpoint(path='/targets', method=GET),
-    Endpoint(path='/duplicates', method=GET),
-]
+# ENDPOINTS = [
+#     endpoint(path='/targets', method=get),
+#     endpoint(path='/duplicates', method=get),
+# ]
+
+
+@pytest.fixture()
+def target_list():
+    return Endpoint(path='/targets', method=GET)
+
+
+@pytest.fixture()
+def get_duplicates():
+    return Endpoint(path='/duplicates', method=GET)
+
+
+@pytest.fixture(params=['target_list', 'get_duplicates'])
+def endpoint(request):
+    return request.getfixturevalue(request.param)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ENDPOINTS)
 class TestInvalidGivenID:
     """
     Tests for giving an invalid ID to endpoints which require a target ID to
     be given.
     """
 
-    def test_not_real_id(self, endpoint: Endpoint,
+    def test_not_real_id(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
+                         endpoint,
                          ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
