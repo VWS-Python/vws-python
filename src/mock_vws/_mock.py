@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
-from requests_mock import GET
+from requests_mock import DELETE, GET
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
@@ -198,6 +198,26 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
         self.routes = ROUTES  # type: Set[Route]
+
+    @validate_authorization
+    @validate_date
+    @route(path_pattern='/targets/.+', methods=[DELETE])
+    def delete_target(self,
+                      request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                      context: _Context) -> str:
+        """
+        Delete a target.
+
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
 
     @validate_authorization
     @validate_date

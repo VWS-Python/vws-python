@@ -3,6 +3,8 @@ Tests for when endpoints are called with unexpected header data.
 """
 
 from datetime import datetime, timedelta
+# This is used in a type hint which linters not pick up on.
+from typing import Union  # noqa: F401 pylint: disable=unused-import
 from urllib.parse import urljoin
 
 import pytest
@@ -34,7 +36,7 @@ class TestHeaders:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers={},
-            data=b'',
+            data=endpoint.content,
         )
         assert_vws_failure(
             response=response,
@@ -62,7 +64,7 @@ class TestAuthorizationHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -88,7 +90,7 @@ class TestAuthorizationHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -116,21 +118,21 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
-            content_type='',
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date='',
             request_path=endpoint.example_path
         )
 
         headers = {
             "Authorization": signature_string,
-        }
+        }  # type: Dict[str, Union[bytes, str]]
 
         response = requests.request(
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -155,8 +157,8 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
-            content_type='',
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date=date_incorrect_format,
             request_path=endpoint.example_path
         )
@@ -170,7 +172,7 @@ class TestDateHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
         assert_vws_failure(
             response=response,
@@ -202,8 +204,8 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
-            content_type='',
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date=date,
             request_path=endpoint.example_path,
         )
@@ -217,7 +219,7 @@ class TestDateHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(
@@ -253,8 +255,8 @@ class TestDateHeader:
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
-            content=b'',
-            content_type='',
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date=date,
             request_path=endpoint.example_path,
         )
@@ -268,7 +270,7 @@ class TestDateHeader:
             method=endpoint.method,
             url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert response.status_code == endpoint.successful_headers_status_code

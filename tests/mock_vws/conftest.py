@@ -3,12 +3,14 @@ Configuration, plugins and fixtures for `pytest`.
 """
 
 import uuid
+# This is used in a type hint which linters not pick up on.
+from typing import Any  # noqa: F401 pylint: disable=unused-import
 from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
 from requests import codes
-from requests_mock import GET
+from requests_mock import DELETE, GET
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
@@ -32,6 +34,22 @@ def verify_mock_vuforia(request: SubRequest) -> Generator:
 
 
 @pytest.fixture()
+def delete_target() -> Endpoint:
+    """
+    Return details of the endpoint for deleting a target.
+    """
+    example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    return Endpoint(
+        example_path=example_path,
+        method=DELETE,
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type=None,
+        content=b'',
+    )
+
+
+@pytest.fixture()
 def database_summary() -> Endpoint:
     """
     Return details of the endpoint for getting details about the database.
@@ -41,6 +59,8 @@ def database_summary() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
+        content_type=None,
+        content=b'',
     )
 
 
@@ -56,6 +76,8 @@ def get_duplicates() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type=None,
+        content=b'',
     )
 
 
@@ -70,6 +92,8 @@ def get_target() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type=None,
+        content=b'',
     )
 
 
@@ -83,10 +107,16 @@ def target_list() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
+        content_type=None,
+        content=b'',
     )
 
 
-@pytest.fixture(params=['get_target', 'get_duplicates'])
+@pytest.fixture(params=[
+    'delete_target',
+    'get_target',
+    'get_duplicates',
+])
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
@@ -96,6 +126,7 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
 
 @pytest.fixture(params=[
     'database_summary',
+    'delete_target',
     'get_duplicates',
     'get_target',
     'target_list',
