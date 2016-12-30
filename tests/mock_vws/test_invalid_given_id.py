@@ -22,11 +22,11 @@ class Endpoint:
     Details of endpoints to be called in tests.
     """
 
-    def __init__(self, path: str, method: int) -> None:
+    def __init__(self, path: str, method: str) -> None:
         """
         Args:
-            path: X
-            method: X
+            path: The path for the endpoint.
+            method: The HTTP method for the endpoint.
         """
         self.path = path
         self.method = method
