@@ -30,6 +30,7 @@ class Endpoint:
 
 ENDPOINTS = [
     Endpoint(path='/targets', method=GET),
+    Endpoint(path='/duplicates', method=GET),
 ]
 
 

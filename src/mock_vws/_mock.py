@@ -271,3 +271,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
 
         return json.dumps(body)
+
+    @route(path_pattern='/duplicates/.+', methods=[GET])
+    def get_duplicates(self,
+                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                       context: _Context) -> str:
+        """
+        XXX
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
