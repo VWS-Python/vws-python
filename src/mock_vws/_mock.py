@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
-from requests_mock import DELETE, GET
+from requests_mock import DELETE, GET, POST
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
@@ -44,11 +44,16 @@ def validate_authorization(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
+    if request.text is None:
+        content = b''
+    else:
+        content = bytes(request.text, encoding='utf-8')
+
     expected_authorization_header = authorization_header(
         access_key=bytes(instance.access_key, encoding='utf-8'),
         secret_key=bytes(instance.secret_key, encoding='utf-8'),
         method=request.method,
-        content=bytes(request.query, encoding='utf-8'),
+        content=content,
         content_type=request.headers.get('Content-Type', ''),
         date=request.headers.get('Date', ''),
         request_path=request.path,
@@ -198,6 +203,25 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
         self.routes = ROUTES  # type: Set[Route]
+
+    @validate_authorization
+    @validate_date
+    @route(path_pattern='/targets', methods=[POST])
+    def add_target(self,
+                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   context: _Context) -> str:
+        """
+        Add a target.
+
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
+        """
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }  # type: Dict[str, str]
+        return json.dumps(body)
 
     @validate_authorization
     @validate_date

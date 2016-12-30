@@ -59,6 +59,8 @@ class TestAuthorizationHeader:
         headers = {
             "Date": rfc_1123_date(),
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
@@ -85,6 +87,8 @@ class TestAuthorizationHeader:
             "Authorization": signature_string,
             "Date": date,
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
@@ -127,6 +131,8 @@ class TestDateHeader:
         headers = {
             "Authorization": signature_string,
         }  # type: Dict[str, Union[bytes, str]]
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
@@ -167,6 +173,8 @@ class TestDateHeader:
             "Authorization": authorization_string,
             "Date": date_incorrect_format,
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
@@ -214,6 +222,8 @@ class TestDateHeader:
             "Authorization": authorization_string,
             "Date": date,
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
@@ -265,6 +275,8 @@ class TestDateHeader:
             "Authorization": authorization_string,
             "Date": date,
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
