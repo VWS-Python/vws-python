@@ -35,7 +35,7 @@ class Endpoint:
 @pytest.fixture()
 def target_list() -> Endpoint:
     """
-    XXX
+    Return details of the endpoint for getting a list of targets.
     """
     return Endpoint(path='/targets', method=GET)
 
@@ -43,7 +43,7 @@ def target_list() -> Endpoint:
 @pytest.fixture()
 def get_duplicates() -> Endpoint:
     """
-    XXX
+    Return details of the endpoint for getting details of a target.
     """
     return Endpoint(path='/duplicates', method=GET)
 
@@ -51,7 +51,7 @@ def get_duplicates() -> Endpoint:
 @pytest.fixture(params=['target_list', 'get_duplicates'])
 def endpoint(request: SubRequest) -> Endpoint:
     """
-    XXX
+    Return details of an endpoint which takes a target ID in the path.
     """
     return request.getfixturevalue(request.param)
 
