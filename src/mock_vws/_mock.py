@@ -201,7 +201,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     @validate_authorization
     @validate_date
-    @route(path_pattern='/targets', methods=[DELETE])
+    @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                       context: _Context) -> str:
@@ -211,6 +211,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
         """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
 
     @validate_authorization
     @validate_date

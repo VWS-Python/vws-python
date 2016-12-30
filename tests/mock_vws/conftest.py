@@ -112,7 +112,11 @@ def target_list() -> Endpoint:
     )
 
 
-@pytest.fixture(params=['get_target', 'get_duplicates'])
+@pytest.fixture(params=[
+    'delete_target',
+    'get_target',
+    'get_duplicates',
+])
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
@@ -122,6 +126,7 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
 
 @pytest.fixture(params=[
     'database_summary',
+    'delete_target',
     'get_duplicates',
     'get_target',
     'target_list',
