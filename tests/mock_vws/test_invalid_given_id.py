@@ -21,13 +21,13 @@ ENDPOINTS = [
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
+@pytest.mark.parametrize('endpoint', ENDPOINTS)
 class TestInvalidGivenID:
     """
     Tests for giving an invalid ID to endpoints which require a target ID to
     be given.
     """
 
-    @pytest.mark.parametrize('endpoint', ENDPOINTS)
     def test_not_real_id(self, endpoint: str,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          ) -> None:
