@@ -28,7 +28,7 @@ class TestSummary:
             secret_key=vuforia_server_credentials.secret_key,
             method=GET,
             content=b'',
-            content_type='',
+            content_type=endpoint.content_type or '',
             date=date,
             request_path='/summary',
         )

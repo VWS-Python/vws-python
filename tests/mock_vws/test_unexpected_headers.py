@@ -117,7 +117,7 @@ class TestDateHeader:
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=b'',
-            content_type='',
+            content_type=endpoint.content_type or '',
             date='',
             request_path=endpoint.example_path
         )
@@ -156,7 +156,7 @@ class TestDateHeader:
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=b'',
-            content_type='',
+            content_type=endpoint.content_type or '',
             date=date_incorrect_format,
             request_path=endpoint.example_path
         )
@@ -203,7 +203,7 @@ class TestDateHeader:
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=b'',
-            content_type='',
+            content_type=endpoint.content_type or '',
             date=date,
             request_path=endpoint.example_path,
         )
