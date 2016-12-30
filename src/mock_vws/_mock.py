@@ -249,3 +249,14 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'results': [],
         }
         return json.dumps(body)
+
+    @route(path_pattern='/targets/.+', methods=[GET])
+    def get_target(self,
+                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   context: _Context) -> str:
+        """
+        XXX
+        """
+        body = {}  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND
+        return json.dumps(body)
