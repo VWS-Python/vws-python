@@ -44,9 +44,25 @@ def get_duplicates() -> Endpoint:
     return Endpoint(path='/duplicates', method=GET)
 
 
+@pytest.fixture()
+def database_summary() -> Endpoint:
+    """
+    Return details of the endpoint for getting details about the database.
+    """
+    return Endpoint(path='/summary', method=GET)
+
+
 @pytest.fixture(params=['target_list', 'get_duplicates'])
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=['target_list', 'get_duplicates', 'database_summary'])
+def endpoint(request: SubRequest) -> Endpoint:
+    """
+    Return details of an endpoint.
     """
     return request.getfixturevalue(request.param)

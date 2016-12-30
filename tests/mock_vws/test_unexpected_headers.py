@@ -7,30 +7,21 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
-from constantly import ValueConstant, Values
 from freezegun import freeze_time
 from requests import codes
 from requests_mock import GET
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import assert_vws_failure, is_valid_transaction_id
+from tests.mock_vws.utils import (
+    Endpoint,
+    assert_vws_failure,
+    is_valid_transaction_id,
+)
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-class ROUTES(Values):
-    """
-    Routes to test headers for.
-    """
-    DATABASE_SUMMARY = ValueConstant('/summary')
-    TARGET_LIST = ValueConstant('/targets')
-
-
-ENDPOINTS = [route.value for route in ROUTES.iterconstants()]
-
-
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ENDPOINTS)
 class TestHeaders:
     """
     Tests for what happens when the headers are not as expected.
@@ -54,13 +45,12 @@ class TestHeaders:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-@pytest.mark.parametrize('endpoint', ENDPOINTS)
 class TestAuthorizationHeader:
     """
     Tests for what happens when the `Authorization` header isn't as expected.
     """
 
-    def test_missing(self, endpoint: str) -> None:
+    def test_missing(self, endpoint: Endpoint) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
