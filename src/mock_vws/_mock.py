@@ -262,5 +262,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
         }  # type: Dict[str, str]
-        context.status_code = codes.NOT_FOUND
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
         return json.dumps(body)
