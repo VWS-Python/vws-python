@@ -41,6 +41,7 @@ def add_target() -> Endpoint:
         method=POST,
         successful_headers_status_code=codes.CREATED,
         successful_headers_result_code=ResultCodes.TARGET_CREATED,
+        content_type='application/json',
     )
 
 
@@ -55,6 +56,7 @@ def delete_target() -> Endpoint:
         method=DELETE,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type=None,
     )
 
 
@@ -68,6 +70,7 @@ def database_summary() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
+        content_type=None,
     )
 
 
@@ -83,6 +86,7 @@ def get_duplicates() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type=None,
     )
 
 
@@ -97,6 +101,7 @@ def get_target() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type=None,
     )
 
 
@@ -110,6 +115,7 @@ def target_list() -> Endpoint:
         method=GET,
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
+        content_type=None,
     )
 
 

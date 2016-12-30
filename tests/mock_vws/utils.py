@@ -3,6 +3,7 @@ Utilities for tests for the VWS mock.
 """
 
 from string import hexdigits
+from typing import Optional
 
 from requests.models import Response
 
@@ -14,9 +15,13 @@ class Endpoint:
     Details of endpoints to be called in tests.
     """
 
-    def __init__(self, example_path: str, method: str,
+    def __init__(self,
+                 example_path: str,
+                 method: str,
                  successful_headers_result_code: ResultCodes,
-                 successful_headers_status_code: int) -> None:
+                 successful_headers_status_code: int,
+                 content_type: Optional[str],
+                 ) -> None:
         """
         Args:
             example_path: An example path for calling the endpoint.
@@ -29,6 +34,8 @@ class Endpoint:
         Attributes:
             example_path: An example path for calling the endpoint.
             method: The HTTP method for the endpoint.
+            content_type: The `Content-Type` header to send, or `None` if one
+                should not be sent.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
@@ -38,6 +45,7 @@ class Endpoint:
         self.method = method
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
+        self.content_type = content_type
 
 
 def is_valid_transaction_id(string: str) -> bool:

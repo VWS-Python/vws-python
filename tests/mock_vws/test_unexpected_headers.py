@@ -254,7 +254,7 @@ class TestDateHeader:
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=b'',
-            content_type='',
+            content_type=endpoint.content_type or '',
             date=date,
             request_path=endpoint.example_path,
         )
@@ -263,6 +263,8 @@ class TestDateHeader:
             "Authorization": authorization_string,
             "Date": date,
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
