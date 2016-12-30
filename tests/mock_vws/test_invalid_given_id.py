@@ -17,30 +17,6 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-@pytest.fixture()
-def target_list() -> Endpoint:
-    """
-    Return details of the endpoint for getting a list of targets.
-    """
-    return Endpoint(path='/targets', method=GET)
-
-
-@pytest.fixture()
-def get_duplicates() -> Endpoint:
-    """
-    Return details of the endpoint for getting details of a target.
-    """
-    return Endpoint(path='/duplicates', method=GET)
-
-
-@pytest.fixture(params=['target_list', 'get_duplicates'])
-def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
-    """
-    Return details of an endpoint which takes a target ID in the path.
-    """
-    return request.getfixturevalue(request.param)
-
-
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidGivenID:
     """
