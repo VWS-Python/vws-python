@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
-from requests_mock import DELETE, GET
+from requests_mock import DELETE, GET, POST
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 

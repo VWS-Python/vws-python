@@ -10,7 +10,7 @@ from typing import Generator
 import pytest
 from _pytest.fixtures import SubRequest
 from requests import codes
-from requests_mock import DELETE, GET
+from requests_mock import DELETE, GET, POST
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
@@ -31,6 +31,24 @@ def verify_mock_vuforia(request: SubRequest) -> Generator:
     else:
         with MockVWS():
             yield
+
+
+@pytest.fixture()
+def add_target() -> Endpoint:
+    """
+    Return details of the endpoint for adding a target.
+    """
+    data = {}  # type: Dict[str, Any]
+    return Endpoint(
+        example_path='/targets',
+        method=POST,
+        # We expect a bad request error because we have not given the required
+        # JSON body elements.
+        successful_headers_status_code=codes.BAD_REQUEST,
+        successful_headers_result_code=ResultCodes.FAIL,
+        content_type='application/json',
+        content=bytes(str(data), encoding='utf-8'),
+    )
 
 
 @pytest.fixture()
@@ -125,6 +143,7 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
 
 
 @pytest.fixture(params=[
+    'add_target',
     'database_summary',
     'delete_target',
     'get_duplicates',
