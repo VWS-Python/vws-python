@@ -320,5 +320,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                    context: _Context,
                    target_id: str) -> str:
         """
-        XXX
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
         """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)

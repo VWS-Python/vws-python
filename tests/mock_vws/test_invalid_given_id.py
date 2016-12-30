@@ -3,19 +3,29 @@ Tests for passing invalid endpoints which require a target ID to be given.
 """
 
 import uuid
+<<<<<<< HEAD
+=======
+from urllib.parse import urljoin
+>>>>>>> origin/master
 
 import pytest
 import requests
 from requests import codes
 from requests_mock import GET
+<<<<<<< HEAD
 from urllib.parse import urljoin
+=======
+>>>>>>> origin/master
 
 from common.constants import ResultCodes
 from tests.conftest import VuforiaServerCredentials
 from tests.mock_vws.utils import assert_vws_failure
 from vws._request_utils import authorization_header, rfc_1123_date
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 ENDPOINTS = [
     '/targets',
 ]
@@ -65,6 +75,5 @@ class TestInvalidGivenID:
         assert_vws_failure(
             response=response,
             status_code=codes.NOT_FOUND,
-            # TODO Send the result code *object* not value
-            result_code=ResultCodes.UNKNOWN_TARGET.value,
+            result_code=ResultCodes.UNKNOWN_TARGET,
         )
