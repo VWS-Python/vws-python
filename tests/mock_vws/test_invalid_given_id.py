@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from _pytest.fixtures import SubRequest
 from requests import codes
 from requests_mock import GET
 
@@ -18,28 +19,40 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 class Endpoint:
     """
-    XXX
+    Details of endpoints to be called in tests.
     """
 
     def __init__(self, path: str, method: int) -> None:
         """
+        Args:
+            path: X
+            method: X
         """
         self.path = path
         self.method = method
 
 
 @pytest.fixture()
-def target_list():
+def target_list() -> Endpoint:
+    """
+    XXX
+    """
     return Endpoint(path='/targets', method=GET)
 
 
 @pytest.fixture()
-def get_duplicates():
+def get_duplicates() -> Endpoint:
+    """
+    XXX
+    """
     return Endpoint(path='/duplicates', method=GET)
 
 
 @pytest.fixture(params=['target_list', 'get_duplicates'])
-def endpoint(request):
+def endpoint(request: SubRequest) -> Endpoint:
+    """
+    XXX
+    """
     return request.getfixturevalue(request.param)
 
 
