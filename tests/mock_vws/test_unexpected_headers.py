@@ -181,40 +181,20 @@ class TestDateHeader:
 
     @pytest.mark.parametrize('time_multiplier', [1, -1],
                              ids=(['After', 'Before']))
-    @pytest.mark.parametrize(
-        ['time_difference_from_now', 'expected_status', 'expected_result'],
-        [
-            (
-                timedelta(minutes=4, seconds=50),
-                codes.OK,
-                ResultCodes.SUCCESS,
-            ),
-            (
-                timedelta(minutes=5, seconds=10),
-                codes.FORBIDDEN,
-                ResultCodes.REQUEST_TIME_TOO_SKEWED,
-            ),
-        ],
-        ids=(['Within Range', 'Out of Range']),
-    )
-    def test_date_skewed(self,
-                         vuforia_server_credentials: VuforiaServerCredentials,
-                         time_difference_from_now: timedelta,
-                         expected_status: str,
-                         expected_result: ResultCodes,
-                         time_multiplier: int,
-                         endpoint: Endpoint,
-                         ) -> None:
+    def test_date_out_of_range(self,
+                               vuforia_server_credentials:
+                               VuforiaServerCredentials,
+                               time_multiplier: int,
+                               endpoint: Endpoint,
+                               ) -> None:
         """
-        If a date header is within five minutes before or after the request
-        is sent, no error is returned.
-
         If the date header is more than five minutes before or after the
         request is sent, a `FORBIDDEN` response is returned.
 
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
+        time_difference_from_now = timedelta(minutes=5, seconds=10)
         time_difference_from_now *= time_multiplier
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
@@ -241,6 +221,58 @@ class TestDateHeader:
             data=b'',
         )
 
-        assert response.status_code == expected_status
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
+        )
+
+    @pytest.mark.parametrize('time_multiplier', [1, -1],
+                             ids=(['After', 'Before']))
+    def test_date_in_range(self,
+                           vuforia_server_credentials:
+                           VuforiaServerCredentials,
+                           time_multiplier: int,
+                           endpoint: Endpoint,
+                           ) -> None:
+        """
+        If a date header is within five minutes before or after the request
+        is sent, no error is returned.
+
+        Because there is a small delay in sending requests and Vuforia isn't
+        consistent, some leeway is given.
+        """
+        time_difference_from_now = timedelta(minutes=4, seconds=50)
+        time_difference_from_now *= time_multiplier
+        with freeze_time(datetime.now() + time_difference_from_now):
+            date = rfc_1123_date()
+        time_difference_from_now *= time_multiplier
+        with freeze_time(datetime.now() + time_difference_from_now):
+            date = rfc_1123_date()
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=endpoint.method,
+            content=b'',
+            content_type='',
+            date=date,
+            request_path=endpoint.example_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+        }
+
+        response = requests.request(
+            method=endpoint.method,
+            url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
+            headers=headers,
+            data=b'',
+        )
+
+        assert response.status_code == endpoint.successful_headers_status_code
         assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == expected_result.value
+        expected_result_code = endpoint.successful_headers_result_code.value
+        assert response.json()['result_code'] == expected_result_code
