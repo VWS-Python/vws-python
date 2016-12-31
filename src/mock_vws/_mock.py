@@ -60,6 +60,7 @@ def validate_authorization(wrapped: Callable[..., str],
     )
 
     if request.headers['Authorization'] != expected_authorization_header:
+        import pdb; pdb.set_trace()
         context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -216,7 +217,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.OK#codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,

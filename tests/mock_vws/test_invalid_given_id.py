@@ -14,13 +14,15 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-@pytest.mark.usefixtures('verify_mock_vuforia')
+# @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidGivenID:
     """
     Tests for giving an invalid ID to endpoints which require a target ID to
     be given.
     """
 
+    from mock_vws import MockVWS
+    @MockVWS()
     def test_not_real_id(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          endpoint_which_takes_target_id: Endpoint,  # noqa: E501 pylint: disable=redefined-outer-name
@@ -103,6 +105,7 @@ class TestInvalidGivenID:
         headers = {
             "Authorization": authorization_string,
             "Date": date,
+            'Content-Type': 'application/json',
         }
 
         url = urljoin('https://vws.vuforia.com/', request_path)
