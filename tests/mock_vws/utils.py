@@ -4,6 +4,7 @@ Utilities for tests for the VWS mock.
 
 from string import hexdigits
 from typing import Optional
+from urllib.parse import urljoin
 
 from requests.models import Response
 
@@ -39,6 +40,7 @@ class Endpoint:
             content_type: The `Content-Type` header to send, or `None` if one
                 should not be sent.
             content: The data to send with the request.
+            url: The URL to call the path with.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
@@ -46,10 +48,11 @@ class Endpoint:
         """
         self.example_path = example_path
         self.method = method
-        self.successful_headers_status_code = successful_headers_status_code
-        self.successful_headers_result_code = successful_headers_result_code
         self.content_type = content_type
         self.content = content
+        self.url = urljoin('https://vws.vuforia.com/', example_path)
+        self.successful_headers_status_code = successful_headers_status_code
+        self.successful_headers_result_code = successful_headers_result_code
 
 
 def is_valid_transaction_id(string: str) -> bool:

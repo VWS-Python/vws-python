@@ -5,7 +5,6 @@ Tests for when endpoints are called with unexpected header data.
 from datetime import datetime, timedelta
 # This is used in a type hint which linters not pick up on.
 from typing import Union  # noqa: F401 pylint: disable=unused-import
-from urllib.parse import urljoin
 
 import pytest
 import requests
@@ -34,7 +33,7 @@ class TestHeaders:
         """
         response = requests.request(
             method=endpoint.method,
-            url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
+            url=endpoint.url,
             headers={},
             data=endpoint.content,
         )
@@ -64,7 +63,7 @@ class TestAuthorizationHeader:
 
         response = requests.request(
             method=endpoint.method,
-            url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
+            url=endpoint.url,
             headers=headers,
             data=endpoint.content,
         )
@@ -92,7 +91,7 @@ class TestAuthorizationHeader:
 
         response = requests.request(
             method=endpoint.method,
-            url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
+            url=endpoint.url,
             headers=headers,
             data=endpoint.content,
         )
@@ -136,7 +135,7 @@ class TestDateHeader:
 
         response = requests.request(
             method=endpoint.method,
-            url=urljoin('https://vws.vuforia.com', endpoint.example_path),
+            url=endpoint.url,
             headers=headers,
             data=endpoint.content,
         )
@@ -178,7 +177,7 @@ class TestDateHeader:
 
         response = requests.request(
             method=endpoint.method,
-            url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
+            url=endpoint.url,
             headers=headers,
             data=endpoint.content,
         )
@@ -227,7 +226,7 @@ class TestDateHeader:
 
         response = requests.request(
             method=endpoint.method,
-            url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
+            url=endpoint.url,
             headers=headers,
             data=endpoint.content,
         )
@@ -280,7 +279,7 @@ class TestDateHeader:
 
         response = requests.request(
             method=endpoint.method,
-            url=urljoin('https://vws.vuforia.com/', endpoint.example_path),
+            url=endpoint.url,
             headers=headers,
             data=endpoint.content,
         )
