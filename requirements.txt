@@ -1,1 +1,4 @@
+constantly==15.1.0  # Symbolic constants.
 requests==2.12.4
+requests-mock==1.2.0  # Mock `requests`.
+wrapt==1.10.8  # Make better decrators.

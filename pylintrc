@@ -65,7 +65,15 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-enable=all
+
+disable=line-too-long,
+        too-few-public-methods,
+        locally-disabled,
+        # Let flake8 handle unused imports
+        unused-import,
+        # This creates errors with typing.py
+        # see https://github.com/PyCQA/pylint/issues/1212
+        invalid-sequence-index,
 
 [REPORTS]
 

@@ -73,11 +73,13 @@ disable=
     no-member,
     # Let isort handle imports
     ungrouped-imports,
+    wrong-import-order,
     protected-access,
     # Let flake8 handle indentation
     bad-continuation,
     # Let flake8 handle long lines
     line-too-long,
+    duplicate-code,
 
 [REPORTS]
 
