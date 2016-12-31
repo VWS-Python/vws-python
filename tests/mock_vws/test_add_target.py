@@ -3,13 +3,18 @@ Tests for the mock of the add target endpoint.
 """
 
 # TODO: Test both PNG and JPEG
+# TODO: Document that "image" is mandatory, despite what the docs say
 
+import base64
+import io
 import json
+import random
 import uuid
 from urllib.parse import urljoin
 
 import pytest
 import requests
+from PIL import Image
 from requests import codes
 from requests_mock import POST
 
@@ -23,6 +28,11 @@ class TestAddTarget:
     Tests for the mock of the add target endpoint at `POST /targets`.
     """
 
+    @pytest.fixture(params=['png_file'])
+    # Have a factory which takes details
+    def image_file(request) -> io.BytesIO:
+        pass
+
     # TODO Skip this and link to an issue for deleting all targets *before*
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
@@ -32,9 +42,25 @@ class TestAddTarget:
         content_type = 'application/json'
         request_path = '/targets'
 
+        image_buffer = io.BytesIO()
+
+        red = random.randint(0, 255)
+        green = random.randint(0, 255)
+        blue = random.randint(0, 255)
+
+        width = 1
+        height = 1
+
+        image = Image.new('RGB', (width, height), color=(red, green, blue))
+        image.save(image_buffer, 'PNG')
+        image_buffer.seek(0)
+        image_data = image_buffer.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
         data = {
             'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
             'width': 1,
+            'image': image_data_encoded,
         }
         content = bytes(json.dumps(data), encoding='utf-8')
 
@@ -60,7 +86,8 @@ class TestAddTarget:
             headers=headers,
             data=content,
         )
-        assert response.status_code == codes.OK
+        assert response.status_code == codes.CREATED
+        # assert response.result_code == ResultCodes.TARGET_CREATED
         assert response.json().keys() == {}
         # Test return headers, esp content-type
 
