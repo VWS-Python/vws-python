@@ -166,6 +166,57 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
+    @pytest.mark.parametrize('data_to_remove', ['name', 'width', 'image'])
+    def test_missing_data(self, vuforia_server_credentials,
+                          image_file,
+                          data_to_remove,
+                          ) -> None:
+        content_type = 'application/json'
+        date = rfc_1123_date()
+        request_path = '/targets'
+
+        image_data = image_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        data.pop(data_to_remove)
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+        assert response.status_code == codes.CREATED
+        expected_keys = {'result_code', 'transaction_id', 'target_id'}
+        assert response.json().keys() == expected_keys
+        assert response.headers['Content-Type'] == 'application/json'
+        expected_result_code = ResultCodes.TARGET_CREATED.value
+        assert response.json()['result_code'] == expected_result_code
+        assert is_valid_transaction_id(response.json()['transaction_id'])
+        assert_valid_target_id(target_id=response.json()['target_id'])
+
     # too short, too long, wrong type
     def test_name_invalid(self) -> None:
         pass
