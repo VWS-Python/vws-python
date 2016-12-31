@@ -164,10 +164,10 @@ def update_target() -> Endpoint:
 
 
 @pytest.fixture(params=[
-    # 'delete_target',
-    # 'get_target',
-    # 'get_duplicates',
-    # 'target_summary',
+    'delete_target',
+    'get_target',
+    'get_duplicates',
+    'target_summary',
     'update_target',
 ])
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
