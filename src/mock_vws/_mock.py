@@ -177,7 +177,11 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                 methods=methods,
             )
         )
-        return method
+        # pylint is not very good with decorators
+        # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
+        date_validated = validate_date(method)  # noqa: E501 pylint: disable=no-value-for-parameter
+        authorization_validated = validate_authorization(date_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
+        return authorization_validated
     return decorator
 
 
@@ -204,8 +208,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         self.routes = ROUTES  # type: Set[Route]
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/targets', methods=[POST])
     def add_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -223,8 +225,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }  # type: Dict[str, str]
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -243,8 +243,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/summary', methods=[GET])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -276,8 +274,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/targets', methods=[GET])
     def target_list(self,
                     request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -298,8 +294,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -318,8 +312,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/duplicates/.+', methods=[GET])
     def get_duplicates(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -338,8 +330,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/targets/.+', methods=[PUT])
     def update_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -358,8 +348,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/summary/.+', methods=[GET])
     def target_summary(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
