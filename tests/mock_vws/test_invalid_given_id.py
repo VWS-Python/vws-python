@@ -64,8 +64,8 @@ class TestInvalidGivenID:
         # )
         import io, random, base64, json
         from PIL import Image
-        request_path = '/targets'
-        method = 'POST'
+        request_path = '/targets/099909c33fad4b3abf5fd88d3ea4f914'
+        method = 'PUT'
 
         image_buffer = io.BytesIO()
 
