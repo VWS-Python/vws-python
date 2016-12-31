@@ -6,6 +6,7 @@ Tests for the mock of the add target endpoint.
 # TODO: Document that "image" is mandatory, despite what the docs say
 # TODO: Test missing width, others
 # TODO: Test not a PNG, JPEG
+# TODO: Handle 'RequestQuotaReached'
 
 import base64
 import io
@@ -169,5 +170,9 @@ class TestAddTarget:
     def test_name_invalid(self) -> None:
         pass
 
+    # Not JPEG/PNG
+    # Not RGB/greyscale
+    # > 2mb
     def test_image_invalid(self) -> None:
+        # See https://library.vuforia.com/articles/Training/Image-Target-Guide
         pass
