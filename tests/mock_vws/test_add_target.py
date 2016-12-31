@@ -208,14 +208,12 @@ class TestAddTarget:
             headers=headers,
             data=content,
         )
-        assert response.status_code == codes.CREATED
-        expected_keys = {'result_code', 'transaction_id', 'target_id'}
-        assert response.json().keys() == expected_keys
-        assert response.headers['Content-Type'] == 'application/json'
-        expected_result_code = ResultCodes.TARGET_CREATED.value
-        assert response.json()['result_code'] == expected_result_code
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert_valid_target_id(target_id=response.json()['target_id'])
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
 
     # too short, too long, wrong type
     def test_name_invalid(self) -> None:
