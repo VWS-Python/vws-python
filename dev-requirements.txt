@@ -10,4 +10,6 @@ freezegun==0.3.8  # Freeze time in tests
 isort==4.2.5  # Lint imports
 dodgy==0.1.9  # Look for uploaded secrets
 pydocstyle==1.1.1  # Lint docstrings
-doc8==0.7.0 # Lint docs
+doc8==0.7.0  # Lint docs
+sphinx==1.5.1  # Build documentation
+sphinx_rtd_theme==0.1.10a0  # Theme for documentation
