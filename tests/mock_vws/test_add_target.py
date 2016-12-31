@@ -170,13 +170,15 @@ class TestAddTarget:
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert_valid_target_id(target_id=response.json()['target_id'])
 
-
     @pytest.mark.parametrize('width', [-1, 'wrong_type'])
     def test_width_invalid(self,
                            vuforia_server_credentials:
                            VuforiaServerCredentials,
                            image_file: io.BytesIO,
                            width: Any) -> None:
+        """
+        XXX
+        """
         content_type = 'application/json'
         date = rfc_1123_date()
         request_path = '/targets'
@@ -271,7 +273,6 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
-
     @pytest.mark.parametrize('name', [-1, '', 'a' * 65])
     def test_name_invalid(self,
                           name: str, image_file: io.BytesIO,
@@ -319,8 +320,6 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
-
-    # TODO Test 64 char name
     # Not JPEG/PNG
     # Not RGB/greyscale
     # > 2mb
