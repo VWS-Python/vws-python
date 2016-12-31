@@ -5,6 +5,8 @@ Tests for the mock of the add target endpoint.
 # TODO: Test both PNG and JPEG
 
 import json
+import uuid
+from urllib.parse import urljoin
 
 import pytest
 import requests
@@ -27,9 +29,11 @@ class TestAddTarget:
                      ) -> None:
         """It is possible to get a success response."""
         date = rfc_1123_date()
+        content_type = 'application/json'
+        request_path = '/targets'
 
         data = {
-            'name': 'example_name',
+            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
             'width': 1,
         }
         content = bytes(json.dumps(data), encoding='utf-8')
@@ -39,39 +43,25 @@ class TestAddTarget:
             secret_key=vuforia_server_credentials.secret_key,
             method=POST,
             content=content,
-            content_type='application/json',
+            content_type=content_type,
             date=date,
-            request_path='/summary',
+            request_path=request_path,
         )
 
         headers = {
             "Authorization": authorization_string,
             "Date": date,
+            'Content-Type': content_type,
         }
 
         response = requests.request(
             method=POST,
-            url='https://vws.vuforia.com/targets',
+            url=urljoin('https://vws.vuforia.com/', request_path),
             headers=headers,
-            data=b'',
+            data=content,
         )
         assert response.status_code == codes.OK
-        assert response.json().keys() == {
-            'active_images',
-            'current_month_recos',
-            'failed_images',
-            'inactive_images',
-            'name',
-            'previous_month_recos',
-            'processing_images',
-            'reco_threshold',
-            'request_quota',
-            'request_usage',
-            'result_code',
-            'target_quota',
-            'total_recos',
-            'transaction_id',
-        }
+        assert response.json().keys() == {}
         # Test return headers, esp content-type
 
     def test_incorrect_content_type(self) -> None:
