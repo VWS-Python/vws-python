@@ -2,22 +2,14 @@
 Tests for passing invalid endpoints which require a target ID to be given.
 """
 
-import uuid
-from urllib.parse import urljoin
-
 import pytest
 import requests
 from requests import codes
-from requests_mock import GET
 
 from common.constants import ResultCodes
-from tests.conftest import VuforiaServerCredentials
-from tests.mock_vws.utils import assert_vws_failure
+from tests.mock_vws.utils import Endpoint, assert_vws_failure
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
-
-ENDPOINTS = [
-    '/targets',
-]
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -27,38 +19,40 @@ class TestInvalidGivenID:
     be given.
     """
 
-    @pytest.mark.parametrize('endpoint', ENDPOINTS)
-    def test_not_real_id(self, endpoint: str,
+    def test_not_real_id(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
+                         endpoint_which_takes_target_id: Endpoint,  # noqa: E501 pylint: disable=redefined-outer-name
                          ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
-        endpoint = endpoint + '/' + uuid.uuid4().hex
+        endpoint = endpoint_which_takes_target_id
+        request_path = endpoint.example_path
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            content_type='',
+            method=endpoint.method,
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date=date,
-            request_path=endpoint,
+            request_path=request_path,
         )
 
         headers = {
             "Authorization": authorization_string,
             "Date": date,
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
-        url = urljoin('https://vws.vuforia.com/', endpoint)
         response = requests.request(
-            method=GET,
-            url=url,
+            method=endpoint.method,
+            url=endpoint.url,
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
 
         assert_vws_failure(

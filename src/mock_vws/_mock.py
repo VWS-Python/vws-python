@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
-from requests_mock import GET
+from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
@@ -48,11 +48,16 @@ def validate_authorization(wrapped: Callable[..., str],
         }
         return json.dumps(body)
 
+    if request.text is None:
+        content = b''
+    else:
+        content = bytes(request.text, encoding='utf-8')
+
     expected_authorization_header = authorization_header(
         access_key=bytes(instance.access_key, encoding='utf-8'),
         secret_key=bytes(instance.secret_key, encoding='utf-8'),
         method=request.method,
-        content=bytes(request.query, encoding='utf-8'),
+        content=content,
         content_type=request.headers.get('Content-Type', ''),
         date=request.headers.get('Date', ''),
         request_path=request.path,
@@ -235,7 +240,10 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         )
         # pylint is not very good with decorators
         # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
-        return parse_path(method)  # pylint: disable=no-value-for-parameter
+        date_validated = validate_date(method)  # noqa: E501 pylint: disable=no-value-for-parameter
+        authorization_validated = validate_authorization(date_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
+        path_parsed = parse_path(authorization_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
+        return path_parsed
     return decorator
 
 
@@ -263,13 +271,48 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.routes = ROUTES  # type: Set[Route]
         self.targets = []  # type: List
 
-    @validate_authorization
-    @validate_date
+    @route(path_pattern='/targets', methods=[POST])
+    def add_target(self,
+                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   context: _Context) -> str:
+        """
+        Add a target.
+
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
+        """
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }  # type: Dict[str, str]
+        return json.dumps(body)
+
+    @route(path_pattern='/targets/.+', methods=[DELETE])
+    def delete_target(self,
+                      request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                      context: _Context) -> str:
+        """
+        Delete a target.
+
+        Fake implementation of
+        https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
+
     @route(path_pattern='/summary', methods=[GET])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                          context: _Context) -> str:
         """
+        Get a database summary report.
+
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
@@ -294,13 +337,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @validate_authorization
-    @validate_date
     @route(path_pattern='/targets', methods=[GET])
     def target_list(self,
                     request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                     context: _Context) -> str:
         """
+        Get a list of all targets.
+
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
         """
@@ -320,8 +363,64 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                    context: _Context,
                    target_id: str) -> str:
         """
+        Get details of a target.
+
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
+
+    @route(path_pattern='/duplicates/.+', methods=[GET])
+    def get_duplicates(self,
+                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                       context: _Context) -> str:
+        """
+        Get targets which may be considered duplicates of a given target.
+
+        Fake implemetation of
+        https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
+
+    @route(path_pattern='/targets/.+', methods=[PUT])
+    def update_target(self,
+                      request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                      context: _Context) -> str:
+        """
+        Update a target.
+
+        Fake implemetation of
+        https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
+
+    @route(path_pattern='/summary/.+', methods=[GET])
+    def target_summary(self,
+                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                       context: _Context) -> str:
+        """
+        Get a summary report for a target.
+
+        Fake implemetation of
+        https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
         body = {
             'transaction_id': uuid.uuid4().hex,

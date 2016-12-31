@@ -7,14 +7,14 @@ import datetime
 import hashlib
 import hmac
 
-import pytest
 from freezegun import freeze_time
 from hypothesis import given
 from hypothesis.strategies import binary, text
 from requests import codes
 from requests_mock import GET
 
-from tests.conftest import VuforiaServerCredentials
+from mock_vws import MockVWS
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
@@ -148,7 +148,7 @@ class TestTargetAPIRequest:
 
     """Tests for `target_api_request`."""
 
-    @pytest.mark.usefixtures('verify_mock_vuforia')
+    @MockVWS()
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      ) -> None:

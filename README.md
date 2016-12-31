@@ -1,10 +1,13 @@
 [![Build Status](https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master)](https://travis-ci.com/adamtheturtle/vws-python)
 [![Coverage Status](https://coveralls.io/repos/github/adamtheturtle/vws-python/badge.svg)](https://coveralls.io/github/adamtheturtle/vws-python)
 [![Requirements Status](https://requires.io/github/adamtheturtle/vws-python/requirements.svg?branch=master)](https://requires.io/github/adamtheturtle/vws-python/requirements/?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/vws-python/badge/?version=latest)](http://vws-python.readthedocs.io/en/latest/?badge=latest)
 
 # vws-python
 
-Python wrapper for Vuforia Web Services (VWS) API
+Python wrapper for Vuforia Web Services (VWS) API.
+
+See the full documentation at <http://vws-python.readthedocs.io/>.
 
 # Installation
 
@@ -51,6 +54,20 @@ Then, add a database from the [Target Manager](https://developer.vuforia.com/tar
 
 To find the environment variables to set in the `vuforia_secrets.env` file,
 visit the Target Database in the Target Manager and view the "Database Access Keys".
+
+# Documentation
+
+To build the documentation, first install the dependencies:
+
+    pip install -e .[dev]
+
+Then use `make`:
+
+    make -C docs clean html
+
+To open the built documentation:
+
+    open docs/build/html/index.html
 
 # Mocking Vuforia
 
@@ -100,3 +117,4 @@ with MockVWS(real_http=True):
 The mock attempts to be realistic, but it was built without access to the source code of the original API.
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
 There is no attempt to make the image matching realistic.
+>>>>>>> origin/master
