@@ -61,7 +61,6 @@ class TestAddTarget:
         return request.getfixturevalue(request.param)
 
     # TODO Skip this and link to an issue for deleting all targets *before*
-    # TODO: Send Bad JSON
     @pytest.mark.parametrize('content_type', [
         # This is the documented required content type:
         'application/json',
@@ -272,7 +271,7 @@ class TestAddTarget:
 
     @pytest.mark.parametrize(
         'name',
-        [-1, '', 'a' * 65],
+        [1, '', 'a' * 65],
         ids=['Wrong Type', 'Empty', 'Too Long'],
     )
     def test_name_invalid(self,
@@ -336,3 +335,4 @@ class TestAddTarget:
     # Test missing image
     # Test missing width
     # Test missing name
+    # TODO: Send Bad JSON
