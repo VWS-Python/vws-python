@@ -163,7 +163,11 @@ class TestAddTarget:
         )
         assert response.status_code == codes.CREATED
 
-    @pytest.mark.parametrize('width', [-1, 'wrong_type'])
+    @pytest.mark.parametrize(
+        'width',
+        [-1, 'example'],
+        ids=['Negative', 'Wrong Type'],
+    )
     def test_width_invalid(self,
                            vuforia_server_credentials:
                            VuforiaServerCredentials,
@@ -266,7 +270,11 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
-    @pytest.mark.parametrize('name', [-1, '', 'a' * 65])
+    @pytest.mark.parametrize(
+        'name',
+        [-1, '', 'a' * 65],
+        ids=['Wrong Type', 'Empty', 'Too Long'],
+    )
     def test_name_invalid(self,
                           name: str,
                           png_file: io.BytesIO,
