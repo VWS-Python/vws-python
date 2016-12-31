@@ -3,12 +3,11 @@
 [![Requirements Status](https://requires.io/github/adamtheturtle/vws-python/requirements.svg?branch=master)](https://requires.io/github/adamtheturtle/vws-python/requirements/?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/vws-python/badge/?version=latest)](http://vws-python.readthedocs.io/en/latest/?badge=latest)
 
-
 # vws-python
 
 Python wrapper for Vuforia Web Services (VWS) API.
 
-See the full documentation at http://vws-python.readthedocs.io/.
+See the full documentation at <http://vws-python.readthedocs.io/>.
 
 # Installation
 
