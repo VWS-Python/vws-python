@@ -21,8 +21,8 @@ class TestInvalidGivenID:
     be given.
     """
 
-    from mock_vws import MockVWS
-    @MockVWS()
+    # from mock_vws import MockVWS
+    # @MockVWS()
     def test_not_real_id(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
                          endpoint_which_takes_target_id: Endpoint,  # noqa: E501 pylint: disable=redefined-outer-name
