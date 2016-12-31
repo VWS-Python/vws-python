@@ -218,11 +218,24 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
+        body = {}  # type: Dict[str, Union[str, int]]
+        decoded_body = request.body.decode('ascii')
+        request_body_json = json.loads(decoded_body)
+        if 'image' in request_body_json:
+            context.headers = {'Content-Type': 'application/json'}
+            context.status_code = codes.CREATED
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_CREATED.value,
+                'target_id': 1,
+            }
+            return json.dumps(body)
+
         context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
-        }  # type: Dict[str, str]
+        }
         return json.dumps(body)
 
     @route(path_pattern='/targets/.+', methods=[DELETE])

@@ -52,6 +52,7 @@ class TestAddTarget:
         return request.getfixturevalue(request.param)
 
     # TODO Skip this and link to an issue for deleting all targets *before*
+    # TODO: Send Bad JSON
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      image_file) -> None:
