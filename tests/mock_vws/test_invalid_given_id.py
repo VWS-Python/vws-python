@@ -2,8 +2,6 @@
 Tests for passing invalid endpoints which require a target ID to be given.
 """
 
-from urllib.parse import urljoin
-
 import pytest
 import requests
 from requests import codes
@@ -50,10 +48,9 @@ class TestInvalidGivenID:
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
 
-        url = urljoin('https://vws.vuforia.com/', request_path)
         response = requests.request(
             method=endpoint.method,
-            url=url,
+            url=endpoint.url,
             headers=headers,
             data=endpoint.content,
         )
