@@ -217,9 +217,55 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
-    # too short, too long, wrong type
-    def test_name_invalid(self) -> None:
-        pass
+    # TODO Test 64 char name
+
+    @pytest.mark.parametrize('name', [-1, '', 'a' * 65])
+    def test_name_invalid(self,
+                          name: str, image_file: io.BytesIO,
+                          vuforia_server_credentials: VuforiaServerCredentials
+                          ) -> None:
+        date = rfc_1123_date()
+        request_path = '/targets'
+        content_type = 'application/json'
+
+        image_data = image_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
 
     # Not JPEG/PNG
     # Not RGB/greyscale
