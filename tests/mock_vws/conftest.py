@@ -10,7 +10,7 @@ from typing import Generator
 import pytest
 from _pytest.fixtures import SubRequest
 from requests import codes
-from requests_mock import DELETE, GET, POST
+from requests_mock import DELETE, GET, POST, PUT
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
@@ -155,7 +155,7 @@ def update_target() -> Endpoint:
     example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
     return Endpoint(
         example_path=example_path,
-        method=GET,
+        method=PUT,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type='application/json',
@@ -164,10 +164,10 @@ def update_target() -> Endpoint:
 
 
 @pytest.fixture(params=[
-    'delete_target',
-    'get_target',
-    'get_duplicates',
-    'target_summary',
+    # 'delete_target',
+    # 'get_target',
+    # 'get_duplicates',
+    # 'target_summary',
     'update_target',
 ])
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
