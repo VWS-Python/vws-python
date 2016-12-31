@@ -119,13 +119,13 @@ class TestAddTarget:
 
     def test_long_name(self,
                        vuforia_server_credentials: VuforiaServerCredentials,
-                       image_file: io.BytesIO) -> None:
+                       png_file: io.BytesIO) -> None:
         """XXX"""
         date = rfc_1123_date()
         request_path = '/targets'
         content_type = 'application/json'
 
-        image_data = image_file.read()
+        image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         random_string = uuid.uuid4().hex
@@ -167,7 +167,7 @@ class TestAddTarget:
     def test_width_invalid(self,
                            vuforia_server_credentials:
                            VuforiaServerCredentials,
-                           image_file: io.BytesIO,
+                           png_file: io.BytesIO,
                            width: Any) -> None:
         """
         XXX
@@ -176,7 +176,7 @@ class TestAddTarget:
         date = rfc_1123_date()
         request_path = '/targets'
 
-        image_data = image_file.read()
+        image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -219,14 +219,14 @@ class TestAddTarget:
     def test_missing_data(self,
                           vuforia_server_credentials:
                           VuforiaServerCredentials,
-                          image_file: io.BytesIO,
+                          png_file: io.BytesIO,
                           data_to_remove: str,
                           ) -> None:
         content_type = 'application/json'
         date = rfc_1123_date()
         request_path = '/targets'
 
-        image_data = image_file.read()
+        image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -268,14 +268,15 @@ class TestAddTarget:
 
     @pytest.mark.parametrize('name', [-1, '', 'a' * 65])
     def test_name_invalid(self,
-                          name: str, image_file: io.BytesIO,
+                          name: str,
+                          png_file: io.BytesIO,
                           vuforia_server_credentials: VuforiaServerCredentials
                           ) -> None:
         date = rfc_1123_date()
         request_path = '/targets'
         content_type = 'application/json'
 
-        image_data = image_file.read()
+        image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
