@@ -29,15 +29,16 @@ class TestInvalidGivenID:
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
-        request_path = endpoint_which_takes_target_id.example_path
+        endpoint = endpoint_which_takes_target_id
+        request_path = endpoint.example_path
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=endpoint_which_takes_target_id.method,
-            content=endpoint_which_takes_target_id.content,
-            content_type=endpoint_which_takes_target_id.content_type or '',
+            method=endpoint.method,
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date=date,
             request_path=request_path,
         )
@@ -46,13 +47,15 @@ class TestInvalidGivenID:
             "Authorization": authorization_string,
             "Date": date,
         }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         url = urljoin('https://vws.vuforia.com/', request_path)
         response = requests.request(
-            method=endpoint_which_takes_target_id.method,
+            method=endpoint.method,
             url=url,
             headers=headers,
-            data=endpoint_which_takes_target_id.content,
+            data=endpoint.content,
         )
 
         assert_vws_failure(

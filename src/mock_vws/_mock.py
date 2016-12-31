@@ -10,7 +10,7 @@ from typing import Callable, Dict, List, Tuple
 
 import wrapt
 from requests import codes
-from requests_mock import DELETE, GET, POST
+from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
@@ -329,6 +329,46 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         Fake implemetation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
+
+    @validate_authorization
+    @validate_date
+    @route(path_pattern='/targets/.+', methods=[PUT])
+    def update_target(self,
+                      request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                      context: _Context) -> str:
+        """
+        Update a target.
+
+        Fake implemetation of
+        https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
+        """
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+
+        return json.dumps(body)
+
+    @validate_authorization
+    @validate_date
+    @route(path_pattern='/summary/.+', methods=[GET])
+    def target_summary(self,
+                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                       context: _Context) -> str:
+        """
+        Get a summary report for a target.
+
+        Fake implemetation of
+        https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
         body = {
             'transaction_id': uuid.uuid4().hex,

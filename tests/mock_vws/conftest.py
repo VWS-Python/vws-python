@@ -10,7 +10,7 @@ from typing import Generator
 import pytest
 from _pytest.fixtures import SubRequest
 from requests import codes
-from requests_mock import DELETE, GET, POST
+from requests_mock import DELETE, GET, POST, PUT
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
@@ -130,10 +130,45 @@ def target_list() -> Endpoint:
     )
 
 
+@pytest.fixture()
+def target_summary() -> Endpoint:
+    """
+    Return details of the endpoint for getting a summary report of a target.
+    """
+    example_path = '/summary/{target_id}'.format(target_id=uuid.uuid4().hex)
+    return Endpoint(
+        example_path=example_path,
+        method=GET,
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type=None,
+        content=b'',
+    )
+
+
+@pytest.fixture()
+def update_target() -> Endpoint:
+    """
+    Return details of the endpoint for updating a target.
+    """
+    data = {}  # type: Dict[str, Any]
+    example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    return Endpoint(
+        example_path=example_path,
+        method=PUT,
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        content_type='application/json',
+        content=bytes(str(data), encoding='utf-8'),
+    )
+
+
 @pytest.fixture(params=[
     'delete_target',
     'get_target',
     'get_duplicates',
+    'target_summary',
+    'update_target',
 ])
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
@@ -149,6 +184,8 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     'get_duplicates',
     'get_target',
     'target_list',
+    'target_summary',
+    'update_target',
 ])
 def endpoint(request: SubRequest) -> Endpoint:
     """
