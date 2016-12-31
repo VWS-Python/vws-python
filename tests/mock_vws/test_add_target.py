@@ -117,6 +117,60 @@ class TestAddTarget:
         assert is_valid_transaction_id(response.json()['transaction_id'])
         assert_valid_target_id(target_id=response.json()['target_id'])
 
+    def test_long_name(self,
+                       vuforia_server_credentials: VuforiaServerCredentials,
+                       image_file: io.BytesIO) -> None:
+        """XXX"""
+        date = rfc_1123_date()
+        request_path = '/targets'
+        content_type = 'application/json'
+
+        image_data = image_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        random_string = uuid.uuid4().hex
+        long_name = 'a' * (64 - len(random_string)) + random_string
+        assert len(long_name) == 64
+
+        data = {
+            'name': long_name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+        assert response.status_code == codes.CREATED
+        expected_keys = {'result_code', 'transaction_id', 'target_id'}
+        assert response.json().keys() == expected_keys
+        assert response.headers['Content-Type'] == 'application/json'
+        expected_result_code = ResultCodes.TARGET_CREATED.value
+        assert response.json()['result_code'] == expected_result_code
+        assert is_valid_transaction_id(response.json()['transaction_id'])
+        assert_valid_target_id(target_id=response.json()['target_id'])
+
+
     @pytest.mark.parametrize('width', [-1, 'wrong_type'])
     def test_width_invalid(self,
                            vuforia_server_credentials:
@@ -217,7 +271,6 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
-    # TODO Test 64 char name
 
     @pytest.mark.parametrize('name', [-1, '', 'a' * 65])
     def test_name_invalid(self,
@@ -267,6 +320,7 @@ class TestAddTarget:
         )
 
 
+    # TODO Test 64 char name
     # Not JPEG/PNG
     # Not RGB/greyscale
     # > 2mb
