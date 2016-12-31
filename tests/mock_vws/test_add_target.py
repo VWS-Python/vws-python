@@ -167,9 +167,11 @@ class TestAddTarget:
         )
 
     @pytest.mark.parametrize('data_to_remove', ['name', 'width', 'image'])
-    def test_missing_data(self, vuforia_server_credentials,
-                          image_file,
-                          data_to_remove,
+    def test_missing_data(self,
+                          vuforia_server_credentials:
+                          VuforiaServerCredentials,
+                          image_file: io.BytesIO,
+                          data_to_remove: str,
                           ) -> None:
         content_type = 'application/json'
         date = rfc_1123_date()
