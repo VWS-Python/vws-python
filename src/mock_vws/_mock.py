@@ -227,7 +227,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             valid = valid and float(width) >= 0
         except (ValueError, KeyError):
             valid = False
-        valid = valid and 'name' in request_body_json
+
+        try:
+            name = request_body_json['name']
+            valid = valid and isinstance(name, str)
+            valid = valid and 0 < len(name) < 65
+        except KeyError:
+            valid = False
 
         if valid:
             context.headers = {'Content-Type': 'application/json'}
