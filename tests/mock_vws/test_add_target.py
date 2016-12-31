@@ -336,3 +336,4 @@ class TestAddTarget:
     # Test missing width
     # Test missing name
     # TODO: Send Bad JSON
+    # TODO: in error checking, check application/json
