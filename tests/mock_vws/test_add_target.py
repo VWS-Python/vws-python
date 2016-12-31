@@ -24,6 +24,10 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
+def assert_valid_target_id(target_id: str) -> None:
+    pass
+
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAddTarget:
     """
@@ -61,8 +65,8 @@ class TestAddTarget:
     ])
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
-                     image_file,
-                     content_type) -> None:
+                     image_file: io.BytesIO,
+                     content_type: str) -> None:
         """It is possible to get a success response."""
         date = rfc_1123_date()
         request_path = '/targets'
@@ -106,10 +110,11 @@ class TestAddTarget:
         expected_result_code = ResultCodes.TARGET_CREATED.value
         assert response.json()['result_code'] == expected_result_code
         assert is_valid_transaction_id(response.json()['transaction_id'])
-        # TODO: assert_valid_target_id(response.json()['target_id'])
+        assert_valid_target_id(target_id=response.json()['target_id'])
 
     # Negative, too small, too large, wrong type
-    def test_width_invalid(self) -> None:
+    def test_width_invalid(self, vuforia_server_credentials, image_file,
+                           width) -> None:
         pass
 
     # too short, too long, wrong type
