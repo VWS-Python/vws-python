@@ -53,12 +53,18 @@ class TestAddTarget:
 
     # TODO Skip this and link to an issue for deleting all targets *before*
     # TODO: Send Bad JSON
+    @pytest.mark.parametrize('content_type', [
+        # This is the documented required content type:
+        'application/json',
+        # Other content types also work.
+        'other/content_type',
+    ])
     def test_success(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
-                     image_file) -> None:
+                     image_file,
+                     content_type) -> None:
         """It is possible to get a success response."""
         date = rfc_1123_date()
-        content_type = 'application/json'
         request_path = '/targets'
 
         image_data = image_file.read()
@@ -101,9 +107,6 @@ class TestAddTarget:
         assert response.json()['result_code'] == expected_result_code
         assert is_valid_transaction_id(response.json()['transaction_id'])
         # TODO: assert_valid_target_id(response.json()['target_id'])
-
-    def test_incorrect_content_type(self) -> None:
-        pass
 
     # Negative, too small, too large, wrong type
     def test_width_invalid(self) -> None:
