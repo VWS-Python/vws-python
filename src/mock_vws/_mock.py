@@ -222,11 +222,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         decoded_body = request.body.decode('ascii')
         request_body_json = json.loads(decoded_body)
         valid = 'image' in request_body_json
-        width = request_body_json['width']
         try:
-            valid = float(width) >= 0
-        except ValueError:
+            width = request_body_json['width']
+            valid = valid and float(width) >= 0
+        except (ValueError, KeyError):
             valid = False
+        valid = valid and 'name' in request_body_json
 
         if valid:
             context.headers = {'Content-Type': 'application/json'}
