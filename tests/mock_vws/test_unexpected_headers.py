@@ -7,32 +7,26 @@ import io
 import json
 import random
 from datetime import datetime, timedelta
-from urllib.parse import urljoin
+# This is used in a type hint which linters not pick up on.
+from typing import Union  # noqa: F401 pylint: disable=unused-import
 
 import pytest
 import requests
 from freezegun import freeze_time
 from PIL import Image
 from requests import codes
-from requests.models import Response
-from requests_mock import GET, POST
 
 from common.constants import ResultCodes
-from tests.conftest import VuforiaServerCredentials
-from tests.mock_vws.utils import is_valid_transaction_id
+from tests.mock_vws.utils import (
+    Endpoint,
+    assert_vws_failure,
+    is_valid_transaction_id,
+)
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-class Route:
-    def __init__(self, path, method, content_type, content):
-        self.path = path
-        self.method = method
-        self.content_type = content_type
-        self.content = content
-
-
-@pytest.fixture
-def png_file() -> io.BytesIO:
+def add_target() -> bytes:
     image_buffer = io.BytesIO()
 
     red = random.randint(0, 255)
@@ -45,82 +39,16 @@ def png_file() -> io.BytesIO:
     image = Image.new('RGB', (width, height), color=(red, green, blue))
     image.save(image_buffer, 'PNG')
     image_buffer.seek(0)
-    return image_buffer
-
-
-@pytest.fixture
-def add_target(png_file):
-    image_data = png_file.read()
-    image_data = base64.b64encode(image_data).decode('ascii')
+    image_data = image_buffer.read()
+    image_data_encoded = base64.b64encode(image_data).decode('ascii')
     data = {
         'name': 'example_name',
         'width': 1,
-        'image': image_data,
+        'image': image_data_encoded,
 
     }
-    route = Route(
-        path='/targets',
-        method=POST,
-        content_type='application/json',
-        content=bytes(json.dumps(data), encoding='utf-8'),
-    )
-    return route
-
-
-@pytest.fixture
-def target_list():
-    data = {}
-    route = Route(
-        path='/targets',
-        method=GET,
-        content_type=None,
-        content=bytes(json.dumps(data), encoding='utf-8'),
-    )
-    return route
-
-
-@pytest.fixture
-def database_summary():
-    data = {}
-    route = Route(
-        path='/summary',
-        method=GET,
-        content_type=None,
-        content=bytes(json.dumps(data), encoding='utf-8'),
-    )
-    return route
-
-
-@pytest.fixture(
-    params=[
-        'add_target',
-        'target_list',
-        'database_summary',
-    ],
-)
-def route(request):
-    return request.getfixturevalue(request.param)
-
-
-def assert_vws_failure(response: Response,
-                       status_code: int,
-                       result_code: str) -> None:
-    """
-    Assert that a VWS failure response is as expected.
-
-    Args:
-        response: The response returned by a request to VWS.
-        status_code: The expected status code of the response.
-        result_code: The expected result code of the response.
-
-    Raises:
-        AssertionError: The response is not in the expected VWS error format
-        for the given codes.
-    """
-    assert response.status_code == status_code
-    assert response.json().keys() == {'transaction_id', 'result_code'}
-    assert is_valid_transaction_id(response.json()['transaction_id'])
-    assert response.json()['result_code'] == result_code
+    content = bytes(json.dumps(data), encoding='utf-8')
+    return content
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -129,20 +57,20 @@ class TestHeaders:
     Tests for what happens when the headers are not as expected.
     """
 
-    def test_empty(self, route) -> None:
+    def test_empty(self, endpoint: Endpoint) -> None:
         """
         When no headers are given, an `UNAUTHORIZED` response is returned.
-i       """
+        """
         response = requests.request(
-            method=route.method,
-            url=urljoin('https://vws.vuforia.com/', route.path),
+            method=endpoint.method,
+            url=endpoint.url,
             headers={},
-            data=route.content,
+            data=endpoint.content,
         )
         assert_vws_failure(
             response=response,
             status_code=codes.UNAUTHORIZED,
-            result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
+            result_code=ResultCodes.AUTHENTICATION_FAILURE,
         )
 
 
@@ -152,7 +80,7 @@ class TestAuthorizationHeader:
     Tests for what happens when the `Authorization` header isn't as expected.
     """
 
-    def test_missing(self, route) -> None:
+    def test_missing(self, endpoint: Endpoint) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
@@ -160,24 +88,23 @@ class TestAuthorizationHeader:
         headers = {
             "Date": rfc_1123_date(),
         }
-
-        if route.content_type:
-            headers['Content-Type'] = route.content_type
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
-            method=route.method,
-            url=urljoin('https://vws.vuforia.com/', route.path),
+            method=endpoint.method,
+            url=endpoint.url,
             headers=headers,
-            data=route.content,
+            data=endpoint.content,
         )
 
         assert_vws_failure(
             response=response,
             status_code=codes.UNAUTHORIZED,
-            result_code=ResultCodes.AUTHENTICATION_FAILURE.value,
+            result_code=ResultCodes.AUTHENTICATION_FAILURE,
         )
 
-    def test_incorrect(self, route) -> None:
+    def test_incorrect(self, endpoint: Endpoint) -> None:
         """
         If an incorrect `Authorization` header is given, a `BAD_REQUEST`
         response is given.
@@ -189,21 +116,20 @@ class TestAuthorizationHeader:
             "Authorization": signature_string,
             "Date": date,
         }
-
-        if route.content_type:
-            headers['Content-Type'] = route.content_type
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
-            method=route.method,
-            url=urljoin('https://vws.vuforia.com/', route.path),
+            method=endpoint.method,
+            url=endpoint.url,
             headers=headers,
-            data=route.content,
+            data=endpoint.content,
         )
 
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL.value,
+            result_code=ResultCodes.FAIL,
         )
 
 
@@ -216,7 +142,7 @@ class TestDateHeader:
     def test_no_date_header(self,
                             vuforia_server_credentials:
                             VuforiaServerCredentials,
-                            route,
+                            endpoint: Endpoint,
                             ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
@@ -224,37 +150,36 @@ class TestDateHeader:
         signature_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=route.method,
-            content=route.content,
-            content_type=route.content_type,
+            method=endpoint.method,
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date='',
-            request_path=route.path,
+            request_path=endpoint.example_path
         )
 
         headers = {
             "Authorization": signature_string,
-        }
-
-        if route.content_type:
-            headers['Content-Type'] = route.content_type
+        }  # type: Dict[str, Union[bytes, str]]
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
-            method=route.method,
-            url=urljoin('https://vws.vuforia.com', route.path),
+            method=endpoint.method,
+            url=endpoint.url,
             headers=headers,
-            data=route.content,
+            data=endpoint.content,
         )
 
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL.value,
+            result_code=ResultCodes.FAIL,
         )
 
     def test_incorrect_date_format(self,
                                    vuforia_server_credentials:
                                    VuforiaServerCredentials,
-                                   route) -> None:
+                                   endpoint: Endpoint) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
         header is not in the expected format (RFC 1123).
@@ -266,69 +191,48 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=route.method,
-            content=route.content,
-            content_type=route.content_type,
+            method=endpoint.method,
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date=date_incorrect_format,
-            request_path=route.path,
+            request_path=endpoint.example_path
         )
 
         headers = {
             "Authorization": authorization_string,
             "Date": date_incorrect_format,
         }
-
-        if route.content_type:
-            headers['Content-Type'] = route.content_type
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
-            method=route.method,
-            url=urljoin('https://vws.vuforia.com/', route.path),
+            method=endpoint.method,
+            url=endpoint.url,
             headers=headers,
-            data=b'',
+            data=endpoint.content,
         )
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL.value,
+            result_code=ResultCodes.FAIL,
         )
 
     @pytest.mark.parametrize('time_multiplier', [1, -1],
                              ids=(['After', 'Before']))
-    @pytest.mark.parametrize(
-        ['time_difference_from_now', 'expected_status', 'expected_result'],
-        [
-            (
-                timedelta(minutes=4, seconds=50),
-                codes.OK,
-                ResultCodes.SUCCESS.value,
-            ),
-            (
-                timedelta(minutes=5, seconds=10),
-                codes.FORBIDDEN,
-                ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
-            ),
-        ],
-        ids=(['Within Range', 'Out of Range']),
-    )
-    def test_date_skewed(self,
-                         vuforia_server_credentials: VuforiaServerCredentials,
-                         time_difference_from_now: timedelta,
-                         expected_status: str,
-                         expected_result: str,
-                         time_multiplier: int,
-                         route,
-                         ) -> None:
+    def test_date_out_of_range(self,
+                               vuforia_server_credentials:
+                               VuforiaServerCredentials,
+                               time_multiplier: int,
+                               endpoint: Endpoint,
+                               ) -> None:
         """
-        If a date header is within five minutes before or after the request
-        is sent, no error is returned.
-
         If the date header is more than five minutes before or after the
         request is sent, a `FORBIDDEN` response is returned.
 
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
+        time_difference_from_now = timedelta(minutes=5, seconds=10)
         time_difference_from_now *= time_multiplier
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
@@ -336,28 +240,81 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
-            method=route.method,
-            content=route.content,
-            content_type=route.content_type,
+            method=endpoint.method,
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
             date=date,
-            request_path=route.path,
+            request_path=endpoint.example_path,
         )
 
         headers = {
             "Authorization": authorization_string,
             "Date": date,
         }
-
-        if route.content_type:
-            headers['Content-Type'] = route.content_type
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
-            method=route.method,
-            url=urljoin('https://vws.vuforia.com/', route.path),
+            method=endpoint.method,
+            url=endpoint.url,
             headers=headers,
-            data=route.content,
+            data=endpoint.content,
         )
 
-        assert response.status_code == expected_status
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
+        )
+
+    @pytest.mark.parametrize('time_multiplier', [1, -1],
+                             ids=(['After', 'Before']))
+    def test_date_in_range(self,
+                           vuforia_server_credentials:
+                           VuforiaServerCredentials,
+                           time_multiplier: int,
+                           endpoint: Endpoint,
+                           ) -> None:
+        """
+        If a date header is within five minutes before or after the request
+        is sent, no error is returned.
+
+        Because there is a small delay in sending requests and Vuforia isn't
+        consistent, some leeway is given.
+        """
+        time_difference_from_now = timedelta(minutes=4, seconds=50)
+        time_difference_from_now *= time_multiplier
+        with freeze_time(datetime.now() + time_difference_from_now):
+            date = rfc_1123_date()
+        time_difference_from_now *= time_multiplier
+        with freeze_time(datetime.now() + time_difference_from_now):
+            date = rfc_1123_date()
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=endpoint.method,
+            content=endpoint.content,
+            content_type=endpoint.content_type or '',
+            date=date,
+            request_path=endpoint.example_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+        }
+        if endpoint.content_type is not None:
+            headers['Content-Type'] = endpoint.content_type
+
+        response = requests.request(
+            method=endpoint.method,
+            url=endpoint.url,
+            headers=headers,
+            data=endpoint.content,
+        )
+
+        assert response.status_code == endpoint.successful_headers_status_code
         assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert response.json()['result_code'] == expected_result
+        expected_result_code = endpoint.successful_headers_result_code.value
+        assert response.json()['result_code'] == expected_result_code
