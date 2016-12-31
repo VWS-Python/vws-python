@@ -149,6 +149,8 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     'get_duplicates',
     'get_target',
     'target_list',
+    'target_summary',
+    'update_target',
 ])
 def endpoint(request: SubRequest) -> Endpoint:
     """
