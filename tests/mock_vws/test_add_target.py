@@ -176,3 +176,11 @@ class TestAddTarget:
     def test_image_invalid(self) -> None:
         # See https://library.vuforia.com/articles/Training/Image-Target-Guide
         pass
+
+    # Test adding random extra field.
+    # If there's an error, have a test for that.
+    # If there's an error, have a test which allows
+
+    # Test missing image
+    # Test missing width
+    # Test missing name
