@@ -14,7 +14,7 @@ class ResultCodes(Values):
     """
 
     SUCCESS = ValueConstant('Success')
-    TARGET_CREATED = ValueConstant('Created')
+    TARGET_CREATED = ValueConstant('TargetCreated')
     AUTHENTICATION_FAILURE = ValueConstant('AuthenticationFailure')
     REQUEST_TIME_TOO_SKEWED = ValueConstant('RequestTimeTooSkewed')
     TARGET_NAME_EXIST = ValueConstant('TargetNameExist')
