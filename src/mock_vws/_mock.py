@@ -236,7 +236,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 'result_code': ResultCodes.TARGET_CREATED.value,
                 'target_id': 1,
             }
-            return json.dumps(body)
+            return json.dumps(bod:y)
 
         context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {

@@ -5,6 +5,7 @@ Tests for the mock of the add target endpoint.
 # TODO: Test both PNG and JPEG
 # TODO: Document that "image" is mandatory, despite what the docs say
 # TODO: Test missing width, others
+# TODO: Test not a PNG, JPEG
 
 import base64
 import io
@@ -12,9 +13,11 @@ import json
 import random
 import uuid
 from urllib.parse import urljoin
+from typing import Any
 
 import pytest
 import requests
+from _pytest.fixtures import SubRequest
 from PIL import Image
 from requests import codes
 from requests_mock import POST
@@ -53,7 +56,7 @@ class TestAddTarget:
 
     @pytest.fixture(params=['png_file'])
     # Have a factory which takes details
-    def image_file(self, request) -> io.BytesIO:
+    def image_file(self, request: SubRequest) -> io.BytesIO:
         return request.getfixturevalue(request.param)
 
     # TODO Skip this and link to an issue for deleting all targets *before*
@@ -114,8 +117,11 @@ class TestAddTarget:
         assert_valid_target_id(target_id=response.json()['target_id'])
 
     @pytest.mark.parametrize('width', [-1, 'wrong_type'])
-    def test_width_invalid(self, vuforia_server_credentials, image_file,
-                           width) -> None:
+    def test_width_invalid(self,
+                           vuforia_server_credentials:
+                           VuforiaServerCredentials,
+                           image_file: io.BytesIO,
+                           width: Any) -> None:
         content_type = 'application/json'
         date = rfc_1123_date()
         request_path = '/targets'
