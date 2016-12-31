@@ -224,8 +224,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         valid = 'image' in request_body_json
         try:
             width = request_body_json['width']
-            valid = valid and float(width) >= 0
-        except (ValueError, KeyError):
+            valid = valid and width >= 0
+        except (KeyError, TypeError):
             valid = False
 
         try:

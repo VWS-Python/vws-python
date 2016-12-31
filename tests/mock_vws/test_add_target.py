@@ -164,7 +164,7 @@ class TestAddTarget:
 
     @pytest.mark.parametrize(
         'width',
-        [-1, 'example'],
+        [-1, '10'],
         ids=['Negative', 'Wrong Type'],
     )
     def test_width_invalid(self,
