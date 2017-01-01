@@ -332,8 +332,5 @@ class TestAddTarget:
     # If there's an error, have a test for that.
     # If there's an error, have a test which allows
 
-    # Test missing image
-    # Test missing width
-    # Test missing name
     # TODO: Send Bad JSON
     # TODO: in error checking, check application/json
