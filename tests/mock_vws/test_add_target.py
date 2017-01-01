@@ -153,55 +153,6 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
-    def test_extra_data(self,
-                        vuforia_server_credentials: VuforiaServerCredentials,
-                        image_file: io.BytesIO,
-                        ) -> None:
-        """XXX"""
-        date = rfc_1123_date()
-        request_path = '/targets'
-        content_type = 'application/json'
-
-        image_data = image_file.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
-        data = {
-            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
-            'width': 1,
-            'image': image_data_encoded,
-            'extra_thing': 1,
-        }
-        content = bytes(json.dumps(data), encoding='utf-8')
-
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
-        )
-
     def test_long_name(self,
                        vuforia_server_credentials: VuforiaServerCredentials,
                        png_file: io.BytesIO) -> None:
@@ -407,13 +358,81 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
+
+class TestInvalidImage:
+    # See https://library.vuforia.com/articles/Training/Image-Target-Guide
+
     # Not JPEG/PNG
-    # Not RGB/greyscale
-    # > 2mb
-    def test_image_invalid(self) -> None:
-        # See https://library.vuforia.com/articles/Training/Image-Target-Guide
+    def test_invalid_type(self) -> None:
         pass
 
-    # Test adding random extra field.
-    # If there's an error, have a test for that.
-    # If there's an error, have a test which allows the extra 3
+    # > 2mb
+    def test_too_large(self) -> None:
+        pass
+
+    # Not RGB/greyscale
+    def test_wrong_colour_space(self) -> None:
+        pass
+
+
+class TestNotMandatoryFields:
+
+    def test_invalid_extra_data(self,
+                        vuforia_server_credentials: VuforiaServerCredentials,
+                        image_file: io.BytesIO,
+                        ) -> None:
+        """XXX"""
+        date = rfc_1123_date()
+        request_path = '/targets'
+        content_type = 'application/json'
+
+        image_data = image_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
+            'width': 1,
+            'image': image_data_encoded,
+            'extra_thing': 1,
+        }
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+    def test_valid_extra_data(self) -> None:
+        active_flag = True
+        application_metadata = 'a' # something base64 encoded
+        pass
+
+    def test_invalid_active_flag(self) -> None:
+        pass
+
+    def test_invalid_application_metadata(self) -> None:
+        pass
