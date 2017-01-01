@@ -5,6 +5,7 @@ A fake implementation of VWS.
 import json
 import uuid
 from datetime import datetime, timedelta
+from json.decoder import JSONDecodeError
 from typing import Union  # noqa F401
 from typing import Callable, Dict, List, Tuple
 
@@ -220,8 +221,14 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, Union[str, int]]
         decoded_body = request.body.decode('ascii')
-        request_body_json = json.loads(decoded_body)
-        valid = 'image' in request_body_json
+
+        valid = True
+        try:
+            request_body_json = json.loads(decoded_body)
+        except JSONDecodeError:
+            request_body_json = {}
+
+        valid = valid and 'image' in request_body_json
         try:
             width = request_body_json['width']
             valid = valid and width >= 0
