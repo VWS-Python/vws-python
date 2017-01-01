@@ -243,9 +243,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'active_flag',
             'application_metadata',
         }
-        for key in request_body_json.keys():
-            if key not in allowed_keys:
-                valid = False
+        valid = valid and all(key in allowed_keys for key in
+                              request_body_json.keys())
 
         if valid:
             context.headers = {'Content-Type': 'application/json'}
