@@ -235,6 +235,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         except KeyError:
             valid = False
 
+        # TODO: Bad request for all endpoints if there's stuff not allowed?
+        allowed_keys = {
+            'name',
+            'width',
+            'image',
+            'active_flag',
+            'application_metadata',
+        }
+        for key in request_body_json.keys():
+            if key not in allowed_keys:
+                valid = False
+
         if valid:
             context.headers = {'Content-Type': 'application/json'}
             context.status_code = codes.CREATED

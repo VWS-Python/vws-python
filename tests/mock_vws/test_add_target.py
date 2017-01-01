@@ -165,7 +165,6 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
-
     def test_long_name(self,
                        vuforia_server_credentials: VuforiaServerCredentials,
                        png_file: io.BytesIO) -> None:
@@ -380,7 +379,7 @@ class TestAddTarget:
 
     # Test adding random extra field.
     # If there's an error, have a test for that.
-    # If there's an error, have a test which allows
+    # If there's an error, have a test which allows the extra 3
 
     # TODO: Send Bad JSON
     # TODO: in error checking, check application/json
