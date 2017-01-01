@@ -418,5 +418,4 @@ class TestAddTarget:
     # If there's an error, have a test for that.
     # If there's an error, have a test which allows the extra 3
 
-    # TODO: Send Bad JSON
     # TODO: in error checking, check application/json
