@@ -417,5 +417,3 @@ class TestAddTarget:
     # Test adding random extra field.
     # If there's an error, have a test for that.
     # If there's an error, have a test which allows the extra 3
-
-    # TODO: in error checking, check application/json
