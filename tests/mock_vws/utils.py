@@ -106,3 +106,4 @@ def assert_vws_failure(response: Response,
     assert response.json().keys() == {'transaction_id', 'result_code'}
     assert is_valid_transaction_id(response.json()['transaction_id'])
     assert response.json()['result_code'] == result_code.value
+    assert response.headers['Content-Type'] == 'application/json'
