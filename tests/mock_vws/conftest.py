@@ -17,8 +17,8 @@ from mock_vws import MockVWS
 from tests.mock_vws.utils import Endpoint
 
 
-# @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-@pytest.fixture(params=[True], ids=['Mock Vuforia'])
+@pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
+# @pytest.fixture(params=[True], ids=['Mock Vuforia'])
 def verify_mock_vuforia(request: SubRequest) -> Generator:
     """
     Using this fixture in a test will make it run twice. Once with the real
