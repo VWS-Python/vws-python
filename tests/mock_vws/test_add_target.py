@@ -378,9 +378,10 @@ class TestInvalidImage:
 class TestNotMandatoryFields:
 
     def test_invalid_extra_data(self,
-                        vuforia_server_credentials: VuforiaServerCredentials,
-                        image_file: io.BytesIO,
-                        ) -> None:
+                                vuforia_server_credentials:
+                                VuforiaServerCredentials,
+                                image_file: io.BytesIO,
+                                ) -> None:
         """XXX"""
         date = rfc_1123_date()
         request_path = '/targets'
