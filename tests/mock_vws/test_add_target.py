@@ -91,7 +91,7 @@ class TestAddTarget:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
-            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
+            'name': 'example_name',
             'width': 1,
             'image': image_data_encoded,
         }
