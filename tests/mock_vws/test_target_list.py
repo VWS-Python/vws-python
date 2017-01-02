@@ -8,7 +8,7 @@ from requests import codes
 from requests_mock import GET
 from urllib.parse import urljoin
 
-from commmon.constants import ResultCodes
+from common.constants import ResultCodes
 from tests.utils import VuforiaServerCredentials
 from tests.mock_vws.utils import assert_vws_response
 from vws._request_utils import authorization_header, rfc_1123_date
