@@ -56,11 +56,9 @@ class TestAddTarget:
         return image_buffer
 
     @pytest.fixture(params=['png_file'])
-    # Have a factory which takes details
     def image_file(self, request: SubRequest) -> io.BytesIO:
         return request.getfixturevalue(request.param)
 
-    # TODO Skip this and link to an issue for deleting all targets *before*
     @pytest.mark.parametrize('content_type', [
         # This is the documented required content type:
         'application/json',
