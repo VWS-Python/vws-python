@@ -40,6 +40,9 @@ class TestAddTarget:
 
     @pytest.fixture
     def png_file(self) -> io.BytesIO:
+        """
+        Return a random coloured, 1x1 PNG, RGB file.
+        """
         image_buffer = io.BytesIO()
 
         red = random.randint(0, 255)
