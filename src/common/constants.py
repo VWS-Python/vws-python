@@ -24,3 +24,4 @@ class ResultCodes(Values):
     METADATA_TOO_LARGE = ValueConstant('MetadataTooLarge')
     DATE_RANGE_ERROR = ValueConstant('DateRangeError')
     FAIL = ValueConstant('Fail')
+    TARGET_STATUS_PROCESSING = ValueConstant('TargetStatusProcessing')
