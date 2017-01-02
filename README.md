@@ -58,7 +58,7 @@ Then, add a database from the [Target Manager](https://developer.vuforia.com/tar
 To find the environment variables to set in the `vuforia_secrets.env` file,
 visit the Target Database in the Target Manager and view the "Database Access Keys".
 
-Sometimes targets get stuck at the "Processing" stage meaning that they cannot be deleted.
+Targets sometimes get stuck at the "Processing" stage meaning that they cannot be deleted.
 When this happens, create a new target database to use for testing.
 
 # Documentation
