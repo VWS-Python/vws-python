@@ -49,8 +49,8 @@ Then, secret keys must be set as environment variables.
 The test infrastructure allows those keys to be set in the file `vuforia_secrets.env`.
 See `vuforia_secrets.env.example` for the environment variables to set.
 
-Do not use target database that you are using for other purposes.
-This is because the test suite adds and deletes targets regularly.
+Do not use a target database that you are using for other purposes.
+This is because the test suite adds deletes targets.
 
 To create a target database, first create a license key in the [License Manager](https://developer.vuforia.com/targetmanager/licenseManager/licenseListing).
 Then, add a database from the [Target Manager](https://developer.vuforia.com/targetmanager).
