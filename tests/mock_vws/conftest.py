@@ -74,6 +74,10 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
                         ) -> None:
     """
     Delete all targets.
+
+    Args:
+        vuforia_server_credentials: The credentials to the Vuforia target
+            database to delete all targets in.
     """
     date = rfc_1123_date()
 
