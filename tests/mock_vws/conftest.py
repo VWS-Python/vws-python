@@ -8,6 +8,7 @@ from typing import Any  # noqa: F401 pylint: disable=unused-import
 from typing import Generator
 
 import pytest
+import requests
 from _pytest.fixtures import SubRequest
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
@@ -15,11 +16,105 @@ from requests_mock import DELETE, GET, POST, PUT
 from common.constants import ResultCodes
 from mock_vws import MockVWS
 from tests.mock_vws.utils import Endpoint
+from tests.utils import VuforiaServerCredentials
+from vws._request_utils import authorization_header, rfc_1123_date
 
 
-# @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-@pytest.fixture(params=[False], ids=['Mock Vuforia'])
-def verify_mock_vuforia(request: SubRequest) -> Generator:
+def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
+                   target: str) -> None:  # pragma: no cover
+    """
+    Delete a given target.
+
+    Args:
+        vuforia_server_credentials: The credentials to the Vuforia target
+            database to delete the target in.
+        target: The ID of the target to delete.
+
+    Raises:
+        AssertionError: The deletion was not a success.
+    """
+    date = rfc_1123_date()
+
+    authorization_string = authorization_header(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=DELETE,
+        content=b'',
+        content_type='',
+        date=date,
+        request_path='/targets/{target}'.format(target=target),
+    )
+
+    headers = {
+        "Authorization": authorization_string,
+        "Date": date,
+    }
+
+    response = requests.request(
+        method=DELETE,
+        url='https://vws.vuforia.com/targets/{target}'.format(target=target),
+        headers=headers,
+        data=b'',
+    )
+
+    result_code = response.json()['result_code']
+    error_message = (
+        'Deleting a target failed. '
+        'The result code returned was: {result_code}. '
+        'Perhaps wait and try again. '
+        'However, sometimes targets get stuck on Vuforia, '
+        'and a new testing database is required.'
+    ).format(result_code=result_code)
+
+    acceptable_results = (ResultCodes.SUCCESS, ResultCodes.UNKNOWN_TARGET)
+    assert result_code in acceptable_results, error_message
+
+
+def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
+                        ) -> None:
+    """
+    Delete all targets.
+
+    Args:
+        vuforia_server_credentials: The credentials to the Vuforia target
+            database to delete all targets in.
+    """
+    date = rfc_1123_date()
+
+    authorization_string = authorization_header(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=GET,
+        content=b'',
+        content_type='',
+        date=date,
+        request_path='/targets',
+    )
+
+    headers = {
+        "Authorization": authorization_string,
+        "Date": date,
+    }
+
+    response = requests.request(
+        method=GET,
+        url='https://vws.vuforia.com/targets',
+        headers=headers,
+        data=b'',
+    )
+    targets = response.json()['results']
+
+    for target in targets:  # pragma: no cover
+        _delete_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target=target,
+        )
+
+
+@pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
+def verify_mock_vuforia(request: SubRequest,
+                        vuforia_server_credentials: VuforiaServerCredentials,
+                        ) -> Generator:
     """
     Using this fixture in a test will make it run twice. Once with the real
     Vuforia, and once with the mock.
@@ -28,6 +123,9 @@ def verify_mock_vuforia(request: SubRequest) -> Generator:
     """
     use_real_vuforia = request.param
     if use_real_vuforia:
+        _delete_all_targets(
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
         yield
     else:
         with MockVWS():
