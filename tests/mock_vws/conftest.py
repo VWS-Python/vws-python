@@ -48,8 +48,17 @@ def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
         headers=headers,
         data=b'',
     )
-    error_message = "Can't delete..."
-    assert response.json()['result_code'] == 'Success'
+
+    result_code = response.json()['result_code']
+    error_message = (
+        'Deleting a target failed. '
+        'The result code returned was: {result_code}. '
+        'Perhaps wait and try again. '
+        'However, sometimes targets get stuck on Vuforia, '
+        'and a new testing database is required.'
+    ).format(result_code=result_code)
+
+    assert result_code == ResultCodes.SUCCESS, error_message
 
 
 def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
