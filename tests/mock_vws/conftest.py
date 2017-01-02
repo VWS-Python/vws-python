@@ -15,10 +15,32 @@ from requests_mock import DELETE, GET, POST, PUT
 from common.constants import ResultCodes
 from mock_vws import MockVWS
 from tests.mock_vws.utils import Endpoint
+from tests.utils import VuforiaServerCredentials
+
+
+def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
+                   target: str) -> None:
+    """
+    XXX
+    """
+    pass
+
+
+def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
+                        ) -> None:
+    """
+    XXX
+    """
+    targets = []
+
+    for target in targets:
+        _delete_target(target)
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-def verify_mock_vuforia(request: SubRequest) -> Generator:
+def verify_mock_vuforia(request: SubRequest,
+                        vuforia_server_credentials: VuforiaServerCredentials,
+                        ) -> Generator:
     """
     Using this fixture in a test will make it run twice. Once with the real
     Vuforia, and once with the mock.
@@ -27,6 +49,9 @@ def verify_mock_vuforia(request: SubRequest) -> Generator:
     """
     use_real_vuforia = request.param
     if use_real_vuforia:
+        _delete_all_targets(
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
         yield
     else:
         with MockVWS():
