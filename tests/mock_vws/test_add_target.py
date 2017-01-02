@@ -11,6 +11,7 @@ import json
 import random
 import uuid
 from urllib.parse import urljoin
+from string import hexdigits
 from typing import Any
 
 import pytest
@@ -27,7 +28,8 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 
 def assert_valid_target_id(target_id: str) -> None:
-    pass
+    assert len(target_id) == 32
+    assert all(char in hexdigits for char in target_id)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
