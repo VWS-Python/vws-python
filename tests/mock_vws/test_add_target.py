@@ -2,10 +2,7 @@
 Tests for the mock of the add target endpoint.
 """
 
-# TODO: Test both PNG and JPEG
 # TODO: Document that "image" is mandatory, despite what the docs say
-# TODO: Test missing width, others
-# TODO: Test not a PNG, JPEG
 # TODO: Handle 'RequestQuotaReached'
 
 import base64
