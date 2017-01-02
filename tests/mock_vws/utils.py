@@ -82,6 +82,30 @@ def assert_vws_failure(response: Response,
     """
     Assert that a VWS failure response is as expected.
 
+    Args:
+        response: The response returned by a request to VWS.
+        status_code: The expected status code of the response.
+        result_code: The expected result code of the response.
+
+    Raises:
+        AssertionError: The response is not in the expected VWS error format
+        for the given codes.
+    """
+    assert response.json().keys() == {'transaction_id', 'result_code'}
+    assert_vws_response(
+        response=response,
+        status_code=status_code,
+        result_code=result_code,
+    )
+
+
+def assert_vws_response(response: Response,
+                        status_code: int,
+                        result_code: ResultCodes,
+                        ) -> None:
+    """
+    Assert that a VWS response is as expected, at least in part.
+
     https://library.vuforia.com/articles/Solution/How-To-Interperete-VWS-API-Result-Codes
     implies that the expected status code can be worked out from the result
     code. However, this is not the case as the real results differ from the
@@ -95,15 +119,14 @@ def assert_vws_failure(response: Response,
         result_code: The expected result code of the response.
 
     Raises:
-        AssertionError: The response is not in the expected VWS error format
-        for the given codes.
+        AssertionError: The response is not in the expected VWS format for the
+        given codes.
     """
     message = 'Expected {expected}, got {actual}.'
     assert response.status_code == status_code, message.format(
         expected=status_code,
         actual=response.status_code,
     )
-    assert response.json().keys() == {'transaction_id', 'result_code'}
     assert is_valid_transaction_id(response.json()['transaction_id'])
     assert response.json()['result_code'] == result_code.value
     assert response.headers['Content-Type'] == 'application/json'
