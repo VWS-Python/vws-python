@@ -22,12 +22,21 @@ from requests import codes
 from requests_mock import POST
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import is_valid_transaction_id, assert_vws_failure
+from tests.mock_vws.utils import assert_vws_failure, assert_vws_response
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
 def assert_valid_target_id(target_id: str) -> None:
+    """
+    Assert that a given Target ID is in a valid format.
+
+    Args:
+        target_id: The Target ID to check.
+
+    Raises:
+        AssertionError: The Target ID is not in a valid format.
+    """
     assert len(target_id) == 32
     assert all(char in hexdigits for char in target_id)
 
@@ -59,6 +68,9 @@ class TestAddTarget:
 
     @pytest.fixture(params=['png_file'])
     def image_file(self, request: SubRequest) -> io.BytesIO:
+        """
+        Return an image file.
+        """
         return request.getfixturevalue(request.param)
 
     @pytest.mark.parametrize('content_type', [
@@ -67,11 +79,11 @@ class TestAddTarget:
         # Other content types also work.
         'other/content_type',
     ])
-    def test_success(self,
+    def test_created(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      image_file: io.BytesIO,
                      content_type: str) -> None:
-        """It is possible to get a success response."""
+        """It is possible to get a `TargetCreated` response."""
         date = rfc_1123_date()
         request_path = '/targets'
 
@@ -107,14 +119,13 @@ class TestAddTarget:
             headers=headers,
             data=content,
         )
-        assert response.status_code == codes.CREATED
+        assert_vws_response(
+            response=response,
+            status_code=codes.CREATED,
+            result_code=ResultCodes.TARGET_CREATED,
+        )
         expected_keys = {'result_code', 'transaction_id', 'target_id'}
         assert response.json().keys() == expected_keys
-        assert response.headers['Content-Type'] == 'application/json'
-        expected_result_code = ResultCodes.TARGET_CREATED.value
-        assert response.json()['result_code'] == expected_result_code
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        assert_valid_target_id(target_id=response.json()['target_id'])
 
     def test_invalid_json(self,
                           vuforia_server_credentials: VuforiaServerCredentials,
