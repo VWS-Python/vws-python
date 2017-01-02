@@ -21,7 +21,7 @@ from vws._request_utils import authorization_header, rfc_1123_date
 
 
 def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
-                   target: str) -> None:
+                   target: str) -> None:  # pragma: no cover
     """
     Delete a given target.
 
@@ -104,7 +104,7 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
     )
     targets = response.json()['results']
 
-    for target in targets:
+    for target in targets:  # pragma: no cover
         _delete_target(
             vuforia_server_credentials=vuforia_server_credentials,
             target=target,
