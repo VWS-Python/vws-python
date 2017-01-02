@@ -8,8 +8,8 @@ from typing import Any  # noqa: F401 pylint: disable=unused-import
 from typing import Generator
 
 import pytest
-from _pytest.fixtures import SubRequest
 import requests
+from _pytest.fixtures import SubRequest
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 
