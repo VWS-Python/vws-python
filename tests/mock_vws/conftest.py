@@ -23,7 +23,15 @@ from vws._request_utils import authorization_header, rfc_1123_date
 def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
                    target: str) -> None:
     """
-    XXX
+    Delete a given target.
+
+    Args:
+        vuforia_server_credentials: The credentials to the Vuforia target
+            database to delete the target in.
+        target: The ID of the target to delete.
+
+    Raises:
+        AssertionError: The deletion was not a success.
     """
     date = rfc_1123_date()
 
@@ -58,13 +66,14 @@ def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
         'and a new testing database is required.'
     ).format(result_code=result_code)
 
-    assert result_code == ResultCodes.SUCCESS, error_message
+    acceptable_results = (ResultCodes.SUCCESS, ResultCodes.UNKNOWN_TARGET)
+    assert result_code in acceptable_results, error_message
 
 
 def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
                         ) -> None:
     """
-    XXX
+    Delete all targets.
     """
     date = rfc_1123_date()
 
