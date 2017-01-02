@@ -129,3 +129,4 @@ def assert_vws_response(response: Response,
     )
     assert is_valid_transaction_id(response.json()['transaction_id'])
     assert response.json()['result_code'] == result_code.value
+    assert response.headers['Content-Type'] == 'application/json'
