@@ -78,11 +78,17 @@ class TestAddTarget:
         'application/json',
         # Other content types also work.
         'other/content_type',
-    ])
+    ], ids=['Documented Content-Type', 'Undocumented Content-Type'])
+    @pytest.mark.parametrize('name', [
+        'a',
+        'a' * 64,
+    ], ids=['Short name', 'Long name'])
     def test_created(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      image_file: io.BytesIO,
-                     content_type: str) -> None:
+                     content_type: str,
+                     name: str,
+                     ) -> None:
         """It is possible to get a `TargetCreated` response."""
         date = rfc_1123_date()
         request_path = '/targets'
@@ -91,7 +97,7 @@ class TestAddTarget:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
-            'name': 'example_name',
+            'name': name,
             'width': 1,
             'image': image_data_encoded,
         }
