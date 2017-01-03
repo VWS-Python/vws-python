@@ -119,6 +119,10 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
         )
 
 
+SKIP_REAL = False
+SKIP_MOCK = False
+
+
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(request: SubRequest,
                         vuforia_server_credentials: VuforiaServerCredentials,
@@ -130,6 +134,13 @@ def verify_mock_vuforia(request: SubRequest,
     This is useful for verifying the mock.
     """
     use_real_vuforia = request.param
+
+    if use_real_vuforia and SKIP_REAL:
+        pytest.skip()
+
+    if not use_real_vuforia and SKIP_MOCK:
+        pytest.skip()
+
     if use_real_vuforia:
         _delete_all_targets(
             vuforia_server_credentials=vuforia_server_credentials,
