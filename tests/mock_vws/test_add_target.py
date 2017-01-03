@@ -379,7 +379,7 @@ class TestNotMandatoryFields:
     def test_invalid_extra_data(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
-                                image_file: io.BytesIO,
+                                image_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                                 ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
