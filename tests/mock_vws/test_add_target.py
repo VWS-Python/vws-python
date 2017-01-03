@@ -39,27 +39,36 @@ def assert_valid_target_id(target_id: str) -> None:
     assert all(char in hexdigits for char in target_id)
 
 
+def _image_file(file_format):
+    """
+    XXX
+    """
+    image_buffer = io.BytesIO()
+    width = 1
+    height = 1
+    image = Image.new('RGB', (width, height))
+    image.save(image_buffer, file_format)
+    image_buffer.seek(0)
+    return image_buffer
+
+
 @pytest.fixture
 def png_file() -> io.BytesIO:
     """
     Return a random coloured, 1x1 PNG, RGB file.
     """
-    image_buffer = io.BytesIO()
-
-    red = random.randint(0, 255)
-    green = random.randint(0, 255)
-    blue = random.randint(0, 255)
-
-    width = 1
-    height = 1
-
-    image = Image.new('RGB', (width, height), color=(red, green, blue))
-    image.save(image_buffer, 'PNG')
-    image_buffer.seek(0)
-    return image_buffer
+    return _image_file(file_format='PNG')
 
 
-@pytest.fixture(params=['png_file'])
+@pytest.fixture
+def jpeg_file() -> io.BytesIO:
+    """
+    Return a random coloured, 1x1 JPEG, RGB file.
+    """
+    return _image_file(file_format='JPEG')
+
+
+@pytest.fixture(params=['png_file', 'jpeg_file'])
 def image_file(request: SubRequest) -> io.BytesIO:
     """
     Return an image file.
