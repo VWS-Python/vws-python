@@ -11,7 +11,7 @@ import json
 import random
 import uuid
 from string import hexdigits
-from typing import Any
+from typing import Any, Union
 from urllib.parse import urljoin
 
 import pytest
@@ -40,6 +40,33 @@ def assert_valid_target_id(target_id: str) -> None:
     assert len(target_id) == 32
     assert all(char in hexdigits for char in target_id)
 
+@pytest.fixture
+def png_file() -> io.BytesIO:
+    """
+    Return a random coloured, 1x1 PNG, RGB file.
+    """
+    image_buffer = io.BytesIO()
+
+    red = random.randint(0, 255)
+    green = random.randint(0, 255)
+    blue = random.randint(0, 255)
+
+    width = 1
+    height = 1
+
+    image = Image.new('RGB', (width, height), color=(red, green, blue))
+    image.save(image_buffer, 'PNG')
+    image_buffer.seek(0)
+    return image_buffer
+
+
+@pytest.fixture(params=['png_file'])
+def image_file(request: SubRequest) -> io.BytesIO:
+    """
+    Return an image file.
+    """
+    return request.getfixturevalue(request.param)
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAddTarget:
@@ -47,31 +74,6 @@ class TestAddTarget:
     Tests for the mock of the add target endpoint at `POST /targets`.
     """
 
-    @pytest.fixture
-    def png_file(self) -> io.BytesIO:
-        """
-        Return a random coloured, 1x1 PNG, RGB file.
-        """
-        image_buffer = io.BytesIO()
-
-        red = random.randint(0, 255)
-        green = random.randint(0, 255)
-        blue = random.randint(0, 255)
-
-        width = 1
-        height = 1
-
-        image = Image.new('RGB', (width, height), color=(red, green, blue))
-        image.save(image_buffer, 'PNG')
-        image_buffer.seek(0)
-        return image_buffer
-
-    @pytest.fixture(params=['png_file'])
-    def image_file(self, request: SubRequest) -> io.BytesIO:
-        """
-        Return an image file.
-        """
-        return request.getfixturevalue(request.param)
 
     @pytest.mark.parametrize('content_type', [
         # This is the documented required content type:
@@ -83,11 +85,14 @@ class TestAddTarget:
         'a',
         'a' * 64,
     ], ids=['Short name', 'Long name'])
+    @pytest.mark.parametrize('width', [0, 0.1],
+                             ids=['Zero width', 'Float width'])
     def test_created(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      image_file: io.BytesIO,
                      content_type: str,
                      name: str,
+                     width: Union[int, float],
                      ) -> None:
         """It is possible to get a `TargetCreated` response."""
         date = rfc_1123_date()
@@ -98,7 +103,7 @@ class TestAddTarget:
 
         data = {
             'name': name,
-            'width': 1,
+            'width': width,
             'image': image_data_encoded,
         }
         content = bytes(json.dumps(data), encoding='utf-8')
@@ -186,7 +191,7 @@ class TestAddTarget:
                            png_file: io.BytesIO,
                            width: Any) -> None:
         """
-        XXX
+        The width must be a non-negative number.
         """
         content_type = 'application/json'
         date = rfc_1123_date()
@@ -196,7 +201,7 @@ class TestAddTarget:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
-            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
+            'name': 'example_name',
             'width': width,
             'image': image_data_encoded,
         }

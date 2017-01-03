@@ -3,6 +3,7 @@ A fake implementation of VWS.
 """
 
 import json
+import numbers
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
@@ -228,6 +229,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             request_body_json = {}
 
         valid = valid and 'image' in request_body_json
+
+        width = request_body_json.get('width')
+        width_is_number = isinstance(width, numbers.Number)
+        width_positive = width_is_number and width >= 0
+        valid = valid and width_positive
         try:
             width = request_body_json['width']
             valid = valid and width >= 0
