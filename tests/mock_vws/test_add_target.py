@@ -38,7 +38,7 @@ def assert_valid_target_id(target_id: str) -> None:
     assert all(char in hexdigits for char in target_id)
 
 
-def _image_file(file_format):
+def _image_file(file_format: str) -> io.BytesIO:
     """
     XXX
     http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
