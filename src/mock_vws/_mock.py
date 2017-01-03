@@ -219,22 +219,46 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
+        body = {}  # type: Dict[str, Union[str, int]]
         decoded_body = request.body.decode('ascii')
-        body = {}  # type: Dict[str, Any]
+
+        valid = True
 
         try:
             request_body_json = json.loads(decoded_body)
         except JSONDecodeError:
             request_body_json = {}
 
+        allowed_keys = {
+            'name',
+            'width',
+            'image',
+            'active_flag',
+            'application_metadata',
+        }
+        valid = valid and all(key in allowed_keys for key in
+                              request_body_json.keys())
+
+        mandatory_keys = {
+            'image',
+            'width',
+            'name',
+        }
+
+        valid = valid and all(name in request_body_json.keys() for name in
+                              mandatory_keys)
+
         width = request_body_json.get('width')
+        name = request_body_json.get('name')
+
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
+        valid = valid and width_positive
 
-        name_exists = 'name' in request_body_json
-        image_exists = 'image' in request_body_json
+        valid = valid and isinstance(name, str)
+        valid = valid and 0 < len(name) < 65
 
-        if width_positive and name_exists and image_exists:
+        if valid:
             context.status_code = codes.CREATED  # pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
