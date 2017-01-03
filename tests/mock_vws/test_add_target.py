@@ -121,3 +121,4 @@ class TestAddTarget:
         )
         expected_keys = {'result_code', 'transaction_id', 'target_id'}
         assert response.json().keys() == expected_keys
+        assert_valid_target_id(target_id=response.json()['target_id'])
