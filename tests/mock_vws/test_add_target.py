@@ -6,8 +6,8 @@ import base64
 import io
 import json
 import random
-from urllib.parse import urljoin
 from string import hexdigits
+from urllib.parse import urljoin
 
 import pytest
 import requests
