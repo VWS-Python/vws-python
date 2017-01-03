@@ -230,7 +230,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         width = request_body_json.get('width')
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
-        if width_positive:
+
+        name_exists = 'name' in request_body_json
+        image_exists = 'image' in request_body_json
+
+        if width_positive and name_exists and image_exists:
             context.status_code = codes.CREATED  # pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
