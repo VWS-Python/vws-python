@@ -298,9 +298,12 @@ class TestAddTarget:
     )
     def test_name_invalid(self,
                           name: str,
-                          png_file: io.BytesIO,
+                          png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                           vuforia_server_credentials: VuforiaServerCredentials
                           ) -> None:
+        """
+        A target's name must be a string of length 0 < N < 65.
+        """
         date = rfc_1123_date()
         request_path = '/targets'
         content_type = 'application/json'
