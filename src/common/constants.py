@@ -25,3 +25,4 @@ class ResultCodes(Values):
     DATE_RANGE_ERROR = ValueConstant('DateRangeError')
     FAIL = ValueConstant('Fail')
     TARGET_STATUS_PROCESSING = ValueConstant('TargetStatusProcessing')
+    REQUEST_QUOTA_REACHED = ValueConstant('RequestQuotaReached')
