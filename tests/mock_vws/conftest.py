@@ -130,15 +130,15 @@ def verify_mock_vuforia(request: SubRequest,
 
     This is useful for verifying the mock.
     """
-    skip_real = os.getenv('SKIP_REAL') == '1'  # pragma: no cover
-    skip_mock = os.getenv('SKIP_MOCK') == '1'  # pragma: no cover
+    skip_real = os.getenv('SKIP_REAL') == '1'
+    skip_mock = os.getenv('SKIP_MOCK') == '1'
 
     use_real_vuforia = request.param
 
-    if use_real_vuforia and skip_real:
+    if use_real_vuforia and skip_real:  # pragma: no cover
         pytest.skip()
 
-    if not use_real_vuforia and skip_mock:
+    if not use_real_vuforia and skip_mock:  # pragma: no cover
         pytest.skip()
 
     if use_real_vuforia:

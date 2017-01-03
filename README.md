@@ -63,7 +63,7 @@ When this happens, create a new target database to use for testing.
 
 ## Skipping tests
 
-Set either `SKIP_MOCK` or `SKIP_REAL` to skip tests against the mock, or tests against the real implementation, for tests which run against both.
+Set either `SKIP_MOCK` or `SKIP_REAL` to `1` to skip tests against the mock, or tests against the real implementation, for tests which run against both.
 
 # Documentation
 
