@@ -357,6 +357,7 @@ class TestAddTarget:
             headers=headers,
             data=content,
         )
+
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
@@ -372,7 +373,8 @@ class TestInvalidImage:
                           vuforia_server_credentials: VuforiaServerCredentials,
                           ) -> None:
         """
-        TODO
+        A `BAD_REQUEST` response is returned if an image which is not a JPEG
+        or PNG file is given.
         """
         date = rfc_1123_date()
         request_path = '/targets'
@@ -410,14 +412,12 @@ class TestInvalidImage:
             headers=headers,
             data=content,
         )
-        assert_vws_response(
+
+        assert_vws_failure(
             response=response,
-            status_code=codes.CREATED,
-            result_code=ResultCodes.TARGET_CREATED,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
         )
-        expected_keys = {'result_code', 'transaction_id', 'target_id'}
-        assert response.json().keys() == expected_keys
-        assert_valid_target_id(target_id=response.json()['target_id'])
 
     # > 2mb
     def test_too_large(self) -> None:
