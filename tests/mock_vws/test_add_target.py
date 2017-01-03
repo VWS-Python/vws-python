@@ -369,6 +369,7 @@ class TestAddTarget:
         """
 
 
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidImage:
     # See https://library.vuforia.com/articles/Training/Image-Target-Guide
 
@@ -419,9 +420,14 @@ class TestInvalidImage:
 
         assert_vws_failure(
             response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.BAD_IMAGE,
         )
+
+    def test_invalid_type_and_bad_data(self) -> None:
+        """
+        XXX
+        """
 
     # > 2mb
     def test_too_large(self) -> None:
@@ -432,6 +438,7 @@ class TestInvalidImage:
         pass
 
 
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestNotMandatoryFields:
     """
     Tests for passing data which is not mandatory to the endpoint.
