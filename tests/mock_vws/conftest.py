@@ -12,6 +12,7 @@ import requests
 from _pytest.fixtures import SubRequest
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
+from retrying import retry
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
@@ -20,6 +21,10 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
+@retry(
+    stop_max_delay=2 * 60 * 1000,
+    wait_fixed=3 * 1000,
+)
 def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
                    target: str) -> None:  # pragma: no cover
     """
@@ -66,7 +71,10 @@ def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
         'and a new testing database is required.'
     ).format(result_code=result_code)
 
-    acceptable_results = (ResultCodes.SUCCESS, ResultCodes.UNKNOWN_TARGET)
+    acceptable_results = (
+        ResultCodes.SUCCESS.value,
+        ResultCodes.UNKNOWN_TARGET.value,
+    )
     assert result_code in acceptable_results, error_message
 
 
