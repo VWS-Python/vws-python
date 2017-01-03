@@ -119,7 +119,6 @@ class TestAddTarget:
             headers=headers,
             data=content,
         )
-
         assert_vws_response(
             response=response,
             status_code=codes.CREATED,
@@ -163,6 +162,7 @@ class TestAddTarget:
             headers=headers,
             data=content,
         )
+
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
