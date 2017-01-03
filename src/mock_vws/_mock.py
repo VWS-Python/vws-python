@@ -6,8 +6,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
-from typing import Union  # noqa F401
-from typing import Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Union  # noqa F401
 
 import wrapt
 from requests import codes
@@ -254,14 +253,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                               request_body_json.keys())
 
         if valid:
-            context.headers = {'Content-Type': 'application/json'}
             context.status_code = codes.CREATED
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_CREATED.value,
                 'target_id': 1,
             }
-            return json.dumps(body)
 
         context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
