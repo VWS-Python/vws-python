@@ -237,7 +237,8 @@ class TestAddTarget:
     def test_missing_data(self,
                           vuforia_server_credentials:
                           VuforiaServerCredentials,
-                          png_file: io.BytesIO,
+                          png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+
                           data_to_remove: str,
                           ) -> None:
         content_type = 'application/json'
