@@ -2,6 +2,7 @@
 Configuration, plugins and fixtures for `pytest`.
 """
 
+import os
 import uuid
 # This is used in a type hint which linters not pick up on.
 from typing import Any  # noqa: F401 pylint: disable=unused-import
@@ -12,6 +13,7 @@ import requests
 from _pytest.fixtures import SubRequest
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
+from retrying import retry
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
@@ -20,8 +22,12 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
+@retry(
+    stop_max_delay=2 * 60 * 1000,
+    wait_fixed=3 * 1000,
+)
 def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
-                   target: str) -> None:  # pragma: no cover
+                   target: str) -> None:
     """
     Delete a given target.
 
@@ -66,7 +72,10 @@ def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
         'and a new testing database is required.'
     ).format(result_code=result_code)
 
-    acceptable_results = (ResultCodes.SUCCESS, ResultCodes.UNKNOWN_TARGET)
+    acceptable_results = (
+        ResultCodes.SUCCESS.value,
+        ResultCodes.UNKNOWN_TARGET.value,
+    )
     assert result_code in acceptable_results, error_message
 
 
@@ -104,7 +113,7 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
     )
     targets = response.json()['results']
 
-    for target in targets:  # pragma: no cover
+    for target in targets:
         _delete_target(
             vuforia_server_credentials=vuforia_server_credentials,
             target=target,
@@ -121,7 +130,17 @@ def verify_mock_vuforia(request: SubRequest,
 
     This is useful for verifying the mock.
     """
+    skip_real = os.getenv('SKIP_REAL') == '1'
+    skip_mock = os.getenv('SKIP_MOCK') == '1'
+
     use_real_vuforia = request.param
+
+    if use_real_vuforia and skip_real:  # pragma: no cover
+        pytest.skip()
+
+    if not use_real_vuforia and skip_mock:  # pragma: no cover
+        pytest.skip()
+
     if use_real_vuforia:
         _delete_all_targets(
             vuforia_server_credentials=vuforia_server_credentials,
