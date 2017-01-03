@@ -81,6 +81,7 @@ disable=
     line-too-long,
     duplicate-code,
     too-many-locals,
+    locally-disabled,
 
 [REPORTS]
 

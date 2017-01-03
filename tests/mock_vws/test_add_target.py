@@ -3,13 +3,11 @@ Tests for the mock of the add target endpoint.
 """
 
 # TODO: Document that "image" is mandatory, despite what the docs say
-# TODO: Handle 'RequestQuotaReached'
 
 import base64
 import io
 import json
 import random
-import uuid
 from string import hexdigits
 from typing import Any, Union
 from urllib.parse import urljoin
@@ -39,6 +37,7 @@ def assert_valid_target_id(target_id: str) -> None:
     """
     assert len(target_id) == 32
     assert all(char in hexdigits for char in target_id)
+
 
 @pytest.fixture
 def png_file() -> io.BytesIO:
@@ -298,9 +297,12 @@ class TestAddTarget:
     )
     def test_name_invalid(self,
                           name: str,
-                          png_file: io.BytesIO,
+                          png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                           vuforia_server_credentials: VuforiaServerCredentials
                           ) -> None:
+        """
+        A target's name must be a string of length 0 < N < 65.
+        """
         date = rfc_1123_date()
         request_path = '/targets'
         content_type = 'application/json'
@@ -361,13 +363,18 @@ class TestInvalidImage:
 
 
 class TestNotMandatoryFields:
+    """
+    Tests for passing data which is not mandatory to the endpoint.
+    """
 
     def test_invalid_extra_data(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
                                 image_file: io.BytesIO,
                                 ) -> None:
-        """XXX"""
+        """
+        A `BAD_REQUEST` response is returned when unexpected data is given.
+        """
         date = rfc_1123_date()
         request_path = '/targets'
         content_type = 'application/json'
@@ -376,7 +383,7 @@ class TestNotMandatoryFields:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
-            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
+            'name': 'example_name',
             'width': 1,
             'image': image_data_encoded,
             'extra_thing': 1,
@@ -414,7 +421,7 @@ class TestNotMandatoryFields:
 
     def test_valid_extra_data(self) -> None:
         active_flag = True
-        application_metadata = 'a' # something base64 encoded
+        application_metadata = 'a'  # something base64 encoded
         pass
 
     def test_invalid_active_flag(self) -> None:
