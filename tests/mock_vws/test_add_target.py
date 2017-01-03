@@ -94,7 +94,7 @@ class TestAddTarget:
 
         data = {
             'name': name,
-            'width': 1.1,
+            'width': 0.1,
             'image': image_data_encoded,
         }
         content = bytes(json.dumps(data), encoding='utf-8')

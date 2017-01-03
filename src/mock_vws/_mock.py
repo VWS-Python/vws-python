@@ -3,6 +3,7 @@ A fake implementation of VWS.
 """
 
 import json
+import numbers
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
@@ -226,7 +227,10 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         except JSONDecodeError:
             request_body_json = {}
 
-        if request_body_json:
+        width = request_body_json.get('width')
+        width_is_number = isinstance(width, numbers.Number)
+        width_positive = width_is_number and width > 0
+        if width_positive:
             context.status_code = codes.CREATED  # pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
