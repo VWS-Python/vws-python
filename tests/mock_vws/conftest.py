@@ -2,6 +2,7 @@
 Configuration, plugins and fixtures for `pytest`.
 """
 
+import os
 import uuid
 # This is used in a type hint which linters not pick up on.
 from typing import Any  # noqa: F401 pylint: disable=unused-import
@@ -119,10 +120,6 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
         )
 
 
-SKIP_REAL = False
-SKIP_MOCK = False
-
-
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(request: SubRequest,
                         vuforia_server_credentials: VuforiaServerCredentials,
@@ -133,6 +130,9 @@ def verify_mock_vuforia(request: SubRequest,
 
     This is useful for verifying the mock.
     """
+    SKIP_REAL = os.getenv('SKIP_REAL') == '1'
+    SKIP_MOCK = os.getenv('SKIP_MOCK') == '1'
+
     use_real_vuforia = request.param
 
     if use_real_vuforia and SKIP_REAL:

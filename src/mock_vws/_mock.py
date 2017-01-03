@@ -5,6 +5,7 @@ A fake implementation of VWS.
 import json
 import uuid
 from datetime import datetime, timedelta
+from json.decoder import JSONDecodeError
 from typing import Union  # noqa F401
 from typing import Callable, Dict, List, Tuple
 
@@ -218,6 +219,22 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
+        decoded_body = request.body.decode('ascii')
+
+        try:
+            request_body_json = json.loads(decoded_body)
+        except JSONDecodeError:
+            request_body_json = {}
+
+        if 'image' in request_body_json:
+            context.status_code = codes.CREATED
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_CREATED.value,
+                'target_id': 1,
+            }
+            return json.dumps(body)
+
         context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
