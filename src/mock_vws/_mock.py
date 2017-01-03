@@ -6,7 +6,7 @@ import json
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
-from typing import Union  # noqa F401
+from typing import Any, Union  # noqa F401
 from typing import Callable, Dict, List, Tuple
 
 import wrapt
@@ -220,6 +220,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
         decoded_body = request.body.decode('ascii')
+        body = {}  # type: Dict[str, Any]
 
         try:
             request_body_json = json.loads(decoded_body)
@@ -227,7 +228,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             request_body_json = {}
 
         if request_body_json:
-            context.status_code = codes.CREATED
+            context.status_code = codes.CREATED  # pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_CREATED.value,
@@ -239,7 +240,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
-        }  # type: Dict[str, str]
+        }
         return json.dumps(body)
 
     @route(path_pattern='/targets/.+', methods=[DELETE])
