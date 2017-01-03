@@ -428,4 +428,8 @@ class TestNotMandatoryFields:
         pass
 
     def test_invalid_application_metadata(self) -> None:
+<<<<<<< HEAD
         pass
+=======
+        pass
+>>>>>>> 65f58935169a2e35d9b677bccde97e43f58865fd
