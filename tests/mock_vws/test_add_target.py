@@ -371,7 +371,11 @@ class TestAddTarget:
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidImage:
-    # See https://library.vuforia.com/articles/Training/Image-Target-Guide
+    """
+    Tests for giving images which do not conform to the specifications
+    detailed in "Supported Images" on
+    https://library.vuforia.com/articles/Training/Image-Target-Guide
+    """
 
     def test_invalid_type(self,
                           tiff_file: io.BytesIO,
