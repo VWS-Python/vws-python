@@ -119,6 +119,7 @@ class TestAddTarget:
             headers=headers,
             data=content,
         )
+
         assert_vws_response(
             response=response,
             status_code=codes.CREATED,
