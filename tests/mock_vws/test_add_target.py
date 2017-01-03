@@ -240,9 +240,13 @@ class TestAddTarget:
     def test_missing_data(self,
                           vuforia_server_credentials:
                           VuforiaServerCredentials,
-                          png_file: io.BytesIO,
+                          png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+
                           data_to_remove: str,
                           ) -> None:
+        """
+        `name`, `width` and `image` are all required.
+        """
         content_type = 'application/json'
         date = rfc_1123_date()
         request_path = '/targets'
@@ -251,7 +255,7 @@ class TestAddTarget:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
-            'name': 'example_name_{random}'.format(random=uuid.uuid4().hex),
+            'name': 'example_name',
             'width': 1,
             'image': image_data_encoded,
         }

@@ -127,4 +127,3 @@ with MockVWS(real_http=True):
 The mock attempts to be realistic, but it was built without access to the source code of the original API.
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
 There is no attempt to make the image matching realistic.
->>>>>>> origin/master
