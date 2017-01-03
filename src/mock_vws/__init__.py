@@ -95,6 +95,7 @@ class MockVWS(ContextDecorator):
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
                         text=getattr(fake_target_api, route.route_name),
+                        headers={'Content-Type': 'application/json'},
                     )
         self.req = req
         self.req.start()

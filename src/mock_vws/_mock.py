@@ -5,8 +5,7 @@ A fake implementation of VWS.
 import json
 import uuid
 from datetime import datetime, timedelta
-from typing import Union  # noqa F401
-from typing import Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Union  # noqa F401
 
 import wrapt
 from requests import codes
@@ -241,14 +240,34 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        target = Target(
-            name='a',
-            width=1,
-            image=b'a',
-            active_flag=True,
-            application_metadata=b'x',
-        )
-        self.targets.append(target)
+        decoded_body = request.body.decode('ascii')
+        body = {}  # type: Dict[str, Any]
+
+        request_body_json = json.loads(decoded_body)
+
+        if request_body_json:
+            target = Target(
+                name='a',
+                width=1,
+                image=b'a',
+                active_flag=True,
+                application_metadata=b'x',
+            )
+            self.targets.append(target)
+            context.status_code = codes.CREATED  # pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_CREATED.value,
+                'target_id': uuid.uuid4().hex,
+            }
+            return json.dumps(body)
+
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
 
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(self,

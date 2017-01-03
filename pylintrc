@@ -74,6 +74,8 @@ disable=line-too-long,
         # This creates errors with typing.py
         # see https://github.com/PyCQA/pylint/issues/1212
         invalid-sequence-index,
+        # Let isort deal with sorting
+        ungrouped-imports,
 
 [REPORTS]
 
