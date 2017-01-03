@@ -42,6 +42,7 @@ def assert_valid_target_id(target_id: str) -> None:
 def _image_file(file_format):
     """
     XXX
+    http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
     """
     image_buffer = io.BytesIO()
     width = 1
@@ -66,6 +67,14 @@ def jpeg_file() -> io.BytesIO:
     Return a random coloured, 1x1 JPEG, RGB file.
     """
     return _image_file(file_format='JPEG')
+
+
+@pytest.fixture
+def tiff_file() -> io.BytesIO:
+    """
+    XXX
+    """
+    return _image_file(file_format='TIFF')
 
 
 @pytest.fixture(params=['png_file', 'jpeg_file'])
@@ -358,9 +367,57 @@ class TestAddTarget:
 class TestInvalidImage:
     # See https://library.vuforia.com/articles/Training/Image-Target-Guide
 
-    # Not JPEG/PNG
-    def test_invalid_type(self) -> None:
-        pass
+    def test_invalid_type(self,
+                          tiff_file: io.BytesIO,
+                          vuforia_server_credentials: VuforiaServerCredentials,
+                          ) -> None:
+        """
+        TODO
+        """
+        date = rfc_1123_date()
+        request_path = '/targets'
+        content_type = 'application/json'
+
+        image_data = tiff_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+        assert_vws_response(
+            response=response,
+            status_code=codes.CREATED,
+            result_code=ResultCodes.TARGET_CREATED,
+        )
+        expected_keys = {'result_code', 'transaction_id', 'target_id'}
+        assert response.json().keys() == expected_keys
+        assert_valid_target_id(target_id=response.json()['target_id'])
 
     # > 2mb
     def test_too_large(self) -> None:
@@ -429,8 +486,10 @@ class TestNotMandatoryFields:
         )
 
     def test_valid_extra_data(self) -> None:
+        """
         active_flag = True
         application_metadata = 'a'  # something base64 encoded
+        """
         pass
 
     def test_invalid_active_flag(self) -> None:
