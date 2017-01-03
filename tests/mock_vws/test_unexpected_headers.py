@@ -2,10 +2,6 @@
 Tests for when endpoints are called with unexpected header data.
 """
 
-import base64
-import io
-import json
-import random
 from datetime import datetime, timedelta
 # This is used in a type hint which linters not pick up on.
 from typing import Union  # noqa: F401 pylint: disable=unused-import
@@ -13,7 +9,6 @@ from typing import Union  # noqa: F401 pylint: disable=unused-import
 import pytest
 import requests
 from freezegun import freeze_time
-from PIL import Image
 from requests import codes
 
 from common.constants import ResultCodes
@@ -24,31 +19,6 @@ from tests.mock_vws.utils import (
 )
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
-
-
-def add_target() -> bytes:
-    image_buffer = io.BytesIO()
-
-    red = random.randint(0, 255)
-    green = random.randint(0, 255)
-    blue = random.randint(0, 255)
-
-    width = 1
-    height = 1
-
-    image = Image.new('RGB', (width, height), color=(red, green, blue))
-    image.save(image_buffer, 'PNG')
-    image_buffer.seek(0)
-    image_data = image_buffer.read()
-    image_data_encoded = base64.b64encode(image_data).decode('ascii')
-    data = {
-        'name': 'example_name',
-        'width': 1,
-        'image': image_data_encoded,
-
-    }
-    content = bytes(json.dumps(data), encoding='utf-8')
-    return content
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
