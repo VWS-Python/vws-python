@@ -10,9 +10,9 @@ import io
 import json
 import random
 import uuid
-from urllib.parse import urljoin
 from string import hexdigits
 from typing import Any
+from urllib.parse import urljoin
 
 import pytest
 import requests
