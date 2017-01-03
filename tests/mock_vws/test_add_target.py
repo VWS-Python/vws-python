@@ -7,7 +7,7 @@ import io
 import json
 import random
 from string import hexdigits
-from typing import Any
+from typing import Any, Union
 from urllib.parse import urljoin
 
 import pytest
@@ -79,11 +79,14 @@ class TestAddTarget:
         'a',
         'a' * 64,
     ], ids=['Short name', 'Long name'])
+    @pytest.mark.parametrize('width', [0, 0.1],
+                             ids=['Zero width', 'Float width'])
     def test_created(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      image_file: io.BytesIO,
                      content_type: str,
                      name: str,
+                     width: Union[int, float],
                      ) -> None:
         """It is possible to get a `TargetCreated` response."""
         date = rfc_1123_date()
@@ -94,7 +97,7 @@ class TestAddTarget:
 
         data = {
             'name': name,
-            'width': 0.1,
+            'width': width,
             'image': image_data_encoded,
         }
         content = bytes(json.dumps(data), encoding='utf-8')
@@ -173,8 +176,8 @@ class TestAddTarget:
 
     @pytest.mark.parametrize(
         'width',
-        [0, '10'],
-        ids=['Zero', 'Wrong Type'],
+        [-1, '10'],
+        ids=['Negative', 'Wrong Type'],
     )
     def test_width_invalid(self,
                            vuforia_server_credentials:

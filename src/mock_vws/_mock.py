@@ -229,7 +229,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         width = request_body_json.get('width')
         width_is_number = isinstance(width, numbers.Number)
-        width_positive = width_is_number and width > 0
+        width_positive = width_is_number and width >= 0
         if width_positive:
             context.status_code = codes.CREATED  # pylint: disable=no-member
             body = {
