@@ -234,11 +234,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
         valid = valid and width_positive
-        try:
-            width = request_body_json['width']
-            valid = valid and width >= 0
-        except (KeyError, TypeError):
-            valid = False
 
         try:
             name = request_body_json['name']
