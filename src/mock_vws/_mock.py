@@ -226,7 +226,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         except JSONDecodeError:
             request_body_json = {}
 
-        if 'image' in request_body_json:
+        if request_body_json:
             context.status_code = codes.CREATED
             body = {
                 'transaction_id': uuid.uuid4().hex,

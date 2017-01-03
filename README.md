@@ -61,6 +61,10 @@ visit the Target Database in the Target Manager and view the "Database Access Ke
 Targets sometimes get stuck at the "Processing" stage meaning that they cannot be deleted.
 When this happens, create a new target database to use for testing.
 
+## Skipping tests
+
+Set either `SKIP_MOCK` or `SKIP_REAL` to skip tests against the mock, or tests against the real implementation, for tests which run against both.
+
 # Documentation
 
 To build the documentation, first install the dependencies:
