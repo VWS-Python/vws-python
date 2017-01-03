@@ -17,7 +17,7 @@ from requests import codes
 from requests_mock import POST
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import assert_vws_response
+from tests.mock_vws.utils import assert_vws_failure, assert_vws_response
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
@@ -122,3 +122,44 @@ class TestAddTarget:
         expected_keys = {'result_code', 'transaction_id', 'target_id'}
         assert response.json().keys() == expected_keys
         assert_valid_target_id(target_id=response.json()['target_id'])
+
+    def test_invalid_JSON(self,
+                          vuforia_server_credentials: VuforiaServerCredentials,
+                          ) -> None:
+        """
+        A `Fail` result is returned when the data given is not valid JSON.
+        """
+        content_type = 'application/json'
+        date = rfc_1123_date()
+        request_path = '/targets'
+
+        content = b'a'
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
