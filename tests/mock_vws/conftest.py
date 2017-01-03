@@ -27,7 +27,7 @@ from vws._request_utils import authorization_header, rfc_1123_date
     wait_fixed=3 * 1000,
 )
 def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
-                   target: str) -> None:  # pragma: no cover
+                   target: str) -> None:
     """
     Delete a given target.
 
@@ -113,7 +113,7 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
     )
     targets = response.json()['results']
 
-    for target in targets:  # pragma: no cover
+    for target in targets:
         _delete_target(
             vuforia_server_credentials=vuforia_server_credentials,
             target=target,
@@ -130,8 +130,8 @@ def verify_mock_vuforia(request: SubRequest,
 
     This is useful for verifying the mock.
     """
-    skip_real = os.getenv('SKIP_REAL') == '1'
-    skip_mock = os.getenv('SKIP_MOCK') == '1'
+    skip_real = os.getenv('SKIP_REAL') == '1'  # pragma: no cover
+    skip_mock = os.getenv('SKIP_MOCK') == '1'  # pragma: no cover
 
     use_real_vuforia = request.param
 
