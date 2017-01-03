@@ -74,7 +74,6 @@ class TestAddTarget:
     Tests for the mock of the add target endpoint at `POST /targets`.
     """
 
-
     @pytest.mark.parametrize('content_type', [
         # This is the documented required content type:
         'application/json',
@@ -89,7 +88,7 @@ class TestAddTarget:
                              ids=['Zero width', 'Float width'])
     def test_created(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
-                     image_file: io.BytesIO,
+                     image_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                      content_type: str,
                      name: str,
                      width: Union[int, float],
@@ -188,7 +187,8 @@ class TestAddTarget:
     def test_width_invalid(self,
                            vuforia_server_credentials:
                            VuforiaServerCredentials,
-                           png_file: io.BytesIO,
+                           png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+
                            width: Any) -> None:
         """
         The width must be a non-negative number.
