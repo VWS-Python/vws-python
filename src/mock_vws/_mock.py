@@ -253,7 +253,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                               request_body_json.keys())
 
         if valid:
-            context.status_code = codes.CREATED
+            context.status_code = codes.CREATED  # pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_CREATED.value,
