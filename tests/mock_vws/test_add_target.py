@@ -363,6 +363,11 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
+    def test_existing_target_name(self) -> None:
+        """
+        XXX
+        """
+
 
 class TestInvalidImage:
     # See https://library.vuforia.com/articles/Training/Image-Target-Guide
