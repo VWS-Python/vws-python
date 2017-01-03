@@ -80,6 +80,7 @@ disable=
     # Let flake8 handle long lines
     line-too-long,
     duplicate-code,
+    too-many-locals,
 
 [REPORTS]
 

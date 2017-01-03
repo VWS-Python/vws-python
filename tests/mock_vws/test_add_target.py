@@ -7,6 +7,7 @@ import io
 import json
 import random
 from string import hexdigits
+from typing import Any, Union
 from urllib.parse import urljoin
 
 import pytest
@@ -78,11 +79,14 @@ class TestAddTarget:
         'a',
         'a' * 64,
     ], ids=['Short name', 'Long name'])
+    @pytest.mark.parametrize('width', [0, 0.1],
+                             ids=['Zero width', 'Float width'])
     def test_created(self,
                      vuforia_server_credentials: VuforiaServerCredentials,
                      image_file: io.BytesIO,
                      content_type: str,
                      name: str,
+                     width: Union[int, float],
                      ) -> None:
         """It is possible to get a `TargetCreated` response."""
         date = rfc_1123_date()
@@ -93,7 +97,7 @@ class TestAddTarget:
 
         data = {
             'name': name,
-            'width': 1,
+            'width': width,
             'image': image_data_encoded,
         }
         content = bytes(json.dumps(data), encoding='utf-8')
@@ -140,6 +144,62 @@ class TestAddTarget:
         request_path = '/targets'
 
         content = b'a'
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+    @pytest.mark.parametrize(
+        'width',
+        [-1, '10'],
+        ids=['Negative', 'Wrong Type'],
+    )
+    def test_width_invalid(self,
+                           vuforia_server_credentials:
+                           VuforiaServerCredentials,
+                           png_file: io.BytesIO,
+                           width: Any) -> None:
+        """
+        The width must be a positive number.
+        """
+        content_type = 'application/json'
+        date = rfc_1123_date()
+        request_path = '/targets'
+
+        image_data = png_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': width,
+            'image': image_data_encoded,
+        }
+        content = bytes(json.dumps(data), encoding='utf-8')
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
