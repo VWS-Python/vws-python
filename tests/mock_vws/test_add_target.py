@@ -241,6 +241,9 @@ class TestAddTarget:
 
                           data_to_remove: str,
                           ) -> None:
+        """
+        `name`, `width` and `image` are all required.
+        """
         content_type = 'application/json'
         date = rfc_1123_date()
         request_path = '/targets'
