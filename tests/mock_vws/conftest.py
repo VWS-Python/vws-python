@@ -135,10 +135,10 @@ def verify_mock_vuforia(request: SubRequest,
 
     use_real_vuforia = request.param
 
-    if use_real_vuforia and SKIP_REAL:
+    if use_real_vuforia and skip_real:
         pytest.skip()
 
-    if not use_real_vuforia and SKIP_MOCK:
+    if not use_real_vuforia and skip_mock:
         pytest.skip()
 
     if use_real_vuforia:
