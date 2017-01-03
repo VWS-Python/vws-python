@@ -130,8 +130,8 @@ def verify_mock_vuforia(request: SubRequest,
 
     This is useful for verifying the mock.
     """
-    SKIP_REAL = os.getenv('SKIP_REAL') == '1'
-    SKIP_MOCK = os.getenv('SKIP_MOCK') == '1'
+    skip_real = os.getenv('SKIP_REAL') == '1'
+    skip_mock = os.getenv('SKIP_MOCK') == '1'
 
     use_real_vuforia = request.param
 
