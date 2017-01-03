@@ -232,3 +232,54 @@ class TestAddTarget:
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
         )
+
+    @pytest.mark.parametrize('data_to_remove', ['name', 'width', 'image'])
+    def test_missing_data(self,
+                          vuforia_server_credentials:
+                          VuforiaServerCredentials,
+                          png_file: io.BytesIO,
+                          data_to_remove: str,
+                          ) -> None:
+        content_type = 'application/json'
+        date = rfc_1123_date()
+        request_path = '/targets'
+
+        image_data = png_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        data.pop(data_to_remove)
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=POST,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=POST,
+            url=urljoin('https://vws.vuforia.com/', request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
