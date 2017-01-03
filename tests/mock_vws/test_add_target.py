@@ -131,6 +131,9 @@ class TestAddTarget:
     def test_invalid_json(self,
                           vuforia_server_credentials: VuforiaServerCredentials,
                           ) -> None:
+        """
+        A `Fail` result is returned when the data given is not valid JSON.
+        """
         content_type = 'application/json'
         date = rfc_1123_date()
         request_path = '/targets'
