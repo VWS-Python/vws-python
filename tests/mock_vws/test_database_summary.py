@@ -71,3 +71,6 @@ class TestSummary:
             'total_recos',
             'transaction_id',
         }
+
+    def test_json_fields(self):
+        pass
