@@ -8,7 +8,7 @@ import base64
 import io
 import json
 from string import hexdigits
-from typing import Any, Union
+from typing import Any, Dict, Union
 from urllib.parse import urljoin
 
 import pytest
@@ -84,6 +84,54 @@ def image_file(request: SubRequest) -> io.BytesIO:
     return request.getfixturevalue(request.param)
 
 
+def add_target(
+    vuforia_server_credentials: VuforiaServerCredentials,
+    data: Dict[str, Any],
+    content_type: str='application/json',
+) -> requests.Response:
+    """
+    Helper to make a request to the endpoint to add a target.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        data: The data to send, in JSON format, to the endpoint.
+        content_type: The `Content-Type` header to use.
+
+    Returns:
+        The response returned by the API.
+    """
+    date = rfc_1123_date()
+    request_path = '/targets'
+
+    content = bytes(json.dumps(data), encoding='utf-8')
+
+    authorization_string = authorization_header(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=POST,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        "Authorization": authorization_string,
+        "Date": date,
+        'Content-Type': content_type,
+    }
+
+    response = requests.request(
+        method=POST,
+        url=urljoin('https://vws.vuforia.com/', request_path),
+        headers=headers,
+        data=content,
+    )
+
+    return response
+
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAddTarget:
     """
@@ -110,9 +158,6 @@ class TestAddTarget:
                      width: Union[int, float],
                      ) -> None:
         """It is possible to get a `TargetCreated` response."""
-        date = rfc_1123_date()
-        request_path = '/targets'
-
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
@@ -121,30 +166,13 @@ class TestAddTarget:
             'width': width,
             'image': image_data_encoded,
         }
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
             content_type=content_type,
-            date=date,
-            request_path=request_path,
         )
 
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
-        )
         assert_vws_response(
             response=response,
             status_code=codes.CREATED,
@@ -209,10 +237,6 @@ class TestAddTarget:
         """
         The width must be a non-negative number.
         """
-        content_type = 'application/json'
-        date = rfc_1123_date()
-        request_path = '/targets'
-
         image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
@@ -221,29 +245,10 @@ class TestAddTarget:
             'width': width,
             'image': image_data_encoded,
         }
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
         )
 
         assert_vws_failure(
@@ -263,10 +268,6 @@ class TestAddTarget:
         """
         `name`, `width` and `image` are all required.
         """
-        content_type = 'application/json'
-        date = rfc_1123_date()
-        request_path = '/targets'
-
         image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
@@ -276,29 +277,10 @@ class TestAddTarget:
             'image': image_data_encoded,
         }
         data.pop(data_to_remove)
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
         )
 
         assert_vws_failure(
@@ -320,10 +302,6 @@ class TestAddTarget:
         """
         A target's name must be a string of length 0 < N < 65.
         """
-        date = rfc_1123_date()
-        request_path = '/targets'
-        content_type = 'application/json'
-
         image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
@@ -332,29 +310,10 @@ class TestAddTarget:
             'width': 1,
             'image': image_data_encoded,
         }
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
         )
 
         assert_vws_failure(
@@ -451,16 +410,12 @@ class TestNotMandatoryFields:
     def test_invalid_extra_data(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
-                                image_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                                png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                                 ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
         """
-        date = rfc_1123_date()
-        request_path = '/targets'
-        content_type = 'application/json'
-
-        image_data = image_file.read()
+        image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -469,29 +424,10 @@ class TestNotMandatoryFields:
             'image': image_data_encoded,
             'extra_thing': 1,
         }
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
         )
 
         assert_vws_failure(
