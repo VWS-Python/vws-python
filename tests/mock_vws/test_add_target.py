@@ -67,7 +67,7 @@ def image_file(request: SubRequest) -> io.BytesIO:
 
 def add_target(
     vuforia_server_credentials: VuforiaServerCredentials,
-    data: Dict[str, Union[int, str, object]],
+    data: Dict[str, Union[int, str, object, float]],
     content_type: str ='application/json',
 ) -> requests.Response:
     """
@@ -130,9 +130,6 @@ class TestAddTarget:
                      width: Union[int, float],
                      ) -> None:
         """It is possible to get a `TargetCreated` response."""
-        date = rfc_1123_date()
-        request_path = '/targets'
-
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
@@ -141,30 +138,13 @@ class TestAddTarget:
             'width': width,
             'image': image_data_encoded,
         }
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
             content_type=content_type,
-            date=date,
-            request_path=request_path,
         )
 
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
-        )
         assert_vws_response(
             response=response,
             status_code=codes.CREATED,
