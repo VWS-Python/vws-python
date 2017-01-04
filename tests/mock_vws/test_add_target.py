@@ -67,7 +67,7 @@ def image_file(request: SubRequest) -> io.BytesIO:
 
 def add_target(
     vuforia_server_credentials: VuforiaServerCredentials,
-    data: Dict[str, Union[int, str, object, float]],
+    data: Dict[str, Any],
     content_type: str ='application/json',
 ) -> requests.Response:
     """
