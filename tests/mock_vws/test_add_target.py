@@ -68,7 +68,7 @@ def image_file(request: SubRequest) -> io.BytesIO:
 def add_target(
     vuforia_server_credentials: VuforiaServerCredentials,
     data: Dict[str, Any],
-    content_type: str ='application/json',
+    content_type: str = 'application/json',
 ) -> requests.Response:
     """
     Helper to make a request to the endpoint to add a target.
