@@ -54,7 +54,7 @@ confidence=
 # either give multiple identifier separated by comma (,) or put this option
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
-#enable=
+enable=spelling
 
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifiers separated by comma (,) or put this
@@ -272,7 +272,7 @@ ignore-imports=no
 spelling-dict=en_US
 
 # List of comma separated words that should not be checked.
-spelling-ignore-words=VWS,API,vws,url,HTTP,hexdigits,JSON,unmocked,linters,noqa,str,PNG,plugins,pytest,RGB,vuforia,https
+spelling-ignore-words=VWS,API,vws,url,HTTP,hexdigits,JSON,unmocked,linters,noqa,str,PNG,plugins,pytest,RGB,vuforia,https,pragma
 
 # A path to a file that contains private dictionary; one word per line.
 spelling-private-dict-file=
