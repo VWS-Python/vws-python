@@ -14,8 +14,8 @@ from requests import codes
 from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     Endpoint,
+    assert_vws_response,
     assert_vws_failure,
-    is_valid_transaction_id,
 )
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
@@ -284,7 +284,8 @@ class TestDateHeader:
             data=endpoint.content,
         )
 
-        assert response.status_code == endpoint.successful_headers_status_code
-        assert is_valid_transaction_id(response.json()['transaction_id'])
-        expected_result_code = endpoint.successful_headers_result_code.value
-        assert response.json()['result_code'] == expected_result_code
+        assert_vws_response(
+            response=response,
+            status_code=endpoint.successful_headers_status_code,
+            result_code=endpoint.successful_headers_result_code,
+        )
