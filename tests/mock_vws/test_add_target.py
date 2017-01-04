@@ -304,6 +304,44 @@ class TestAddTarget:
         )
 
 
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestInvalidImage:
+    """
+    Tests for giving images which do not conform to the specifications
+    detailed in "Supported Images" on
+    https://library.vuforia.com/articles/Training/Image-Target-Guide
+    """
+
+    def test_invalid_type(self,
+                          tiff_file: io.BytesIO,
+                          vuforia_server_credentials: VuforiaServerCredentials,
+                          ) -> None:
+        """
+        A `BAD_REQUEST` response is returned if an image which is not a JPEG
+        or PNG file is given.
+        """
+        image_data = tiff_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.BAD_IMAGE,
+        )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestNotMandatoryFields:
     """
     Tests for passing data which is not mandatory to the endpoint.
