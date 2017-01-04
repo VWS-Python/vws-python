@@ -323,16 +323,12 @@ class TestNotMandatoryFields:
     def test_invalid_extra_data(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
-                                image_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                                png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                                 ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
         """
-        date = rfc_1123_date()
-        request_path = '/targets'
-        content_type = 'application/json'
-
-        image_data = image_file.read()
+        image_data = png_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -341,29 +337,10 @@ class TestNotMandatoryFields:
             'image': image_data_encoded,
             'extra_thing': 1,
         }
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
         )
 
         assert_vws_failure(
