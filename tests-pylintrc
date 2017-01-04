@@ -272,10 +272,10 @@ ignore-imports=no
 spelling-dict=en_US
 
 # List of comma separated words that should not be checked.
-spelling-ignore-words=VWS,API,vws,HTTP,hexdigits,JSON,unmocked,linters,noqa,str,PNG,plugins,pytest,RGB,vuforia,https,pragma,RFC,url,URL
+spelling-ignore-words=
 
 # A path to a file that contains private dictionary; one word per line.
-spelling-private-dict-file=
+spelling-private-dict-file=spelling_private_dict.txt
 
 # Tells whether to store unknown words to indicated private dictionary in
 # --spelling-private-dict-file option instead of raising a message.
