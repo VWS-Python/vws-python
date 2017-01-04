@@ -258,9 +258,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         valid = valid and isinstance(name, str)
         valid = valid and 0 < len(name) < 65
 
-
         if not valid:
-            context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.FAIL.value,
@@ -268,7 +267,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             return json.dumps(body)
 
         image = request_body_json.get('image')
-        context.status_code = codes.CREATED  # pylint: disable=no-member
+        import pdb; pdb.set_trace()
+        context.status_code = codes.CREATED  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.TARGET_CREATED.value,
