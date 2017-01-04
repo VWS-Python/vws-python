@@ -17,3 +17,15 @@ url
 json
 api
 http
+hmac
+kwargs
+github
+regex
+foo
+readthedocs
+readme
+bool
+io
+html
+args
+issuecomment
