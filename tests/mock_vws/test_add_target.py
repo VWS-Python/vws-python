@@ -5,7 +5,6 @@ Tests for the mock of the add target endpoint.
 import base64
 import io
 import json
-import random
 from string import hexdigits
 from typing import Any, Dict, Union
 from urllib.parse import urljoin
@@ -39,8 +38,11 @@ def assert_valid_target_id(target_id: str) -> None:
 
 def _image_file(file_format: str) -> io.BytesIO:
     """
-    XXX
-    http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
+    Return an image file in the given format.
+
+    Args:
+        file_format: See
+            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
     """
     image_buffer = io.BytesIO()
     width = 1
@@ -54,7 +56,7 @@ def _image_file(file_format: str) -> io.BytesIO:
 @pytest.fixture
 def png_file() -> io.BytesIO:
     """
-    Return a random colored, 1x1 PNG, RGB file.
+    Return a PNG file.
     """
     return _image_file(file_format='PNG')
 
@@ -62,7 +64,7 @@ def png_file() -> io.BytesIO:
 @pytest.fixture
 def jpeg_file() -> io.BytesIO:
     """
-    Return a random coloured, 1x1 JPEG, RGB file.
+    Return a JPEG file.
     """
     return _image_file(file_format='JPEG')
 
@@ -70,7 +72,7 @@ def jpeg_file() -> io.BytesIO:
 @pytest.fixture
 def tiff_file() -> io.BytesIO:
     """
-    XXX
+    Return a TIFF file.
     """
     return _image_file(file_format='TIFF')
 
