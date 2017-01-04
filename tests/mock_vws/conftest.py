@@ -297,6 +297,32 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
 
 @pytest.fixture(params=[
     'add_target',
+    'update_target',
+])
+def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
+    """
+    XXX
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=[
+    'database_summary',
+    'delete_target',
+    'get_duplicates',
+    'get_target',
+    'target_list',
+    'target_summary',
+])
+def endpoint_which_does_not_take_data(request: SubRequest) -> Endpoint:
+    """
+    XXX
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=[
+    'add_target',
     'database_summary',
     'delete_target',
     'get_duplicates',

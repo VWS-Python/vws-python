@@ -156,14 +156,25 @@ def validate_keys(mandatory_keys, optional_keys):
             The result of calling the endpoint.
         """
         request, context = args
-        decoded_body = request.body.decode('ascii')
+        allowed_keys = mandatory_keys.union(optional_keys)
+
+        try:
+            decoded_body = request.body.decode('ascii')
+        except AttributeError:
+            decoded_body = ''
 
         try:
             request_body_json = json.loads(decoded_body)
         except JSONDecodeError:
             request_body_json = {}
+            if not allowed_keys:
+                context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+                }
+                return json.dumps(body)
 
-        allowed_keys = mandatory_keys.union(optional_keys)
         # TODO What if one is None?
 
         given_keys = set(request_body_json.keys())
