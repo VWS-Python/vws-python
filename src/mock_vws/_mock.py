@@ -9,8 +9,17 @@ import json
 import numbers
 import uuid
 from datetime import datetime, timedelta
+from functools import partial
 from json.decoder import JSONDecodeError
-from typing import Any, Callable, Dict, List, Tuple, Union  # noqa F401
+from typing import (  # noqa F401
+    Any,
+    Callable,
+    Dict,
+    List,
+    Tuple,
+    Union,
+    Optional,
+)
 
 import wrapt
 from requests import codes
@@ -121,6 +130,59 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
+def validate_keys(mandatory_keys, optional_keys):
+    """
+    Args:
+        mandatory_keys: TODO
+        optional_keys: TODO
+    """
+
+    @wrapt.decorator
+    def wrapper(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict,
+                  ) -> str:
+        """
+        Validate the request keys given to a VWS endpoint.
+
+        Args:
+            wrapped: An endpoint function for `requests_mock`.
+            instance: The class that the endpoint function is in.
+            args: The arguments given to the endpoint function.
+            kwargs: The keyword arguments given to the endpoint function.
+
+        Returns:
+            The result of calling the endpoint.
+        """
+        request, context = args
+        decoded_body = request.body.decode('ascii')
+
+        try:
+            request_body_json = json.loads(decoded_body)
+        except JSONDecodeError:
+            request_body_json = {}
+
+        allowed_keys = mandatory_keys.union(optional_keys)
+        # TODO What if one is None?
+
+        given_keys = set(request_body_json.keys())
+        all_given_keys_allowed = given_keys.issubset(allowed_keys)
+        all_mandatory_keys_given = mandatory_keys.issubset(given_keys)
+
+        if all_given_keys_allowed and all_mandatory_keys_given:
+            return wrapped(*args, **kwargs)
+
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapper
+
+
 class Route:
     """
     A container for the route details which `requests_mock` needs.
@@ -154,7 +216,12 @@ class Route:
 ROUTES = set([])
 
 
-def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
+def route(
+    path_pattern: str,
+    methods: List[str],
+    mandatory_keys: Optional[List[str]]=None,
+    optional_keys: Optional[List[str]]=None,
+) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
 
@@ -185,7 +252,12 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
         date_validated = validate_date(method)  # noqa: E501 pylint: disable=no-value-for-parameter
         authorization_validated = validate_authorization(date_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
-        return authorization_validated
+        key_validator = validate_keys(
+            optional_keys=optional_keys or set([]),
+            mandatory_keys=mandatory_keys or set([]),
+        )
+        keys_validated = key_validator(authorization_validated)
+        return keys_validated
     return decorator
 
 
@@ -212,10 +284,16 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         self.routes = ROUTES  # type: Set[Route]
 
-    @route(path_pattern='/targets', methods=[POST])
+    @route(
+        path_pattern='/targets',
+        methods=[POST],
+        mandatory_keys={'image', 'width', 'name'},
+        optional_keys={'active_flag', 'application_metadata'},
+    )
     def add_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                   context: _Context) -> str:
+                   context: _Context,
+                   ) -> str:
         """
         Add a target.
 
@@ -224,33 +302,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, Union[str, int]]
         decoded_body = request.body.decode('ascii')
+        request_body_json = json.loads(decoded_body)
 
         valid = True
-
-        try:
-            request_body_json = json.loads(decoded_body)
-        except JSONDecodeError:
-            request_body_json = {}
-
-        allowed_keys = {
-            'name',
-            'width',
-            'image',
-            'active_flag',
-            'application_metadata',
-        }
-        valid = valid and all(key in allowed_keys for key in
-                              request_body_json.keys())
-
-        mandatory_keys = {
-            'image',
-            'width',
-            'name',
-        }
-
-        valid = valid and all(name in request_body_json.keys() for name in
-                              mandatory_keys)
-
         width = request_body_json.get('width')
         name = request_body_json.get('name')
 
