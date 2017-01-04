@@ -20,7 +20,7 @@ def request_unmocked_address() -> None:
         requests.exceptions.ConnectionError: This is expected as there is
             nothing to connect to.
         requests_mock.exceptions.NoMockAddress: This request is being made in
-            the context of a `requests_mock` mock which does not mocl local
+            the context of a `requests_mock` mock which does not mock local
             addresses.
     """
     sock = socket.socket()
