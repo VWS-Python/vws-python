@@ -3,6 +3,9 @@ language: "python"
 python:
   - "3.5"
 
+before_install:
+  - "apt-get install -y enchant"
+
 install:
   - "pip install --upgrade --editable .[dev]"
   - "npm install -g markdownlint-cli"

@@ -40,7 +40,7 @@ def assert_valid_target_id(target_id: str) -> None:
 @pytest.fixture
 def png_file() -> io.BytesIO:
     """
-    Return a random coloured, 1x1 PNG, RGB file.
+    Return a random colored, 1x1 PNG, RGB file.
     """
     image_buffer = io.BytesIO()
 
