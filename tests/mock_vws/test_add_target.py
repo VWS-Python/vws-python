@@ -55,7 +55,7 @@ def _image_file(file_format: str) -> io.BytesIO:
 @pytest.fixture
 def png_file() -> io.BytesIO:
     """
-    Return a random coloured, 1x1 PNG, RGB file.
+    Return a random colored, 1x1 PNG, RGB file.
     """
     return _image_file(file_format='PNG')
 

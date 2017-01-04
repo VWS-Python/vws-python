@@ -28,7 +28,7 @@ def validate_authorization(wrapped: Callable[..., str],
     Validate the authorization header given to a VWS endpoint.
 
     Args:
-        wrapped: An endpoing function for `requests_mock`.
+        wrapped: An endpoint function for `requests_mock`.
         instance: The class that the endpoint function is in.
         args: The arguments given to the endpoint function.
         kwargs: The keyword arguments given to the endpoint function.
@@ -80,7 +80,7 @@ def validate_date(wrapped: Callable[..., str],
     Validate the date header given to a VWS endpoint.
 
     Args:
-        wrapped: An endpoing function for `requests_mock`.
+        wrapped: An endpoint function for `requests_mock`.
         instance: The class that the endpoint function is in.
         args: The arguments given to the endpoint function.
         kwargs: The keyword arguments given to the endpoint function.
@@ -368,7 +368,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Get targets which may be considered duplicates of a given target.
 
-        Fake implemetation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
         body = {
@@ -386,7 +386,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Update a target.
 
-        Fake implemetation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
         """
         body = {
@@ -404,7 +404,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Get a summary report for a target.
 
-        Fake implemetation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
         body = {
