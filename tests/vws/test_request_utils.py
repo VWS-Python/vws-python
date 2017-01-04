@@ -91,7 +91,7 @@ class TestAuthorizationHeader:
                                   content_type: str, date: str,
                                   request_path: str) -> None:
         """
-        This is mostly a reimplimentation of the header creation. The real
+        This is mostly a reimplementation of the header creation. The real
         test is that the header works. This exists to make refactoring easier
         as we can check that the output is as expected.
         """
