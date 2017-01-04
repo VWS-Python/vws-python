@@ -71,7 +71,16 @@ def add_target(
     content_type: str ='application/json',
 ) -> requests.Response:
     """
-    XXX
+    Helper to make a request to the endpoint to add a target.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        data: The data to send, in JSON format, to the endpoint.
+        content_type: The `Content-Type` header to use.
+
+    Returns:
+        The response returned by the API.
     """
     date = rfc_1123_date()
     request_path = '/targets'
