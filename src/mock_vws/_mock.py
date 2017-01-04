@@ -2,6 +2,9 @@
 A fake implementation of VWS.
 """
 
+import base64
+import imghdr
+import io
 import json
 import numbers
 import uuid
@@ -267,7 +270,19 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             return json.dumps(body)
 
         image = request_body_json.get('image')
-        import pdb; pdb.set_trace()
+        decoded = base64.b64decode(image)
+        image_file = io.BytesIO(decoded)
+        image_file_type = imghdr.what(image_file)
+
+        if image_file_type not in ('png', 'jpeg'):
+            context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.BAD_IMAGE.value,
+                'target_id': uuid.uuid4().hex,
+            }
+            return json.dumps(body)
+
         context.status_code = codes.CREATED  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
