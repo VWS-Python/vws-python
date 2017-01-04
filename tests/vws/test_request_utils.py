@@ -58,7 +58,7 @@ class TestRfc1123FormatDate:
         """
         ``rfc_1123_date`` returns the date formatted as required by Vuforia.
         This test matches the example date set at
-        https://library.vuforia.com/articles/Training/Using-the-VWS-API.
+        `<https://library.vuforia.com/articles/Training/Using-the-VWS-API>`_.
         """
         date = datetime.datetime(
             day=22,
