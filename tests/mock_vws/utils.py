@@ -57,8 +57,7 @@ class Endpoint:
 
 def assert_vws_failure(response: Response,
                        status_code: int,
-                       result_code: ResultCodes,
-                       ) -> None:
+                       result_code: ResultCodes) -> None:
     """
     Assert that a VWS failure response is as expected.
 
