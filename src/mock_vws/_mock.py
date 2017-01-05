@@ -164,7 +164,6 @@ def key_validator_2(mandatory_keys: Set[str],
         mandatory_keys: TODO
         optional_keys: TODO
     """
-
     @wrapt.decorator
     def wrapper(wrapped: Callable[..., str],
                 instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
@@ -226,8 +225,7 @@ def validate_keys(mandatory_keys: Set[str],
     Args:
         mandatory_keys: TODO
         optional_keys: TODO
-        """
-
+    """
     @wrapt.decorator
     def wrapper(wrapped: Callable[..., str],
                 instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
