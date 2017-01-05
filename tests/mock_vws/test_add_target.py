@@ -5,7 +5,6 @@ Tests for the mock of the add target endpoint.
 import base64
 import io
 import json
-import random
 from string import hexdigits
 from typing import Any, Dict, Union
 from urllib.parse import urljoin
@@ -37,27 +36,48 @@ def assert_valid_target_id(target_id: str) -> None:
     assert all(char in hexdigits for char in target_id)
 
 
-@pytest.fixture
-def png_file() -> io.BytesIO:
+def _image_file(file_format: str) -> io.BytesIO:
     """
-    Return a random colored, 1x1 PNG, RGB file.
+    Return an image file in the given format.
+
+    Args:
+        file_format: See
+            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
     """
     image_buffer = io.BytesIO()
-
-    red = random.randint(0, 255)
-    green = random.randint(0, 255)
-    blue = random.randint(0, 255)
-
     width = 1
     height = 1
-
-    image = Image.new('RGB', (width, height), color=(red, green, blue))
-    image.save(image_buffer, 'PNG')
+    image = Image.new('RGB', (width, height))
+    image.save(image_buffer, file_format)
     image_buffer.seek(0)
     return image_buffer
 
 
-@pytest.fixture(params=['png_file'])
+@pytest.fixture
+def png_file() -> io.BytesIO:
+    """
+    Return a PNG file.
+    """
+    return _image_file(file_format='PNG')
+
+
+@pytest.fixture
+def jpeg_file() -> io.BytesIO:
+    """
+    Return a JPEG file.
+    """
+    return _image_file(file_format='JPEG')
+
+
+@pytest.fixture
+def tiff_file() -> io.BytesIO:
+    """
+    Return a TIFF file.
+    """
+    return _image_file(file_format='TIFF')
+
+
+@pytest.fixture(params=['png_file', 'jpeg_file'])
 def image_file(request: SubRequest) -> io.BytesIO:
     """
     Return an image file.
@@ -304,6 +324,44 @@ class TestAddTarget:
         )
 
 
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestInvalidImage:
+    """
+    Tests for giving images which do not conform to the specifications
+    detailed in "Supported Images" on
+    https://library.vuforia.com/articles/Training/Image-Target-Guide
+    """
+
+    def test_invalid_type(self,
+                          tiff_file: io.BytesIO,
+                          vuforia_server_credentials: VuforiaServerCredentials,
+                          ) -> None:
+        """
+        A `BAD_REQUEST` response is returned if an image which is not a JPEG
+        or PNG file is given.
+        """
+        image_data = tiff_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.BAD_IMAGE,
+        )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestNotMandatoryFields:
     """
     Tests for passing data which is not mandatory to the endpoint.

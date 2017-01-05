@@ -166,6 +166,7 @@ def add_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.FAIL,
         content_type='application/json',
         content=bytes(str(data), encoding='utf-8'),
+        error_has_response=False,
     )
 
 
@@ -291,6 +292,32 @@ def update_target() -> Endpoint:
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=[
+    'add_target',
+    'update_target',
+])
+def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
+    """
+    XXX
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=[
+    'database_summary',
+    'delete_target',
+    'get_duplicates',
+    'get_target',
+    'target_list',
+    'target_summary',
+])
+def endpoint_which_does_not_take_data(request: SubRequest) -> Endpoint:
+    """
+    XXX
     """
     return request.getfixturevalue(request.param)
 
