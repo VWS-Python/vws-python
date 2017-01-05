@@ -127,7 +127,8 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
-def validate_keys(mandatory_keys, optional_keys):
+def validate_keys(mandatory_keys: Set[str],
+                  optional_keys: Set[str]) -> Callable:
     """
     Args:
         mandatory_keys: TODO
