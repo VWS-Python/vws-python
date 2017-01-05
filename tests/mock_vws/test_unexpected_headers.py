@@ -2,8 +2,6 @@
 Tests for when endpoints are called with unexpected header data.
 """
 
-# TODO Test bad headers and bad date
-
 from datetime import datetime, timedelta
 # This is used in a type hint which linters not pick up on.
 from typing import Union  # noqa: F401 pylint: disable=unused-import

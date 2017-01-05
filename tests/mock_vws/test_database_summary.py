@@ -73,4 +73,13 @@ class TestSummary:
         }
 
     def test_json_fields(self) -> None:
+        """
+        XXX
+        """
+        pass
+
+    def test_bad_headers_and_date(self) -> None:
+        """
+        XXX
+        """
         pass

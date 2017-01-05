@@ -1,4 +1,5 @@
 """
+XXX
 """
 
 import pytest
@@ -17,16 +18,15 @@ class TestInvalidJSON:
     XXX
     """
 
-    # TODO Skewed time AND bad json data
     def test_does_not_take_data(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
-                                endpoint_which_does_not_take_data: Endpoint,
+                                endpoint_no_data: Endpoint,
                                 ) -> None:
         """
         XXX
         """
-        endpoint = endpoint_which_does_not_take_data
+        endpoint = endpoint_no_data
         content = b'a'
         date = rfc_1123_date()
 
@@ -71,12 +71,12 @@ class TestInvalidJSON:
     def test_does_not_take_data_2(self,
                                   vuforia_server_credentials:
                                   VuforiaServerCredentials,
-                                  endpoint_which_does_not_take_data: Endpoint,
+                                  endpoint_no_data: Endpoint,
                                   ) -> None:
         """
         XXX
         """
-        endpoint = endpoint_which_does_not_take_data
+        endpoint = endpoint_no_data
         content = b'a'
         from freezegun import freeze_time
         from datetime import datetime, timedelta

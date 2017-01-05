@@ -314,7 +314,7 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     'target_list',
     'target_summary',
 ])
-def endpoint_which_does_not_take_data(request: SubRequest) -> Endpoint:
+def endpoint_no_data(request: SubRequest) -> Endpoint:
     """
     XXX
     """
