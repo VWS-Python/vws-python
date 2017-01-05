@@ -108,6 +108,8 @@ class TestInvalidJSON:
             data=content,
         )
 
+        # This is an undocumented difference between `/summary` and other
+        # endpoints.
         if endpoint.example_path == '/summary':
             assert_vws_failure(
                 response=response,
@@ -118,20 +120,7 @@ class TestInvalidJSON:
             assert response.status_code == codes.BAD_REQUEST
             assert response.text == ''
             assert 'Content-Type' not in response.headers
-        # This is an undocumented difference between `/summary` and other
-        # endpoints.
-        # if endpoint.example_path == '/summary':
-        #     assert_vws_failure(
-        #         response=response,
-        #         status_code=codes.UNAUTHORIZED,
-        #         result_code=ResultCodes.AUTHENTICATION_FAILURE,
-        #     )
-        #
-        # else:
-        #     assert response.status_code == codes.BAD_REQUEST
-        #     assert response.text == ''
-        #     assert 'Content-Type' not in response.headers
-        #
+
     def test_takes_data(self,
                         vuforia_server_credentials:
                         VuforiaServerCredentials,
