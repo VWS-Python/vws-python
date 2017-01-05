@@ -29,6 +29,35 @@ from vws._request_utils import authorization_header
 
 
 @wrapt.decorator
+def validate_authorization_2(wrapped: Callable[..., str],
+                             instance: 'MockVuforiaTargetAPI',
+                             args: Tuple[_RequestObjectProxy, _Context],
+                             kwargs: Dict) -> str:
+    """
+    Validate the authorization header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    request, context = args
+    if 'Authorization' not in request.headers:
+        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
                            args: Tuple[_RequestObjectProxy, _Context],
@@ -98,6 +127,10 @@ def validate_date(wrapped: Callable[..., str],
         The result of calling the endpoint.
     """
     request, context = args
+    if not request.headers:
+        context.status_code = codes.UNAUTHORIZED
+        body = {}
+        return json.dumps(body)
 
     try:
         date_from_header = datetime.strptime(
@@ -105,6 +138,7 @@ def validate_date(wrapped: Callable[..., str],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
     except (KeyError, ValueError):
+
         context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -125,6 +159,60 @@ def validate_date(wrapped: Callable[..., str],
         return json.dumps(body)
 
     return wrapped(*args, **kwargs)
+
+
+def key_validator_2(mandatory_keys: Set[str],
+                    optional_keys: Set[str]) -> Callable:
+    """
+    Args:
+        mandatory_keys: TODO
+        optional_keys: TODO
+    """
+
+    @wrapt.decorator
+    def wrapper(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict,
+                  ) -> str:
+        """
+        Validate the request keys given to a VWS endpoint.
+
+        Args:
+            wrapped: An endpoint function for `requests_mock`.
+            instance: The class that the endpoint function is in.
+            args: The arguments given to the endpoint function.
+            kwargs: The keyword arguments given to the endpoint function.
+
+        Returns:
+            The result of calling the endpoint.
+        """
+        request, context = args
+        allowed_keys = mandatory_keys.union(optional_keys)
+
+        try:
+            decoded_body = request.body.decode('ascii')
+        except AttributeError:
+            if not allowed_keys:
+                return wrapped(*args, **kwargs)
+
+        try:
+            json.loads(decoded_body)
+        except JSONDecodeError:
+            if allowed_keys:
+                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.FAIL.value,
+                }
+                return json.dumps(body)
+            context.status_code = codes.BAD_REQUEST
+            context.headers.pop('Content-Type')
+            return ""
+
+        return wrapped(*args, **kwargs)
+
+    return wrapper
 
 
 def validate_keys(mandatory_keys: Set[str],
@@ -156,8 +244,10 @@ def validate_keys(mandatory_keys: Set[str],
         request, context = args
         allowed_keys = mandatory_keys.union(optional_keys)
 
-        # if request.path == '/summary':
-        #     return wrapped(*args, **kwargs)
+        if not request.headers:
+            context.status_code = codes.UNAUTHORIZED
+            body = {}
+            return json.dumps(body)
 
         try:
             decoded_body = request.body.decode('ascii')
@@ -270,10 +360,24 @@ def route(
             optional_keys=optional_keys or set([]),
             mandatory_keys=mandatory_keys or set([]),
         )
-        keys_validated = key_validator(method)
-        date_validated = validate_date(keys_validated)
-        authorization_validated = validate_authorization(date_validated)
-        return authorization_validated
+        kv2 = key_validator_2(
+            optional_keys=optional_keys or set([]),
+            mandatory_keys=mandatory_keys or set([]),
+        )
+        validators = [
+            validate_authorization,
+            key_validator,
+            validate_date,
+            kv2,
+            validate_authorization_2,
+        ]
+        for validator in validators:
+            method = validator(method)
+        return method
+        # date_validated = validate_date(method)
+        # keys_validated = key_validator(date_validated)
+        # authorization_validated = validate_authorization(keys_validated)
+        # return authorization_validated
     return decorator
 
 
