@@ -274,7 +274,7 @@ def validate_keys(mandatory_keys: Set[str],
                     context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
                     body = {
                         'transaction_id': uuid.uuid4().hex,
-                        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+                        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,  # noqa: E501
                     }
                     return json.dumps(body)
                 context.headers.pop('Content-Type')
