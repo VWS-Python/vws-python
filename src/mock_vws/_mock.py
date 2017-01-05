@@ -2,20 +2,17 @@
 A fake implementation of VWS.
 """
 
-import base64
-import imghdr
-import io
 import json
 import numbers
 import uuid
 from datetime import datetime, timedelta
-from functools import partial
 from json.decoder import JSONDecodeError
 from typing import (  # noqa F401
     Any,
     Callable,
     Dict,
     List,
+    Set,
     Tuple,
     Union,
     Optional,
@@ -232,8 +229,8 @@ ROUTES = set([])
 def route(
     path_pattern: str,
     methods: List[str],
-    mandatory_keys: Optional[List[str]]=None,
-    optional_keys: Optional[List[str]]=None,
+    mandatory_keys: Optional[Set[str]]=None,
+    optional_keys: Optional[Set[str]]=None,
 ) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
@@ -448,7 +445,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         return json.dumps(body)
 
-    @route(path_pattern='/targets/.+', methods=[PUT])
+    @route(
+        path_pattern='/targets/.+',
+        methods=[PUT],
+        optional_keys={'name'},
+    )
     def update_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                       context: _Context) -> str:
