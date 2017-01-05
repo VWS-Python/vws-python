@@ -199,6 +199,14 @@ def key_validator_2(mandatory_keys: Set[str],
         try:
             json.loads(decoded_body)
         except JSONDecodeError:
+            if request.path == '/summary':
+                context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+                }
+                return json.dumps(body)
+
             if allowed_keys:
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 body = {
@@ -208,6 +216,7 @@ def key_validator_2(mandatory_keys: Set[str],
                 return json.dumps(body)
             context.status_code = codes.BAD_REQUEST
             context.headers.pop('Content-Type')
+
             return ""
 
         return wrapped(*args, **kwargs)
@@ -265,6 +274,13 @@ def validate_keys(mandatory_keys: Set[str],
                 }
                 return json.dumps(body)
             elif request.text:
+                if request.path == '/summary':
+                    context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+                    body = {
+                        'transaction_id': uuid.uuid4().hex,
+                        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+                    }
+                    return json.dumps(body)
                 context.headers.pop('Content-Type')
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 return ''
@@ -371,6 +387,15 @@ def route(
             kv2,
             validate_authorization_2,
         ]
+
+        if path_pattern == '/summary':
+            validators = [
+                validate_authorization,
+                key_validator,
+                kv2,
+                validate_date,
+                validate_authorization_2,
+            ]
         for validator in validators:
             method = validator(method)
         return method
