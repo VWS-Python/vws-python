@@ -70,7 +70,6 @@ def assert_vws_failure(response: Response,
         AssertionError: The response is not in the expected VWS error format
         for the given codes.
     """
-    # import pdb; pdb.set_trace()
     assert response.json().keys() == {'transaction_id', 'result_code'}
     assert_vws_response(
         response=response,
