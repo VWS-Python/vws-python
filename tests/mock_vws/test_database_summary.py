@@ -72,5 +72,5 @@ class TestSummary:
             'transaction_id',
         }
 
-    def test_json_fields(self):
+    def test_json_fields(self) -> None:
         pass
