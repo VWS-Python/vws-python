@@ -129,6 +129,10 @@ def validate_date(wrapped: Callable[..., str],
         The result of calling the endpoint.
     """
     request, context = args
+    if not request.headers:
+        context.status_code = codes.UNAUTHORIZED
+        body = {}
+        return json.dumps(body)
 
     try:
         date_from_header = datetime.strptime(
