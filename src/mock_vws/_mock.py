@@ -399,10 +399,6 @@ def route(
         for validator in validators:
             method = validator(method)
         return method
-        # date_validated = validate_date(method)
-        # keys_validated = key_validator(date_validated)
-        # authorization_validated = validate_authorization(keys_validated)
-        # return authorization_validated
     return decorator
 
 
