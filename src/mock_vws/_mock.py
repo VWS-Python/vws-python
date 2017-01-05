@@ -249,11 +249,6 @@ def validate_keys(mandatory_keys: Set[str],
         request, context = args
         allowed_keys = mandatory_keys.union(optional_keys)
 
-        if not request.headers:
-            context.status_code = codes.UNAUTHORIZED
-            body = {}
-            return json.dumps(body)
-
         try:
             decoded_body = request.body.decode('ascii')
         except AttributeError:
