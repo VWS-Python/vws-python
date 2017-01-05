@@ -14,8 +14,8 @@ from requests import codes
 from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     Endpoint,
-    assert_vws_response,
     assert_vws_failure,
+    assert_vws_response,
 )
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
