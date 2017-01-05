@@ -166,7 +166,6 @@ def add_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.FAIL,
         content_type='application/json',
         content=bytes(str(data), encoding='utf-8'),
-        error_has_response=False,
     )
 
 
