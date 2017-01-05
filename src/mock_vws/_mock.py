@@ -12,10 +12,10 @@ from typing import (  # noqa F401
     Callable,
     Dict,
     List,
+    Optional,
     Set,
     Tuple,
     Union,
-    Optional,
 )
 
 import wrapt
