@@ -171,8 +171,14 @@ def validate_keys(mandatory_keys: Set[str],
                     'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
                 }
                 return json.dumps(body)
-            request_body_json = {}
-            if not allowed_keys:
+            if allowed_keys:
+                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.FAIL.value,
+                }
+                return json.dumps(body)
+            else:
                 context.headers.pop('Content-Type')
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 return ''
