@@ -175,7 +175,7 @@ def validate_keys(mandatory_keys, optional_keys):
                 return json.dumps(body)
             request_body_json = {}
             if not allowed_keys:
-                # TODO do content type
+                context.headers.pop('Content-Type')
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 return ''
 
