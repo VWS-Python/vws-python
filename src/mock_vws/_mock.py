@@ -30,7 +30,7 @@ from vws._request_utils import authorization_header
 
 @wrapt.decorator
 def validate_authorization_2(wrapped: Callable[..., str],
-                             instance: 'MockVuforiaTargetAPI',
+                             instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                              args: Tuple[_RequestObjectProxy, _Context],
                              kwargs: Dict) -> str:
     """
@@ -210,7 +210,7 @@ def key_validator_2(mandatory_keys: Set[str],
                     'result_code': ResultCodes.FAIL.value,
                 }
                 return json.dumps(body)
-            context.status_code = codes.BAD_REQUEST
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             context.headers.pop('Content-Type')
 
             return ""
@@ -328,11 +328,10 @@ ROUTES = set([])
 
 
 def route(
-    path_pattern: str,
-    methods: List[str],
-    mandatory_keys: Optional[Set[str]]=None,
-    optional_keys: Optional[Set[str]]=None,
-) -> Callable[..., Callable]:
+        path_pattern: str,
+        methods: List[str],
+        mandatory_keys: Optional[Set[str]]=None,
+        optional_keys: Optional[Set[str]]=None) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
 
