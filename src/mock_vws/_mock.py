@@ -167,10 +167,10 @@ def key_validator_2(mandatory_keys: Set[str],
 
     @wrapt.decorator
     def wrapper(wrapped: Callable[..., str],
-                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple[_RequestObjectProxy, _Context],
-                  kwargs: Dict,
-                  ) -> str:
+                instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                args: Tuple[_RequestObjectProxy, _Context],
+                kwargs: Dict,
+               ) -> str:
         """
         Validate the request keys given to a VWS endpoint.
 
@@ -226,14 +226,14 @@ def validate_keys(mandatory_keys: Set[str],
     Args:
         mandatory_keys: TODO
         optional_keys: TODO
-    """
+        """
 
     @wrapt.decorator
     def wrapper(wrapped: Callable[..., str],
-                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple[_RequestObjectProxy, _Context],
-                  kwargs: Dict,
-                  ) -> str:
+                instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                args: Tuple[_RequestObjectProxy, _Context],
+                kwargs: Dict,
+               ) -> str:
         """
         Validate the request keys given to a VWS endpoint.
 
