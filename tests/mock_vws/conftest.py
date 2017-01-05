@@ -183,7 +183,6 @@ def delete_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
-        error_has_response=False,
     )
 
 
@@ -199,7 +198,6 @@ def database_summary() -> Endpoint:
         successful_headers_result_code=ResultCodes.SUCCESS,
         content_type=None,
         content=b'',
-        error_has_response=True,
     )
 
 
@@ -217,7 +215,6 @@ def get_duplicates() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
-        error_has_response=False,
     )
 
 
@@ -234,7 +231,6 @@ def get_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
-        error_has_response=False,
     )
 
 
@@ -250,7 +246,6 @@ def target_list() -> Endpoint:
         successful_headers_result_code=ResultCodes.SUCCESS,
         content_type=None,
         content=b'',
-        error_has_response=False,
     )
 
 
@@ -267,7 +262,6 @@ def target_summary() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
-        error_has_response=False,
     )
 
 
@@ -285,7 +279,6 @@ def update_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type='application/json',
         content=bytes(str(data), encoding='utf-8'),
-        error_has_response=False,
     )
 
 

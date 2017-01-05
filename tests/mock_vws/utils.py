@@ -23,7 +23,6 @@ class Endpoint:
                  successful_headers_status_code: int,
                  content_type: Optional[str],
                  content: bytes,
-                 error_has_response: bool,
                  ) -> None:
         """
         Args:
@@ -34,7 +33,6 @@ class Endpoint:
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
             content: The data to send with the request.
-            XXX
 
         Attributes:
             example_path: An example path for calling the endpoint.
@@ -55,7 +53,6 @@ class Endpoint:
         self.url = urljoin('https://vws.vuforia.com/', example_path)
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
-        self.error_has_response = error_has_response
 
 
 def is_valid_transaction_id(string: str) -> bool:
@@ -82,7 +79,6 @@ def is_valid_transaction_id(string: str) -> bool:
 def assert_vws_failure(response: Response,
                        status_code: int,
                        result_code: ResultCodes,
-                       has_response: bool=True,
                        ) -> None:
     """
     Assert that a VWS failure response is as expected.
@@ -96,15 +92,6 @@ def assert_vws_failure(response: Response,
         AssertionError: The response is not in the expected VWS error format
         for the given codes.
     """
-    if not has_response:
-        message = 'Expected {expected}, got {actual}.'
-        assert response.status_code == status_code, message.format(
-            expected=status_code,
-            actual=response.status_code,
-        )
-        assert response.text == ''
-        return
-
     assert response.json().keys() == {'transaction_id', 'result_code'}
     assert_vws_response(
         response=response,
