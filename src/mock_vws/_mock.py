@@ -57,56 +57,58 @@ def validate_authorization_2(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
-@wrapt.decorator
-def validate_authorization(wrapped: Callable[..., str],
-                           instance: 'MockVuforiaTargetAPI',
-                           args: Tuple[_RequestObjectProxy, _Context],
-                           kwargs: Dict) -> str:
-    """
-    Validate the authorization header given to a VWS endpoint.
+def validate_authorization_wrapper(path_pattern):
+    @wrapt.decorator
+    def validate_authorization(wrapped: Callable[..., str],
+                               instance: 'MockVuforiaTargetAPI',
+                               args: Tuple[_RequestObjectProxy, _Context],
+                               kwargs: Dict) -> str:
+        """
+        Validate the authorization header given to a VWS endpoint.
 
-    Args:
-        wrapped: An endpoint function for `requests_mock`.
-        instance: The class that the endpoint function is in.
-        args: The arguments given to the endpoint function.
-        kwargs: The keyword arguments given to the endpoint function.
+        Args:
+            wrapped: An endpoint function for `requests_mock`.
+            instance: The class that the endpoint function is in.
+            args: The arguments given to the endpoint function.
+            kwargs: The keyword arguments given to the endpoint function.
 
-    Returns:
-        The result of calling the endpoint.
-    """
-    request, context = args
-    if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-        }
-        return json.dumps(body)
+        Returns:
+            The result of calling the endpoint.
+        """
+        request, context = args
+        if 'Authorization' not in request.headers:
+            context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+            }
+            return json.dumps(body)
 
-    if request.text is None:
-        content = b''
-    else:
-        content = bytes(request.text, encoding='utf-8')
+        if request.text is None:
+            content = b''
+        else:
+            content = bytes(request.text, encoding='utf-8')
 
-    expected_authorization_header = authorization_header(
-        access_key=bytes(instance.access_key, encoding='utf-8'),
-        secret_key=bytes(instance.secret_key, encoding='utf-8'),
-        method=request.method,
-        content=content,
-        content_type=request.headers.get('Content-Type', ''),
-        date=request.headers.get('Date', ''),
-        request_path=request.path,
-    )
+        expected_authorization_header = authorization_header(
+            access_key=bytes(instance.access_key, encoding='utf-8'),
+            secret_key=bytes(instance.secret_key, encoding='utf-8'),
+            method=request.method,
+            content=content,
+            content_type=request.headers.get('Content-Type', ''),
+            date=request.headers.get('Date', ''),
+            request_path=request.path,
+        )
 
-    if request.headers['Authorization'] != expected_authorization_header:
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json.dumps(body)
+        if request.headers['Authorization'] != expected_authorization_header:
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.FAIL.value,
+            }
+            return json.dumps(body)
 
-    return wrapped(*args, **kwargs)
+        return wrapped(*args, **kwargs)
+    return validate_authorization
 
 
 @wrapt.decorator
@@ -253,11 +255,6 @@ def validate_keys(mandatory_keys: Set[str],
         request, context = args
         allowed_keys = mandatory_keys.union(optional_keys)
 
-        if not request.headers:
-            context.status_code = codes.UNAUTHORIZED
-            body = {}
-            return json.dumps(body)
-
         try:
             decoded_body = request.body.decode('ascii')
         except AttributeError:
@@ -274,13 +271,6 @@ def validate_keys(mandatory_keys: Set[str],
                 }
                 return json.dumps(body)
             elif request.text:
-                if request.path == '/summary':
-                    context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-                    body = {
-                        'transaction_id': uuid.uuid4().hex,
-                        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-                    }
-                    return json.dumps(body)
                 context.headers.pop('Content-Type')
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 return ''
@@ -380,8 +370,9 @@ def route(
             optional_keys=optional_keys or set([]),
             mandatory_keys=mandatory_keys or set([]),
         )
+        va = validate_authorization_wrapper(path_pattern=path_pattern)
         validators = [
-            validate_authorization,
+            va,
             key_validator,
             validate_date,
             kv2,
@@ -390,7 +381,7 @@ def route(
 
         if path_pattern == '/summary':
             validators = [
-                validate_authorization,
+                va,
                 key_validator,
                 kv2,
                 validate_date,
