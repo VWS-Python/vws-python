@@ -163,6 +163,7 @@ class TestAddTarget:
         assert response.json().keys() == expected_keys
         assert_valid_target_id(target_id=response.json()['target_id'])
 
+    @pytest.mark.skip
     def test_invalid_json(self,
                           vuforia_server_credentials: VuforiaServerCredentials,
                           ) -> None:

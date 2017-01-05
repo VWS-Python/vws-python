@@ -156,6 +156,9 @@ def validate_keys(mandatory_keys: Set[str],
         request, context = args
         allowed_keys = mandatory_keys.union(optional_keys)
 
+        # if request.path == '/summary':
+        #     return wrapped(*args, **kwargs)
+
         try:
             decoded_body = request.body.decode('ascii')
         except AttributeError:
@@ -164,13 +167,6 @@ def validate_keys(mandatory_keys: Set[str],
         try:
             request_body_json = json.loads(decoded_body)
         except JSONDecodeError:
-            if request.path == '/summary':
-                context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-                body = {
-                    'transaction_id': uuid.uuid4().hex,
-                    'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-                }
-                return json.dumps(body)
             if allowed_keys:
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 body = {
@@ -178,10 +174,11 @@ def validate_keys(mandatory_keys: Set[str],
                     'result_code': ResultCodes.FAIL.value,
                 }
                 return json.dumps(body)
-            else:
+            elif request.text:
                 context.headers.pop('Content-Type')
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 return ''
+            request_body_json = {}
 
         given_keys = set(request_body_json.keys())
         all_given_keys_allowed = given_keys.issubset(allowed_keys)
@@ -266,15 +263,17 @@ def route(
             )
         )
         # pylint is not very good with decorators
-        # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
-        date_validated = validate_date(method)  # noqa: E501 pylint: disable=no-value-for-parameter
-        authorization_validated = validate_authorization(date_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
+        # # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
+        # authorization_validated = validate_authorization(method)  # noqa: E501 pylint: disable=no-value-for-parameter
+        # date_validated = validate_date(authorization_validated)
         key_validator = validate_keys(
             optional_keys=optional_keys or set([]),
             mandatory_keys=mandatory_keys or set([]),
         )
-        keys_validated = key_validator(authorization_validated)
-        return keys_validated
+        keys_validated = key_validator(method)
+        date_validated = validate_date(keys_validated)
+        authorization_validated = validate_authorization(date_validated)
+        return authorization_validated
     return decorator
 
 
