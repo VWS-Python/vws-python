@@ -97,6 +97,11 @@ def assert_vws_failure(response: Response,
         for the given codes.
     """
     if not has_response:
+        message = 'Expected {expected}, got {actual}.'
+        assert response.status_code == status_code, message.format(
+            expected=status_code,
+            actual=response.status_code,
+        )
         assert response.text == ''
         return
 

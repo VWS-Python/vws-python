@@ -166,16 +166,18 @@ def validate_keys(mandatory_keys, optional_keys):
         try:
             request_body_json = json.loads(decoded_body)
         except JSONDecodeError:
-            request_body_json = {}
-            if not allowed_keys:
+            if request.path == '/summary':
                 context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
                 body = {
                     'transaction_id': uuid.uuid4().hex,
                     'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
                 }
                 return json.dumps(body)
-
-        # TODO What if one is None?
+            request_body_json = {}
+            if not allowed_keys:
+                # TODO do content type
+                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+                return ''
 
         given_keys = set(request_body_json.keys())
         all_given_keys_allowed = given_keys.issubset(allowed_keys)
