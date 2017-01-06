@@ -258,12 +258,22 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
             )
         )
 
-        validators = [
-            validate_date,
-            validate_authorization,
-            validate_not_invalid_json,
-            validate_auth_header_exists,
-        ]
+        # There is an undocumented difference in behavior between `/summary`
+        # and other endpoints.
+        if path_pattern == '/summary':
+            validators = [
+                validate_authorization,
+                validate_not_invalid_json,
+                validate_date,
+                validate_auth_header_exists,
+            ]
+        else:
+            validators = [
+                validate_date,
+                validate_authorization,
+                validate_not_invalid_json,
+                validate_auth_header_exists,
+            ]
 
         for validator in validators:
             method = validator(method)
