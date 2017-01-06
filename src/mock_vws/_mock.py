@@ -22,7 +22,7 @@ from vws._request_utils import authorization_header
 @wrapt.decorator
 def validate_auth_header_exists(
         wrapped: Callable[..., str],
-        instance: 'MockVuforiaTargetAPI',
+        instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
         args: Tuple[_RequestObjectProxy, _Context],
         kwargs: Dict) -> str:
     """
