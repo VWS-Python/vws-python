@@ -7,14 +7,7 @@ import numbers
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
-from typing import (  # noqa F401
-    Any,
-    Callable,
-    Dict,
-    List,
-    Tuple,
-    Union,
-)
+from typing import Any, Callable, Dict, List, Tuple, Union  # noqa F401
 
 import wrapt
 from requests import codes
