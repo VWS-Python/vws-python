@@ -20,12 +20,13 @@ from vws._request_utils import authorization_header
 
 
 @wrapt.decorator
-def validate_authorization(wrapped: Callable[..., str],
-                           instance: 'MockVuforiaTargetAPI',
-                           args: Tuple[_RequestObjectProxy, _Context],
-                           kwargs: Dict) -> str:
+def validate_auth_header_exists(
+        wrapped: Callable[..., str],
+        instance: 'MockVuforiaTargetAPI',
+        args: Tuple[_RequestObjectProxy, _Context],
+        kwargs: Dict) -> str:
     """
-    Validate the authorization header given to a VWS endpoint.
+    Validate that there is an authorization header given to a VWS endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -44,6 +45,28 @@ def validate_authorization(wrapped: Callable[..., str],
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
         }
         return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_authorization(wrapped: Callable[..., str],
+                           instance: 'MockVuforiaTargetAPI',
+                           args: Tuple[_RequestObjectProxy, _Context],
+                           kwargs: Dict) -> str:
+    """
+    Validate the authorization header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    request, context = args
 
     if request.text is None:
         content = b''
@@ -182,6 +205,7 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         validators = [
             validate_date,
             validate_authorization,
+            validate_auth_header_exists,
         ]
 
         for validator in validators:
@@ -304,7 +328,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Get a database summary report.
 
-        ake implementation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
         body = {}  # type: Dict[str, str]
