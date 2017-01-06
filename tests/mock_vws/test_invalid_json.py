@@ -1,5 +1,5 @@
 """
-XXX
+Tests for giving invalid JSON to endpoints.
 """
 
 import pytest
@@ -15,7 +15,7 @@ from vws._request_utils import authorization_header, rfc_1123_date
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidJSON:
     """
-    XXX
+    Tests for giving invalid JSON to endpoints.
     """
 
     def test_does_not_take_data(self,
@@ -24,18 +24,20 @@ class TestInvalidJSON:
                                 endpoint_no_data: Endpoint,
                                 ) -> None:
         """
-        XXX
+        Giving invalid JSON to endpoints which do not take any JSON data
+        returns error responses.
         """
         endpoint = endpoint_no_data
         content = b'a'
         date = rfc_1123_date()
+        assert not endpoint.content_type
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=content,
-            content_type=endpoint.content_type or '',
+            content_type='',
             date=date,
             request_path=endpoint.example_path,
         )
@@ -44,8 +46,6 @@ class TestInvalidJSON:
             "Authorization": authorization_string,
             "Date": date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
