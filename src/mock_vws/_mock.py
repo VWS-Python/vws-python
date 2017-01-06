@@ -21,7 +21,7 @@ from vws._request_utils import authorization_header
 
 @wrapt.decorator
 def validate_not_invalid_json(wrapped: Callable[..., str],
-                              instance: 'MockVuforiaTargetAPI',
+                              instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                               args: Tuple[_RequestObjectProxy, _Context],
                               kwargs: Dict) -> str:
     """
@@ -51,21 +51,21 @@ def validate_not_invalid_json(wrapped: Callable[..., str],
         json.loads(request.text)
     except JSONDecodeError:
         if request.path == '/summary':
-            context.status_code = codes.UNAUTHORIZED
+            context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
             }
             return json.dumps(body)
         elif request.method == POST:
-            context.status_code = codes.BAD_REQUEST
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.FAIL.value,
             }
             return json.dumps(body)
 
-        context.status_code = codes.BAD_REQUEST
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
         context.headers.pop('Content-Type')
         return ''
 
