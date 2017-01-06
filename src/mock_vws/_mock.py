@@ -178,11 +178,16 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                 methods=methods,
             )
         )
-        # pylint is not very good with decorators
-        # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
-        date_validated = validate_date(method)  # noqa: E501 pylint: disable=no-value-for-parameter
-        authorization_validated = validate_authorization(date_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
-        return authorization_validated
+
+        validators = [
+            validate_date,
+            validate_authorization,
+        ]
+
+        for validator in validators:
+            method = validator(method)
+
+        return method
     return decorator
 
 
