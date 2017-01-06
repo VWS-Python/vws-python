@@ -20,6 +20,59 @@ from vws._request_utils import authorization_header
 
 
 @wrapt.decorator
+def validate_not_invalid_json(wrapped: Callable[..., str],
+                              instance: 'MockVuforiaTargetAPI',
+                              args: Tuple[_RequestObjectProxy, _Context],
+                              kwargs: Dict) -> str:
+    """
+    Validate that there is either no JSON given or the JSON given is valid.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNAUTHORIZED` response if there is invalid JSON given to the
+        database summary endpoint.
+        A `BAD_REQUEST` response with a FAIL result code if there is invalid
+        JSON given to a POST request.
+        A `BAD_REQUEST` with empty text if there is invalid JSON given to
+        another request type.
+    """
+    request, context = args
+
+    if request.text is None:
+        return wrapped(*args, **kwargs)
+
+    try:
+        json.loads(request.text)
+    except JSONDecodeError:
+        if request.path == '/summary':
+            context.status_code = codes.UNAUTHORIZED
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+            }
+            return json.dumps(body)
+        elif request.method == POST:
+            context.status_code = codes.BAD_REQUEST
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.FAIL.value,
+            }
+            return json.dumps(body)
+
+        context.status_code = codes.BAD_REQUEST
+        context.headers.pop('Content-Type')
+        return ''
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
 def validate_auth_header_exists(
         wrapped: Callable[..., str],
         instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
@@ -208,6 +261,7 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         validators = [
             validate_date,
             validate_authorization,
+            validate_not_invalid_json,
             validate_auth_header_exists,
         ]
 
