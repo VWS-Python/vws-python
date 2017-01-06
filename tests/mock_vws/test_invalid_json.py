@@ -30,13 +30,14 @@ class TestInvalidJSON:
         endpoint = endpoint_no_data
         content = b'a'
         date = rfc_1123_date()
+        assert not endpoint.content_type
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=content,
-            content_type=endpoint.content_type or '',
+            content_type='',
             date=date,
             request_path=endpoint.example_path,
         )

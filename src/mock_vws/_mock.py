@@ -310,10 +310,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         valid = True
 
-        try:
-            request_body_json = json.loads(decoded_body)
-        except JSONDecodeError:
-            request_body_json = {}
+        request_body_json = json.loads(decoded_body)
 
         allowed_keys = {
             'name',
