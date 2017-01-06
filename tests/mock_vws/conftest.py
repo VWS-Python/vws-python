@@ -316,7 +316,7 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
 ])
 def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     """
-    XXX
+    Return details of an endpoint which takes JSON data.
     """
     return request.getfixturevalue(request.param)
 

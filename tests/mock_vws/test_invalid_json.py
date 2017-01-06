@@ -127,7 +127,8 @@ class TestInvalidJSON:
                         endpoint_which_takes_data: Endpoint,
                         ) -> None:
         """
-        XXX
+        Giving invalid JSON to endpoints which do take JSON data returns error
+        responses.
         """
         endpoint = endpoint_which_takes_data
         content = b'a'
@@ -146,9 +147,8 @@ class TestInvalidJSON:
         headers = {
             "Authorization": authorization_string,
             "Date": date,
+            'Content-Type': endpoint.content_type,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
