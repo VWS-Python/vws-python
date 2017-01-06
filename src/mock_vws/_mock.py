@@ -216,7 +216,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     @route(path_pattern='/targets', methods=[POST])
     def add_target(self,
-                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   request: _RequestObjectProxy,
                    context: _Context) -> str:
         """
         Add a target.
@@ -263,19 +263,19 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         valid = valid and isinstance(name, str)
         valid = valid and 0 < len(name) < 65
 
-        if valid:
-            context.status_code = codes.CREATED  # pylint: disable=no-member
+        if not valid:
+            context.status_code = codes.BAD_REQUEST  # noqa E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.TARGET_CREATED.value,
-                'target_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.FAIL.value,
             }
             return json.dumps(body)
 
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.CREATED  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
+            'result_code': ResultCodes.TARGET_CREATED.value,
+            'target_id': uuid.uuid4().hex,
         }
         return json.dumps(body)
 
