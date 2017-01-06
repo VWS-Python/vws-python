@@ -234,34 +234,10 @@ def validate_keys(mandatory_keys: Set[str],
         request, context = args
         allowed_keys = mandatory_keys.union(optional_keys)
 
-        try:
-            decoded_body = request.body.decode('ascii')
-        except AttributeError:
-            decoded_body = ''
+        if request.text is None and not allowed_keys:
+            return wrapped(*args, **kwargs)
 
-        try:
-            request_body_json = json.loads(decoded_body)
-        except JSONDecodeError:
-            if allowed_keys:
-                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-                body = {
-                    'transaction_id': uuid.uuid4().hex,
-                    'result_code': ResultCodes.FAIL.value,
-                }
-                return json.dumps(body)
-            elif request.text:
-                if request.path == '/summary':
-                    context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-                    body = {
-                        'transaction_id': uuid.uuid4().hex,
-                        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,  # noqa: E501
-                    }
-                    return json.dumps(body)
-                context.headers.pop('Content-Type')
-                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-                return ''
-            request_body_json = {}
-
+        request_body_json = json.loads(request.text)
         given_keys = set(request_body_json.keys())
         all_given_keys_allowed = given_keys.issubset(allowed_keys)
         all_mandatory_keys_given = mandatory_keys.issubset(given_keys)
@@ -355,6 +331,7 @@ def route(
             validators = [
                 validate_authorization,
                 key_validator,
+                validate_not_invalid_json,
                 validate_date,
                 validate_auth_header_exists,
             ]
