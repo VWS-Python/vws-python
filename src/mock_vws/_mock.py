@@ -258,7 +258,7 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
             )
         )
 
-        # There is an undocumented difference in behaviour between `/summary`
+        # There is an undocumented difference in behavior between `/summary`
         # and other endpoints.
         if path_pattern == '/summary':
             validators = [
