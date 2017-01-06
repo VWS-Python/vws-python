@@ -2,8 +2,11 @@
 Tests for giving invalid JSON to endpoints.
 """
 
+from datetime import datetime, timedelta
+
 import pytest
 import requests
+from freezegun import freeze_time
 from requests import codes
 
 from common.constants import ResultCodes
@@ -68,18 +71,20 @@ class TestInvalidJSON:
             assert response.text == ''
             assert 'Content-Type' not in response.headers
 
-    def test_does_not_take_data_2(self,
-                                  vuforia_server_credentials:
-                                  VuforiaServerCredentials,
-                                  endpoint_no_data: Endpoint,
-                                  ) -> None:
+    def test_does_not_take_data_skewed_time(  # pylint: disable=invalid-name
+        self,
+        vuforia_server_credentials:
+        VuforiaServerCredentials,
+        endpoint_no_data: Endpoint,
+    ) -> None:
         """
-        XXX
+        Of the endpoints which do not take data, only `/summary` gives a
+        `REQUEST_TIME_TOO_SKEWED` error if invalid JSON is given at with a
+        skewed date.
         """
         endpoint = endpoint_no_data
         content = b'a'
-        from freezegun import freeze_time
-        from datetime import datetime, timedelta
+        assert not endpoint.content_type
 
         with freeze_time(datetime.now() + timedelta(minutes=10)):
             date = rfc_1123_date()
@@ -89,7 +94,7 @@ class TestInvalidJSON:
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=content,
-            content_type=endpoint.content_type or '',
+            content_type='',
             date=date,
             request_path=endpoint.example_path,
         )
@@ -98,8 +103,6 @@ class TestInvalidJSON:
             "Authorization": authorization_string,
             "Date": date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
