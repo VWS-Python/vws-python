@@ -45,8 +45,6 @@ class TestInvalidJSON:
             "Authorization": authorization_string,
             "Date": date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
         response = requests.request(
             method=endpoint.method,
