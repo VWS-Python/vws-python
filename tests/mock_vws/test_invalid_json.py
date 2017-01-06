@@ -86,7 +86,7 @@ class TestInvalidJSON:
             secret_key=vuforia_server_credentials.secret_key,
             method=endpoint.method,
             content=content,
-            content_type=endpoint.content_type,
+            content_type=endpoint.content_type or '',
             date=date,
             request_path=endpoint.example_path,
         )
