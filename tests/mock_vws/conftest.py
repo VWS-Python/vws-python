@@ -322,21 +322,6 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
 
 
 @pytest.fixture(params=[
-    'database_summary',
-    'delete_target',
-    'get_duplicates',
-    'get_target',
-    'target_list',
-    'target_summary',
-])
-def endpoint_no_data(request: SubRequest) -> Endpoint:
-    """
-    XXX
-    """
-    return request.getfixturevalue(request.param)
-
-
-@pytest.fixture(params=[
     'add_target',
     'database_summary',
     'delete_target',
