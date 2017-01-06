@@ -355,10 +355,7 @@ def route(
                 methods=methods,
             )
         )
-        # pylint is not very good with decorators
-        # # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
-        # authorization_validated = validate_authorization(method)  # noqa: E501 pylint: disable=no-value-for-parameter
-        # date_validated = validate_date(authorization_validated)
+
         key_validator = validate_keys(
             optional_keys=optional_keys or set([]),
             mandatory_keys=mandatory_keys or set([]),
@@ -383,8 +380,10 @@ def route(
                 validate_date,
                 validate_authorization_2,
             ]
+
         for validator in validators:
             method = validator(method)
+
         return method
     return decorator
 
@@ -419,7 +418,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         optional_keys={'active_flag', 'application_metadata'},
     )
     def add_target(self,
-                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   request: _RequestObjectProxy,
                    context: _Context) -> str:
         """
         Add a target.
