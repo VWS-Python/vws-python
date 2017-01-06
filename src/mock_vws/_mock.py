@@ -349,19 +349,19 @@ def route(
             mandatory_keys=mandatory_keys or set([]),
         )
 
-        validators = [
-            validate_authorization,
-            key_validator,
-            validate_date,
-            validate_not_invalid_json,
-            validate_auth_header_exists,
-        ]
-
         if path_pattern == '/summary':
             validators = [
                 validate_authorization,
                 key_validator,
                 validate_date,
+                validate_auth_header_exists,
+            ]
+        else:
+            validators = [
+                validate_authorization,
+                key_validator,
+                validate_date,
+                validate_not_invalid_json,
                 validate_auth_header_exists,
             ]
 
