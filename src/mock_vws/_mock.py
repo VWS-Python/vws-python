@@ -66,7 +66,8 @@ def validate_authorization(wrapped: Callable[..., str],
 
     Returns:
         The result of calling the endpoint.
-        A `BAD_REQUEST` response if "Authorization" header is not as expected.
+        A `BAD_REQUEST` response if the "Authorization" header is not as
+        expected.
     """
     request, context = args
 
