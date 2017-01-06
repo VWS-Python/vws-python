@@ -312,6 +312,17 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
 
 @pytest.fixture(params=[
     'add_target',
+    'update_target',
+])
+def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
+    """
+    Return details of an endpoint which takes JSON data.
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=[
+    'add_target',
     'database_summary',
     'delete_target',
     'get_duplicates',
