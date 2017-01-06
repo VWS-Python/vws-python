@@ -391,7 +391,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, Union[str, int]]
         decoded_body = request.body.decode('ascii')
-        request_body_json = json.loads(decoded_body)
 
         valid = True
 
