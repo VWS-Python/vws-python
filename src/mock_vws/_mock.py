@@ -206,68 +206,6 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
-def key_validator_2(mandatory_keys: Set[str],
-                    optional_keys: Set[str]) -> Callable:
-    """
-    Args:
-        mandatory_keys: TODO
-        optional_keys: TODO
-    """
-    @wrapt.decorator
-    def wrapper(wrapped: Callable[..., str],
-                instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                args: Tuple[_RequestObjectProxy, _Context],
-                kwargs: Dict,
-               ) -> str:
-        """
-        Validate the request keys given to a VWS endpoint.
-
-        Args:
-            wrapped: An endpoint function for `requests_mock`.
-            instance: The class that the endpoint function is in.
-            args: The arguments given to the endpoint function.
-            kwargs: The keyword arguments given to the endpoint function.
-
-        Returns:
-            The result of calling the endpoint.
-        """
-        request, context = args
-        allowed_keys = mandatory_keys.union(optional_keys)
-
-        try:
-            decoded_body = request.body.decode('ascii')
-        except AttributeError:
-            if not allowed_keys:
-                return wrapped(*args, **kwargs)
-
-        try:
-            json.loads(decoded_body)
-        except JSONDecodeError:
-            if request.path == '/summary':
-                context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-                body = {
-                    'transaction_id': uuid.uuid4().hex,
-                    'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-                }
-                return json.dumps(body)
-
-            if allowed_keys:
-                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-                body = {
-                    'transaction_id': uuid.uuid4().hex,
-                    'result_code': ResultCodes.FAIL.value,
-                }
-                return json.dumps(body)
-            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-            context.headers.pop('Content-Type')
-
-            return ""
-
-        return wrapped(*args, **kwargs)
-
-    return wrapper
-
-
 def validate_keys(mandatory_keys: Set[str],
                   optional_keys: Set[str]) -> Callable:
     """
@@ -410,15 +348,11 @@ def route(
             optional_keys=optional_keys or set([]),
             mandatory_keys=mandatory_keys or set([]),
         )
-        kv2 = key_validator_2(
-            optional_keys=optional_keys or set([]),
-            mandatory_keys=mandatory_keys or set([]),
-        )
+
         validators = [
             validate_authorization,
             key_validator,
             validate_date,
-            kv2,
             validate_not_invalid_json,
             validate_auth_header_exists,
         ]
@@ -427,7 +361,6 @@ def route(
             validators = [
                 validate_authorization,
                 key_validator,
-                kv2,
                 validate_date,
                 validate_auth_header_exists,
             ]
