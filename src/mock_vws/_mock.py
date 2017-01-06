@@ -57,7 +57,7 @@ def validate_not_invalid_json(wrapped: Callable[..., str],
                 'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
             }
             return json.dumps(body)
-        elif request.method == POST:
+        elif request.method in (POST, PUT):
             context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,

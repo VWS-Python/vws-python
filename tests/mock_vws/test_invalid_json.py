@@ -67,3 +67,45 @@ class TestInvalidJSON:
             assert response.status_code == codes.BAD_REQUEST
             assert response.text == ''
             assert 'Content-Type' not in response.headers
+
+    def test_takes_data(self,
+                        vuforia_server_credentials:
+                        VuforiaServerCredentials,
+                        endpoint_which_takes_data: Endpoint,
+                        ) -> None:
+        """
+        Giving invalid JSON to endpoints which do take JSON data returns error
+        responses.
+        """
+        endpoint = endpoint_which_takes_data
+        content = b'a'
+        date = rfc_1123_date()
+
+        authorization_string = authorization_header(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=endpoint.method,
+            content=content,
+            content_type=endpoint.content_type or '',
+            date=date,
+            request_path=endpoint.example_path,
+        )
+
+        headers = {
+            "Authorization": authorization_string,
+            "Date": date,
+            'Content-Type': endpoint.content_type,
+        }
+
+        response = requests.request(
+            method=endpoint.method,
+            url=endpoint.url,
+            headers=headers,
+            data=content,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
