@@ -36,6 +36,7 @@ def validate_auth_header_exists(
 
     Returns:
         The result of calling the endpoint.
+        An `UNAUTHORIZED` response if there is no "Authorization" header.
     """
     request, context = args
     if 'Authorization' not in request.headers:
@@ -65,6 +66,7 @@ def validate_authorization(wrapped: Callable[..., str],
 
     Returns:
         The result of calling the endpoint.
+        A `BAD_REQUEST` response if "Authorization" header is not as expected.
     """
     request, context = args
 
