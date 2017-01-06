@@ -304,7 +304,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Get a database summary report.
 
-        ake implementation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
         body = {}  # type: Dict[str, str]
