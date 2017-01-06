@@ -20,6 +20,37 @@ from vws._request_utils import authorization_header
 
 
 @wrapt.decorator
+def validate_auth_header_exists(
+        wrapped: Callable[..., str],
+        instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+        args: Tuple[_RequestObjectProxy, _Context],
+        kwargs: Dict) -> str:
+    """
+    Validate that there is an authorization header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNAUTHORIZED` response if there is no "Authorization" header.
+    """
+    request, context = args
+    if 'Authorization' not in request.headers:
+        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
                            args: Tuple[_RequestObjectProxy, _Context],
@@ -35,15 +66,10 @@ def validate_authorization(wrapped: Callable[..., str],
 
     Returns:
         The result of calling the endpoint.
+        A `BAD_REQUEST` response if the "Authorization" header is not as
+        expected.
     """
     request, context = args
-    if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-        }
-        return json.dumps(body)
 
     if request.text is None:
         content = b''
@@ -182,6 +208,7 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
         validators = [
             validate_date,
             validate_authorization,
+            validate_auth_header_exists,
         ]
 
         for validator in validators:
