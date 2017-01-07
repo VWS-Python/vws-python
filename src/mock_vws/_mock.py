@@ -390,14 +390,10 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
         body = {}  # type: Dict[str, Union[str, int]]
-        decoded_body = request.body.decode('ascii')
-
         valid = True
 
-        request_body_json = json.loads(decoded_body)
-
-        width = request_body_json.get('width')
-        name = request_body_json.get('name')
+        width = request.json().get('width')
+        name = request.json().get('name')
 
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
