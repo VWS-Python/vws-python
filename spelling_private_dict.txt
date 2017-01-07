@@ -1,8 +1,10 @@
 api
 args
 bool
+cmyk
 foo
 github
+greyscale
 hexdigits
 hmac
 html
