@@ -36,48 +36,52 @@ def assert_valid_target_id(target_id: str) -> None:
     assert all(char in hexdigits for char in target_id)
 
 
-def _image_file(file_format: str) -> io.BytesIO:
+def _image_file(file_format: str, color_space: str) -> io.BytesIO:
     """
-    Return an image file in the given format.
+    Return an image file in the given format and color space.
 
     Args:
         file_format: See
             http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
+        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
     """
     image_buffer = io.BytesIO()
     width = 1
     height = 1
-    image = Image.new('RGB', (width, height))
+    image = Image.new(color_space, (width, height))
     image.save(image_buffer, file_format)
     image_buffer.seek(0)
     return image_buffer
 
 
 @pytest.fixture
-def png_file() -> io.BytesIO:
+def png_rgb() -> io.BytesIO:
     """
-    Return a PNG file.
+    Return a PNG file in RGB format.
     """
-    return _image_file(file_format='PNG')
+    return _image_file(file_format='PNG', color_space='RGB')
 
 
 @pytest.fixture
-def jpeg_file() -> io.BytesIO:
+def jpeg_rgb() -> io.BytesIO:
     """
-    Return a JPEG file.
+    Return a JPEG file in RGB format.
     """
-    return _image_file(file_format='JPEG')
+    return _image_file(file_format='JPEG', color_space='RGB')
 
 
 @pytest.fixture
-def tiff_file() -> io.BytesIO:
+def tiff_rgb() -> io.BytesIO:
     """
-    Return a TIFF file.
+    Return a TIFF file in RGB format.
+
+    This is given as an option which is not supported by Vuforia as Vuforia
+    supports only JPEG and PNG files.
     """
-    return _image_file(file_format='TIFF')
+    return _image_file(file_format='TIFF', color_space='RGB')
 
 
-@pytest.fixture(params=['png_file', 'jpeg_file'])
+@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale'])
 def image_file(request: SubRequest) -> io.BytesIO:
     """
     Return an image file.
@@ -191,13 +195,13 @@ class TestAddTarget:
     def test_width_invalid(self,
                            vuforia_server_credentials:
                            VuforiaServerCredentials,
-                           png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                           png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
 
                            width: Any) -> None:
         """
         The width must be a non-negative number.
         """
-        image_data = png_file.read()
+        image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -221,14 +225,14 @@ class TestAddTarget:
     def test_missing_data(self,
                           vuforia_server_credentials:
                           VuforiaServerCredentials,
-                          png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                          png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
 
                           data_to_remove: str,
                           ) -> None:
         """
         `name`, `width` and `image` are all required.
         """
-        image_data = png_file.read()
+        image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -256,13 +260,13 @@ class TestAddTarget:
     )
     def test_name_invalid(self,
                           name: str,
-                          png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                          png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                           vuforia_server_credentials: VuforiaServerCredentials
                           ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.
         """
-        image_data = png_file.read()
+        image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -283,13 +287,13 @@ class TestAddTarget:
         )
 
     def test_existing_target_name(self,
-                                  png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                                  png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                                   vuforia_server_credentials:
                                   VuforiaServerCredentials) -> None:
         """
         Only one target can have a given name.
         """
-        image_data = png_file.read()
+        image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -324,14 +328,14 @@ class TestInvalidImage:
     """
 
     def test_invalid_type(self,
-                          tiff_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                          tiff_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                           vuforia_server_credentials: VuforiaServerCredentials,
                           ) -> None:
         """
         A `BAD_REQUEST` response is returned if an image which is not a JPEG
         or PNG file is given.
         """
-        image_data = tiff_file.read()
+        image_data = tiff_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -361,12 +365,12 @@ class TestNotMandatoryFields:
     def test_invalid_extra_data(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
-                                png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                                png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                                 ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
         """
-        image_data = png_file.read()
+        image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
