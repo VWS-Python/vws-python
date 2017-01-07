@@ -255,6 +255,49 @@ def validate_width(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
+@wrapt.decorator
+def validate_name(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict) -> str:
+    """
+    Validate the name argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the name is given and is not between 1 and
+        64 characters in length.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    name = request.json().get('name')
+
+    if name is None:
+        return wrapped(*args, **kwargs)
+
+    name_is_string = isinstance(name, str)
+    name_valid_length = name_is_string and 0 < len(name) < 65
+
+    if not name_valid_length:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
 def validate_keys(mandatory_keys: Set[str],
                   optional_keys: Set[str]) -> Callable:
     """
@@ -393,6 +436,7 @@ def route(
         else:
             validators = [
                 validate_authorization,
+                validate_name,
                 validate_width,
                 key_validator,
                 validate_date,
@@ -465,17 +509,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         name = request.json().get('name')
         image = request.json().get('image')
-
-        name_is_string = isinstance(name, str)
-        name_valid_length = name_is_string and 0 < len(name) < 65
-
-        if not name_valid_length:
-            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.FAIL.value,
-            }
-            return json.dumps(body)
 
         if any(target.name == name for target in self.targets):
             context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
