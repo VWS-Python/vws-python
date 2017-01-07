@@ -157,6 +157,10 @@ def add_target(
 class TestSuccess:
     """
     Tests for the mock of the add target endpoint at `POST /targets`.
+
+    Each success creates a target which must be deleted before the next test.
+    This is a slow operation so these tests are limited and not parametrized
+    in a matrix.
     """
 
     @pytest.mark.parametrize('content_type', [
