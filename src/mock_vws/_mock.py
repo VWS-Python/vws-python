@@ -7,7 +7,16 @@ import numbers
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
-from typing import Any, Callable, Dict, List, Tuple, Union  # noqa F401
+from typing import (  # noqa F401
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import wrapt
 from requests import codes
@@ -48,7 +57,7 @@ def validate_not_invalid_json(wrapped: Callable[..., str],
         return wrapped(*args, **kwargs)
 
     try:
-        json.loads(request.text)
+        request.json()
     except JSONDecodeError:
         if request.path == '/summary':
             context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
@@ -197,6 +206,61 @@ def validate_date(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
+def validate_keys(mandatory_keys: Set[str],
+                  optional_keys: Set[str]) -> Callable:
+    """
+    Args:
+        mandatory_keys: Keys required by the endpoint.
+        optional_keys: Keys which are not required by the endpoint but which
+            are allowed.
+
+    Returns:
+        A wrapper function to validate that the keys given to the endpoint are
+            all allowed and that the mandatory keys are given.
+    """
+    @wrapt.decorator
+    def wrapper(wrapped: Callable[..., str],
+                instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                args: Tuple[_RequestObjectProxy, _Context],
+                kwargs: Dict,
+               ) -> str:
+        """
+        Validate the request keys given to a VWS endpoint.
+
+        Args:
+            wrapped: An endpoint function for `requests_mock`.
+            instance: The class that the endpoint function is in.
+            args: The arguments given to the endpoint function.
+            kwargs: The keyword arguments given to the endpoint function.
+
+        Returns:
+            The result of calling the endpoint.
+            A `BAD_REQUEST` error if any keys are not allowed, or if any
+            required keys are missing.
+        """
+        request, context = args
+        allowed_keys = mandatory_keys.union(optional_keys)
+
+        if request.text is None and not allowed_keys:
+            return wrapped(*args, **kwargs)
+
+        given_keys = set(request.json().keys())
+        all_given_keys_allowed = given_keys.issubset(allowed_keys)
+        all_mandatory_keys_given = mandatory_keys.issubset(given_keys)
+
+        if all_given_keys_allowed and all_mandatory_keys_given:
+            return wrapped(*args, **kwargs)
+
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapper
+
+
 class Route:
     """
     A container for the route details which `requests_mock` needs.
@@ -230,7 +294,11 @@ class Route:
 ROUTES = set([])
 
 
-def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
+def route(
+        path_pattern: str,
+        methods: List[str],
+        mandatory_keys: Optional[Set[str]]=None,
+        optional_keys: Optional[Set[str]]=None) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
 
@@ -258,19 +326,26 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
             )
         )
 
+        key_validator = validate_keys(
+            optional_keys=optional_keys or set([]),
+            mandatory_keys=mandatory_keys or set([]),
+        )
+
         # There is an undocumented difference in behavior between `/summary`
         # and other endpoints.
         if path_pattern == '/summary':
             validators = [
                 validate_authorization,
+                key_validator,
                 validate_not_invalid_json,
                 validate_date,
                 validate_auth_header_exists,
             ]
         else:
             validators = [
-                validate_date,
                 validate_authorization,
+                key_validator,
+                validate_date,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
             ]
@@ -305,7 +380,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         self.routes = ROUTES  # type: Set[Route]
 
-    @route(path_pattern='/targets', methods=[POST])
+    @route(
+        path_pattern='/targets',
+        methods=[POST],
+        mandatory_keys={'image', 'width', 'name'},
+        optional_keys={'active_flag', 'application_metadata'},
+    )
     def add_target(self,
                    request: _RequestObjectProxy,
                    context: _Context) -> str:
@@ -315,44 +395,17 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        body = {}  # type: Dict[str, Union[str, int]]
-        decoded_body = request.body.decode('ascii')
-
-        valid = True
-
-        request_body_json = json.loads(decoded_body)
-
-        allowed_keys = {
-            'name',
-            'width',
-            'image',
-            'active_flag',
-            'application_metadata',
-        }
-        valid = valid and all(key in allowed_keys for key in
-                              request_body_json.keys())
-
-        mandatory_keys = {
-            'image',
-            'width',
-            'name',
-        }
-
-        valid = valid and all(name in request_body_json.keys() for name in
-                              mandatory_keys)
-
-        width = request_body_json.get('width')
-        name = request_body_json.get('name')
+        width = request.json().get('width')
+        name = request.json().get('name')
 
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
-        valid = valid and width_positive
 
-        valid = valid and isinstance(name, str)
-        valid = valid and 0 < len(name) < 65
+        name_is_string = isinstance(name, str)
+        name_valid_length = name_is_string and 0 < len(name) < 65
 
-        if not valid:
-            context.status_code = codes.BAD_REQUEST  # noqa E501 pylint: disable=no-member
+        if not all([width_positive, name_valid_length]):
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.FAIL.value,
