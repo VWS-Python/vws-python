@@ -69,11 +69,11 @@ class MockVWS(ContextDecorator):
             server if they are not handled by the mock.
             See
             http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
-            req: None or an `requests_mock` object used for mocking Vuforia.
+            mock: None or an `requests_mock` object used for mocking Vuforia.
         """
         super().__init__()
         self.real_http = real_http
-        self.req = None  # type: Optional[Mocker]
+        self.mock = None  # type: Optional[Mocker]
 
     def __enter__(self: _MockVWSType) -> _MockVWSType:
         """
@@ -88,16 +88,17 @@ class MockVWS(ContextDecorator):
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
         )
 
-        with Mocker(real_http=self.real_http) as req:
+        with Mocker(real_http=self.real_http) as mock:
             for route in fake_target_api.routes:
                 for http_method in route.methods:
-                    req.register_uri(
+                    mock.register_uri(
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
                         text=getattr(fake_target_api, route.route_name),
+                        headers={'Content-Type': 'application/json'},
                     )
-        self.req = req
-        self.req.start()
+        self.mock = mock
+        self.mock.start()
         return self
 
     def __exit__(self, *exc: Tuple[None, None, None]) -> bool:
@@ -107,5 +108,5 @@ class MockVWS(ContextDecorator):
         Returns:
             False
         """
-        self.req.stop()
+        self.mock.stop()
         return False

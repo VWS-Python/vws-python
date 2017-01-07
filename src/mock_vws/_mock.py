@@ -2,13 +2,26 @@
 A fake implementation of VWS.
 """
 
+import base64
+import io
 import json
+import numbers
 import uuid
 from datetime import datetime, timedelta
-from typing import Union  # noqa F401
-from typing import Callable, Dict, List, Tuple
+from json.decoder import JSONDecodeError
+from typing import (  # noqa F401
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import wrapt
+from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
@@ -16,6 +29,92 @@ from requests_mock.response import _Context
 
 from common.constants import ResultCodes
 from vws._request_utils import authorization_header
+
+
+@wrapt.decorator
+def validate_not_invalid_json(wrapped: Callable[..., str],
+                              instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                              args: Tuple[_RequestObjectProxy, _Context],
+                              kwargs: Dict) -> str:
+    """
+    Validate that there is either no JSON given or the JSON given is valid.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNAUTHORIZED` response if there is invalid JSON given to the
+        database summary endpoint.
+        A `BAD_REQUEST` response with a FAIL result code if there is invalid
+        JSON given to a POST request.
+        A `BAD_REQUEST` with empty text if there is invalid JSON given to
+        another request type.
+    """
+    request, context = args
+
+    if request.text is None:
+        return wrapped(*args, **kwargs)
+
+    try:
+        request.json()
+    except JSONDecodeError:
+        if request.path == '/summary':
+            context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+            }
+            return json.dumps(body)
+        elif request.method in (POST, PUT):
+            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.FAIL.value,
+            }
+            return json.dumps(body)
+
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        context.headers.pop('Content-Type')
+        return ''
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_auth_header_exists(
+        wrapped: Callable[..., str],
+        instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+        args: Tuple[_RequestObjectProxy, _Context],
+        kwargs: Dict) -> str:
+    """
+    Validate that there is an authorization header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNAUTHORIZED` response if there is no "Authorization" header.
+    """
+    request = args[0]
+    context = args[1]
+
+    if 'Authorization' not in request.headers:
+        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
 
 
 @wrapt.decorator
@@ -29,24 +128,17 @@ def validate_authorization(wrapped: Callable[..., str],
     Validate the authorization header given to a VWS endpoint.
 
     Args:
-        wrapped: An endpoing function for `requests_mock`.
+        wrapped: An endpoint function for `requests_mock`.
         instance: The class that the endpoint function is in.
         args: The arguments given to the endpoint function.
         kwargs: The keyword arguments given to the endpoint function.
 
     Returns:
         The result of calling the endpoint.
+        A `BAD_REQUEST` response if the "Authorization" header is not as
+        expected.
     """
-    request = args[0]
-    context = args[1]
-
-    if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-        }
-        return json.dumps(body)
+    request, context = args
 
     if request.text is None:
         content = b''
@@ -86,13 +178,16 @@ def validate_date(wrapped: Callable[..., str],
     Validate the date header given to a VWS endpoint.
 
     Args:
-        wrapped: An endpoing function for `requests_mock`.
+        wrapped: An endpoint function for `requests_mock`.
         instance: The class that the endpoint function is in.
         args: The arguments given to the endpoint function.
         kwargs: The keyword arguments given to the endpoint function.
 
     Returns:
         The result of calling the endpoint.
+        A `BAD_REQUEST` response if the date is not given, or is in the wrong
+        format.
+        A `FORBIDDEN` response if the date is out of range.
     """
     request = args[0]
     context = args[1]
@@ -123,6 +218,193 @@ def validate_date(wrapped: Callable[..., str],
         return json.dumps(body)
 
     return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_width(wrapped: Callable[..., str],
+                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                   args: Tuple[_RequestObjectProxy, _Context],
+                   kwargs: Dict) -> str:
+    """
+    Validate the width argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the width is given and is not a positive
+        number.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    width = request.json().get('width')
+
+    if width is None:
+        return wrapped(*args, **kwargs)
+
+    width_is_number = isinstance(width, numbers.Number)
+    width_positive = width_is_number and width >= 0
+
+    if not width_positive:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_name(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict) -> str:
+    """
+    Validate the name argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the name is given and is not between 1 and
+        64 characters in length.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    name = request.json().get('name')
+
+    if name is None:
+        return wrapped(*args, **kwargs)
+
+    name_is_string = isinstance(name, str)
+    name_valid_length = name_is_string and 0 < len(name) < 65
+
+    if not name_valid_length:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_image(wrapped: Callable[..., str],
+                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                   args: Tuple[_RequestObjectProxy, _Context],
+                   kwargs: Dict) -> str:
+    """
+    Validate the image argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
+        either a PNG or a JPEG, in either the RGB or greyscale color space.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
+    decoded = base64.b64decode(image)
+    image_file = io.BytesIO(decoded)
+    pil_image = Image.open(image_file)
+    image_valid_file_type = pil_image.format in ('PNG', 'JPEG')
+    image_valid_color_space = pil_image.mode in ('L', 'RGB')
+
+    if not all([image_valid_file_type, image_valid_color_space]):
+        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.BAD_IMAGE.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+def validate_keys(mandatory_keys: Set[str],
+                  optional_keys: Set[str]) -> Callable:
+    """
+    Args:
+        mandatory_keys: Keys required by the endpoint.
+        optional_keys: Keys which are not required by the endpoint but which
+            are allowed.
+
+    Returns:
+        A wrapper function to validate that the keys given to the endpoint are
+            all allowed and that the mandatory keys are given.
+    """
+    @wrapt.decorator
+    def wrapper(wrapped: Callable[..., str],
+                instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                args: Tuple[_RequestObjectProxy, _Context],
+                kwargs: Dict,
+               ) -> str:
+        """
+        Validate the request keys given to a VWS endpoint.
+
+        Args:
+            wrapped: An endpoint function for `requests_mock`.
+            instance: The class that the endpoint function is in.
+            args: The arguments given to the endpoint function.
+            kwargs: The keyword arguments given to the endpoint function.
+
+        Returns:
+            The result of calling the endpoint.
+            A `BAD_REQUEST` error if any keys are not allowed, or if any
+            required keys are missing.
+        """
+        request, context = args
+        allowed_keys = mandatory_keys.union(optional_keys)
+
+        if request.text is None and not allowed_keys:
+            return wrapped(*args, **kwargs)
+
+        given_keys = set(request.json().keys())
+        all_given_keys_allowed = given_keys.issubset(allowed_keys)
+        all_mandatory_keys_given = mandatory_keys.issubset(given_keys)
+
+        if all_given_keys_allowed and all_mandatory_keys_given:
+            return wrapped(*args, **kwargs)
+
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapper
 
 
 class Route:
@@ -211,7 +493,11 @@ def parse_path(wrapped: Callable[..., str],
     return _execute(*args, **kwargs)
 
 
-def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
+def route(
+        path_pattern: str,
+        methods: List[str],
+        mandatory_keys: Optional[Set[str]]=None,
+        optional_keys: Optional[Set[str]]=None) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
 
@@ -238,13 +524,58 @@ def route(path_pattern: str, methods: List[str]) -> Callable[..., Callable]:
                 methods=methods,
             )
         )
-        # pylint is not very good with decorators
-        # https://github.com/PyCQA/pylint/issues/259#issuecomment-267671718
-        date_validated = validate_date(method)  # noqa: E501 pylint: disable=no-value-for-parameter
-        authorization_validated = validate_authorization(date_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
-        path_parsed = parse_path(authorization_validated)  # noqa: E501 pylint: disable=no-value-for-parameter
-        return path_parsed
+
+        key_validator = validate_keys(
+            optional_keys=optional_keys or set([]),
+            mandatory_keys=mandatory_keys or set([]),
+        )
+
+        # There is an undocumented difference in behavior between `/summary`
+        # and other endpoints.
+        if path_pattern == '/summary':
+            validators = [
+                validate_authorization,
+                key_validator,
+                parse_path,
+                validate_not_invalid_json,
+                validate_date,
+                validate_auth_header_exists,
+            ]
+        else:
+            validators = [
+                validate_authorization,
+                validate_image,
+                validate_name,
+                validate_width,
+                key_validator,
+                parse_path,
+                validate_date,
+                validate_not_invalid_json,
+                validate_auth_header_exists,
+            ]
+
+        for validator in validators:
+            method = validator(method)
+
+        return method
     return decorator
+
+
+class Target:
+    """
+    A Vuforia Target as managed in
+    https://developer.vuforia.com/target-manager.
+    """
+
+    def __init__(self, name: str) -> None:
+        """
+        Args:
+            name: The name of the target.
+
+        Attributes:
+            name (str): The name of the target.
+        """
+        self.name = name
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -268,12 +599,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
+        self.targets = []  # type: List[Target]
         self.routes = ROUTES  # type: Set[Route]
         self.targets = []  # type: List
 
-    @route(path_pattern='/targets', methods=[POST])
+    @route(
+        path_pattern='/targets',
+        methods=[POST],
+        mandatory_keys={'image', 'width', 'name'},
+        optional_keys={'active_flag', 'application_metadata'},
+    )
     def add_target(self,
-                   request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+                   request: _RequestObjectProxy,
                    context: _Context) -> str:
         """
         Add a target.
@@ -281,11 +618,25 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        name = request.json().get('name')
+
+        if any(target.name == name for target in self.targets):
+            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_NAME_EXIST.value,
+            }
+            return json.dumps(body)
+
+        new_target = Target(name=name)
+        self.targets.append(new_target)
+
+        context.status_code = codes.CREATED  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }  # type: Dict[str, str]
+            'result_code': ResultCodes.TARGET_CREATED.value,
+            'target_id': uuid.uuid4().hex,
+        }
         return json.dumps(body)
 
     @route(path_pattern='/targets/.+', methods=[DELETE])
@@ -383,7 +734,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Get targets which may be considered duplicates of a given target.
 
-        Fake implemetation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
         body = {
@@ -401,7 +752,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Update a target.
 
-        Fake implemetation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
         """
         body = {
@@ -419,7 +770,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         Get a summary report for a target.
 
-        Fake implemetation of
+        Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
         body = {

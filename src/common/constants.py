@@ -14,7 +14,7 @@ class ResultCodes(Values):
     """
 
     SUCCESS = ValueConstant('Success')
-    TARGET_CREATED = ValueConstant('Created')
+    TARGET_CREATED = ValueConstant('TargetCreated')
     AUTHENTICATION_FAILURE = ValueConstant('AuthenticationFailure')
     REQUEST_TIME_TOO_SKEWED = ValueConstant('RequestTimeTooSkewed')
     TARGET_NAME_EXIST = ValueConstant('TargetNameExist')
@@ -24,3 +24,5 @@ class ResultCodes(Values):
     METADATA_TOO_LARGE = ValueConstant('MetadataTooLarge')
     DATE_RANGE_ERROR = ValueConstant('DateRangeError')
     FAIL = ValueConstant('Fail')
+    TARGET_STATUS_PROCESSING = ValueConstant('TargetStatusProcessing')
+    REQUEST_QUOTA_REACHED = ValueConstant('RequestQuotaReached')

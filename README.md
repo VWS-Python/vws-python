@@ -18,7 +18,22 @@ Get in touch with `adamdangoor@gmail.com` if you would like to see this with ano
 
 # Tests
 
-To run the tests, first install the dependencies:
+To run the tests, first install the dependencies.
+
+Spell checking requires `enchant`.
+This can be installed on macOS, for example, with [Homebrew](http://brew.sh):
+
+```sh
+brew install enchant
+```
+
+and on Ubuntu with `apt`:
+
+```sh
+apt-get install -y enchant
+```
+
+Then install the Python dependencies:
 
 ```sh
 pip install -e .[dev]
@@ -49,11 +64,21 @@ Then, secret keys must be set as environment variables.
 The test infrastructure allows those keys to be set in the file `vuforia_secrets.env`.
 See `vuforia_secrets.env.example` for the environment variables to set.
 
+Do not use a target database that you are using for other purposes.
+This is because the test suite adds deletes targets.
+
 To create a target database, first create a license key in the [License Manager](https://developer.vuforia.com/targetmanager/licenseManager/licenseListing).
 Then, add a database from the [Target Manager](https://developer.vuforia.com/targetmanager).
 
 To find the environment variables to set in the `vuforia_secrets.env` file,
 visit the Target Database in the Target Manager and view the "Database Access Keys".
+
+Targets sometimes get stuck at the "Processing" stage meaning that they cannot be deleted.
+When this happens, create a new target database to use for testing.
+
+## Skipping tests
+
+Set either `SKIP_MOCK` or `SKIP_REAL` to `1` to skip tests against the mock, or tests against the real implementation, for tests which run against both.
 
 # Documentation
 
@@ -117,4 +142,3 @@ with MockVWS(real_http=True):
 The mock attempts to be realistic, but it was built without access to the source code of the original API.
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
 There is no attempt to make the image matching realistic.
->>>>>>> origin/master
