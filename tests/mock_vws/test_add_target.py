@@ -6,14 +6,14 @@ import base64
 import io
 import json
 from string import hexdigits
-from typing import Any, Dict, Union
+from typing import Any, Dict
 from urllib.parse import urljoin
 
 import pytest
 import requests
 from _pytest.fixtures import SubRequest
 from PIL import Image
-from requests import codes
+from requests import codes, Response
 from requests_mock import POST
 
 from common.constants import ResultCodes
@@ -153,14 +153,29 @@ def add_target(
     return response
 
 
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestSuccess:
+def assert_success(response: Response) -> None:
     """
-    Tests for the mock of the add target endpoint at `POST /targets`.
+    Assert that the given response is a success response for adding a
+    target.
 
-    Each success creates a target which must be deleted before the next test.
-    This is a slow operation so these tests are limited and not parametrized
-    in a matrix.
+    Raises:
+        AssertionError: The given response is not a valid success response
+            for adding a target.
+    """
+    assert_vws_response(
+        response=response,
+        status_code=codes.CREATED,
+        result_code=ResultCodes.TARGET_CREATED,
+    )
+    expected_keys = {'result_code', 'transaction_id', 'target_id'}
+    assert response.json().keys() == expected_keys
+    assert_valid_target_id(target_id=response.json()['target_id'])
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestContentTypes:
+    """
+    Tests for the `Content-Type` header.
     """
 
     @pytest.mark.parametrize('content_type', [
@@ -168,27 +183,23 @@ class TestSuccess:
         'application/json',
         # Other content types also work.
         'other/content_type',
-    ], ids=['Documented Content-Type', 'Undocumented Content-Type'])
-    @pytest.mark.parametrize('name', [
-        'a',
-        'a' * 64,
-    ], ids=['Short name', 'Long name'])
-    @pytest.mark.parametrize('width', [0, 0.1],
-                             ids=['Zero width', 'Float width'])
-    def test_created(self,
-                     vuforia_server_credentials: VuforiaServerCredentials,
-                     image_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
-                     content_type: str,
-                     name: str,
-                     width: Union[int, float],
-                     ) -> None:
-        """It is possible to get a `TargetCreated` response."""
-        image_data = image_file.read()
+        '',
+    ], ids=['Documented Content-Type', 'Undocumented Content-Type', 'Empty'])
+    def test_content_types(self,
+                           vuforia_server_credentials:
+                           VuforiaServerCredentials,
+                           png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                           content_type: str,
+                           ) -> None:
+        """
+        Any `Content-Type` header is allowed.
+        """
+        image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
-            'name': name,
-            'width': width,
+            'name': 'example',
+            'width': 1,
             'image': image_data_encoded,
         }
 
@@ -198,14 +209,7 @@ class TestSuccess:
             content_type=content_type,
         )
 
-        assert_vws_response(
-            response=response,
-            status_code=codes.CREATED,
-            result_code=ResultCodes.TARGET_CREATED,
-        )
-        expected_keys = {'result_code', 'transaction_id', 'target_id'}
-        assert response.json().keys() == expected_keys
-        assert_valid_target_id(target_id=response.json()['target_id'])
+        assert_success(response=response)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -285,12 +289,68 @@ class TestWidth:
             result_code=ResultCodes.FAIL,
         )
 
+    @pytest.mark.parametrize('width', [0, 0.1],
+                             ids=['Zero width', 'Float width'])
+    def test_width_valid(self,
+                         vuforia_server_credentials:
+                         VuforiaServerCredentials,
+                         png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                         width: Any) -> None:
+        """
+        Non-negative numbers are valid widths.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': width,
+            'image': image_data_encoded,
+        }
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type='application/json',
+        )
+
+        assert_success(response=response)
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestTargetName:
     """
     Tests for the target name field.
     """
+
+    @pytest.mark.parametrize('name', [
+        'a',
+        'a' * 64,
+    ], ids=['Short name', 'Long name'])
+    def test_name_valid(self,
+                        name: str,
+                        png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                        vuforia_server_credentials: VuforiaServerCredentials
+                        ) -> None:
+        """
+        Names between 1 and 64 characters in length are valid.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type='application/json',
+        )
+
+        assert_success(response=response)
 
     @pytest.mark.parametrize(
         'name',
@@ -359,12 +419,38 @@ class TestTargetName:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestInvalidImage:
+class TestImage:
     """
-    Tests for giving images which do not conform to the specifications
-    detailed in "Supported Images" on
+    Tests for the image parameter.
+
+    The specification for images is documented in "Supported Images" on
     https://library.vuforia.com/articles/Training/Image-Target-Guide
     """
+
+    def test_image_valid(self,
+                         vuforia_server_credentials: VuforiaServerCredentials,
+                         image_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                         ) -> None:
+        """
+        JPEG and PNG files in the RGB and greyscale color spaces are
+        allowed.
+        """
+        image_data = image_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type='application/json',
+        )
+
+        assert_success(response=response)
 
     def test_invalid_type(self,
                           tiff_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
