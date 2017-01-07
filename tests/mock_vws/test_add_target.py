@@ -63,6 +63,14 @@ def png_rgb() -> io.BytesIO:
 
 
 @pytest.fixture
+def png_greyscale() -> io.BytesIO:
+    """
+    Return a PNG file in greyscale format.
+    """
+    return _image_file(file_format='PNG', color_space='L')
+
+
+@pytest.fixture
 def jpeg_rgb() -> io.BytesIO:
     """
     Return a JPEG file in RGB format.
