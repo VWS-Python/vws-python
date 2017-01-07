@@ -203,6 +203,13 @@ class TestSuccess:
         assert response.json().keys() == expected_keys
         assert_valid_target_id(target_id=response.json()['target_id'])
 
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestMissingData:
+    """
+    Tests for giving incomplete data.
+    """
+
     @pytest.mark.parametrize('data_to_remove', ['name', 'width', 'image'])
     def test_missing_data(self,
                           vuforia_server_credentials:
