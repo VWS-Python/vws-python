@@ -282,6 +282,38 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
+    def test_existing_target_name(self,
+                                  png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                                  vuforia_server_credentials:
+                                  VuforiaServerCredentials) -> None:
+        """
+        Only one target can have a given name.
+        """
+        image_data = png_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.TARGET_NAME_EXIST,
+        )
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestInvalidImage:

@@ -362,17 +362,22 @@ def route(
 
 class Target:
     """
-    XXX
+    A Vuforia Target as managed in
+    https://developer.vuforia.com/target-manager.
     """
 
     def __init__(self,
-                 name,
+                 name: str,
                  width,
                  image,
                  active_flag,
                  application_metadata) -> None:
         """
-        XXX
+        Args:
+            name: The name of the target.
+
+        Attributes:
+            name (str): The name of the target.
         """
         self.name = name
         self.width = width
@@ -403,7 +408,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.secret_key = secret_key  # type: str
 
         self.targets = []  # type: List[Target]
-
         self.routes = ROUTES  # type: Set[Route]
 
     @route(
@@ -423,6 +427,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         width = request.json().get('width')
         name = request.json().get('name')
+        image = request.json().get('image')
 
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
@@ -438,21 +443,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
-        image = request.json().get('image')
+        if any(target.name == name for target in self.targets):
+            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_NAME_EXIST.value,
+            }
+            return json.dumps(body)
+
         decoded = base64.b64decode(image)
         image_file = io.BytesIO(decoded)
         image_file_type = imghdr.what(image_file)
 
-        if request_body_json:
-            target = Target(
-                name='a',
-                width=1,
-                image=b'a',
-                active_flag=True,
-                application_metadata=b'x',
-            )
-            self.targets.append(target)
-            context.status_code = codes.CREATED  # pylint: disable=no-member
         if image_file_type not in ('png', 'jpeg'):
             context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
             body = {
@@ -460,6 +462,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 'result_code': ResultCodes.BAD_IMAGE.value,
             }
             return json.dumps(body)
+
+        new_target = Target(
+            name=name,
+            width=width,
+            image=image,
+            active_flag=True,
+            application_metadata=b'x',
+        )
+        self.targets.append(new_target)
 
         context.status_code = codes.CREATED  # pylint: disable=no-member
         body = {
