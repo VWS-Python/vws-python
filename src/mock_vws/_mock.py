@@ -315,7 +315,7 @@ def validate_image(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
         An `UNPROCESSABLE_ENTITY` response if the image is given and is not
-        either a PNG or a JPEG.
+        either a PNG or a JPEG, in either the RGB or greyscale color space.
     """
     request, context = args
 
