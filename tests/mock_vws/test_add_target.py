@@ -4,22 +4,18 @@ Tests for the mock of the add target endpoint.
 
 import base64
 import io
-import json
 from string import hexdigits
-from typing import Any, Dict
-from urllib.parse import urljoin
+from typing import Any
 
 import pytest
-import requests
 from _pytest.fixtures import SubRequest
 from PIL import Image
 from requests import Response, codes
-from requests_mock import POST
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import assert_vws_failure, assert_vws_response
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import authorization_header, rfc_1123_date
+from tests.mock_vws.utils import add_target
 
 
 def assert_valid_target_id(target_id: str) -> None:
@@ -105,52 +101,6 @@ def image_file(request: SubRequest) -> io.BytesIO:
     return request.getfixturevalue(request.param)
 
 
-def add_target(
-    vuforia_server_credentials: VuforiaServerCredentials,
-    data: Dict[str, Any],
-    content_type: str='application/json',
-) -> requests.Response:
-    """
-    Helper to make a request to the endpoint to add a target.
-
-    Args:
-        vuforia_server_credentials: The credentials to use to connect to
-            Vuforia.
-        data: The data to send, in JSON format, to the endpoint.
-        content_type: The `Content-Type` header to use.
-
-    Returns:
-        The response returned by the API.
-    """
-    date = rfc_1123_date()
-    request_path = '/targets'
-
-    content = bytes(json.dumps(data), encoding='utf-8')
-
-    authorization_string = authorization_header(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
-        method=POST,
-        content=content,
-        content_type=content_type,
-        date=date,
-        request_path=request_path,
-    )
-
-    headers = {
-        "Authorization": authorization_string,
-        "Date": date,
-        'Content-Type': content_type,
-    }
-
-    response = requests.request(
-        method=POST,
-        url=urljoin('https://vws.vuforia.com/', request_path),
-        headers=headers,
-        data=content,
-    )
-
-    return response
 
 
 def assert_success(response: Response) -> None:
