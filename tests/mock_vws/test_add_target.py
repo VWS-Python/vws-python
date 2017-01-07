@@ -154,7 +154,7 @@ def add_target(
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestAddTarget:
+class TestSuccess:
     """
     Tests for the mock of the add target endpoint at `POST /targets`.
     """
@@ -269,6 +269,12 @@ class TestAddTarget:
             result_code=ResultCodes.FAIL,
         )
 
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestTargetName:
+    """
+    Tests for the target name field.
+    """
     @pytest.mark.parametrize(
         'name',
         [1, '', 'a' * 65],
