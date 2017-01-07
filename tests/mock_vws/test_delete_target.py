@@ -12,4 +12,7 @@ class TestDelete:
     """
 
     def test_delete(self) -> None:
+        """
+        It is possible to delete a target.
+        """
         pass

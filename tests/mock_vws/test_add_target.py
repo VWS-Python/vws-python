@@ -8,8 +8,6 @@ from string import hexdigits
 from typing import Any
 
 import pytest
-from _pytest.fixtures import SubRequest
-from PIL import Image
 from requests import Response, codes
 
 from common.constants import ResultCodes
@@ -30,77 +28,6 @@ def assert_valid_target_id(target_id: str) -> None:
     """
     assert len(target_id) == 32
     assert all(char in hexdigits for char in target_id)
-
-
-def _image_file(file_format: str, color_space: str) -> io.BytesIO:
-    """
-    Return an image file in the given format and color space.
-
-    Args:
-        file_format: See
-            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
-        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
-    """
-    image_buffer = io.BytesIO()
-    width = 1
-    height = 1
-    image = Image.new(color_space, (width, height))
-    image.save(image_buffer, file_format)
-    image_buffer.seek(0)
-    return image_buffer
-
-
-@pytest.fixture
-def png_rgb() -> io.BytesIO:
-    """
-    Return a PNG file in the RGB color space.
-    """
-    return _image_file(file_format='PNG', color_space='RGB')
-
-
-@pytest.fixture
-def png_greyscale() -> io.BytesIO:
-    """
-    Return a PNG file in the greyscale color space.
-    """
-    return _image_file(file_format='PNG', color_space='L')
-
-
-@pytest.fixture
-def jpeg_cmyk() -> io.BytesIO:
-    """
-    Return a PNG file in the CMYK color space.
-    """
-    return _image_file(file_format='JPEG', color_space='CMYK')
-
-
-@pytest.fixture
-def jpeg_rgb() -> io.BytesIO:
-    """
-    Return a JPEG file in the RGB color space.
-    """
-    return _image_file(file_format='JPEG', color_space='RGB')
-
-
-@pytest.fixture
-def tiff_rgb() -> io.BytesIO:
-    """
-    Return a TIFF file in the RGB color space.
-
-    This is given as an option which is not supported by Vuforia as Vuforia
-    supports only JPEG and PNG files.
-    """
-    return _image_file(file_format='TIFF', color_space='RGB')
-
-
-@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale'])
-def image_file(request: SubRequest) -> io.BytesIO:
-    """
-    Return an image file.
-    """
-    return request.getfixturevalue(request.param)
-
-
 
 
 def assert_success(response: Response) -> None:
@@ -138,7 +65,7 @@ class TestContentTypes:
     def test_content_types(self,
                            vuforia_server_credentials:
                            VuforiaServerCredentials,
-                           png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                           png_rgb: io.BytesIO,
                            content_type: str,
                            ) -> None:
         """
@@ -172,7 +99,7 @@ class TestMissingData:
     def test_missing_data(self,
                           vuforia_server_credentials:
                           VuforiaServerCredentials,
-                          png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                          png_rgb: io.BytesIO,
                           data_to_remove: str,
                           ) -> None:
         """
@@ -214,7 +141,7 @@ class TestWidth:
     def test_width_invalid(self,
                            vuforia_server_credentials:
                            VuforiaServerCredentials,
-                           png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                           png_rgb: io.BytesIO,
                            width: Any) -> None:
         """
         The width must be a non-negative number.
@@ -244,7 +171,7 @@ class TestWidth:
     def test_width_valid(self,
                          vuforia_server_credentials:
                          VuforiaServerCredentials,
-                         png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                         png_rgb: io.BytesIO,
                          width: Any) -> None:
         """
         Non-negative numbers are valid widths.
@@ -279,7 +206,7 @@ class TestTargetName:
     ], ids=['Short name', 'Long name'])
     def test_name_valid(self,
                         name: str,
-                        png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                        png_rgb: io.BytesIO,
                         vuforia_server_credentials: VuforiaServerCredentials
                         ) -> None:
         """
@@ -309,7 +236,7 @@ class TestTargetName:
     )
     def test_name_invalid(self,
                           name: str,
-                          png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                          png_rgb: io.BytesIO,
                           vuforia_server_credentials: VuforiaServerCredentials
                           ) -> None:
         """
@@ -336,7 +263,7 @@ class TestTargetName:
         )
 
     def test_existing_target_name(self,
-                                  png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                                  png_rgb: io.BytesIO,
                                   vuforia_server_credentials:
                                   VuforiaServerCredentials) -> None:
         """
@@ -379,7 +306,7 @@ class TestImage:
 
     def test_image_valid(self,
                          vuforia_server_credentials: VuforiaServerCredentials,
-                         image_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                         image_file: io.BytesIO,
                          ) -> None:
         """
         JPEG and PNG files in the RGB and greyscale color spaces are
@@ -403,7 +330,7 @@ class TestImage:
         assert_success(response=response)
 
     def test_invalid_type(self,
-                          tiff_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                          tiff_rgb: io.BytesIO,
                           vuforia_server_credentials: VuforiaServerCredentials,
                           ) -> None:
         """
@@ -431,7 +358,7 @@ class TestImage:
         )
 
     def test_wrong_color_space(self,
-                               jpeg_cmyk: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                               jpeg_cmyk: io.BytesIO,
                                vuforia_server_credentials:
                                VuforiaServerCredentials,
                                ) -> None:
@@ -469,7 +396,7 @@ class TestNotMandatoryFields:
     def test_invalid_extra_data(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
-                                png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                                png_rgb: io.BytesIO,
                                 ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.

@@ -9,7 +9,7 @@ from urllib.parse import urljoin
 
 import requests
 from requests import Response
-from request_mock import POST
+from requests_mock import POST
 
 from common.constants import ResultCodes
 from tests.utils import VuforiaServerCredentials

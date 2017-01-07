@@ -3,6 +3,7 @@ Configuration, plugins and fixtures for `pytest`.
 """
 
 import os
+import io
 import uuid
 # This is used in a type hint which linters not pick up on.
 from typing import Any  # noqa: F401 pylint: disable=unused-import
@@ -11,6 +12,7 @@ from typing import Generator
 import pytest
 import requests
 from _pytest.fixtures import SubRequest
+from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
@@ -20,6 +22,75 @@ from mock_vws import MockVWS
 from tests.mock_vws.utils import Endpoint
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
+
+
+def _image_file(file_format: str, color_space: str) -> io.BytesIO:
+    """
+    Return an image file in the given format and color space.
+
+    Args:
+        file_format: See
+            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
+        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
+    """
+    image_buffer = io.BytesIO()
+    width = 1
+    height = 1
+    image = Image.new(color_space, (width, height))
+    image.save(image_buffer, file_format)
+    image_buffer.seek(0)
+    return image_buffer
+
+
+@pytest.fixture
+def png_rgb() -> io.BytesIO:
+    """
+    Return a PNG file in the RGB color space.
+    """
+    return _image_file(file_format='PNG', color_space='RGB')
+
+
+@pytest.fixture
+def png_greyscale() -> io.BytesIO:
+    """
+    Return a PNG file in the greyscale color space.
+    """
+    return _image_file(file_format='PNG', color_space='L')
+
+
+@pytest.fixture
+def jpeg_cmyk() -> io.BytesIO:
+    """
+    Return a PNG file in the CMYK color space.
+    """
+    return _image_file(file_format='JPEG', color_space='CMYK')
+
+
+@pytest.fixture
+def jpeg_rgb() -> io.BytesIO:
+    """
+    Return a JPEG file in the RGB color space.
+    """
+    return _image_file(file_format='JPEG', color_space='RGB')
+
+
+@pytest.fixture
+def tiff_rgb() -> io.BytesIO:
+    """
+    Return a TIFF file in the RGB color space.
+
+    This is given as an option which is not supported by Vuforia as Vuforia
+    supports only JPEG and PNG files.
+    """
+    return _image_file(file_format='TIFF', color_space='RGB')
+
+
+@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale'])
+def image_file(request: SubRequest) -> io.BytesIO:
+    """
+    Return an image file.
+    """
+    return request.getfixturevalue(request.param)
 
 
 @retry(
