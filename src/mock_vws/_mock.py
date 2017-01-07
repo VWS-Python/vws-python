@@ -396,25 +396,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         request_body_json = json.loads(decoded_body)
 
-        allowed_keys = {
-            'name',
-            'width',
-            'image',
-            'active_flag',
-            'application_metadata',
-        }
-        valid = valid and all(key in allowed_keys for key in
-                              request_body_json.keys())
-
-        mandatory_keys = {
-            'image',
-            'width',
-            'name',
-        }
-
-        valid = valid and all(name in request_body_json.keys() for name in
-                              mandatory_keys)
-
         width = request_body_json.get('width')
         name = request_body_json.get('name')
 
