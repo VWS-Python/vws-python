@@ -18,7 +18,7 @@ from vws._request_utils import authorization_header, rfc_1123_date
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestSummary:
     """
-    Tests for the mock of the database summary endpoint at `/summary`.
+    Tests for the mock of the database summary endpoint at `GET /summary`.
     """
 
     def test_success(self,

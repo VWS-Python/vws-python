@@ -18,7 +18,22 @@ Get in touch with `adamdangoor@gmail.com` if you would like to see this with ano
 
 # Tests
 
-To run the tests, first install the dependencies:
+To run the tests, first install the dependencies.
+
+Spell checking requires `enchant`.
+This can be installed on macOS, for example, with [Homebrew](http://brew.sh):
+
+```sh
+brew install enchant
+```
+
+and on Ubuntu with `apt`:
+
+```sh
+apt-get install -y enchant
+```
+
+Then install the Python dependencies:
 
 ```sh
 pip install -e .[dev]
@@ -127,4 +142,3 @@ with MockVWS(real_http=True):
 The mock attempts to be realistic, but it was built without access to the source code of the original API.
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
 There is no attempt to make the image matching realistic.
->>>>>>> origin/master
