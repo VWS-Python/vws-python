@@ -47,39 +47,40 @@ def validate_not_invalid_json(wrapped: Callable[..., str],
 
     Returns:
         The result of calling the endpoint.
-        An `UNAUTHORIZED` response if there is invalid JSON given to the
-        database summary endpoint.
+        An `UNAUTHORIZED` response if there is data given to the database
+        summary endpoint.
         A `BAD_REQUEST` response with a FAIL result code if there is invalid
-        JSON given to a POST request.
-        A `BAD_REQUEST` with empty text if there is invalid JSON given to
-        another request type.
+        JSON given to a POST or PUT request.
+        A `BAD_REQUEST` with empty text if there is data given to another
+        request type.
     """
     request, context = args
 
     if request.text is None:
         return wrapped(*args, **kwargs)
 
+    if request.path == '/summary':
+        context.status_code = codes.UNAUTHORIZED  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+        }
+        return json.dumps(body)
+
+    if request.method not in (POST, PUT):
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.headers.pop('Content-Type')
+        return ''
+
     try:
         request.json()
     except JSONDecodeError:
-        if request.path == '/summary':
-            context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-            }
-            return json.dumps(body)
-        elif request.method in (POST, PUT):
-            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.FAIL.value,
-            }
-            return json.dumps(body)
-
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-        context.headers.pop('Content-Type')
-        return ''
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
 
     return wrapped(*args, **kwargs)
 
@@ -87,7 +88,7 @@ def validate_not_invalid_json(wrapped: Callable[..., str],
 @wrapt.decorator
 def validate_auth_header_exists(
         wrapped: Callable[..., str],
-        instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+        instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
         args: Tuple[_RequestObjectProxy, _Context],
         kwargs: Dict) -> str:
     """
@@ -105,7 +106,7 @@ def validate_auth_header_exists(
     """
     request, context = args
     if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.UNAUTHORIZED  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
