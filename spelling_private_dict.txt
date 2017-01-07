@@ -11,6 +11,7 @@ http
 https
 io
 issuecomment
+jpeg
 json
 kwargs
 linters
@@ -21,11 +22,14 @@ pragma
 pytest
 readme
 readthedocs
+refactoring
 regex
 rfc
 rgb
 str
+todo
 unmocked
 url
 vuforia
 vws
+xxx

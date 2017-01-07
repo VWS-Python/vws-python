@@ -40,22 +40,19 @@ def assert_valid_target_id(target_id: str) -> None:
 
 def _image_file(file_format: str) -> io.BytesIO:
     """
-    XXX
-    http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
+    Return an image file in the given format.
+
+    Args:
+        file_format: See
+            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
     """
-    image_buffer = io.BytesIO()
-    width = 1
-    height = 1
-    image = Image.new('RGB', (width, height))
-    image.save(image_buffer, file_format)
-    image_buffer.seek(0)
-    return image_buffer
+    return _image_file(file_format='PNG')
 
 
 @pytest.fixture
 def png_file() -> io.BytesIO:
     """
-    Return a random colored, 1x1 PNG, RGB file.
+    Return a PNG file.
     """
     return _image_file(file_format='PNG')
 
@@ -63,7 +60,7 @@ def png_file() -> io.BytesIO:
 @pytest.fixture
 def jpeg_file() -> io.BytesIO:
     """
-    Return a random coloured, 1x1 JPEG, RGB file.
+    Return a JPEG file.
     """
     return _image_file(file_format='JPEG')
 
@@ -71,7 +68,7 @@ def jpeg_file() -> io.BytesIO:
 @pytest.fixture
 def tiff_file() -> io.BytesIO:
     """
-    XXX
+    Return a TIFF file.
     """
     return _image_file(file_format='TIFF')
 
@@ -181,47 +178,6 @@ class TestAddTarget:
         expected_keys = {'result_code', 'transaction_id', 'target_id'}
         assert response.json().keys() == expected_keys
         assert_valid_target_id(target_id=response.json()['target_id'])
-
-    def test_invalid_json(self,
-                          vuforia_server_credentials: VuforiaServerCredentials,
-                          ) -> None:
-        """
-        A `Fail` result is returned when the data given is not valid JSON.
-        """
-        content_type = 'application/json'
-        date = rfc_1123_date()
-        request_path = '/targets'
-
-        content = b'a'
-
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
-        )
 
     @pytest.mark.parametrize(
         'width',
@@ -337,48 +293,25 @@ class TestInvalidImage:
     """
 
     def test_invalid_type(self,
-                          tiff_file: io.BytesIO,
+                          tiff_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                           vuforia_server_credentials: VuforiaServerCredentials,
                           ) -> None:
         """
         A `BAD_REQUEST` response is returned if an image which is not a JPEG
         or PNG file is given.
         """
-        date = rfc_1123_date()
-        request_path = '/targets'
-        content_type = 'application/json'
-
         image_data = tiff_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
-            'name': 'example',
+            'name': 'example_name',
             'width': 1,
             'image': image_data_encoded,
         }
-        content = bytes(json.dumps(data), encoding='utf-8')
 
-        authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=POST,
-            content=content,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data=content,
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
         )
 
         assert_vws_failure(
