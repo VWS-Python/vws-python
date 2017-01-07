@@ -292,7 +292,7 @@ class TestInvalidImage:
     """
 
     def test_invalid_type(self,
-                          tiff_file: io.BytesIO,
+                          tiff_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                           vuforia_server_credentials: VuforiaServerCredentials,
                           ) -> None:
         """
