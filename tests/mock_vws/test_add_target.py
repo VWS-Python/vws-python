@@ -283,7 +283,7 @@ class TestAddTarget:
         )
 
     def test_existing_target_name(self,
-                                  png_file: io.BytesIO,
+                                  png_file: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
                                   vuforia_server_credentials:
                                   VuforiaServerCredentials) -> None:
         """
