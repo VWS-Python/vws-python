@@ -298,6 +298,11 @@ class TestAddTarget:
             'image': image_data_encoded,
         }
 
+        add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
         response = add_target(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
@@ -305,8 +310,8 @@ class TestAddTarget:
 
         assert_vws_failure(
             response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.TARGET_NAME_EXIST,
         )
 
 
