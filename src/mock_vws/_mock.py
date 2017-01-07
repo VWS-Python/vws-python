@@ -3,7 +3,6 @@ A fake implementation of VWS.
 """
 
 import base64
-import imghdr
 import io
 import json
 import numbers
@@ -22,6 +21,7 @@ from typing import (  # noqa F401
 )
 
 import wrapt
+from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
@@ -444,9 +444,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         decoded = base64.b64decode(image)
         image_file = io.BytesIO(decoded)
-        image_file_type = imghdr.what(image_file)
+        pil_image = Image.open(image_file)
+        image_valid_file_type = pil_image.format in ('PNG', 'JPEG')
+        image_valid_color_space = pil_image.mode in ('L', 'RGB')
 
-        if image_file_type not in ('png', 'jpeg'):
+        if not all([image_valid_file_type, image_valid_color_space]):
             context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
