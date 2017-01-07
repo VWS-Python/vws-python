@@ -127,7 +127,7 @@ def assert_vws_response(response: Response,
     assert all(char in hexdigits for char in transaction_id)
 
 
-def add_target(
+def add_target_to_vws(
     vuforia_server_credentials: VuforiaServerCredentials,
     data: Dict[str, Any],
     content_type: str='application/json',

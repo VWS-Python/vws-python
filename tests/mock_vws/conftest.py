@@ -2,8 +2,9 @@
 Configuration, plugins and fixtures for `pytest`.
 """
 
-import os
+import base64
 import io
+import os
 import uuid
 # This is used in a type hint which linters not pick up on.
 from typing import Any  # noqa: F401 pylint: disable=unused-import
@@ -19,7 +20,7 @@ from retrying import retry
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
-from tests.mock_vws.utils import Endpoint
+from tests.mock_vws.utils import Endpoint, add_target_to_vws
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
@@ -189,6 +190,32 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
             vuforia_server_credentials=vuforia_server_credentials,
             target=target,
         )
+
+
+@pytest.fixture()
+def target_id(
+    png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
+    vuforia_server_credentials: VuforiaServerCredentials,
+) -> None:
+    """
+    The target ID of a target in the database.
+    """
+    image_data = png_rgb.read()
+    image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+    data = {
+        'name': 'example',
+        'width': 1,
+        'image': image_data_encoded,
+    }
+
+    response = add_target_to_vws(
+        vuforia_server_credentials=vuforia_server_credentials,
+        data=data,
+        content_type='application/json',
+    )
+
+    return response.json()['target_id']
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])

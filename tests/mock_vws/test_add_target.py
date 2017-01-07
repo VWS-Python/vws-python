@@ -11,9 +11,12 @@ import pytest
 from requests import Response, codes
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import assert_vws_failure, assert_vws_response
+from tests.mock_vws.utils import (
+    add_target_to_vws,
+    assert_vws_failure,
+    assert_vws_response,
+)
 from tests.utils import VuforiaServerCredentials
-from tests.mock_vws.utils import add_target
 
 
 def assert_valid_target_id(target_id: str) -> None:
@@ -80,7 +83,7 @@ class TestContentTypes:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
             content_type=content_type,
@@ -115,7 +118,7 @@ class TestMissingData:
         }
         data.pop(data_to_remove)
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
@@ -155,7 +158,7 @@ class TestWidth:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
@@ -185,7 +188,7 @@ class TestWidth:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
             content_type='application/json',
@@ -221,7 +224,7 @@ class TestTargetName:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
             content_type='application/json',
@@ -251,7 +254,7 @@ class TestTargetName:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
@@ -278,12 +281,12 @@ class TestTargetName:
             'image': image_data_encoded,
         }
 
-        add_target(
+        add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
@@ -321,7 +324,7 @@ class TestImage:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
             content_type='application/json',
@@ -346,7 +349,7 @@ class TestImage:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
@@ -375,7 +378,7 @@ class TestImage:
             'image': image_data_encoded,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
@@ -411,7 +414,7 @@ class TestNotMandatoryFields:
             'extra_thing': 1,
         }
 
-        response = add_target(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
