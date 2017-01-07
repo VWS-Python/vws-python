@@ -428,14 +428,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
-        for target in self.targets:
-            if target.name == name:
-                context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
-                body = {
-                    'transaction_id': uuid.uuid4().hex,
-                    'result_code': ResultCodes.TARGET_NAME_EXIST.value,
-                }
-                return json.dumps(body)
+        if any(target.name == name for target in self.targets):
+            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_NAME_EXIST.value,
+            }
+            return json.dumps(body)
 
         image = request.json().get('image')
         decoded = base64.b64decode(image)
