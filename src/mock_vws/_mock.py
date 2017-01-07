@@ -329,9 +329,11 @@ def validate_image(wrapped: Callable[..., str],
 
     decoded = base64.b64decode(image)
     image_file = io.BytesIO(decoded)
-    image_file_type = imghdr.what(image_file)
+    pil_image = Image.open(image_file)
+    image_valid_file_type = pil_image.format in ('PNG', 'JPEG')
+    image_valid_color_space = pil_image.mode in ('L', 'RGB')
 
-    if image_file_type not in ('png', 'jpeg'):
+    if not all([image_valid_file_type, image_valid_color_space]):
         context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -559,20 +561,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_NAME_EXIST.value,
-            }
-            return json.dumps(body)
-
-        decoded = base64.b64decode(image)
-        image_file = io.BytesIO(decoded)
-        pil_image = Image.open(image_file)
-        image_valid_file_type = pil_image.format in ('PNG', 'JPEG')
-        image_valid_color_space = pil_image.mode in ('L', 'RGB')
-
-        if not all([image_valid_file_type, image_valid_color_space]):
-            context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.BAD_IMAGE.value,
             }
             return json.dumps(body)
 
