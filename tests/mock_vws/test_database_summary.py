@@ -71,15 +71,3 @@ class TestSummary:
             'total_recos',
             'transaction_id',
         }
-
-    def test_json_fields(self) -> None:
-        """
-        XXX
-        """
-        pass
-
-    def test_bad_headers_and_date(self) -> None:
-        """
-        XXX
-        """
-        pass
