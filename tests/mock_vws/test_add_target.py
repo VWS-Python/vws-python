@@ -46,7 +46,13 @@ def _image_file(file_format: str) -> io.BytesIO:
         file_format: See
             http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
     """
-    return _image_file(file_format='PNG')
+    image_buffer = io.BytesIO()
+    width = 1
+    height = 1
+    image = Image.new('RGB', (width, height))
+    image.save(image_buffer, file_format)
+    image_buffer.seek(0)
+    return image_buffer
 
 
 @pytest.fixture
