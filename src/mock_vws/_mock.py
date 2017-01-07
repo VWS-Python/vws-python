@@ -7,16 +7,7 @@ import numbers
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
-from typing import (  # noqa F401
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Union,
-)
+from typing import Any, Callable, Dict, List, Set, Tuple, Union  # noqa F401
 
 import wrapt
 from requests import codes
@@ -291,8 +282,8 @@ ROUTES = set([])
 def route(
         path_pattern: str,
         methods: List[str],
-        mandatory_keys: Optional[Set[str]]=None,
-        optional_keys: Optional[Set[str]]=None) -> Callable[..., Callable]:
+        mandatory_keys: Set[str]=set([]),
+        optional_keys: Set[str]=set([])) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
 
@@ -321,8 +312,8 @@ def route(
         )
 
         key_validator = validate_keys(
-            optional_keys=optional_keys or set([]),
-            mandatory_keys=mandatory_keys or set([]),
+            optional_keys=optional_keys,
+            mandatory_keys=mandatory_keys,
         )
 
         # There is an undocumented difference in behavior between `/summary`
