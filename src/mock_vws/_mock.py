@@ -393,6 +393,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
+        self.targets = []  # type: List[Target]
         self.routes = ROUTES  # type: Set[Route]
 
     @route(
@@ -427,6 +428,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
+        for target in self.targets:
+            if target.name == name:
+                context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.TARGET_NAME_EXIST.value,
+                }
+                return json.dumps(body)
+
         image = request.json().get('image')
         decoded = base64.b64decode(image)
         image_file = io.BytesIO(decoded)
@@ -439,6 +449,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 'result_code': ResultCodes.BAD_IMAGE.value,
             }
             return json.dumps(body)
+
+        new_target = Target(name=name)
+        self.targets.append(new_target)
 
         context.status_code = codes.CREATED  # pylint: disable=no-member
         body = {
