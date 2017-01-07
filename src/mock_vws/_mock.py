@@ -298,6 +298,50 @@ def validate_name(wrapped: Callable[..., str],
     return wrapped(*args, **kwargs)
 
 
+@wrapt.decorator
+def validate_image(wrapped: Callable[..., str],
+                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                   args: Tuple[_RequestObjectProxy, _Context],
+                   kwargs: Dict) -> str:
+    """
+    Validate the image argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
+        either a PNG or a JPEG.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
+    decoded = base64.b64decode(image)
+    image_file = io.BytesIO(decoded)
+    image_file_type = imghdr.what(image_file)
+
+    if image_file_type not in ('png', 'jpeg'):
+        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.BAD_IMAGE.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
 def validate_keys(mandatory_keys: Set[str],
                   optional_keys: Set[str]) -> Callable:
     """
@@ -436,6 +480,7 @@ def route(
         else:
             validators = [
                 validate_authorization,
+                validate_image,
                 validate_name,
                 validate_width,
                 key_validator,
@@ -508,25 +553,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
         name = request.json().get('name')
-        image = request.json().get('image')
 
         if any(target.name == name for target in self.targets):
             context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_NAME_EXIST.value,
-            }
-            return json.dumps(body)
-
-        decoded = base64.b64decode(image)
-        image_file = io.BytesIO(decoded)
-        image_file_type = imghdr.what(image_file)
-
-        if image_file_type not in ('png', 'jpeg'):
-            context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.BAD_IMAGE.value,
             }
             return json.dumps(body)
 
