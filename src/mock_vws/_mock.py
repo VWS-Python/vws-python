@@ -362,12 +362,17 @@ def route(
 
 class Target:
     """
-    XXX
+    A Vuforia Target as managed in
+    https://developer.vuforia.com/target-manager.
     """
 
     def __init__(self, name: str) -> None:
         """
-        XXX
+        Args:
+            name: The name of the target.
+
+        Attributes:
+            name (str): The name of the target.
         """
         self.name = name
 
