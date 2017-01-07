@@ -21,6 +21,7 @@ pragma
 pytest
 readme
 readthedocs
+refactoring
 regex
 rfc
 rgb

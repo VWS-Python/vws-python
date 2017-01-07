@@ -1,10 +1,16 @@
+# This makes Travis CI use the container-based infrastructure which starts
+# tests faster.
+sudo: false
+
 language: "python"
 
 python:
   - "3.5"
 
-before_install:
-  - "sudo apt-get install -y enchant"
+addons:
+  apt:
+    packages:
+    - "enchant"
 
 install:
   - "pip install --upgrade --editable .[dev]"
