@@ -2,6 +2,8 @@
 Tests for the mock of the add target endpoint.
 """
 
+# TODO: Document that "image" is mandatory, despite what the docs say
+
 import base64
 import io
 import json
@@ -400,6 +402,19 @@ class TestInvalidImage:
             result_code=ResultCodes.BAD_IMAGE,
         )
 
+    def test_invalid_type_and_bad_data(self) -> None:
+        """
+        XXX
+        """
+
+    # > 2mb
+    def test_too_large(self) -> None:
+        pass
+
+    # Not RGB/greyscale
+    def test_wrong_colour_space(self) -> None:
+        pass
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestNotMandatoryFields:
@@ -435,3 +450,16 @@ class TestNotMandatoryFields:
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
         )
+
+    def test_valid_extra_data(self) -> None:
+        """
+        active_flag = True
+        application_metadata = 'a'  # something base64 encoded
+        """
+        pass
+
+    def test_invalid_active_flag(self) -> None:
+        pass
+
+    def test_invalid_application_metadata(self) -> None:
+        pass
