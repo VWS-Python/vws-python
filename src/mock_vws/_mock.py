@@ -413,6 +413,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         width = request.json().get('width')
         name = request.json().get('name')
+        image = request.json().get('image')
 
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
@@ -436,7 +437,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
-        image = request.json().get('image')
         decoded = base64.b64decode(image)
         image_file = io.BytesIO(decoded)
         image_file_type = imghdr.what(image_file)
