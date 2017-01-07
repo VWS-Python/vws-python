@@ -5,7 +5,6 @@ Tests for the mock of the add target endpoint.
 import base64
 import io
 import json
-import random
 from string import hexdigits
 from typing import Any, Dict, Union
 from urllib.parse import urljoin
