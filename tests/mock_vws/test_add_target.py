@@ -13,7 +13,7 @@ import pytest
 import requests
 from _pytest.fixtures import SubRequest
 from PIL import Image
-from requests import codes, Response
+from requests import Response, codes
 from requests_mock import POST
 
 from common.constants import ResultCodes
