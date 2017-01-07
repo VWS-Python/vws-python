@@ -203,46 +203,11 @@ class TestSuccess:
         assert response.json().keys() == expected_keys
         assert_valid_target_id(target_id=response.json()['target_id'])
 
-    @pytest.mark.parametrize(
-        'width',
-        [-1, '10'],
-        ids=['Negative', 'Wrong Type'],
-    )
-    def test_width_invalid(self,
-                           vuforia_server_credentials:
-                           VuforiaServerCredentials,
-                           png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
-
-                           width: Any) -> None:
-        """
-        The width must be a non-negative number.
-        """
-        image_data = png_rgb.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
-        data = {
-            'name': 'example_name',
-            'width': width,
-            'image': image_data_encoded,
-        }
-
-        response = add_target(
-            vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
-        )
-
     @pytest.mark.parametrize('data_to_remove', ['name', 'width', 'image'])
     def test_missing_data(self,
                           vuforia_server_credentials:
                           VuforiaServerCredentials,
                           png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
-
                           data_to_remove: str,
                           ) -> None:
         """
@@ -271,10 +236,51 @@ class TestSuccess:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
+class TestWidth:
+    """
+    Tests for the target width field.
+    """
+
+    @pytest.mark.parametrize(
+        'width',
+        [-1, '10'],
+        ids=['Negative', 'Wrong Type'],
+    )
+    def test_width_invalid(self,
+                           vuforia_server_credentials:
+                           VuforiaServerCredentials,
+                           png_rgb: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                           width: Any) -> None:
+        """
+        The width must be a non-negative number.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': width,
+            'image': image_data_encoded,
+        }
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestTargetName:
     """
     Tests for the target name field.
     """
+
     @pytest.mark.parametrize(
         'name',
         [1, '', 'a' * 65],
