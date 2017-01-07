@@ -519,11 +519,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         return json.dumps(body)
 
-    @route(
-        path_pattern='/targets/.+',
-        methods=[PUT],
-        optional_keys={'name'},
-    )
+    @route(path_pattern='/targets/.+', methods=[PUT])
     def update_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                       context: _Context) -> str:
