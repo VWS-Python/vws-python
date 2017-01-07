@@ -389,20 +389,16 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        body = {}  # type: Dict[str, Union[str, int]]
-        valid = True
-
         width = request.json().get('width')
         name = request.json().get('name')
 
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
-        valid = valid and width_positive
 
-        valid = valid and isinstance(name, str)
-        valid = valid and 0 < len(name) < 65
+        name_is_string = isinstance(name, str)
+        name_valid_length = name_is_string and 0 < len(name) < 65
 
-        if not valid:
+        if not all([width_positive, name_valid_length]):
             context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
