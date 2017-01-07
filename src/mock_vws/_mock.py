@@ -201,8 +201,13 @@ def validate_keys(mandatory_keys: Set[str],
                   optional_keys: Set[str]) -> Callable:
     """
     Args:
-        mandatory_keys: TODO
-        optional_keys: TODO
+        mandatory_keys: Keys required by the endpoint.
+        optional_keys: Keys which are not required by the endpoint but which
+            are allowed.
+
+    Returns:
+        A wrapper function to validate that the keys given to the endpoint are
+            all allowed and that the mandatory keys are given.
     """
     @wrapt.decorator
     def wrapper(wrapped: Callable[..., str],
@@ -221,6 +226,8 @@ def validate_keys(mandatory_keys: Set[str],
 
         Returns:
             The result of calling the endpoint.
+            A `BAD_REQUEST` error if any keys are not allowed, or if any
+            required keys are missing.
         """
         request, context = args
         allowed_keys = mandatory_keys.union(optional_keys)
