@@ -48,7 +48,7 @@ def validate_not_invalid_json(wrapped: Callable[..., str],
         return wrapped(*args, **kwargs)
 
     try:
-        json.loads(request.text)
+        request.json()
     except JSONDecodeError:
         if request.path == '/summary':
             context.status_code = codes.UNAUTHORIZED  # noqa: E501 pylint: disable=no-member
@@ -228,8 +228,7 @@ def validate_keys(mandatory_keys: Set[str],
         if request.text is None and not allowed_keys:
             return wrapped(*args, **kwargs)
 
-        request_body_json = json.loads(request.text)
-        given_keys = set(request_body_json.keys())
+        given_keys = set(request.json().keys())
         all_given_keys_allowed = given_keys.issubset(allowed_keys)
         all_mandatory_keys_given = mandatory_keys.issubset(given_keys)
 
