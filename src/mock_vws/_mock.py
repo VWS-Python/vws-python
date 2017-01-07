@@ -457,7 +457,12 @@ class Target:
     https://developer.vuforia.com/target-manager.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self,
+                 name: str,
+                 width,
+                 image,
+                 active_flag,
+                 application_metadata) -> None:
         """
         Args:
             name: The name of the target.
@@ -466,6 +471,10 @@ class Target:
             name (str): The name of the target.
         """
         self.name = name
+        self.width = width
+        self.image = image
+        self.active_flag = active_flag
+        self.application_metadata = application_metadata
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -530,7 +539,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
-        new_target = Target(name=name)
+        new_target = Target(
+            name=name,
+            width=width,
+            image=image,
+            active_flag=True,
+            application_metadata=b'x',
+        )
         self.targets.append(new_target)
 
         context.status_code = codes.CREATED  # pylint: disable=no-member
