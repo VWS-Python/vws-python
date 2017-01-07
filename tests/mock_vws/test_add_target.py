@@ -57,7 +57,7 @@ def _image_file(file_format: str, color_space: str) -> io.BytesIO:
 @pytest.fixture
 def png_rgb() -> io.BytesIO:
     """
-    Return a PNG file in RGB format.
+    Return a PNG file in the RGB color space.
     """
     return _image_file(file_format='PNG', color_space='RGB')
 
@@ -65,15 +65,23 @@ def png_rgb() -> io.BytesIO:
 @pytest.fixture
 def png_greyscale() -> io.BytesIO:
     """
-    Return a PNG file in greyscale format.
+    Return a PNG file in the greyscale color space.
     """
     return _image_file(file_format='PNG', color_space='L')
 
 
 @pytest.fixture
+def jpeg_cmyk() -> io.BytesIO:
+    """
+    Return a PNG file in the CMYK color space.
+    """
+    return _image_file(file_format='JPEG', color_space='CMYK')
+
+
+@pytest.fixture
 def jpeg_rgb() -> io.BytesIO:
     """
-    Return a JPEG file in RGB format.
+    Return a JPEG file in the RGB color space.
     """
     return _image_file(file_format='JPEG', color_space='RGB')
 
@@ -81,7 +89,7 @@ def jpeg_rgb() -> io.BytesIO:
 @pytest.fixture
 def tiff_rgb() -> io.BytesIO:
     """
-    Return a TIFF file in RGB format.
+    Return a TIFF file in the RGB color space.
 
     This is given as an option which is not supported by Vuforia as Vuforia
     supports only JPEG and PNG files.
@@ -344,6 +352,35 @@ class TestInvalidImage:
         or PNG file is given.
         """
         image_data = tiff_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.BAD_IMAGE,
+        )
+
+    def test_wrong_color_space(self,
+                               jpeg_cmyk: io.BytesIO,  # noqa: E501 pylint: disable=redefined-outer-name
+                               vuforia_server_credentials:
+                               VuforiaServerCredentials,
+                               ) -> None:
+        """
+        A `BAD_REQUEST` response is returned if an image which is not in the
+        greyscale or RGB color space.
+        """
+        image_data = jpeg_cmyk.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
