@@ -3,6 +3,7 @@ args
 bool
 foo
 github
+greyscale
 hexdigits
 hmac
 html
