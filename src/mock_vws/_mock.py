@@ -178,6 +178,9 @@ def validate_date(wrapped: Callable[..., str],
 
     Returns:
         The result of calling the endpoint.
+        A `BAD_REQUEST` response if the date is not given, or is in the wrong
+        format.
+        A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
 
@@ -203,6 +206,136 @@ def validate_date(wrapped: Callable[..., str],
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_width(wrapped: Callable[..., str],
+                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                   args: Tuple[_RequestObjectProxy, _Context],
+                   kwargs: Dict) -> str:
+    """
+    Validate the width argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the width is given and is not a positive
+        number.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    width = request.json().get('width')
+
+    if width is None:
+        return wrapped(*args, **kwargs)
+
+    width_is_number = isinstance(width, numbers.Number)
+    width_positive = width_is_number and width >= 0
+
+    if not width_positive:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_name(wrapped: Callable[..., str],
+                  instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                  args: Tuple[_RequestObjectProxy, _Context],
+                  kwargs: Dict) -> str:
+    """
+    Validate the name argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the name is given and is not between 1 and
+        64 characters in length.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    name = request.json().get('name')
+
+    if name is None:
+        return wrapped(*args, **kwargs)
+
+    name_is_string = isinstance(name, str)
+    name_valid_length = name_is_string and 0 < len(name) < 65
+
+    if not name_valid_length:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_image(wrapped: Callable[..., str],
+                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                   args: Tuple[_RequestObjectProxy, _Context],
+                   kwargs: Dict) -> str:
+    """
+    Validate the image argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
+        either a PNG or a JPEG.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
+    decoded = base64.b64decode(image)
+    image_file = io.BytesIO(decoded)
+    image_file_type = imghdr.what(image_file)
+
+    if image_file_type not in ('png', 'jpeg'):
+        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.BAD_IMAGE.value,
         }
         return json.dumps(body)
 
@@ -347,6 +480,9 @@ def route(
         else:
             validators = [
                 validate_authorization,
+                validate_image,
+                validate_name,
+                validate_width,
                 key_validator,
                 validate_date,
                 validate_not_invalid_json,
@@ -416,23 +552,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        width = request.json().get('width')
         name = request.json().get('name')
-        image = request.json().get('image')
-
-        width_is_number = isinstance(width, numbers.Number)
-        width_positive = width_is_number and width >= 0
-
-        name_is_string = isinstance(name, str)
-        name_valid_length = name_is_string and 0 < len(name) < 65
-
-        if not all([width_positive, name_valid_length]):
-            context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.FAIL.value,
-            }
-            return json.dumps(body)
 
         if any(target.name == name for target in self.targets):
             context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
