@@ -360,6 +360,23 @@ def route(
     return decorator
 
 
+class Target:
+    """
+    A Vuforia Target as managed in
+    https://developer.vuforia.com/target-manager.
+    """
+
+    def __init__(self, name: str) -> None:
+        """
+        Args:
+            name: The name of the target.
+
+        Attributes:
+            name (str): The name of the target.
+        """
+        self.name = name
+
+
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
@@ -381,6 +398,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
+        self.targets = []  # type: List[Target]
         self.routes = ROUTES  # type: Set[Route]
 
     @route(
@@ -400,6 +418,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         width = request.json().get('width')
         name = request.json().get('name')
+        image = request.json().get('image')
 
         width_is_number = isinstance(width, numbers.Number)
         width_positive = width_is_number and width >= 0
@@ -415,7 +434,14 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
-        image = request.json().get('image')
+        if any(target.name == name for target in self.targets):
+            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_NAME_EXIST.value,
+            }
+            return json.dumps(body)
+
         decoded = base64.b64decode(image)
         image_file = io.BytesIO(decoded)
         image_file_type = imghdr.what(image_file)
@@ -427,6 +453,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 'result_code': ResultCodes.BAD_IMAGE.value,
             }
             return json.dumps(body)
+
+        new_target = Target(name=name)
+        self.targets.append(new_target)
 
         context.status_code = codes.CREATED  # pylint: disable=no-member
         body = {
