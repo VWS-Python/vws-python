@@ -360,6 +360,18 @@ def route(
     return decorator
 
 
+class Target:
+    """
+    XXX
+    """
+
+    def __init__(self, name: str) -> None:
+        """
+        XXX
+        """
+        self.name = name
+
+
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
