@@ -553,7 +553,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
         name = request.json().get('name')
-        image = request.json().get('image')
 
         if any(target.name == name for target in self.targets):
             context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
@@ -562,7 +561,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 'result_code': ResultCodes.TARGET_NAME_EXIST.value,
             }
             return json.dumps(body)
-
 
         new_target = Target(name=name)
         self.targets.append(new_target)
