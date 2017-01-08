@@ -426,6 +426,7 @@ def parse_target_id(wrapped: Callable[..., str],
     if len(split_path) == 2:
         return wrapped(*args, **kwargs)
 
+    args = args + (split_path[-1],)
     return wrapped(*args, **kwargs)
 
 
@@ -694,7 +695,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                   context: _Context) -> str:
+                   context: _Context,
+                   target_id: str,
+                   ) -> str:
         """
         Get details of a target.
 
@@ -712,7 +715,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/duplicates/.+', methods=[GET])
     def get_duplicates(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                       context: _Context) -> str:
+                       context: _Context,
+                       target_id: str,
+                       ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
 
@@ -730,7 +735,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[PUT])
     def update_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                      context: _Context) -> str:
+                      context: _Context,
+                      target_id: str,
+                      ) -> str:
         """
         Update a target.
 
@@ -748,7 +755,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/summary/.+', methods=[GET])
     def target_summary(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                       context: _Context) -> str:
+                       context: _Context,
+                       target_id,
+                       ) -> str:
         """
         Get a summary report for a target.
 
