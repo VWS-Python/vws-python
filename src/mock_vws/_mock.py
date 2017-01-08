@@ -390,7 +390,7 @@ def validate_keys(mandatory_keys: Set[str],
         if all_given_keys_allowed and all_mandatory_keys_given:
             return wrapped(*args, **kwargs)
 
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -402,7 +402,7 @@ def validate_keys(mandatory_keys: Set[str],
 
 @wrapt.decorator
 def parse_target_id(wrapped: Callable[..., str],
-                    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                    instance: 'MockVuforiaTargetAPI',
                     args: Tuple[_RequestObjectProxy, _Context],
                     kwargs: Dict) -> str:
     """
@@ -434,7 +434,7 @@ def parse_target_id(wrapped: Callable[..., str],
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
         }  # type: Dict[str, str]
-        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
         return json.dumps(body)
 
     new_args = args + (target_id,)
