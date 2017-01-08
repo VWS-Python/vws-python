@@ -419,7 +419,7 @@ def parse_target_id(wrapped: Callable[..., str],
         An `UNPROCESSABLE_ENTITY` response if the image is given and is not
         either a PNG or a JPEG, in either the RGB or greyscale color space.
     """
-    request, context = args
+    request, _ = args
 
     split_path = request.path.split('/')
 
@@ -696,7 +696,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                    context: _Context,
-                   target_id: str,
+                   target_id: str,  # noqa: E501 pylint: disable=unused-argument
                   ) -> str:
         """
         Get details of a target.
@@ -716,7 +716,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def get_duplicates(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                        context: _Context,
-                       target_id: str,
+                       target_id: str,  # noqa: E501 pylint: disable=unused-argument
                       ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
@@ -736,7 +736,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def update_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                       context: _Context,
-                      target_id: str,
+                      target_id: str,  # noqa: E501 pylint: disable=unused-argument
                      ) -> str:
         """
         Update a target.
@@ -756,7 +756,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def target_summary(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                        context: _Context,
-                       target_id: str,
+                       target_id: str,  # noqa: E501 pylint: disable=unused-argument
                       ) -> str:
         """
         Get a summary report for a target.
