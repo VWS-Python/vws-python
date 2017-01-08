@@ -512,7 +512,7 @@ class Target:
 
         Attributes:
             name (str): The name of the target.
-            target_id (str): The unique ID of a target.
+            target_id (str): The unique ID of the target.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
@@ -574,7 +574,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.TARGET_CREATED.value,
-            'target_id': uuid.uuid4().hex,
+            'target_id': new_target.target_id,
         }
         return json.dumps(body)
 
