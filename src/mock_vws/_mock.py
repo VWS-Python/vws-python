@@ -400,6 +400,36 @@ def validate_keys(mandatory_keys: Set[str],
     return wrapper
 
 
+@wrapt.decorator
+def parse_target_id(wrapped: Callable[..., str],
+                    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                    args: Tuple[_RequestObjectProxy, _Context],
+                    kwargs: Dict) -> str:
+    """
+    Parse a target ID in a URL path.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        If a target ID is given in the path then the wrapped function is given
+        an extra argument - the target ID.
+    """
+    request, _ = args
+
+    split_path = request.path.split('/')
+
+    if len(split_path) == 2:
+        return wrapped(*args, **kwargs)
+
+    new_args = args + (split_path[-1],)
+    return wrapped(*new_args, **kwargs)
+
+
 class Route:
     """
     A container for the route details which `requests_mock` needs.
@@ -482,6 +512,7 @@ def route(
             ]
         else:
             validators = [
+                parse_target_id,
                 validate_authorization,
                 validate_image,
                 validate_name,
@@ -581,7 +612,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                      context: _Context) -> str:
+                      context: _Context,
+                      target_id: str,
+                     ) -> str:
         """
         Delete a target.
 
@@ -662,7 +695,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                   context: _Context) -> str:
+                   context: _Context,
+                   target_id: str,  # noqa: E501 pylint: disable=unused-argument
+                  ) -> str:
         """
         Get details of a target.
 
@@ -680,7 +715,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/duplicates/.+', methods=[GET])
     def get_duplicates(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                       context: _Context) -> str:
+                       context: _Context,
+                       target_id: str,  # noqa: E501 pylint: disable=unused-argument
+                      ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
 
@@ -698,7 +735,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[PUT])
     def update_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                      context: _Context) -> str:
+                      context: _Context,
+                      target_id: str,  # noqa: E501 pylint: disable=unused-argument
+                     ) -> str:
         """
         Update a target.
 
@@ -716,7 +755,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/summary/.+', methods=[GET])
     def target_summary(self,
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                       context: _Context) -> str:
+                       context: _Context,
+                       target_id: str,  # noqa: E501 pylint: disable=unused-argument
+                      ) -> str:
         """
         Get a summary report for a target.
 
