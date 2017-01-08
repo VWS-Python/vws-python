@@ -512,8 +512,10 @@ class Target:
 
         Attributes:
             name (str): The name of the target.
+            target_id (str): The unique ID of the target.
         """
         self.name = name
+        self.target_id = uuid.uuid4().hex
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -572,7 +574,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.TARGET_CREATED.value,
-            'target_id': uuid.uuid4().hex,
+            'target_id': new_target.target_id,
         }
         return json.dumps(body)
 
@@ -586,11 +588,23 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
         """
+        body = {}  # type: Dict[str, str]
+
+        target_id = request.path.split('/')[-1]
+        for target in self.targets:
+            if target.target_id == target_id:
+                context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
+                }
+                return json.dumps(body)
+
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
-        }  # type: Dict[str, str]
-        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+        }
+        context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
 
         return json.dumps(body)
 

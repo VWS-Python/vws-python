@@ -2,13 +2,18 @@
 Utilities for tests for the VWS mock.
 """
 
+import json
 from string import hexdigits
-from typing import Optional
+from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
-from requests.models import Response
+import requests
+from requests import Response
+from requests_mock import POST
 
 from common.constants import ResultCodes
+from tests.utils import VuforiaServerCredentials
+from vws._request_utils import authorization_header, rfc_1123_date
 
 
 class Endpoint:
@@ -120,3 +125,51 @@ def assert_vws_response(response: Response,
     transaction_id = response.json()['transaction_id']
     assert len(transaction_id) == 32
     assert all(char in hexdigits for char in transaction_id)
+
+
+def add_target_to_vws(
+    vuforia_server_credentials: VuforiaServerCredentials,
+    data: Dict[str, Any],
+    content_type: str='application/json',
+) -> Response:
+    """
+    Helper to make a request to the endpoint to add a target.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        data: The data to send, in JSON format, to the endpoint.
+        content_type: The `Content-Type` header to use.
+
+    Returns:
+        The response returned by the API.
+    """
+    date = rfc_1123_date()
+    request_path = '/targets'
+
+    content = bytes(json.dumps(data), encoding='utf-8')
+
+    authorization_string = authorization_header(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=POST,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        "Authorization": authorization_string,
+        "Date": date,
+        'Content-Type': content_type,
+    }
+
+    response = requests.request(
+        method=POST,
+        url=urljoin('https://vws.vuforia.com/', request_path),
+        headers=headers,
+        data=content,
+    )
+
+    return response
