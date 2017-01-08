@@ -406,7 +406,7 @@ def parse_target_id(wrapped: Callable[..., str],
                     args: Tuple[_RequestObjectProxy, _Context],
                     kwargs: Dict) -> str:
     """
-    Validate the image argument given to a VWS endpoint.
+    Parse a target ID in a URL path.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -416,8 +416,8 @@ def parse_target_id(wrapped: Callable[..., str],
 
     Returns:
         The result of calling the endpoint.
-        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
-        either a PNG or a JPEG, in either the RGB or greyscale color space.
+        If a target ID is given in the path then the wrapped function is given
+        an extra argument - the target ID.
     """
     request, _ = args
 
