@@ -419,14 +419,25 @@ def parse_target_id(wrapped: Callable[..., str],
         If a target ID is given in the path then the wrapped function is given
         an extra argument - the target ID.
     """
-    request, _ = args
+    request, context = args
 
     split_path = request.path.split('/')
 
     if len(split_path) == 2:
         return wrapped(*args, **kwargs)
 
-    new_args = args + (split_path[-1],)
+    target_id = split_path[-1]
+
+    if not any([target for target in instance.targets if
+                target.target_id == target_id]):
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.UNKNOWN_TARGET.value,
+        }  # type: Dict[str, str]
+        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
+        return json.dumps(body)
+
+    new_args = args + (target_id,)
     return wrapped(*new_args, **kwargs)
 
 
@@ -633,14 +644,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 }
                 return json.dumps(body)
 
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.UNKNOWN_TARGET.value,
-        }
-        context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
-
-        return json.dumps(body)
-
     @route(path_pattern='/summary', methods=[GET])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
@@ -704,13 +707,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
         """
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.UNKNOWN_TARGET.value,
-        }  # type: Dict[str, str]
-        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
-
-        return json.dumps(body)
 
     @route(path_pattern='/duplicates/.+', methods=[GET])
     def get_duplicates(self,
@@ -724,13 +720,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.UNKNOWN_TARGET.value,
-        }  # type: Dict[str, str]
-        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
-
-        return json.dumps(body)
 
     @route(path_pattern='/targets/.+', methods=[PUT])
     def update_target(self,
@@ -744,13 +733,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
         """
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.UNKNOWN_TARGET.value,
-        }  # type: Dict[str, str]
-        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
-
-        return json.dumps(body)
 
     @route(path_pattern='/summary/.+', methods=[GET])
     def target_summary(self,
@@ -764,10 +746,3 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.UNKNOWN_TARGET.value,
-        }  # type: Dict[str, str]
-        context.status_code = codes.NOT_FOUND  # noqa: E501 pylint: disable=no-member
-
-        return json.dumps(body)
