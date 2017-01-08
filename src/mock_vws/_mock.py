@@ -614,7 +614,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                       context: _Context,
                       target_id: str,
-                      ) -> str:
+                     ) -> str:
         """
         Delete a target.
 
@@ -697,7 +697,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                    context: _Context,
                    target_id: str,
-                   ) -> str:
+                  ) -> str:
         """
         Get details of a target.
 
@@ -717,7 +717,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                        context: _Context,
                        target_id: str,
-                       ) -> str:
+                      ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
 
@@ -737,7 +737,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                       context: _Context,
                       target_id: str,
-                      ) -> str:
+                     ) -> str:
         """
         Update a target.
 
@@ -757,7 +757,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                        context: _Context,
                        target_id: str,
-                       ) -> str:
+                      ) -> str:
         """
         Get a summary report for a target.
 
