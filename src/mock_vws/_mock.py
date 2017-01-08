@@ -642,7 +642,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                     'transaction_id': uuid.uuid4().hex,
                     'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
                 }
-                return json.dumps(body)
+        return json.dumps(body)
 
     @route(path_pattern='/summary', methods=[GET])
     def database_summary(self,
