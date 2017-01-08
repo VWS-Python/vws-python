@@ -8,8 +8,8 @@ from requests_mock import DELETE
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import assert_vws_failure
-from vws._request_utils import target_api_request
 from tests.utils import VuforiaServerCredentials
+from vws._request_utils import target_api_request
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
