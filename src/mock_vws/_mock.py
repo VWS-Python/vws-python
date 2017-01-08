@@ -400,6 +400,35 @@ def validate_keys(mandatory_keys: Set[str],
     return wrapper
 
 
+@wrapt.decorator
+def parse_target_id(wrapped: Callable[..., str],
+                    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                    args: Tuple[_RequestObjectProxy, _Context],
+                    kwargs: Dict) -> str:
+    """
+    Validate the image argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
+        either a PNG or a JPEG, in either the RGB or greyscale color space.
+    """
+    request, context = args
+
+    split_path = request.path.split('/')
+
+    if len(split_path) == 2:
+        return wrapped(*args, **kwargs)
+
+    return wrapped(*args, **kwargs)
+
+
 class Route:
     """
     A container for the route details which `requests_mock` needs.
@@ -482,6 +511,7 @@ def route(
             ]
         else:
             validators = [
+                parse_target_id,
                 validate_authorization,
                 validate_image,
                 validate_name,
@@ -581,7 +611,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(self,
                       request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                      context: _Context) -> str:
+                      context: _Context,
+                      target_id: str,
+                      ) -> str:
         """
         Delete a target.
 
