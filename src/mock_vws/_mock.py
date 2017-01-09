@@ -656,7 +656,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, str]
 
-        context.status_code = codes.OK  # pylint: disable=no-member
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
@@ -687,7 +686,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, Union[str, List[object]]]
 
-        context.status_code = codes.OK  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
