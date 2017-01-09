@@ -686,12 +686,14 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, Union[str, List[object]]]
+        body = {}  # type: Dict[str, Union[str, List[str]]]
+
+        results = [target.target_id for target in self.targets]
 
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
-            'results': [],
+            'results': results,
         }
         return json.dumps(body)
 
