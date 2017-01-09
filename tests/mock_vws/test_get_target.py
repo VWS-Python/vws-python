@@ -12,3 +12,9 @@ class TestGetRecord:
     """
     Tests for getting a target record.
     """
+
+    def test_get_target(self, target_id: str) -> None:
+        """
+        Details of a target are returned.
+        """
+        pass
