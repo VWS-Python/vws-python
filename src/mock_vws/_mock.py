@@ -647,7 +647,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/summary', methods=[GET])
     def database_summary(self,
                          request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                         context: _Context) -> str:
+                         context: _Context,  # pylint: disable=unused-argument
+                        ) -> str:
         """
         Get a database summary report.
 
@@ -677,7 +678,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets', methods=[GET])
     def target_list(self,
                     request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                    context: _Context) -> str:
+                    context: _Context,  # pylint: disable=unused-argument
+                   ) -> str:
         """
         Get a list of all targets.
 
