@@ -104,7 +104,9 @@ def validate_auth_header_exists(
         The result of calling the endpoint.
         An `UNAUTHORIZED` response if there is no "Authorization" header.
     """
-    request, context = args
+    request = args[0]
+    context = args[1]
+
     if 'Authorization' not in request.headers:
         context.status_code = codes.UNAUTHORIZED  # pylint: disable=no-member
         body = {
@@ -119,7 +121,9 @@ def validate_auth_header_exists(
 @wrapt.decorator
 def validate_authorization(wrapped: Callable[..., str],
                            instance: 'MockVuforiaTargetAPI',
-                           args: Tuple[_RequestObjectProxy, _Context],
+                           args: Union[
+                               Tuple[_RequestObjectProxy, _Context],
+                               Tuple[_RequestObjectProxy, _Context, str]],
                            kwargs: Dict) -> str:
     """
     Validate the authorization header given to a VWS endpoint.
@@ -164,9 +168,12 @@ def validate_authorization(wrapped: Callable[..., str],
 
 
 @wrapt.decorator
+# TODO Validate headers of all routes
 def validate_date(wrapped: Callable[..., str],
                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                  args: Tuple[_RequestObjectProxy, _Context],
+                  args: Union[
+                      Tuple[_RequestObjectProxy, _Context],
+                      Tuple[_RequestObjectProxy, _Context, str]],
                   kwargs: Dict) -> str:
     """
     Validate the date header given to a VWS endpoint.
@@ -183,7 +190,8 @@ def validate_date(wrapped: Callable[..., str],
         format.
         A `FORBIDDEN` response if the date is out of range.
     """
-    request, context = args
+    request = args[0]
+    context = args[1]
 
     try:
         date_from_header = datetime.strptime(
@@ -474,6 +482,59 @@ class Route:
 ROUTES = set([])
 
 
+@wrapt.decorator
+def parse_path(wrapped: Callable[..., str],
+               instance: 'MockVuforiaTargetAPI',
+               args: Union[
+                   Tuple[_RequestObjectProxy, _Context],
+                   Tuple[_RequestObjectProxy, _Context, str]],
+               kwargs: Dict) -> str:
+    """Give the decorated function a "target_id" parameter if given.
+
+    If a path has multiple parts (e.g. `/summary/thing`) then the only thing
+    which the VWS API accepts as a final part is a target's id.
+
+    Therefore, if there is an extra part on the end of the path, validate this
+    path, and give it to the route method as a parameter.
+
+    Args:
+        wrapped: An endpoing function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    def _execute(request: _RequestObjectProxy,
+                 context: _Context,
+                 *_args: Tuple,
+                 **_kwargs: Dict) -> str:
+        """
+        See `path_pattern`.
+        """
+
+        try:
+            _, _, target_id = request.path.split('/')
+        except ValueError:
+            return wrapped(request, context, *_args, **_kwargs)
+
+        cloud_target_ids = set(
+            [target.target_id for target in instance.targets])
+
+        if target_id not in cloud_target_ids:
+            context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
+
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.UNKNOWN_TARGET.value,
+            }  # type: Dict[str, str]
+            return json.dumps(body)
+        return wrapped(request, context, target_id, *_args, **_kwargs)
+
+    return _execute(*args, **kwargs)
+
+
 def route(
         path_pattern: str,
         methods: List[str],
@@ -517,6 +578,7 @@ def route(
             validators = [
                 validate_authorization,
                 key_validator,
+                parse_path,
                 validate_not_invalid_json,
                 validate_date,
                 validate_auth_header_exists,
@@ -529,6 +591,7 @@ def route(
                 validate_name,
                 validate_width,
                 key_validator,
+                parse_path,
                 validate_date,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
@@ -583,6 +646,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         self.targets = []  # type: List[Target]
         self.routes = ROUTES  # type: Set[Route]
+        self.targets = []  # type: List
 
     @route(
         path_pattern='/targets',
