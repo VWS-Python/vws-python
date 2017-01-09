@@ -9,7 +9,11 @@ from requests import codes
 from requests_mock import GET
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import assert_vws_response, VuforiaServerCredentials
+from tests.mock_vws.utils import (
+    VuforiaServerCredentials,
+    assert_valid_target_id,
+    assert_vws_response,
+)
 from vws._request_utils import target_api_request
 
 
@@ -51,6 +55,8 @@ class TestGetRecord:
 
         assert set(response.json().keys()) == expected_keys
 
+        target_record = response.json()['target_record']
+
         expected_target_record_keys = {
             'target_id',
             'active_flag',
@@ -60,6 +66,6 @@ class TestGetRecord:
             'reco_rating',
         }
 
-        target_record_keys = set(response.json()['target_record'].keys())
+        assert set(target_record.keys()) == expected_target_record_keys
 
-        assert target_record_keys == expected_target_record_keys
+        assert_valid_target_id(target_id=target_record['target_id'])
