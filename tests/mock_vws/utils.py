@@ -7,7 +7,6 @@ from string import hexdigits
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
-import requests
 from requests import Response
 from requests_mock import POST
 
