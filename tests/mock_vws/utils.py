@@ -7,12 +7,13 @@ from string import hexdigits
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
+import requests
 from requests import Response
 from requests_mock import POST
 
 from common.constants import ResultCodes
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import target_api_request
+from vws._request_utils import authorization_header, rfc_1123_date
 
 
 class Endpoint:
@@ -143,14 +144,32 @@ def add_target_to_vws(
     Returns:
         The response returned by the API.
     """
+    date = rfc_1123_date()
+    request_path = '/targets'
+
     content = bytes(json.dumps(data), encoding='utf-8')
 
-    response = target_api_request(
+    authorization_string = authorization_header(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=POST,
         content=content,
-        request_path='/targets',
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        "Authorization": authorization_string,
+        "Date": date,
+        'Content-Type': content_type,
+    }
+
+    response = requests.request(
+        method=POST,
+        url=urljoin('https://vws.vuforia.com/', request_path),
+        headers=headers,
+        data=content,
     )
 
     return response
