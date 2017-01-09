@@ -2,17 +2,14 @@
 Tests for the mock of the database summary endpoint.
 """
 
-from urllib.parse import urljoin
-
 import pytest
-import requests
 from requests import codes
 from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import assert_vws_response
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import authorization_header, rfc_1123_date
+from vws._request_utils import target_api_request
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -25,30 +22,14 @@ class TestSummary:
                      vuforia_server_credentials: VuforiaServerCredentials,
                      ) -> None:
         """It is possible to get a success response."""
-        date = rfc_1123_date()
-        request_path = '/summary'
-
-        authorization_string = authorization_header(
+        response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=GET,
             content=b'',
-            content_type='',
-            date=date,
-            request_path=request_path,
+            request_path='/summary',
         )
 
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-        }
-
-        response = requests.request(
-            method=GET,
-            url=urljoin('https://vws.vuforia.com', request_path),
-            headers=headers,
-            data=b'',
-        )
         assert_vws_response(
             response=response,
             status_code=codes.OK,
