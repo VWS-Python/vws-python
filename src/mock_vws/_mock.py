@@ -699,7 +699,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
                    context: _Context,
-                   target_id: str,  # noqa: E501 pylint: disable=unused-argument
+                   target_id: str,
                   ) -> str:
         """
         Get details of a target.
@@ -707,6 +707,21 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
         """
+        target_record = {
+            'target_id': target_id,
+            'active_flag': '',
+            'name': '',
+            'width': '',
+            'tracking_rating': '',
+            'reco_rating': '',
+        }
+        body = {
+            'result_code': ResultCodes.SUCCESS.value,
+            'transaction_id': uuid.uuid4().hex,
+            'target_record': target_record,
+            'status': codes.OK,  # pylint: disable=no-member
+        }
+        return json.dumps(body)
 
     @route(path_pattern='/duplicates/.+', methods=[GET])
     def get_duplicates(self,
