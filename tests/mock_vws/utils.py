@@ -173,17 +173,3 @@ def add_target_to_vws(
     )
 
     return response
-
-
-def assert_valid_target_id(target_id: str) -> None:
-    """
-    Assert that a given Target ID is in a valid format.
-
-    Args:
-        target_id: The Target ID to check.
-
-    Raises:
-        AssertionError: The Target ID is not in a valid format.
-    """
-    assert len(target_id) == 32
-    assert all(char in hexdigits for char in target_id)

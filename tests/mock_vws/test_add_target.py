@@ -4,6 +4,7 @@ Tests for the mock of the add target endpoint.
 
 import base64
 import io
+from string import hexdigits
 from typing import Any
 
 import pytest
@@ -12,11 +13,24 @@ from requests import Response, codes
 from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
-    assert_valid_target_id,
     assert_vws_failure,
     assert_vws_response,
 )
 from tests.utils import VuforiaServerCredentials
+
+
+def assert_valid_target_id(target_id: str) -> None:
+    """
+    Assert that a given Target ID is in a valid format.
+
+    Args:
+        target_id: The Target ID to check.
+
+    Raises:
+        AssertionError: The Target ID is not in a valid format.
+    """
+    assert len(target_id) == 32
+    assert all(char in hexdigits for char in target_id)
 
 
 def assert_success(response: Response) -> None:
