@@ -37,3 +37,20 @@ class TestTargetList:
         expected_keys = {'result_code', 'transaction_id', 'results'}
         assert response.json().keys() == expected_keys
         assert response.json()['results'] == []
+
+    def test_includes_targets(self,
+                              vuforia_server_credentials:
+                              VuforiaServerCredentials,
+                              target_id: str,
+                              ) -> None:
+        """
+        Targets in the database are returned in the list.
+        """
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/targets',
+        )
+        assert response.json()['results'] == [target_id]
