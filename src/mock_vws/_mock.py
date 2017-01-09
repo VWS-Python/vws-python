@@ -698,7 +698,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(self,
                    request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
-                   context: _Context,
+                   context: _Context,  # pylint: disable=unused-argument
                    target_id: str,
                   ) -> str:
         """
