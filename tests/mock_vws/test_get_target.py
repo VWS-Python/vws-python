@@ -41,3 +41,25 @@ class TestGetRecord:
             status_code=codes.OK,
             result_code=ResultCodes.SUCCESS,
         )
+
+        expected_keys = {
+            'result_code',
+            'transaction_id',
+            'target_record',
+            'status',
+        }
+
+        assert set(response.json().keys()) == expected_keys
+
+        expected_target_record_keys = {
+            'target_id',
+            'active_flag',
+            'name',
+            'width',
+            'tracking_rating',
+            'reco_rating',
+        }
+
+        target_record_keys = set(response.json()['target_record'].keys())
+
+        assert target_record_keys == expected_target_record_keys
