@@ -13,7 +13,7 @@ from requests_mock import POST
 
 from common.constants import ResultCodes
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import authorization_header, rfc_1123_date
+from vws._request_utils import target_api_request
 
 
 class Endpoint:
@@ -144,32 +144,14 @@ def add_target_to_vws(
     Returns:
         The response returned by the API.
     """
-    date = rfc_1123_date()
-    request_path = '/targets'
-
     content = bytes(json.dumps(data), encoding='utf-8')
 
-    authorization_string = authorization_header(
+    response = target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=POST,
         content=content,
-        content_type=content_type,
-        date=date,
-        request_path=request_path,
-    )
-
-    headers = {
-        "Authorization": authorization_string,
-        "Date": date,
-        'Content-Type': content_type,
-    }
-
-    response = requests.request(
-        method=POST,
-        url=urljoin('https://vws.vuforia.com/', request_path),
-        headers=headers,
-        data=content,
+        request_path='/targets',
     )
 
     return response
