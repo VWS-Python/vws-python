@@ -59,7 +59,11 @@ def png_large(png_rgb) -> io.BytesIO:
     Return a PNG file 2 MB in size.
     """
     png_size = len(png_rgb.getbuffer())
-    max_size = bitmath.MiB(2.20).bytes
+    # TODO: Document that this is different to the docs which say 2 MB
+    # Between 290, 295
+    max_size = 2359293
+    # int(bitmath.MiB(2.2499).bytes)
+    # import pdb; pdb.set_trace()
     filler_length = max_size - png_size
     filler_data = b'\x00' * int(filler_length)
     original_data = png_rgb.getvalue()
