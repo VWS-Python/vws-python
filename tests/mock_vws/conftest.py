@@ -3,7 +3,9 @@ Configuration, plugins and fixtures for `pytest`.
 """
 
 import base64
+import bitmath
 import io
+import sys
 import os
 import uuid
 # This is used in a type hint which linters not pick up on.
@@ -51,6 +53,30 @@ def png_rgb() -> io.BytesIO:
     return _image_file(file_format='PNG', color_space='RGB')
 
 
+@pytest.fixture()
+def png_large() -> io.BytesIO:
+    """
+    Return a PNG file 2 MB in size.
+    """
+    png = _image_file(file_format='PNG', color_space='RGB')
+    png_size = sys.getsizeof(png)
+    gibberish = b'a' * (bitmath.MiB(2).bytes - png_size - 1)
+    png.write(gibberish)
+    return png
+
+
+@pytest.fixture()
+def png_too_large() -> io.BytesIO:
+    """
+    Return a PNG file just over 2 MB in size.
+    """
+    png = _image_file(file_format='PNG', color_space='RGB')
+    png_size = sys.getsizeof(png)
+    gibberish = b'a' * (bitmath.MiB(2).bytes - png_size)
+    png.write(gibberish)
+    return png
+
+
 @pytest.fixture
 def png_greyscale() -> io.BytesIO:
     """
@@ -86,10 +112,31 @@ def tiff_rgb() -> io.BytesIO:
     return _image_file(file_format='TIFF', color_space='RGB')
 
 
-@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale'])
+@pytest.fixture(params=[
+    'png_rgb',
+    'jpeg_rgb',
+    'png_greyscale',
+    'png_large',
+])
 def image_file(request: SubRequest) -> io.BytesIO:
     """
-    Return an image file.
+    Return an image file which is expected to work on Vuforia.
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=[
+    'tiff_rgb',
+    'jpeg_cmyk',
+    'png_too_large',
+], ids=[
+    'Invalid format',
+    'Invalid color space',
+    'Too large',
+])
+def bad_image_file(request: SubRequest) -> io.BytesIO:
+    """
+    Return an image file which is not expected to work on Vuforia.
     """
     return request.getfixturevalue(request.param)
 
