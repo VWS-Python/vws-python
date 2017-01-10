@@ -332,16 +332,45 @@ class TestImage:
 
         assert_success(response=response)
 
-    def test_image_invalid(self,
-                           bad_image_file: io.BytesIO,
-                           vuforia_server_credentials:
-                           VuforiaServerCredentials,
-                           ) -> None:
+    # def test_bad_image(self,
+    #                    bad_image_file: io.BytesIO,
+    #                    vuforia_server_credentials:
+    #                    VuforiaServerCredentials,
+    #                    ) -> None:
+    #     """
+    #     A `BAD_REQUEST` response is returned if an image which is not a JPEG
+    #     or PNG file is given.
+    #     """
+    #     image_data = bad_image_file.read()
+    #     image_data_encoded = base64.b64encode(image_data).decode('ascii')
+    #
+    #     data = {
+    #         'name': 'example_name',
+    #         'width': 1,
+    #         'image': image_data_encoded,
+    #     }
+    #
+    #     response = add_target_to_vws(
+    #         vuforia_server_credentials=vuforia_server_credentials,
+    #         data=data,
+    #     )
+    #
+    #     assert_vws_failure(
+    #         response=response,
+    #         status_code=codes.UNPROCESSABLE_ENTITY,
+    #         result_code=ResultCodes.BAD_IMAGE,
+    #     )
+    #
+    def test_too_large(self,
+                       png_too_large: io.BytesIO,
+                       vuforia_server_credentials:
+                       VuforiaServerCredentials,
+                       ) -> None:
         """
         A `BAD_REQUEST` response is returned if an image which is not a JPEG
         or PNG file is given.
         """
-        image_data = bad_image_file.read()
+        image_data = png_too_large.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -358,7 +387,7 @@ class TestImage:
         assert_vws_failure(
             response=response,
             status_code=codes.UNPROCESSABLE_ENTITY,
-            result_code=ResultCodes.BAD_IMAGE,
+            result_code=ResultCodes.IMAGE_TOO_LARGE,
         )
 
 
