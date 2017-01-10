@@ -80,6 +80,16 @@ When this happens, create a new target database to use for testing.
 
 Set either `SKIP_MOCK` or `SKIP_REAL` to `1` to skip tests against the mock, or tests against the real implementation, for tests which run against both.
 
+## Running on Travis CI
+
+Tests are run on Travis CI.
+The configuration for this is in `.travis.yml`.
+Travis CI is set up with environment variables for connecting to Vuforia.
+
+All targets are deleted from the database beween each test.
+Therefore there may be conflicts if the test suite is run concurrently as Travis CI is configured to connect to one Vuforia database.
+As such, Travis CI is configured not to run multiple instances of the test suite concurrently.
+
 # Documentation
 
 To build the documentation, first install the dependencies:
@@ -93,6 +103,8 @@ Then use `make`:
 To open the built documentation:
 
     open docs/build/html/index.html
+
+The documentation is hosted by ReadTheDocs on <http://vws-python.readthedocs.io/>.
 
 # Mocking Vuforia
 
