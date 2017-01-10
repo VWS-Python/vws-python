@@ -59,7 +59,8 @@ def png_large(png_rgb) -> io.BytesIO:
     Return a PNG file 2 MB in size.
     """
     png_size = len(png_rgb.getbuffer())
-    filler_length = bitmath.Mib(2).bytes - png_size
+    max_size = bitmath.MiB(2.1)
+    filler_length = max_size - png_size
     filler_data = b'\x00' * int(filler_length)
     original_data = png_rgb.getvalue()
     long_data = original_data.replace(b'IEND', filler_data + b'IEND')
@@ -68,15 +69,12 @@ def png_large(png_rgb) -> io.BytesIO:
 
 
 @pytest.fixture()
-def png_too_large(png_rgb) -> io.BytesIO:
+def png_too_large(png_large) -> io.BytesIO:
     """
     Return a PNG file just over 2 MB in size.
     """
-    png_size = len(png_rgb.getbuffer())
-    filler_length = bitmath.Mib(2).bytes - png_size + 10000000
-    filler_data = b'\x00' * int(filler_length)
-    original_data = png_rgb.getvalue()
-    long_data = original_data.replace(b'IEND', filler_data + b'IEND')
+    original_data = png_large.getvalue()
+    long_data = original_data.replace(b'IEND', 'b\x00' + b'IEND')
     png = io.BytesIO(long_data)
     return png
 
