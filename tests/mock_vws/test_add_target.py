@@ -313,8 +313,10 @@ class TestImage:
                          ) -> None:
         """
         JPEG and PNG files in the RGB and greyscale color spaces are
-        allowed. The image must be under a threshold, documented as 2 MB but
-        actually slightly larger. See the `png_large` fixture for more details.
+        allowed. The image must be under a threshold.
+
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
         """
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -361,6 +363,18 @@ class TestImage:
             status_code=codes.UNPROCESSABLE_ENTITY,
             result_code=ResultCodes.BAD_IMAGE,
         )
+
+    def test_too_large(self,
+                       vuforia_server_credentials: VuforiaServerCredentials,
+                       png_large: io.BytesIO,
+                       ) -> None:
+        """
+        An `ImageTooLarge` result is returned if the image is above a certain
+        threshold.
+
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
+        """
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
