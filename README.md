@@ -104,6 +104,8 @@ To open the built documentation:
 
     open docs/build/html/index.html
 
+The documentation is hosted by ReadTheDocs on <http://vws-python.readthedocs.io/>.
+
 # Mocking Vuforia
 
 Requests made to Vuforia can be mocked.
