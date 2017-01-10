@@ -60,7 +60,8 @@ def png_greyscale() -> io.BytesIO:
 
 
 @pytest.fixture()
-def png_large(png_rgb: io.BytesIO) -> io.BytesIO:
+def png_large(png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
+              ) -> io.BytesIO:
     """
     Return a PNG file of the maximum allowed file size.
 
