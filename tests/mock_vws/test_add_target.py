@@ -333,7 +333,7 @@ class TestImage:
         assert_success(response=response)
 
     def test_bad_image(self,
-                       bad_image: io.BytesIO,
+                       bad_image_file: io.BytesIO,
                        vuforia_server_credentials: VuforiaServerCredentials,
                        ) -> None:
         """
@@ -341,7 +341,7 @@ class TestImage:
         or PNG file is given, or if the given image is not in the greyscale or
         RGB color space.
         """
-        image_data = bad_image.read()
+        image_data = bad_image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
