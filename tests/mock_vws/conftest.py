@@ -89,7 +89,17 @@ def tiff_rgb() -> io.BytesIO:
 @pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale'])
 def image_file(request: SubRequest) -> io.BytesIO:
     """
-    Return an image file.
+    Return an image file which is expected to work on Vuforia.
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=['tiff_rgb', 'jpeg_cmyk'])
+def bad_image_file(request: SubRequest) -> io.BytesIO:
+    """
+    Return an image file which is expected to work on Vuforia which is
+    expected to cause a `BadImage` result when an attempt is made to add it to
+    the target database.
     """
     return request.getfixturevalue(request.param)
 
