@@ -332,44 +332,16 @@ class TestImage:
 
         assert_success(response=response)
 
-    def test_invalid_type(self,
-                          tiff_rgb: io.BytesIO,
-                          vuforia_server_credentials: VuforiaServerCredentials,
-                          ) -> None:
+    def test_bad_image(self,
+                       bad_image: io.BytesIO,
+                       vuforia_server_credentials: VuforiaServerCredentials,
+                       ) -> None:
         """
         A `BAD_REQUEST` response is returned if an image which is not a JPEG
-        or PNG file is given.
+        or PNG file is given, or if the given image is not in the greyscale or
+        RGB color space.
         """
-        image_data = tiff_rgb.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
-        data = {
-            'name': 'example_name',
-            'width': 1,
-            'image': image_data_encoded,
-        }
-
-        response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.UNPROCESSABLE_ENTITY,
-            result_code=ResultCodes.BAD_IMAGE,
-        )
-
-    def test_wrong_color_space(self,
-                               jpeg_cmyk: io.BytesIO,
-                               vuforia_server_credentials:
-                               VuforiaServerCredentials,
-                               ) -> None:
-        """
-        A `BAD_REQUEST` response is returned if an image which is not in the
-        greyscale or RGB color space.
-        """
-        image_data = jpeg_cmyk.read()
+        image_data = bad_image.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
