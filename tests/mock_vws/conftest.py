@@ -54,26 +54,30 @@ def png_rgb() -> io.BytesIO:
 
 
 @pytest.fixture()
-def png_large() -> io.BytesIO:
+def png_large(png_rgb) -> io.BytesIO:
     """
     Return a PNG file 2 MB in size.
     """
-    png = _image_file(file_format='PNG', color_space='RGB')
-    png_size = sys.getsizeof(png)
-    gibberish = b'a' * (bitmath.MiB(2).bytes - png_size - 1)
-    png.write(gibberish)
+    png_size = len(png_rgb.getbuffer())
+    filler_length = bitmath.Mib(2).bytes - png_size
+    filler_data = b'\x00' * int(filler_length)
+    original_data = png_rgb.getvalue()
+    long_data = original_data.replace(b'IEND', filler_data + b'IEND')
+    png = io.BytesIO(long_data)
     return png
 
 
 @pytest.fixture()
-def png_too_large() -> io.BytesIO:
+def png_too_large(png_rgb) -> io.BytesIO:
     """
     Return a PNG file just over 2 MB in size.
     """
-    png = _image_file(file_format='PNG', color_space='RGB')
-    png_size = sys.getsizeof(png)
-    gibberish = b'a' * (bitmath.MiB(2).bytes - png_size)
-    png.write(gibberish)
+    png_size = len(png_rgb.getbuffer())
+    filler_length = bitmath.Mib(2).bytes - png_size + 100000
+    filler_data = b'\x00' * int(filler_length)
+    original_data = png_rgb.getvalue()
+    long_data = original_data.replace(b'IEND', filler_data + b'IEND')
+    png = io.BytesIO(long_data)
     return png
 
 
@@ -113,9 +117,9 @@ def tiff_rgb() -> io.BytesIO:
 
 
 @pytest.fixture(params=[
-    'png_rgb',
-    'jpeg_rgb',
-    'png_greyscale',
+    # 'png_rgb',
+    # 'jpeg_rgb',
+    # 'png_greyscale',
     'png_large',
 ])
 def image_file(request: SubRequest) -> io.BytesIO:
@@ -126,12 +130,12 @@ def image_file(request: SubRequest) -> io.BytesIO:
 
 
 @pytest.fixture(params=[
-    'tiff_rgb',
-    'jpeg_cmyk',
+    # 'tiff_rgb',
+    # 'jpeg_cmyk',
     'png_too_large',
 ], ids=[
-    'Invalid format',
-    'Invalid color space',
+    # 'Invalid format',
+    # 'Invalid color space',
     'Too large',
 ])
 def bad_image_file(request: SubRequest) -> io.BytesIO:
