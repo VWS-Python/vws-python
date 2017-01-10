@@ -312,8 +312,8 @@ class TestImage:
                          image_file: io.BytesIO,
                          ) -> None:
         """
-        JPEG and PNG files in the RGB and greyscale color spaces are
-        allowed.
+        JPEG and PNG files in the RGB and greyscale color spaces under 2 MB
+        are allowed.
         """
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
