@@ -59,12 +59,13 @@ def png_large(png_rgb) -> io.BytesIO:
     Return a PNG file 2 MB in size.
     """
     png_size = len(png_rgb.getbuffer())
-    max_size = bitmath.MiB(2.1)
+    max_size = bitmath.MiB(2).bytes
     filler_length = max_size - png_size
     filler_data = b'\x00' * int(filler_length)
     original_data = png_rgb.getvalue()
-    long_data = original_data.replace(b'IEND', filler_data + b'IEND')
-    png = io.BytesIO(long_data)
+    longer_data = original_data.replace(b'IEND', filler_data + b'IEND')
+    png = io.BytesIO(longer_data)
+    png.seek(0)
     return png
 
 
@@ -74,8 +75,9 @@ def png_too_large(png_large) -> io.BytesIO:
     Return a PNG file just over 2 MB in size.
     """
     original_data = png_large.getvalue()
-    long_data = original_data.replace(b'IEND', 'b\x00' + b'IEND')
-    png = io.BytesIO(long_data)
+    longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+    png = io.BytesIO(longer_data)
+    png.seek(0)
     return png
 
 
