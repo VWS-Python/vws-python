@@ -375,6 +375,29 @@ class TestImage:
         This threshold is documented as being 2 MB but it is actually
         slightly larger. See the `png_large` fixture for more details.
         """
+        original_data = png_large.getvalue()
+        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+        too_large_file = io.BytesIO(longer_data)
+
+        image_data = too_large_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.IMAGE_TOO_LARGE,
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
