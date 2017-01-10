@@ -17,6 +17,7 @@ jpeg
 json
 kwargs
 linters
+mb
 noqa
 plugins
 png
