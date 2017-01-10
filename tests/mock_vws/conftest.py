@@ -60,16 +60,12 @@ def png_large(png_rgb) -> io.BytesIO:
     """
     png_size = len(png_rgb.getbuffer())
     # TODO: Document that this is different to the docs which say 2 MB
-    # Between 290, 295
     max_size = 2359293
-    # int(bitmath.MiB(2.2499).bytes)
-    # import pdb; pdb.set_trace()
     filler_length = max_size - png_size
     filler_data = b'\x00' * int(filler_length)
     original_data = png_rgb.getvalue()
     longer_data = original_data.replace(b'IEND', filler_data + b'IEND')
     png = io.BytesIO(longer_data)
-    png.seek(0)
     return png
 
 
@@ -81,7 +77,6 @@ def png_too_large(png_large) -> io.BytesIO:
     original_data = png_large.getvalue()
     longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
     png = io.BytesIO(longer_data)
-    png.seek(0)
     return png
 
 
