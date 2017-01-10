@@ -73,7 +73,7 @@ def png_too_large(png_rgb) -> io.BytesIO:
     Return a PNG file just over 2 MB in size.
     """
     png_size = len(png_rgb.getbuffer())
-    filler_length = bitmath.Mib(2).bytes - png_size + 100000
+    filler_length = bitmath.Mib(2).bytes - png_size + 10000000
     filler_data = b'\x00' * int(filler_length)
     original_data = png_rgb.getvalue()
     long_data = original_data.replace(b'IEND', filler_data + b'IEND')
