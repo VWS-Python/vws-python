@@ -459,9 +459,26 @@ class TestImage:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestNotMandatoryFields:
+class TestActiveFlag:
     """
-    Tests for passing data which is not mandatory to the endpoint.
+    XXX
+    """
+
+    def test_valid(self) -> None:
+        """
+        XXX
+        """
+
+    def test_invalid(self) -> None:
+        """
+        XXX
+        """
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestUnexpectedData:
+    """
+    Tests for passing data which is not mandatory or allowed to the endpoint.
     """
 
     def test_invalid_extra_data(self,
