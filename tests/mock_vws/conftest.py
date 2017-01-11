@@ -2,6 +2,8 @@
 Configuration, plugins and fixtures for `pytest`.
 """
 
+import base64
+import io
 import os
 import uuid
 # This is used in a type hint which linters not pick up on.
@@ -11,15 +13,116 @@ from typing import Generator
 import pytest
 import requests
 from _pytest.fixtures import SubRequest
+from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS
-from tests.mock_vws.utils import Endpoint
+from tests.mock_vws.utils import Endpoint, add_target_to_vws
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
+
+
+def _image_file(file_format: str, color_space: str) -> io.BytesIO:
+    """
+    Return an image file in the given format and color space.
+
+    Args:
+        file_format: See
+            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
+        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
+    """
+    image_buffer = io.BytesIO()
+    width = 1
+    height = 1
+    image = Image.new(color_space, (width, height))
+    image.save(image_buffer, file_format)
+    image_buffer.seek(0)
+    return image_buffer
+
+
+@pytest.fixture
+def png_rgb() -> io.BytesIO:
+    """
+    Return a PNG file in the RGB color space.
+    """
+    return _image_file(file_format='PNG', color_space='RGB')
+
+
+@pytest.fixture
+def png_greyscale() -> io.BytesIO:
+    """
+    Return a PNG file in the greyscale color space.
+    """
+    return _image_file(file_format='PNG', color_space='L')
+
+
+@pytest.fixture()
+def png_large(png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
+              ) -> io.BytesIO:
+    """
+    Return a PNG file of the maximum allowed file size.
+
+    https://library.vuforia.com/articles/Training/Cloud-Recognition-Guide
+    describes that the maximum allowed file size of an image is 2 MB.
+    However, tests using this fixture demonstrate that the maximum allowed
+    size is actually slightly greater than that.
+    """
+    png_size = len(png_rgb.getbuffer())
+    max_size = 2359293
+    filler_length = max_size - png_size
+    filler_data = b'\x00' * int(filler_length)
+    original_data = png_rgb.getvalue()
+    longer_data = original_data.replace(b'IEND', filler_data + b'IEND')
+    png = io.BytesIO(longer_data)
+    return png
+
+
+@pytest.fixture
+def jpeg_cmyk() -> io.BytesIO:
+    """
+    Return a PNG file in the CMYK color space.
+    """
+    return _image_file(file_format='JPEG', color_space='CMYK')
+
+
+@pytest.fixture
+def jpeg_rgb() -> io.BytesIO:
+    """
+    Return a JPEG file in the RGB color space.
+    """
+    return _image_file(file_format='JPEG', color_space='RGB')
+
+
+@pytest.fixture
+def tiff_rgb() -> io.BytesIO:
+    """
+    Return a TIFF file in the RGB color space.
+
+    This is given as an option which is not supported by Vuforia as Vuforia
+    supports only JPEG and PNG files.
+    """
+    return _image_file(file_format='TIFF', color_space='RGB')
+
+
+@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale', 'png_large'])
+def image_file(request: SubRequest) -> io.BytesIO:
+    """
+    Return an image file which is expected to work on Vuforia.
+    """
+    return request.getfixturevalue(request.param)
+
+
+@pytest.fixture(params=['tiff_rgb', 'jpeg_cmyk'])
+def bad_image_file(request: SubRequest) -> io.BytesIO:
+    """
+    Return an image file which is expected to work on Vuforia which is
+    expected to cause a `BadImage` result when an attempt is made to add it to
+    the target database.
+    """
+    return request.getfixturevalue(request.param)
 
 
 @retry(
@@ -118,6 +221,32 @@ def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
             vuforia_server_credentials=vuforia_server_credentials,
             target=target,
         )
+
+
+@pytest.fixture()
+def target_id(
+    png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
+    vuforia_server_credentials: VuforiaServerCredentials,
+) -> None:
+    """
+    The target ID of a target in the database.
+    """
+    image_data = png_rgb.read()
+    image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+    data = {
+        'name': 'example',
+        'width': 1,
+        'image': image_data_encoded,
+    }
+
+    response = add_target_to_vws(
+        vuforia_server_credentials=vuforia_server_credentials,
+        data=data,
+        content_type='application/json',
+    )
+
+    return response.json()['target_id']
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
