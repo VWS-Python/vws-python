@@ -2,6 +2,7 @@ api
 args
 bool
 cmyk
+decodable
 foo
 github
 greyscale
