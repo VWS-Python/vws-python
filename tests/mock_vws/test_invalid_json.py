@@ -21,11 +21,11 @@ class TestInvalidJSON:
     Tests for giving invalid JSON to endpoints.
     """
 
-    def test_does_not_take_data(self,
-                                vuforia_server_credentials:
-                                VuforiaServerCredentials,
-                                endpoint_no_data: Endpoint,
-                                ) -> None:
+    def test_does_not_take_data(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        endpoint_no_data: Endpoint,
+    ) -> None:
         """
         Giving invalid JSON to endpoints which do not take any JSON data
         returns error responses.
@@ -124,11 +124,11 @@ class TestInvalidJSON:
             assert response.text == ''
             assert 'Content-Type' not in response.headers
 
-    def test_takes_data(self,
-                        vuforia_server_credentials:
-                        VuforiaServerCredentials,
-                        endpoint_which_takes_data: Endpoint,
-                        ) -> None:
+    def test_takes_data(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        endpoint_which_takes_data: Endpoint,
+    ) -> None:
         """
         Giving invalid JSON to endpoints which do take JSON data returns error
         responses.

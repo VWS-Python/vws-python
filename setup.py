@@ -22,12 +22,12 @@ setup(
     description="Interact with the Vuforia Web Services (VWS) API.",
     long_description=long_description,
     license='MIT',
-    packages=find_packages(where='src', exclude='common'),
+    packages=find_packages(
+        where='src', exclude='common'
+    ),
     package_dir={'': 'src'},
     install_requires=install_requires,
-    extras_require={
-        "dev": dev_requires,
-    },
+    extras_require={"dev": dev_requires, },
     classifiers=[
         'Operating System :: POSIX',
         'Environment :: Web Environment',

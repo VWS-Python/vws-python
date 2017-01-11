@@ -86,10 +86,16 @@ class TestAuthorizationHeader:
         date=text(),
         request_path=text(),
     )
-    def test_authorization_header(self, access_key: bytes, secret_key: bytes,
-                                  method: str, content: bytes,
-                                  content_type: str, date: str,
-                                  request_path: str) -> None:
+    def test_authorization_header(
+        self,
+        access_key: bytes,
+        secret_key: bytes,
+        method: str,
+        content: bytes,
+        content_type: str,
+        date: str,
+        request_path: str
+    ) -> None:
         """
         This is mostly a reimplementation of the header creation. The real
         test is that the header works. This exists to make refactoring easier
@@ -111,9 +117,7 @@ class TestAuthorizationHeader:
 
         signature = compute_hmac_base64(key=secret_key, data=string)
 
-        expected = (
-            b'VWS ' + access_key + b':' + signature
-        )
+        expected = (b'VWS ' + access_key + b':' + signature)
 
         result = authorization_header(
             access_key=access_key,
@@ -145,13 +149,13 @@ class TestAuthorizationHeader:
 
 
 class TestTargetAPIRequest:
-
     """Tests for `target_api_request`."""
 
     @MockVWS()
-    def test_success(self,
-                     vuforia_server_credentials: VuforiaServerCredentials,
-                     ) -> None:
+    def test_success(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(

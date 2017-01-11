@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
 """
 VWS Python documentation build configuration file, created by
 sphinx-quickstart on Tue Dec 20 15:36:57 2016.
@@ -77,7 +76,6 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -97,12 +95,10 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'VWSPythondoc'
-
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -128,20 +124,19 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'VWSPython.tex', 'VWS Python Documentation',
-     'Adam Dangoor', 'manual'),
+    (
+        master_doc, 'VWSPython.tex', 'VWS Python Documentation',
+        'Adam Dangoor', 'manual'
+    ),
 ]
-
 
 # -- Options for manual page output ---------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'vwspython', 'VWS Python Documentation',
-     [author], 1)
+    (master_doc, 'vwspython', 'VWS Python Documentation', [author], 1)
 ]
-
 
 # -- Options for Texinfo output -------------------------------------------
 
@@ -149,7 +144,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'VWSPython', 'VWS Python Documentation',
-     author, 'VWSPython', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc, 'VWSPython', 'VWS Python Documentation', author,
+        'VWSPython', 'One line description of project.', 'Miscellaneous'
+    ),
 ]
