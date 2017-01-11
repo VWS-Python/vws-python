@@ -35,7 +35,7 @@ from vws._request_utils import authorization_header
 @wrapt.decorator
 def validate_not_invalid_json(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -163,7 +163,7 @@ def validate_authorization(
     )
 
     if request.headers['Authorization'] != expected_authorization_header:
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -176,7 +176,7 @@ def validate_authorization(
 @wrapt.decorator
 def validate_date(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -203,7 +203,7 @@ def validate_date(
             '%a, %d %b %Y %H:%M:%S GMT',
         )
     except (KeyError, ValueError):
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -214,7 +214,7 @@ def validate_date(
     maximum_time_difference = timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:
-        context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
 
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -228,7 +228,7 @@ def validate_date(
 @wrapt.decorator
 def validate_width(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -273,7 +273,7 @@ def validate_width(
 @wrapt.decorator
 def validate_name(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -318,7 +318,7 @@ def validate_name(
 @wrapt.decorator
 def validate_image_format(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -364,7 +364,7 @@ def validate_image_format(
 @wrapt.decorator
 def validate_image_color_space(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -410,7 +410,7 @@ def validate_image_color_space(
 @wrapt.decorator
 def validate_image_size(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -456,7 +456,7 @@ def validate_image_size(
 @wrapt.decorator
 def validate_image_is_image(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -503,7 +503,7 @@ def validate_image_is_image(
 @wrapt.decorator
 def validate_image_encoding(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -896,7 +896,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets', methods=[GET])
     def target_list(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
     ) -> str:
         """
@@ -919,7 +919,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[GET])
     def get_target(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
         target_id: str,
     ) -> str:
@@ -948,9 +948,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/duplicates/.+', methods=[GET])
     def get_duplicates(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # noqa: E501 pylint: disable=unused-argument
+        target_id: str,  # pylint: disable=unused-argument
     ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
@@ -962,9 +962,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[PUT])
     def update_target(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # noqa: E501 pylint: disable=unused-argument
+        target_id: str,  # pylint: disable=unused-argument
     ) -> str:
         """
         Update a target.
@@ -976,9 +976,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/summary/.+', methods=[GET])
     def target_summary(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # noqa: E501 pylint: disable=unused-argument
+        target_id: str,  # pylint: disable=unused-argument
     ) -> str:
         """
         Get a summary report for a target.
