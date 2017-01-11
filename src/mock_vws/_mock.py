@@ -410,7 +410,7 @@ def validate_image_color_space(
 @wrapt.decorator
 def validate_image_size(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -456,7 +456,7 @@ def validate_image_size(
 @wrapt.decorator
 def validate_image_is_image(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -503,7 +503,7 @@ def validate_image_is_image(
 @wrapt.decorator
 def validate_image_encoding(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -736,6 +736,7 @@ def route(
             validators = [
                 parse_target_id,
                 validate_authorization,
+                validate_active_flag,
                 validate_image_size,
                 validate_image_color_space,
                 validate_image_format,
