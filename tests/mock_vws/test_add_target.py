@@ -403,7 +403,6 @@ class TestImage:
     def test_not_base64_encoded(self,
                                 vuforia_server_credentials:
                                 VuforiaServerCredentials,
-                                png_large: io.BytesIO,
                                 ) -> None:
         """
         If the given image is not decodable as base64 data then a `Fail`
