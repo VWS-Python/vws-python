@@ -60,15 +60,15 @@ class MockVWS(ContextDecorator):
         """
         Args:
             real_http: Whether or not to forward requests to the real server if
-            they are not handled by the mock.
-            See
-            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
+                they are not handled by the mock.
+                See
+                http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
 
         Attributes:
             real_http (bool): Whether or not to forward requests to the real
-            server if they are not handled by the mock.
-            See
-            http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
+                server if they are not handled by the mock.
+                See
+                http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             mock: None or an `requests_mock` object used for mocking Vuforia.
         """
         super().__init__()
