@@ -300,12 +300,12 @@ def validate_name(wrapped: Callable[..., str],
 
 
 @wrapt.decorator
-def validate_image(wrapped: Callable[..., str],
-                   instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
-                   args: Tuple[_RequestObjectProxy, _Context],
-                   kwargs: Dict) -> str:
+def validate_image_format(wrapped: Callable[..., str],
+                          instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                          args: Tuple[_RequestObjectProxy, _Context],
+                          kwargs: Dict) -> str:
     """
-    Validate the image argument given to a VWS endpoint.
+    Validate the format of the image given to a VWS endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -316,7 +316,7 @@ def validate_image(wrapped: Callable[..., str],
     Returns:
         The result of calling the endpoint.
         An `UNPROCESSABLE_ENTITY` response if the image is given and is not
-        either a PNG or a JPEG, in either the RGB or greyscale color space.
+        either a PNG or a JPEG.
     """
     request, context = args
 
@@ -331,18 +331,104 @@ def validate_image(wrapped: Callable[..., str],
     decoded = base64.b64decode(image)
     image_file = io.BytesIO(decoded)
     pil_image = Image.open(image_file)
-    image_valid_file_type = pil_image.format in ('PNG', 'JPEG')
-    image_valid_color_space = pil_image.mode in ('L', 'RGB')
 
-    if not all([image_valid_file_type, image_valid_color_space]):
-        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.BAD_IMAGE.value,
-        }
-        return json.dumps(body)
+    if pil_image.format in ('PNG', 'JPEG'):
+        return wrapped(*args, **kwargs)
 
-    return wrapped(*args, **kwargs)
+    context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.BAD_IMAGE.value,
+    }
+    return json.dumps(body)
+
+
+@wrapt.decorator
+def validate_image_color_space(wrapped: Callable[..., str],
+                               instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                               args: Tuple[_RequestObjectProxy, _Context],
+                               kwargs: Dict) -> str:
+    """
+    Validate the color space of the image given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
+        in either the RGB or greyscale color space.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
+    decoded = base64.b64decode(image)
+    image_file = io.BytesIO(decoded)
+    pil_image = Image.open(image_file)
+
+    if pil_image.mode in ('L', 'RGB'):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.BAD_IMAGE.value,
+    }
+    return json.dumps(body)
+
+
+@wrapt.decorator
+def validate_image_size(wrapped: Callable[..., str],
+                        instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                        args: Tuple[_RequestObjectProxy, _Context],
+                        kwargs: Dict) -> str:
+    """
+    Validate the file size of the image given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
+        under a certain file size threshold.
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
+    decoded = base64.b64decode(image)
+
+    if len(decoded) <= 2359293:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.IMAGE_TOO_LARGE.value,
+    }
+    return json.dumps(body)
 
 
 def validate_keys(mandatory_keys: Set[str],
@@ -525,7 +611,9 @@ def route(
             validators = [
                 parse_target_id,
                 validate_authorization,
-                validate_image,
+                validate_image_size,
+                validate_image_color_space,
+                validate_image_format,
                 validate_name,
                 validate_width,
                 key_validator,
