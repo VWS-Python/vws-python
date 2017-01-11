@@ -660,6 +660,9 @@ def route(
         path_pattern: The end part of a URL pattern. E.g. `/targets` or
             `/targets/.+`.
         methods: HTTP methods that map to the route function.
+        mandatory_keys: Keys required by the endpoint.
+        optional_keys: Keys which are not required by the endpoint but which
+            are allowed.
     """
     def decorator(method: Callable[..., str]) -> Callable[
             ..., str]:
