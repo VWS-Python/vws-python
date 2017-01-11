@@ -508,16 +508,16 @@ class TestActiveFlag:
 
         assert_success(response=response)
 
+    @pytest.mark.parametrize('active_flag', ['string', None])
     def test_invalid(
         self,
+        active_flag: Any,
         png_rgb: io.BytesIO,
         vuforia_server_credentials: VuforiaServerCredentials
     ) -> None:
         """
         Non-boolean values are not valid active flags.
         """
-        active_flag = 'not a boolean'
-
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         content_type = 'application/json'
