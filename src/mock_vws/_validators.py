@@ -10,13 +10,7 @@ import numbers
 import uuid
 from datetime import datetime, timedelta
 from json.decoder import JSONDecodeError
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Set,
-    Tuple,
-)
+from typing import Any, Callable, Dict, Set, Tuple
 
 import wrapt
 from PIL import Image

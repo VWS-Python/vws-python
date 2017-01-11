@@ -21,19 +21,20 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from common.constants import ResultCodes
+
 from ._validators import (
+    validate_auth_header_exists,
     validate_authorization,
-    validate_image_size,
+    validate_date,
     validate_image_color_space,
+    validate_image_encoding,
     validate_image_format,
     validate_image_is_image,
-    validate_image_encoding,
-    validate_name,
-    validate_width,
+    validate_image_size,
     validate_keys,
-    validate_date,
+    validate_name,
     validate_not_invalid_json,
-    validate_auth_header_exists,
+    validate_width,
 )
 
 
