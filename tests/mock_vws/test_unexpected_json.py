@@ -20,11 +20,11 @@ class TestUnexpectedJSON:
     Tests for giving JSON to endpoints which do not expect it.
     """
 
-    def test_does_not_take_data(self,
-                                vuforia_server_credentials:
-                                VuforiaServerCredentials,
-                                endpoint_no_data: Endpoint,
-                                ) -> None:
+    def test_does_not_take_data(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        endpoint_no_data: Endpoint,
+    ) -> None:
         """
         Giving JSON to endpoints which do not take any JSON data returns
         error responses.

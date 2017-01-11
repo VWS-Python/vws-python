@@ -18,10 +18,11 @@ class TestDelete:
     Tests for deleting targets.
     """
 
-    def test_no_wait(self,
-                     target_id: str,
-                     vuforia_server_credentials: VuforiaServerCredentials,
-                     ) -> None:
+    def test_no_wait(
+        self,
+        target_id: str,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """
         When attempting to delete a target immediately after creating it, a
         `FORBIDDEN` response is returned.

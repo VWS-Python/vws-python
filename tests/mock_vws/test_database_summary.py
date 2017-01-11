@@ -18,9 +18,10 @@ class TestSummary:
     Tests for the mock of the database summary endpoint at `GET /summary`.
     """
 
-    def test_success(self,
-                     vuforia_server_credentials: VuforiaServerCredentials,
-                     ) -> None:
+    def test_success(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """It is possible to get a success response."""
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,

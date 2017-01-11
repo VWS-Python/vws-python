@@ -60,8 +60,9 @@ def png_greyscale() -> io.BytesIO:
 
 
 @pytest.fixture()
-def png_large(png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
-              ) -> io.BytesIO:
+def png_large(
+    png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
+) -> io.BytesIO:
     """
     Return a PNG file of the maximum allowed file size.
 
@@ -129,8 +130,9 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     stop_max_delay=2 * 60 * 1000,
     wait_fixed=3 * 1000,
 )
-def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
-                   target: str) -> None:
+def _delete_target(
+    vuforia_server_credentials: VuforiaServerCredentials, target: str
+) -> None:
     """
     Delete a given target.
 
@@ -182,8 +184,9 @@ def _delete_target(vuforia_server_credentials: VuforiaServerCredentials,
     assert result_code in acceptable_results, error_message
 
 
-def _delete_all_targets(vuforia_server_credentials: VuforiaServerCredentials,
-                        ) -> None:
+def _delete_all_targets(
+    vuforia_server_credentials: VuforiaServerCredentials,
+) -> None:
     """
     Delete all targets.
 
@@ -250,9 +253,10 @@ def target_id(
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-def verify_mock_vuforia(request: SubRequest,
-                        vuforia_server_credentials: VuforiaServerCredentials,
-                        ) -> Generator:
+def verify_mock_vuforia(
+    request: SubRequest,
+    vuforia_server_credentials: VuforiaServerCredentials,
+) -> Generator:
     """
     Using this fixture in a test will make it run twice. Once with the real
     Vuforia, and once with the mock.
@@ -294,7 +298,9 @@ def add_target() -> Endpoint:
         successful_headers_status_code=codes.BAD_REQUEST,
         successful_headers_result_code=ResultCodes.FAIL,
         content_type='application/json',
-        content=bytes(str(data), encoding='utf-8'),
+        content=bytes(
+            str(data), encoding='utf-8'
+        ),
     )
 
 
@@ -406,17 +412,21 @@ def update_target() -> Endpoint:
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type='application/json',
-        content=bytes(str(data), encoding='utf-8'),
+        content=bytes(
+            str(data), encoding='utf-8'
+        ),
     )
 
 
-@pytest.fixture(params=[
-    'delete_target',
-    'get_target',
-    'get_duplicates',
-    'target_summary',
-    'update_target',
-])
+@pytest.fixture(
+    params=[
+        'delete_target',
+        'get_target',
+        'get_duplicates',
+        'target_summary',
+        'update_target',
+    ]
+)
 def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
@@ -424,14 +434,16 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     return request.getfixturevalue(request.param)
 
 
-@pytest.fixture(params=[
-    'database_summary',
-    'delete_target',
-    'get_duplicates',
-    'get_target',
-    'target_list',
-    'target_summary',
-])
+@pytest.fixture(
+    params=[
+        'database_summary',
+        'delete_target',
+        'get_duplicates',
+        'get_target',
+        'target_list',
+        'target_summary',
+    ]
+)
 def endpoint_no_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which does not take any JSON data.
@@ -450,16 +462,18 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     return request.getfixturevalue(request.param)
 
 
-@pytest.fixture(params=[
-    'add_target',
-    'database_summary',
-    'delete_target',
-    'get_duplicates',
-    'get_target',
-    'target_list',
-    'target_summary',
-    'update_target',
-])
+@pytest.fixture(
+    params=[
+        'add_target',
+        'database_summary',
+        'delete_target',
+        'get_duplicates',
+        'get_target',
+        'target_list',
+        'target_summary',
+        'update_target',
+    ]
+)
 def endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint.

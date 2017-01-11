@@ -18,9 +18,10 @@ class TestTargetList:
     Tests for the mock of the database summary endpoint at `/summary`.
     """
 
-    def test_success(self,
-                     vuforia_server_credentials: VuforiaServerCredentials,
-                     ) -> None:
+    def test_success(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """It is possible to get a success response."""
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
@@ -38,11 +39,11 @@ class TestTargetList:
         assert response.json().keys() == expected_keys
         assert response.json()['results'] == []
 
-    def test_includes_targets(self,
-                              vuforia_server_credentials:
-                              VuforiaServerCredentials,
-                              target_id: str,
-                              ) -> None:
+    def test_includes_targets(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
+    ) -> None:
         """
         Targets in the database are returned in the list.
         """

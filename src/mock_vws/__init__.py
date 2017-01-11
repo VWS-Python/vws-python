@@ -14,8 +14,7 @@ from requests_mock.mocker import Mocker
 
 from ._mock import MockVuforiaTargetAPI
 
-
-_MockVWSType = TypeVar('_MockVWSType', bound='MockVWS')  # noqa: E501 pylint: disable=invalid-name
+_MOCK_VWS_TYPE = TypeVar('_MOCK_VWS_TYPE', bound='MockVWS')
 
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
@@ -75,7 +74,7 @@ class MockVWS(ContextDecorator):
         self.real_http = real_http
         self.mock = None  # type: Optional[Mocker]
 
-    def __enter__(self: _MockVWSType) -> _MockVWSType:
+    def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """
         Start an instance of a Vuforia mock with access keys set from
         environment variables.

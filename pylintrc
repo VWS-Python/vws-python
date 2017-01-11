@@ -76,8 +76,11 @@ disable=line-too-long,
         invalid-sequence-index,
         # Let isort deal with sorting
         ungrouped-imports,
+        # We don't need everything to be documented because of mypy
         missing-type-doc,
         missing-returns-doc,
+        # Let YAPF deal with this
+        bad-continuation,
 
 [REPORTS]
 

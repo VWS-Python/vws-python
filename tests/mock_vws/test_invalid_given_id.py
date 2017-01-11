@@ -19,10 +19,11 @@ class TestInvalidGivenID:
     be given.
     """
 
-    def test_not_real_id(self,
-                         vuforia_server_credentials: VuforiaServerCredentials,
-                         endpoint_which_takes_target_id: Endpoint,  # noqa: E501 pylint: disable=redefined-outer-name
-                         ) -> None:
+    def test_not_real_id(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        endpoint_which_takes_target_id: Endpoint,  # noqa: E501 pylint: disable=redefined-outer-name
+    ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.

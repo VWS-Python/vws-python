@@ -82,11 +82,11 @@ def authorization_header(  # pylint: disable=too-many-arguments
 
 
 def target_api_request(
-        access_key: bytes,
-        secret_key: bytes,
-        method: str,
-        content: bytes,
-        request_path: str
+    access_key: bytes,
+    secret_key: bytes,
+    method: str,
+    content: bytes,
+    request_path: str
 ) -> requests.Response:
     """
     Make a request to the Vuforia Target API.
