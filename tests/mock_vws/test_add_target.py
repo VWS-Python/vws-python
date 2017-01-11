@@ -3,6 +3,7 @@ Tests for the mock of the add target endpoint.
 """
 
 import base64
+import binascii
 import io
 from string import hexdigits
 from typing import Any
@@ -397,6 +398,37 @@ class TestImage:
             response=response,
             status_code=codes.UNPROCESSABLE_ENTITY,
             result_code=ResultCodes.IMAGE_TOO_LARGE,
+        )
+
+    def test_not_base64_encoded(self,
+                                vuforia_server_credentials:
+                                VuforiaServerCredentials,
+                                png_large: io.BytesIO,
+                                ) -> None:
+        """
+        If the given image is not decodable as base64 data then a `Fail`
+        result is returned.
+        """
+        not_base64_encoded = b'a'
+
+        with pytest.raises(binascii.Error):
+            base64.b64decode(not_base64_encoded)
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': str(not_base64_encoded),
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
         )
 
 
