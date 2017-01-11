@@ -464,6 +464,7 @@ class TestActiveFlag:
     XXX
     """
 
+    @pytest.mark.parametrize('active_flag', [True, False])
     def test_valid(self) -> None:
         """
         XXX
@@ -473,6 +474,7 @@ class TestActiveFlag:
         """
         XXX
         """
+        active_flag = 'not a boolean'
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
