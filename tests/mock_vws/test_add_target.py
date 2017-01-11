@@ -476,7 +476,7 @@ class TestImage:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestActiveFlag:
     """
-    XXX
+    Tests for the active flag parameter.
     """
 
     @pytest.mark.parametrize('active_flag', [True, False])
@@ -514,7 +514,7 @@ class TestActiveFlag:
         vuforia_server_credentials: VuforiaServerCredentials
     ) -> None:
         """
-        XXX
+        Non-boolean values are not valid active flags.
         """
         active_flag = 'not a boolean'
 
@@ -533,6 +533,12 @@ class TestActiveFlag:
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
             content_type=content_type,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
         )
 
 
