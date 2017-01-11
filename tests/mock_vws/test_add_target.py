@@ -480,16 +480,60 @@ class TestActiveFlag:
     """
 
     @pytest.mark.parametrize('active_flag', [True, False])
-    def test_valid(self) -> None:
+    def test_valid(
+        self,
+        active_flag: bool,
+        png_rgb: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
-        XXX
+        Boolean values are valid active flags.
         """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        content_type = 'application/json'
 
-    def test_invalid(self) -> None:
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': active_flag,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type=content_type,
+        )
+
+        assert_success(response=response)
+
+    def test_invalid(
+        self,
+        png_rgb: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
         XXX
         """
         active_flag = 'not a boolean'
+
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        content_type = 'application/json'
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': active_flag,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type=content_type,
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
