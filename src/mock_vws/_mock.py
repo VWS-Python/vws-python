@@ -674,10 +674,10 @@ def validate_active_flag(
     if not request.text:
         return wrapped(*args, **kwargs)
 
-    active_flag = request.json().get('active_flag')
-
-    if active_flag is None:
+    if 'active_flag' not in request.json():
         return wrapped(*args, **kwargs)
+
+    active_flag = request.json().get('active_flag')
 
     if isinstance(active_flag, bool):
         return wrapped(*args, **kwargs)
