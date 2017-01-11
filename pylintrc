@@ -76,6 +76,8 @@ disable=line-too-long,
         invalid-sequence-index,
         # Let isort deal with sorting
         ungrouped-imports,
+        missing-type-doc,
+        missing-returns-doc,
 
 [REPORTS]
 
