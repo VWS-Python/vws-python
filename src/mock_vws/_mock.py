@@ -3,6 +3,7 @@ A fake implementation of VWS.
 """
 
 import base64
+import binascii
 import io
 import json
 import numbers
@@ -431,6 +432,48 @@ def validate_image_size(wrapped: Callable[..., str],
     return json.dumps(body)
 
 
+@wrapt.decorator
+def validate_image_encoding(wrapped: Callable[..., str],
+                            instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                            args: Tuple[_RequestObjectProxy, _Context],
+                            kwargs: Dict) -> str:
+    """
+    Validate that the given image data can be base64 decoded.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if image data is given and it cannot be
+        base64 decoded.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
+    try:
+        base64.b64decode(image)
+    except binascii.Error:
+        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
 def validate_keys(mandatory_keys: Set[str],
                   optional_keys: Set[str]) -> Callable:
     """
@@ -614,6 +657,7 @@ def route(
                 validate_image_size,
                 validate_image_color_space,
                 validate_image_format,
+                validate_image_encoding,
                 validate_name,
                 validate_width,
                 key_validator,
