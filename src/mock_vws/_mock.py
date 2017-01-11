@@ -457,6 +457,10 @@ def validate_image_is_image(wrapped: Callable[..., str],
         return wrapped(*args, **kwargs)
 
     image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
     decoded = base64.b64decode(image)
     image_file = io.BytesIO(decoded)
 

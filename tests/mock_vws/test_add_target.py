@@ -437,7 +437,6 @@ class TestImage:
         """
         If the given image is a file which is not an image file.
         """
-
         not_image_data = b'not_image_data'
         image_data_encoded = base64.b64encode(not_image_data).decode('ascii')
 
