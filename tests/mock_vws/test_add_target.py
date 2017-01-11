@@ -474,9 +474,45 @@ class TestImage:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestNotMandatoryFields:
+class TestActiveFlag:
     """
-    Tests for passing data which is not mandatory to the endpoint.
+    Tests for the active flag parameter.
+    """
+
+    @pytest.mark.parametrize('active_flag', [True, False])
+    def test_valid(
+        self,
+        active_flag: bool,
+        png_rgb: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
+        """
+        Boolean values are valid active flags.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        content_type = 'application/json'
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': active_flag,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type=content_type,
+        )
+
+        assert_success(response=response)
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestUnexpectedData:
+    """
+    Tests for passing data which is not mandatory or allowed to the endpoint.
     """
 
     def test_invalid_extra_data(
