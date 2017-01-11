@@ -55,9 +55,7 @@ class TestAuthorizationHeader:
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
         """
-        headers = {
-            "Date": rfc_1123_date(),
-        }
+        headers = {"Date": rfc_1123_date(), }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
 
@@ -109,11 +107,11 @@ class TestDateHeader:
     Tests for what happens when the `Date` header isn't as expected.
     """
 
-    def test_no_date_header(self,
-                            vuforia_server_credentials:
-                            VuforiaServerCredentials,
-                            endpoint: Endpoint,
-                            ) -> None:
+    def test_no_date_header(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        endpoint: Endpoint,
+    ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
@@ -146,17 +144,18 @@ class TestDateHeader:
             result_code=ResultCodes.FAIL,
         )
 
-    def test_incorrect_date_format(self,
-                                   vuforia_server_credentials:
-                                   VuforiaServerCredentials,
-                                   endpoint: Endpoint) -> None:
+    def test_incorrect_date_format(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        endpoint: Endpoint
+    ) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
         header is not in the expected format (RFC 1123).
         """
         with freeze_time(datetime.now()):
-            date_incorrect_format = datetime.now().strftime(
-                "%a %b %d %H:%M:%S %Y")
+            date_incorrect_format = datetime.now(
+            ).strftime("%a %b %d %H:%M:%S %Y")
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
@@ -187,14 +186,15 @@ class TestDateHeader:
             result_code=ResultCodes.FAIL,
         )
 
-    @pytest.mark.parametrize('time_multiplier', [1, -1],
-                             ids=(['After', 'Before']))
-    def test_date_out_of_range(self,
-                               vuforia_server_credentials:
-                               VuforiaServerCredentials,
-                               time_multiplier: int,
-                               endpoint: Endpoint,
-                               ) -> None:
+    @pytest.mark.parametrize(
+        'time_multiplier', [1, -1], ids=(['After', 'Before'])
+    )
+    def test_date_out_of_range(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        time_multiplier: int,
+        endpoint: Endpoint,
+    ) -> None:
         """
         If the date header is more than five minutes before or after the
         request is sent, a `FORBIDDEN` response is returned.
@@ -237,14 +237,15 @@ class TestDateHeader:
             result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
         )
 
-    @pytest.mark.parametrize('time_multiplier', [1, -1],
-                             ids=(['After', 'Before']))
-    def test_date_in_range(self,
-                           vuforia_server_credentials:
-                           VuforiaServerCredentials,
-                           time_multiplier: int,
-                           endpoint: Endpoint,
-                           ) -> None:
+    @pytest.mark.parametrize(
+        'time_multiplier', [1, -1], ids=(['After', 'Before'])
+    )
+    def test_date_in_range(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        time_multiplier: int,
+        endpoint: Endpoint,
+    ) -> None:
         """
         If a date header is within five minutes before or after the request
         is sent, no error is returned.

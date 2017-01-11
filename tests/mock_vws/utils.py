@@ -21,14 +21,15 @@ class Endpoint:
     Details of endpoints to be called in tests.
     """
 
-    def __init__(self,
-                 example_path: str,
-                 method: str,
-                 successful_headers_result_code: ResultCodes,
-                 successful_headers_status_code: int,
-                 content_type: Optional[str],
-                 content: bytes,
-                 ) -> None:
+    def __init__(
+        self,
+        example_path: str,
+        method: str,
+        successful_headers_result_code: ResultCodes,
+        successful_headers_status_code: int,
+        content_type: Optional[str],
+        content: bytes,
+    ) -> None:
         """
         Args:
             example_path: An example path for calling the endpoint.
@@ -60,9 +61,9 @@ class Endpoint:
         self.successful_headers_result_code = successful_headers_result_code
 
 
-def assert_vws_failure(response: Response,
-                       status_code: int,
-                       result_code: ResultCodes) -> None:
+def assert_vws_failure(
+    response: Response, status_code: int, result_code: ResultCodes
+) -> None:
     """
     Assert that a VWS failure response is as expected.
 
@@ -88,10 +89,11 @@ def assert_vws_failure(response: Response,
     )
 
 
-def assert_vws_response(response: Response,
-                        status_code: int,
-                        result_code: ResultCodes,
-                        ) -> None:
+def assert_vws_response(
+    response: Response,
+    status_code: int,
+    result_code: ResultCodes,
+) -> None:
     """
     Assert that a VWS response is as expected, at least in part.
 

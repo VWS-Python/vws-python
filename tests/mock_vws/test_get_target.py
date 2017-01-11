@@ -19,10 +19,11 @@ class TestGetRecord:
     Tests for getting a target record.
     """
 
-    def test_get_target(self,
-                        target_id: str,
-                        vuforia_server_credentials: VuforiaServerCredentials,
-                        ) -> None:
+    def test_get_target(
+        self,
+        target_id: str,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """
         Details of a target are returned.
         """

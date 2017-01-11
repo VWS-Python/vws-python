@@ -59,19 +59,23 @@ class TestContentTypes:
     Tests for the `Content-Type` header.
     """
 
-    @pytest.mark.parametrize('content_type', [
-        # This is the documented required content type:
-        'application/json',
-        # Other content types also work.
-        'other/content_type',
-        '',
-    ], ids=['Documented Content-Type', 'Undocumented Content-Type', 'Empty'])
-    def test_content_types(self,
-                           vuforia_server_credentials:
-                           VuforiaServerCredentials,
-                           png_rgb: io.BytesIO,
-                           content_type: str,
-                           ) -> None:
+    @pytest.mark.parametrize(
+        'content_type',
+        [
+            # This is the documented required content type:
+            'application/json',
+            # Other content types also work.
+            'other/content_type',
+            '',
+        ],
+        ids=['Documented Content-Type', 'Undocumented Content-Type', 'Empty']
+    )
+    def test_content_types(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+        content_type: str,
+    ) -> None:
         """
         Any `Content-Type` header is allowed.
         """
@@ -100,12 +104,12 @@ class TestMissingData:
     """
 
     @pytest.mark.parametrize('data_to_remove', ['name', 'width', 'image'])
-    def test_missing_data(self,
-                          vuforia_server_credentials:
-                          VuforiaServerCredentials,
-                          png_rgb: io.BytesIO,
-                          data_to_remove: str,
-                          ) -> None:
+    def test_missing_data(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+        data_to_remove: str,
+    ) -> None:
         """
         `name`, `width` and `image` are all required.
         """
@@ -142,11 +146,12 @@ class TestWidth:
         [-1, '10'],
         ids=['Negative', 'Wrong Type'],
     )
-    def test_width_invalid(self,
-                           vuforia_server_credentials:
-                           VuforiaServerCredentials,
-                           png_rgb: io.BytesIO,
-                           width: Any) -> None:
+    def test_width_invalid(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+        width: Any
+    ) -> None:
         """
         The width must be a non-negative number.
         """
@@ -170,13 +175,15 @@ class TestWidth:
             result_code=ResultCodes.FAIL,
         )
 
-    @pytest.mark.parametrize('width', [0, 0.1],
-                             ids=['Zero width', 'Float width'])
-    def test_width_valid(self,
-                         vuforia_server_credentials:
-                         VuforiaServerCredentials,
-                         png_rgb: io.BytesIO,
-                         width: Any) -> None:
+    @pytest.mark.parametrize(
+        'width', [0, 0.1], ids=['Zero width', 'Float width']
+    )
+    def test_width_valid(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+        width: Any
+    ) -> None:
         """
         Non-negative numbers are valid widths.
         """
@@ -204,15 +211,18 @@ class TestTargetName:
     Tests for the target name field.
     """
 
-    @pytest.mark.parametrize('name', [
-        'a',
-        'a' * 64,
-    ], ids=['Short name', 'Long name'])
-    def test_name_valid(self,
-                        name: str,
-                        png_rgb: io.BytesIO,
-                        vuforia_server_credentials: VuforiaServerCredentials
-                        ) -> None:
+    @pytest.mark.parametrize(
+        'name', [
+            'a',
+            'a' * 64,
+        ], ids=['Short name', 'Long name']
+    )
+    def test_name_valid(
+        self,
+        name: str,
+        png_rgb: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
         Names between 1 and 64 characters in length are valid.
         """
@@ -238,11 +248,12 @@ class TestTargetName:
         [1, '', 'a' * 65],
         ids=['Wrong Type', 'Empty', 'Too Long'],
     )
-    def test_name_invalid(self,
-                          name: str,
-                          png_rgb: io.BytesIO,
-                          vuforia_server_credentials: VuforiaServerCredentials
-                          ) -> None:
+    def test_name_invalid(
+        self,
+        name: str,
+        png_rgb: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.
         """
@@ -266,10 +277,11 @@ class TestTargetName:
             result_code=ResultCodes.FAIL,
         )
 
-    def test_existing_target_name(self,
-                                  png_rgb: io.BytesIO,
-                                  vuforia_server_credentials:
-                                  VuforiaServerCredentials) -> None:
+    def test_existing_target_name(
+        self,
+        png_rgb: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
         Only one target can have a given name.
         """
@@ -308,10 +320,11 @@ class TestImage:
     https://library.vuforia.com/articles/Training/Image-Target-Guide
     """
 
-    def test_image_valid(self,
-                         vuforia_server_credentials: VuforiaServerCredentials,
-                         image_file: io.BytesIO,
-                         ) -> None:
+    def test_image_valid(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        image_file: io.BytesIO,
+    ) -> None:
         """
         JPEG and PNG files in the RGB and greyscale color spaces are
         allowed. The image must be under a threshold.
@@ -336,10 +349,11 @@ class TestImage:
 
         assert_success(response=response)
 
-    def test_bad_image(self,
-                       bad_image_file: io.BytesIO,
-                       vuforia_server_credentials: VuforiaServerCredentials,
-                       ) -> None:
+    def test_bad_image(
+        self,
+        bad_image_file: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """
         A `BAD_REQUEST` response is returned if an image which is not a JPEG
         or PNG file is given, or if the given image is not in the greyscale or
@@ -365,10 +379,11 @@ class TestImage:
             result_code=ResultCodes.BAD_IMAGE,
         )
 
-    def test_too_large(self,
-                       vuforia_server_credentials: VuforiaServerCredentials,
-                       png_large: io.BytesIO,
-                       ) -> None:
+    def test_too_large(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_large: io.BytesIO,
+    ) -> None:
         """
         An `ImageTooLarge` result is returned if the image is above a certain
         threshold.
@@ -400,10 +415,10 @@ class TestImage:
             result_code=ResultCodes.IMAGE_TOO_LARGE,
         )
 
-    def test_not_base64_encoded(self,
-                                vuforia_server_credentials:
-                                VuforiaServerCredentials,
-                                ) -> None:
+    def test_not_base64_encoded(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """
         If the given image is not decodable as base64 data then a `Fail`
         result is returned.
@@ -430,10 +445,10 @@ class TestImage:
             result_code=ResultCodes.FAIL,
         )
 
-    def test_not_image(self,
-                       vuforia_server_credentials:
-                       VuforiaServerCredentials,
-                       ) -> None:
+    def test_not_image(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         """
         If the given image is a file which is not an image file.
         """
@@ -483,11 +498,11 @@ class TestUnexpectedData:
     Tests for passing data which is not mandatory or allowed to the endpoint.
     """
 
-    def test_invalid_extra_data(self,
-                                vuforia_server_credentials:
-                                VuforiaServerCredentials,
-                                png_rgb: io.BytesIO,
-                                ) -> None:
+    def test_invalid_extra_data(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
         """
