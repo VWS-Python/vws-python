@@ -448,8 +448,8 @@ def validate_image_encoding(wrapped: Callable[..., str],
 
     Returns:
         The result of calling the endpoint.
-        A `BAD_REQUEST` response if image data is given and it cannot be
-        base64 decoded.
+        An `UNPROCESSABLE_ENTITY` response if image data is given and it cannot
+        be base64 decoded.
     """
     request, context = args
 
@@ -464,7 +464,7 @@ def validate_image_encoding(wrapped: Callable[..., str],
     try:
         base64.b64decode(image)
     except binascii.Error:
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
