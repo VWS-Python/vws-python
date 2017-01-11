@@ -430,6 +430,33 @@ class TestImage:
             result_code=ResultCodes.FAIL,
         )
 
+    def test_not_image(self,
+                       vuforia_server_credentials:
+                       VuforiaServerCredentials,
+                       ) -> None:
+        """
+        If the given image is a file which is not an image file.
+        """
+        not_image_data = b'not_image_data'
+        image_data_encoded = base64.b64encode(not_image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.BAD_IMAGE,
+        )
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestNotMandatoryFields:

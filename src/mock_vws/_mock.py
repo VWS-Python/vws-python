@@ -433,6 +433,51 @@ def validate_image_size(wrapped: Callable[..., str],
 
 
 @wrapt.decorator
+def validate_image_is_image(wrapped: Callable[..., str],
+                            instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
+                            args: Tuple[_RequestObjectProxy, _Context],
+                            kwargs: Dict) -> str:
+    """
+    Validate that the given image data is actually an image file.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if image data is given and it is not
+        an image file.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if image is None:
+        return wrapped(*args, **kwargs)
+
+    decoded = base64.b64decode(image)
+    image_file = io.BytesIO(decoded)
+
+    try:
+        Image.open(image_file)
+    except OSError:
+        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.BAD_IMAGE.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
 def validate_image_encoding(wrapped: Callable[..., str],
                             instance: 'MockVuforiaTargetAPI',  # noqa: E501 pylint: disable=unused-argument
                             args: Tuple[_RequestObjectProxy, _Context],
@@ -657,6 +702,7 @@ def route(
                 validate_image_size,
                 validate_image_color_space,
                 validate_image_format,
+                validate_image_is_image,
                 validate_image_encoding,
                 validate_name,
                 validate_width,
