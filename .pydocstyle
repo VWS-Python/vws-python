@@ -7,4 +7,6 @@
 #   - D203
 # We don't need docstrings to start at the first line
 #   - D212
-ignore = D200,D203,D205,D212,D400
+# Allow blank lines after function docstrings
+#   - D202
+ignore = D200,D202,D203,D205,D212,D400
