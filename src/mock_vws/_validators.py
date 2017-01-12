@@ -285,10 +285,10 @@ def validate_width(
     if not request.text:
         return wrapped(*args, **kwargs)
 
-    width = request.json().get('width')
-
-    if width is None:
+    if 'width' not in request.json():
         return wrapped(*args, **kwargs)
+
+    width = request.json().get('width')
 
     width_is_number = isinstance(width, numbers.Number)
     width_positive = width_is_number and width >= 0
@@ -330,10 +330,10 @@ def validate_name(
     if not request.text:
         return wrapped(*args, **kwargs)
 
-    name = request.json().get('name')
-
-    if name is None:
+    if 'name' not in request.json():
         return wrapped(*args, **kwargs)
+
+    name = request.json().get('name')
 
     name_is_string = isinstance(name, str)
     name_valid_length = name_is_string and 0 < len(name) < 65
@@ -560,10 +560,10 @@ def validate_image_encoding(
     if not request.text:
         return wrapped(*args, **kwargs)
 
-    image = request.json().get('image')
-
-    if image is None:
+    if 'image' not in request.json():
         return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
 
     try:
         base64.b64decode(image)
@@ -576,6 +576,48 @@ def validate_image_encoding(
         return json.dumps(body)
 
     return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_image_data_type(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict
+) -> str:
+    """
+    Validate that the given image data is a string.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `BAD_REQUEST` response if image data is given and it is not a
+        string.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'image' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if isinstance(image, str):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json.dumps(body)
 
 
 def validate_keys(mandatory_keys: Set[str],
