@@ -42,7 +42,8 @@ def validate_active_flag(
     Returns:
         The result of calling the endpoint.
         A `BAD_REQUEST` response with a FAIL result code if there is
-        non-Boolean active flag data given to the endpoint.
+        active flag data given to the endpoint which is not either a Boolean or
+        NULL.
     """
     request, context = args
 
@@ -54,7 +55,7 @@ def validate_active_flag(
 
     active_flag = request.json().get('active_flag')
 
-    if isinstance(active_flag, bool):
+    if active_flag is None or isinstance(active_flag, bool):
         return wrapped(*args, **kwargs)
 
     context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
