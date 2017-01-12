@@ -611,20 +611,20 @@ class TestUnexpectedData:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestApplicationMetadata:
     """
-    XXX
+    Tests for the application metadata parameter.
     """
 
     def test_valid(self) -> None:
         """
-        XXX
+        A base64 encoded string is valid application metadata.
         """
 
     def test_invalid_type(self) -> None:
         """
-        XXX
+        Non-string values are not valid application metadata.
         """
 
     def test_not_base64_encoded(self) -> None:
         """
-        XXX
+        A string which is not base64 encoded is not valid application metadata.
         """
