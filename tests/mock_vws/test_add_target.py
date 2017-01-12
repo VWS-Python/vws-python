@@ -67,11 +67,11 @@ class TestContentTypes:
             # Other content types also work.
             'other/content_type',
             '',
-            1,
         ],
         ids=[
-            'Documented Content-Type', 'Undocumented Content-Type', 'Empty',
-            'Wrong Type'
+            'Documented Content-Type',
+            'Undocumented Content-Type',
+            'Empty',
         ]
     )
     def test_content_types(
