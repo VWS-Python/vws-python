@@ -12,6 +12,9 @@ addons:
     packages:
     - "enchant"
 
+before_install:
+    - "pip install --upgrade pip setuptools"
+
 install:
   - "pip install --upgrade --editable .[dev]"
   - "npm install -g markdownlint-cli"
