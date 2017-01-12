@@ -614,17 +614,125 @@ class TestApplicationMetadata:
     Tests for the application metadata parameter.
     """
 
-    def test_valid(self) -> None:
+    def test_base64_encoded(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
         """
         A base64 encoded string is valid application metadata.
         """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-    def test_invalid_type(self) -> None:
-        """
-        Non-string values are not valid application metadata.
-        """
+        metadata = b'Some data'
+        metadata_encoded = base64.b64encode(metadata).decode('ascii')
 
-    def test_not_base64_encoded(self) -> None:
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'application_metadata': metadata_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_success(response=response)
+
+    def test_null(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        NULL is valid application metadata.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'application_metadata': None,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_success(response=response)
+
+    def test_invalid_type(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        Values which are not a string or NULL are not valid application
+        metadata.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'application_metadata': 1,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+    def test_not_base64_encoded(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
         """
         A string which is not base64 encoded is not valid application metadata.
         """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        not_base64_encoded = b'a'
+
+        with pytest.raises(binascii.Error):
+            base64.b64decode(not_base64_encoded)
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'application_metadata': str(not_base64_encoded),
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.FAIL,
+        )
