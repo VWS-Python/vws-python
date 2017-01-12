@@ -6,7 +6,7 @@ import base64
 import binascii
 import io
 from string import hexdigits
-from typing import Any
+from typing import Any, Union
 
 import pytest
 from requests import Response, codes
@@ -479,15 +479,15 @@ class TestActiveFlag:
     Tests for the active flag parameter.
     """
 
-    @pytest.mark.parametrize('active_flag', [True, False])
+    @pytest.mark.parametrize('active_flag', [True, False, None])
     def test_valid(
         self,
-        active_flag: bool,
+        active_flag: Union[bool, None],
         png_rgb: io.BytesIO,
         vuforia_server_credentials: VuforiaServerCredentials
     ) -> None:
         """
-        Boolean values are valid active flags.
+        Boolean values and NULL are valid active flags.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -507,6 +507,38 @@ class TestActiveFlag:
         )
 
         assert_success(response=response)
+
+    def test_invalid(
+        self,
+        png_rgb: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
+        """
+        Values which are not Boolean values or NULL are not valid active flags.
+        """
+        active_flag = 'string'
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        content_type = 'application/json'
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': active_flag,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type=content_type,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

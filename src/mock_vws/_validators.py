@@ -24,6 +24,49 @@ from vws._request_utils import authorization_header
 
 
 @wrapt.decorator
+def validate_active_flag(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict
+) -> str:
+    """
+    Validate the active flag data given to the endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response with a FAIL result code if there is
+        active flag data given to the endpoint which is not either a Boolean or
+        NULL.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'active_flag' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    active_flag = request.json().get('active_flag')
+
+    if active_flag is None or isinstance(active_flag, bool):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }  # type: Dict[str, str]
+    return json.dumps(body)
+
+
+@wrapt.decorator
 def validate_not_invalid_json(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
