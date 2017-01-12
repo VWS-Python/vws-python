@@ -24,8 +24,6 @@ from common.constants import ResultCodes
 
 from ._validators import (
     validate_active_flag,
-    validate_metadata_encoding,
-    validate_metadata_type,
     validate_auth_header_exists,
     validate_authorization,
     validate_date,
@@ -36,6 +34,8 @@ from ._validators import (
     validate_image_is_image,
     validate_image_size,
     validate_keys,
+    validate_metadata_encoding,
+    validate_metadata_type,
     validate_name,
     validate_not_invalid_json,
     validate_width,
