@@ -678,7 +678,7 @@ def validate_keys(mandatory_keys: Set[str],
 
 
 @wrapt.decorator
-def validate_application_metadata_encoding(
+def validate_metadata_encoding(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
@@ -725,7 +725,7 @@ def validate_application_metadata_encoding(
 
 
 @wrapt.decorator
-def validate_application_metadata_type(
+def validate_metadata_type(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
