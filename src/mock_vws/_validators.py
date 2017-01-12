@@ -26,12 +26,12 @@ from vws._request_utils import authorization_header
 @wrapt.decorator
 def validate_active_flag(
     wrapped: Callable[..., str],
-    instance: Any,
+    instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
     """
-    Parse a target ID in a URL path.
+    Validate the active flag data given to the endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -41,8 +41,8 @@ def validate_active_flag(
 
     Returns:
         The result of calling the endpoint.
-        If a target ID is given in the path then the wrapped function is given
-        an extra argument - the target ID.
+        A `BAD_REQUEST` response with a FAIL result code if there is
+        non-boolean active flag data given to the endpoint.
     """
     request, context = args
 
