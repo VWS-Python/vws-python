@@ -42,7 +42,7 @@ def validate_active_flag(
     Returns:
         The result of calling the endpoint.
         A `BAD_REQUEST` response with a FAIL result code if there is
-        non-boolean active flag data given to the endpoint.
+        non-Boolean active flag data given to the endpoint.
     """
     request, context = args
 
