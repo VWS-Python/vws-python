@@ -123,7 +123,17 @@ def assert_vws_response(
         expected=result_code.value,
         actual=response_result_code,
     )
+    response_header_keys = {
+        'Connection',
+        'Content-Length',
+        'Content-Type',
+        'Date',
+        'Server',
+    }
+    assert response.headers.keys() == response_header_keys
+    assert response.headers['Connection'] == 'keep-alive'
     assert response.headers['Content-Type'] == 'application/json'
+    assert response.headers['Server'] == 'nginx'
     transaction_id = response.json()['transaction_id']
     assert len(transaction_id) == 32
     assert all(char in hexdigits for char in transaction_id)
