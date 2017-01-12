@@ -675,3 +675,92 @@ def validate_keys(mandatory_keys: Set[str],
         return json.dumps(body)
 
     return wrapper
+
+
+@wrapt.decorator
+def validate_application_metadata_encoding(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict
+) -> str:
+    """
+    Validate that the given application metadata can be base64 decoded.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if application metadata is given and
+        it cannot be base64 decoded.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'application_metadata' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    application_metadata = request.json().get('application_metadata')
+
+    if application_metadata is None:
+        return wrapped(*args, **kwargs)
+
+    try:
+        base64.b64decode(application_metadata)
+    except binascii.Error:
+        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json.dumps(body)
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_application_metadata_type(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict
+) -> str:
+    """
+    Validate that the given application metadata is a string or NULL.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `BAD_REQUEST` response if application metadata is given and it is
+        not a string or NULL.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'application_metadata' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    application_metadata = request.json().get('application_metadata')
+
+    if application_metadata is None or isinstance(application_metadata, str):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json.dumps(body)

@@ -24,6 +24,8 @@ from common.constants import ResultCodes
 
 from ._validators import (
     validate_active_flag,
+    validate_application_metadata_encoding,
+    validate_application_metadata_type,
     validate_auth_header_exists,
     validate_authorization,
     validate_date,
@@ -175,6 +177,8 @@ def route(
             validators = [
                 parse_target_id,
                 validate_authorization,
+                validate_application_metadata_encoding,
+                validate_application_metadata_type,
                 validate_active_flag,
                 validate_image_size,
                 validate_image_color_space,
