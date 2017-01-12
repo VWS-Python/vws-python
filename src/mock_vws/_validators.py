@@ -285,10 +285,10 @@ def validate_width(
     if not request.text:
         return wrapped(*args, **kwargs)
 
-    width = request.json().get('width')
-
-    if width is None:
+    if 'width' not in request.json():
         return wrapped(*args, **kwargs)
+
+    width = request.json().get('width')
 
     width_is_number = isinstance(width, numbers.Number)
     width_positive = width_is_number and width >= 0
@@ -330,10 +330,10 @@ def validate_name(
     if not request.text:
         return wrapped(*args, **kwargs)
 
-    name = request.json().get('name')
-
-    if name is None:
+    if 'name' not in request.json():
         return wrapped(*args, **kwargs)
+
+    name = request.json().get('name')
 
     name_is_string = isinstance(name, str)
     name_valid_length = name_is_string and 0 < len(name) < 65
@@ -560,10 +560,10 @@ def validate_image_encoding(
     if not request.text:
         return wrapped(*args, **kwargs)
 
-    image = request.json().get('image')
-
-    if image is None:
+    if 'image' not in request.json():
         return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
 
     try:
         base64.b64decode(image)

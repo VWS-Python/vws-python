@@ -67,8 +67,12 @@ class TestContentTypes:
             # Other content types also work.
             'other/content_type',
             '',
+            1,
         ],
-        ids=['Documented Content-Type', 'Undocumented Content-Type', 'Empty']
+        ids=[
+            'Documented Content-Type', 'Undocumented Content-Type', 'Empty',
+            'Wrong Type'
+        ]
     )
     def test_content_types(
         self,
@@ -143,8 +147,8 @@ class TestWidth:
 
     @pytest.mark.parametrize(
         'width',
-        [-1, '10'],
-        ids=['Negative', 'Wrong Type'],
+        [-1, '10', None],
+        ids=['Negative', 'Wrong Type', 'None'],
     )
     def test_width_invalid(
         self,
@@ -245,8 +249,8 @@ class TestTargetName:
 
     @pytest.mark.parametrize(
         'name',
-        [1, '', 'a' * 65],
-        ids=['Wrong Type', 'Empty', 'Too Long'],
+        [1, '', 'a' * 65, None],
+        ids=['Wrong Type', 'Empty', 'Too Long', 'None'],
     )
     def test_name_invalid(
         self,
@@ -450,7 +454,8 @@ class TestImage:
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
-        If the given image is a file which is not an image file.
+        If the given image is not an image file then a `BadImage` result is
+        returned.
         """
         not_image_data = b'not_image_data'
         image_data_encoded = base64.b64encode(not_image_data).decode('ascii')
@@ -470,6 +475,32 @@ class TestImage:
             response=response,
             status_code=codes.UNPROCESSABLE_ENTITY,
             result_code=ResultCodes.BAD_IMAGE,
+        )
+
+    @pytest.mark.parametrize('invalid_type_image', [1, None])
+    def test_invalid_type(
+        self,
+        invalid_type_image: Any,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        If the given image is NULL, a `Fail` result is returned.
+        """
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': invalid_type_image,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
         )
 
 
