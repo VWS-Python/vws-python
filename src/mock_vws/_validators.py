@@ -586,7 +586,7 @@ def validate_image_data_type(
     kwargs: Dict
 ) -> str:
     """
-    Validate that the given image data can be base64 decoded.
+    Validate that the given image data is a string.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -596,8 +596,8 @@ def validate_image_data_type(
 
     Returns:
         The result of calling the endpoint.
-        An `UNPROCESSABLE_ENTITY` response if image data is given and it cannot
-        be base64 decoded.
+        An `BAD_REQUEST` response if image data is given and it is not a
+        string.
     """
     request, context = args
 
