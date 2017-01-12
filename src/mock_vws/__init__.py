@@ -87,6 +87,13 @@ class MockVWS(ContextDecorator):
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
         )
 
+        headers = {
+            'Connection': 'keep-alive',
+            'Content-Length': '',
+            'Content-Type': 'application/json',
+            'Date': '',
+            'Server': 'nginx',
+        }
         with Mocker(real_http=self.real_http) as mock:
             for route in fake_target_api.routes:
                 for http_method in route.methods:
@@ -94,7 +101,7 @@ class MockVWS(ContextDecorator):
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
                         text=getattr(fake_target_api, route.route_name),
-                        headers={'Content-Type': 'application/json'},
+                        headers=headers,
                     )
         self.mock = mock
         self.mock.start()
