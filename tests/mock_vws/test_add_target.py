@@ -516,7 +516,7 @@ class TestActiveFlag:
         vuforia_server_credentials: VuforiaServerCredentials
     ) -> None:
         """
-        Non-boolean values are not valid active flags.
+        Non-Boolean values are not valid active flags.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
