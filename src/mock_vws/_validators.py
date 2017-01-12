@@ -578,6 +578,48 @@ def validate_image_encoding(
     return wrapped(*args, **kwargs)
 
 
+@wrapt.decorator
+def validate_image_data_type(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict
+) -> str:
+    """
+    Validate that the given image data can be base64 decoded.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if image data is given and it cannot
+        be base64 decoded.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'image' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    image = request.json().get('image')
+
+    if isinstance(image, str):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json.dumps(body)
+
+
 def validate_keys(mandatory_keys: Set[str],
                   optional_keys: Set[str]) -> Callable:
     """
