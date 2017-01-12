@@ -636,7 +636,7 @@ def validate_keys(mandatory_keys: Set[str],
     @wrapt.decorator
     def wrapper(
         wrapped: Callable[..., str],
-        instance: Any,  # noqa: E501 pylint: disable=unused-argument
+        instance: Any,  # pylint: disable=unused-argument
         args: Tuple[_RequestObjectProxy, _Context],
         kwargs: Dict,
     ) -> str:
