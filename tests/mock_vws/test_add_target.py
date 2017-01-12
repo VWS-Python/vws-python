@@ -606,3 +606,25 @@ class TestUnexpectedData:
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestApplicationMetadata:
+    """
+    XXX
+    """
+
+    def test_valid(self) -> None:
+        """
+        XXX
+        """
+
+    def test_invalid_type(self) -> None:
+        """
+        XXX
+        """
+
+    def test_not_base64_encoded(self) -> None:
+        """
+        XXX
+        """
