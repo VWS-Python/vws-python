@@ -91,8 +91,13 @@ class TestGetRecord:
 
         assert set(target_record.keys()) == expected_target_record_keys
         assert target_id == target_record['target_id']
-        assert
-
+        assert response.json()['status'] == 'processing'
+        assert target_record['active_flag'] is True
+        assert target_record['name'] == name
+        assert target_record['width'] == width
+        # TODO Document that the mock's tracking ratings are constantly 0
+        assert isinstance(target_record['tracking_rating'], int)
+        assert target_record['reco_rating'] == ''
 
     """
     Test with active flag set to something

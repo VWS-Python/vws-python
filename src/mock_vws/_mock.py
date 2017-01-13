@@ -386,7 +386,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
             'target_record': target_record,
-            'status': codes.OK,  # pylint: disable=no-member
+            'status': 'processing',
         }
         return json.dumps(body)
 
