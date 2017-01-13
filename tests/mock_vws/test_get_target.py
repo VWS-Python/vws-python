@@ -114,7 +114,7 @@ class TestGetRecord:
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
-        assert target_record['tracking_rating'] in {0, 1, 2, 3, 4, 5}
+        assert target_record['tracking_rating'] in {-1, 0, 1, 2, 3, 4, 5}
         assert target_record['reco_rating'] == ''
 
     def test_active_flag_not_set(
