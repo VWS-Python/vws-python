@@ -50,7 +50,7 @@ def parse_target_id(
     kwargs: Dict
 ) -> str:
     """
-    Parse a target ID in a URL path.
+    Parse a target ID in a URL path and give the method a target argument.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -61,7 +61,8 @@ def parse_target_id(
     Returns:
         The result of calling the endpoint.
         If a target ID is given in the path then the wrapped function is given
-        an extra argument - the target ID.
+        an extra argument - the matching target.
+        A `NOT_FOUND` response if there is no matching target.
     """
     request, context = args
 
@@ -72,12 +73,12 @@ def parse_target_id(
 
     target_id = split_path[-1]
 
-    if not any(
-        [
+    try:
+        [matching_target] = [
             target for target in instance.targets
             if target.target_id == target_id
         ]
-    ):
+    except ValueError:
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
@@ -85,7 +86,7 @@ def parse_target_id(
         context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
         return json.dumps(body)
 
-    new_args = args + (target_id, )
+    new_args = args + (matching_target, )
     return wrapped(*new_args, **kwargs)
 
 
@@ -208,7 +209,7 @@ class Target:
     https://developer.vuforia.com/target-manager.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, active_flag: bool, width: float) -> None:
         """
         Args:
             name: The name of the target.
@@ -219,6 +220,12 @@ class Target:
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
+        self.active_flag = active_flag
+        self.width = width
+        # TODO do this random between 0 and 5
+        self.tracking_rating = 0
+        self.reco_rating = reco_rating
+        self.status = status
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -286,7 +293,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
         context: _Context,
-        target_id: str,
+        target: Target,
     ) -> str:
         """
         Delete a target.
@@ -366,7 +373,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
-        target_id: str,
+        target: Target,
     ) -> str:
         """
         Get details of a target.
@@ -375,18 +382,19 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
         """
         target_record = {
-            'target_id': target_id,
-            'active_flag': '',
-            'name': '',
-            'width': '',
-            'tracking_rating': '',
-            'reco_rating': '',
+            'target_id': target.target_id,
+            'active_flag': target.active_flag,
+            'name': target.name,
+            'width': target.width,
+            'tracking_rating': target.tracking_rating,
+            'reco_rating': target.reco_rating,
         }
+
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
             'target_record': target_record,
-            'status': 'processing',
+            'status': target.status,
         }
         return json.dumps(body)
 
@@ -395,7 +403,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # pylint: disable=unused-argument
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
@@ -409,7 +417,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # pylint: disable=unused-argument
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Update a target.
@@ -423,7 +431,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # pylint: disable=unused-argument
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Get a summary report for a target.
