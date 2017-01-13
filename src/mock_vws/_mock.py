@@ -3,6 +3,7 @@ A fake implementation of VWS.
 """
 
 import json
+import random
 import uuid
 from typing import (  # noqa: F401
     Callable,
@@ -222,10 +223,9 @@ class Target:
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        # TODO do this random between 0 and 5
-        self.tracking_rating = 0
-        self.reco_rating = reco_rating
-        self.status = status
+        self.tracking_rating = random.choice([1, 2, 3, 4, 5])
+        self.reco_rating = ''
+        self.status = 'processing'
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -267,7 +267,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        name = request.json().get('name')
+        name = request.json()['name']
 
         if any(target.name == name for target in self.targets):
             context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
@@ -277,7 +277,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
-        new_target = Target(name=name)
+        active_flag = request.json().get('active_flag')
+        if active_flag is None:
+            active_flag = True
+
+        new_target = Target(
+            name=request.json()['name'],
+            width=request.json()['width'],
+            active_flag=active_flag,
+        )
         self.targets.append(new_target)
 
         context.status_code = codes.CREATED  # pylint: disable=no-member
@@ -357,15 +365,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, Union[str, List[str]]]
-
         results = [target.target_id for target in self.targets]
 
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
             'results': results,
-        }
+        }  # type: Dict[str, Union[str, List[str]]]
         return json.dumps(body)
 
     @route(path_pattern='/targets/.+', methods=[GET])

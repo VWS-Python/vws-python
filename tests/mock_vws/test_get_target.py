@@ -96,7 +96,7 @@ class TestGetRecord:
         assert target_record['name'] == name
         assert target_record['width'] == width
         # TODO Document that the mock's tracking ratings are constantly 0
-        assert isinstance(target_record['tracking_rating'], int)
+        assert target_record['tracking_rating'] in {0, 1, 2, 3, 4, 5}
         assert target_record['reco_rating'] == ''
 
     """
