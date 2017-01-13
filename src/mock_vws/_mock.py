@@ -223,7 +223,7 @@ class Target:
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.tracking_rating = random.choice([1, 2, 3, 4, 5])
+        self.tracking_rating = random.randint(0, 5)
         self.reco_rating = ''
         self.status = 'processing'
 
