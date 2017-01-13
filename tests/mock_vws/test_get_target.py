@@ -96,7 +96,6 @@ class TestGetRecord:
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
-        # TODO Document that the mock's tracking ratings are constantly 0
         assert target_record['tracking_rating'] in {0, 1, 2, 3, 4, 5}
         assert target_record['reco_rating'] == ''
 
@@ -106,7 +105,7 @@ class TestGetRecord:
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        The active flag defaults to True.
+        The active flag defaults to True if it is not set.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -140,10 +139,43 @@ class TestGetRecord:
         target_record = response.json()['target_record']
         assert target_record['active_flag'] is True
 
-    """
-    Test that status eventually changes.
+    def test_active_flag_set_to_none(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        The active flag defaults to True if it is set to NULL.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-    GET with a slash at the end
+        name = 'my_example_name'
+        width = 1234
 
-    Test setting active flag to None.
-    """
+        data = {
+            'name': name,
+            'width': width,
+            'image': image_data_encoded,
+            'active_flag': None,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type='application/json',
+        )
+
+        target_id = response.json()['target_id']
+        request_path = '/targets/' + target_id
+
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path=request_path,
+        )
+
+        target_record = response.json()['target_record']
+        assert target_record['active_flag'] is True
