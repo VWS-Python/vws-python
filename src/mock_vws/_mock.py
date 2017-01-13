@@ -214,10 +214,20 @@ class Target:
         """
         Args:
             name: The name of the target.
+            active_flag: Whether or not the target is active for query.
+            width: The width of the image in scene unit.
 
         Attributes:
             name (str): The name of the target.
             target_id (str): The unique ID of the target.
+            active_flag (bool): Whether or not the target is active for query.
+            width (int): The width of the image in scene unit.
+            tracking_rating (int): The rating of the target recognition image
+                for tracking purposes. In this implementation that is just a
+                random integer between 0 and 5.
+            reco_rating (str): An empty string (for now according to the
+                documentation).
+            status (str): The status of the target.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
