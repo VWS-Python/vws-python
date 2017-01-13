@@ -8,7 +8,7 @@ import base64
 import io
 
 import pytest
-from requests import codes
+from requests import codes, Response
 from requests_mock import GET
 
 from common.constants import ResultCodes
@@ -18,6 +18,29 @@ from tests.mock_vws.utils import (
     assert_vws_response,
 )
 from vws._request_utils import target_api_request
+
+
+def get_target(
+    target_id: str, vuforia_server_credentials: VuforiaServerCredentials
+) -> Response:
+    """
+    Helper to make a request to the endpoint to get a target record.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        target_id: The ID of the target to return a record for.
+
+    Returns:
+        The response returned by the API.
+    """
+    return target_api_request(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=GET,
+        content=b'',
+        request_path='/targets/' + target_id,
+    )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -54,14 +77,9 @@ class TestGetRecord:
         )
 
         target_id = response.json()['target_id']
-        request_path = '/targets/' + target_id
-
-        response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            request_path=request_path,
+        response = get_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
         )
 
         assert_vws_response(
@@ -126,14 +144,9 @@ class TestGetRecord:
         )
 
         target_id = response.json()['target_id']
-        request_path = '/targets/' + target_id
-
-        response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            request_path=request_path,
+        response = get_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
         )
 
         target_record = response.json()['target_record']
@@ -167,14 +180,9 @@ class TestGetRecord:
         )
 
         target_id = response.json()['target_id']
-        request_path = '/targets/' + target_id
-
-        response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            request_path=request_path,
+        response = get_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
         )
 
         target_record = response.json()['target_record']
