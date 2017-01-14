@@ -32,7 +32,7 @@ def update_target(
     content_type: str='application/json',
 ) -> Response:
     """
-    Helper to make a request to the endpoint to add a target.
+    Helper to make a request to the endpoint to update a target.
 
     Args:
         vuforia_server_credentials: The credentials to use to connect to
@@ -118,7 +118,22 @@ class TestContentTypes:
             data=data,
         )
 
-        assert_success(response=response)
+        target_id = response.json()['target_id']
+
+        from time import sleep
+        sleep(10)
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'name': 'Adam'},
+            target_id=target_id,
+            content_type=content_type
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
