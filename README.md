@@ -151,6 +151,13 @@ with MockVWS(real_http=True):
     requests.get('http://example.com')
 ```
 
+## Differences between the mock and the real Vuforia Web Services
+
 The mock attempts to be realistic, but it was built without access to the source code of the original API.
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
 There is no attempt to make the image matching realistic.
+
+The mock responds much more quickly than the real Vuforia Web Services.
+
+Targets are assigned a rating between 0 and 5 of how good they are for tracking purposes.
+In the mock this is a random number between 0 and 5.

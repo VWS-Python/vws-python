@@ -3,6 +3,7 @@ A fake implementation of VWS.
 """
 
 import json
+import random
 import uuid
 from typing import (  # noqa: F401
     Callable,
@@ -50,7 +51,7 @@ def parse_target_id(
     kwargs: Dict
 ) -> str:
     """
-    Parse a target ID in a URL path.
+    Parse a target ID in a URL path and give the method a target argument.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -61,7 +62,8 @@ def parse_target_id(
     Returns:
         The result of calling the endpoint.
         If a target ID is given in the path then the wrapped function is given
-        an extra argument - the target ID.
+        an extra argument - the matching target.
+        A `NOT_FOUND` response if there is no matching target.
     """
     request, context = args
 
@@ -72,12 +74,12 @@ def parse_target_id(
 
     target_id = split_path[-1]
 
-    if not any(
-        [
+    try:
+        [matching_target] = [
             target for target in instance.targets
             if target.target_id == target_id
         ]
-    ):
+    except ValueError:
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
@@ -85,7 +87,7 @@ def parse_target_id(
         context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
         return json.dumps(body)
 
-    new_args = args + (target_id, )
+    new_args = args + (matching_target, )
     return wrapped(*new_args, **kwargs)
 
 
@@ -208,17 +210,32 @@ class Target:
     https://developer.vuforia.com/target-manager.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, active_flag: bool, width: float) -> None:
         """
         Args:
             name: The name of the target.
+            active_flag: Whether or not the target is active for query.
+            width: The width of the image in scene unit.
 
         Attributes:
             name (str): The name of the target.
             target_id (str): The unique ID of the target.
+            active_flag (bool): Whether or not the target is active for query.
+            width (int): The width of the image in scene unit.
+            tracking_rating (int): The rating of the target recognition image
+                for tracking purposes. In this implementation that is just a
+                random integer between 0 and 5.
+            reco_rating (str): An empty string (for now according to the
+                documentation).
+            status (str): The status of the target.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
+        self.active_flag = active_flag
+        self.width = width
+        self.tracking_rating = random.randint(0, 5)
+        self.reco_rating = ''
+        self.status = 'processing'
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -260,7 +277,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
         """
-        name = request.json().get('name')
+        name = request.json()['name']
 
         if any(target.name == name for target in self.targets):
             context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
@@ -270,7 +287,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             }
             return json.dumps(body)
 
-        new_target = Target(name=name)
+        active_flag = request.json().get('active_flag')
+        if active_flag is None:
+            active_flag = True
+
+        new_target = Target(
+            name=request.json()['name'],
+            width=request.json()['width'],
+            active_flag=active_flag,
+        )
         self.targets.append(new_target)
 
         context.status_code = codes.CREATED  # pylint: disable=no-member
@@ -284,9 +309,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,
         context: _Context,
-        target_id: str,
+        target: Target,
     ) -> str:
         """
         Delete a target.
@@ -350,15 +375,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, Union[str, List[str]]]
-
         results = [target.target_id for target in self.targets]
 
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
             'results': results,
-        }
+        }  # type: Dict[str, Union[str, List[str]]]
         return json.dumps(body)
 
     @route(path_pattern='/targets/.+', methods=[GET])
@@ -366,7 +389,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
-        target_id: str,
+        target: Target,
     ) -> str:
         """
         Get details of a target.
@@ -375,18 +398,19 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
         """
         target_record = {
-            'target_id': target_id,
-            'active_flag': '',
-            'name': '',
-            'width': '',
-            'tracking_rating': '',
-            'reco_rating': '',
+            'target_id': target.target_id,
+            'active_flag': target.active_flag,
+            'name': target.name,
+            'width': target.width,
+            'tracking_rating': target.tracking_rating,
+            'reco_rating': target.reco_rating,
         }
+
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
             'target_record': target_record,
-            'status': codes.OK,  # pylint: disable=no-member
+            'status': target.status,
         }
         return json.dumps(body)
 
@@ -395,7 +419,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # pylint: disable=unused-argument
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
@@ -409,7 +433,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # pylint: disable=unused-argument
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Update a target.
@@ -423,7 +447,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target_id: str,  # pylint: disable=unused-argument
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Get a summary report for a target.
