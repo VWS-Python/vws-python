@@ -8,7 +8,7 @@ import base64
 import io
 
 import pytest
-from requests import codes, Response
+from requests import Response, codes
 from requests_mock import GET
 
 from common.constants import ResultCodes
