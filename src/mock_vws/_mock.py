@@ -91,6 +91,35 @@ def parse_target_id(
     return wrapped(*new_args, **kwargs)
 
 
+@wrapt.decorator
+def content_length_header(
+    wrapped: Callable[..., str],
+    instance: 'MockVuforiaTargetAPI',
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict
+) -> str:
+    """
+    Parse a target ID in a URL path and give the method a target argument.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        If a target ID is given in the path then the wrapped function is given
+        an extra argument - the matching target.
+        A `NOT_FOUND` response if there is no matching target.
+    """
+    request, context = args
+
+    result = wrapped(*args, **kwargs)
+    context.headers['Content-Length'] = str(len(result))
+    return result
+
+
 class Route:
     """
     A container for the route details which `requests_mock` needs.
@@ -174,9 +203,11 @@ def route(
                 validate_not_invalid_json,
                 validate_date,
                 validate_auth_header_exists,
+                content_length_header,
             ]
         else:
             validators = [
+                # TODO: Move this to "Modifiers"
                 parse_target_id,
                 validate_authorization,
                 validate_metadata_encoding,
@@ -194,6 +225,7 @@ def route(
                 validate_date,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
+                content_length_header,
             ]
 
         for validator in validators:

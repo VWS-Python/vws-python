@@ -89,7 +89,6 @@ class MockVWS(ContextDecorator):
 
         headers = {
             'Connection': 'keep-alive',
-            'Content-Length': '',
             'Content-Type': 'application/json',
             'Date': '',
             'Server': 'nginx',
