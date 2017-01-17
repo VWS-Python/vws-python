@@ -428,7 +428,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
 
-    @route(path_pattern='/targets/.+', methods=[PUT])
+    @route(path_pattern='/targets/.+', methods=[PUT], optional_keys={'name'})
     def update_target(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
