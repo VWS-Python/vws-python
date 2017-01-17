@@ -74,7 +74,7 @@ def assert_vws_failure(
 
     Raises:
         AssertionError: The response is not in the expected VWS error format
-        for the given codes.
+            for the given codes.
     """
     message = 'Expected {expected}, got {actual}.'
     expected_keys = {'transaction_id', 'result_code'}
@@ -111,7 +111,7 @@ def assert_vws_response(
 
     Raises:
         AssertionError: The response is not in the expected VWS format for the
-        given codes.
+            given codes.
     """
     message = 'Expected {expected}, got {actual}.'
     assert response.status_code == status_code, message.format(
