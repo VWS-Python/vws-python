@@ -94,7 +94,7 @@ def parse_target_id(
 @wrapt.decorator
 def content_length_header(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -113,7 +113,7 @@ def content_length_header(
         an extra argument - the matching target.
         A `NOT_FOUND` response if there is no matching target.
     """
-    request, context = args
+    _, context = args
 
     result = wrapped(*args, **kwargs)
     context.headers['Content-Length'] = str(len(result))
