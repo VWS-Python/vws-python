@@ -197,7 +197,7 @@ def route(
         # There is an undocumented difference in behavior between `/summary`
         # and other endpoints.
         if path_pattern == '/summary':
-            validators = [
+            decorators = [
                 validate_authorization,
                 key_validator,
                 validate_not_invalid_json,
@@ -206,8 +206,7 @@ def route(
                 content_length_header,
             ]
         else:
-            validators = [
-                # TODO: Move this to "Modifiers"
+            decorators = [
                 parse_target_id,
                 validate_authorization,
                 validate_metadata_encoding,
@@ -228,8 +227,8 @@ def route(
                 content_length_header,
             ]
 
-        for validator in validators:
-            method = validator(method)
+        for decorator in decorators:
+            method = decorator(method)
 
         return method
 
