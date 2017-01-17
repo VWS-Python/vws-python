@@ -91,6 +91,32 @@ def parse_target_id(
     return wrapped(*new_args, **kwargs)
 
 
+@wrapt.decorator
+def content_length_header(
+    wrapped: Callable[..., str],
+    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict
+) -> str:
+    """
+    Set the `Content-Length` header to the length
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    _, context = args
+
+    result = wrapped(*args, **kwargs)
+    context.headers['Content-Length'] = str(len(result))
+    return result
+
+
 class Route:
     """
     A container for the route details which `requests_mock` needs.
@@ -168,15 +194,16 @@ def route(
         # There is an undocumented difference in behavior between `/summary`
         # and other endpoints.
         if path_pattern == '/summary':
-            validators = [
+            decorators = [
                 validate_authorization,
                 key_validator,
                 validate_not_invalid_json,
                 validate_date,
                 validate_auth_header_exists,
+                content_length_header,
             ]
         else:
-            validators = [
+            decorators = [
                 parse_target_id,
                 validate_authorization,
                 validate_metadata_encoding,
@@ -194,10 +221,11 @@ def route(
                 validate_date,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
+                content_length_header,
             ]
 
-        for validator in validators:
-            method = validator(method)
+        for decorator in decorators:
+            method = decorator(method)
 
         return method
 

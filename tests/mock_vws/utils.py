@@ -132,6 +132,7 @@ def assert_vws_response(
     }
     assert response.headers.keys() == response_header_keys
     assert response.headers['Connection'] == 'keep-alive'
+    assert response.headers['Content-Length'] == str(len(response.text))
     assert response.headers['Content-Type'] == 'application/json'
     assert response.headers['Server'] == 'nginx'
     transaction_id = response.json()['transaction_id']
