@@ -120,8 +120,6 @@ class TestContentTypes:
 
         target_id = response.json()['target_id']
 
-        from time import sleep
-        sleep(10)
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
             data={'name': 'Adam'},
@@ -131,44 +129,6 @@ class TestContentTypes:
 
         assert_vws_response(
             response=response,
-            status_code=codes.OK,
-            result_code=ResultCodes.SUCCESS,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.TARGET_STATUS_NOT_SUCCESS,
         )
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestName:
-    """
-    """
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestWidth:
-    """
-    """
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestImage:
-    """
-    """
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestActiveFlag:
-    """
-    """
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestApplicationMetadata:
-    """
-    Tests for the application metadata parameter.
-    """
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestUnexpectedData:
-    """
-    Tests for passing data which is not mandatory or allowed to the endpoint.
-    """
