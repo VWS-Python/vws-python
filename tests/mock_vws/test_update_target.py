@@ -3,24 +3,18 @@ Tests for the mock of the update target endpoint.
 """
 
 import base64
-import binascii
 import io
 import json
-from string import hexdigits
-from typing import Any, Dict, Union
+from typing import Any, Dict
 from urllib.parse import urljoin
 
 import pytest
 import requests
 from requests import Response, codes
-from requests_mock import POST, PUT
+from requests_mock import PUT
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import (
-    add_target_to_vws,
-    assert_vws_failure,
-    assert_vws_response,
-)
+from tests.mock_vws.utils import add_target_to_vws, assert_vws_response
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 

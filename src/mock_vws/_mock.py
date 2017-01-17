@@ -428,7 +428,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
 
-    @route(path_pattern='/targets/.+', methods=[PUT], optional_keys={'name'})
+    @route(
+        path_pattern='/targets/.+',
+        methods=[PUT],
+        optional_keys={'name'},
+    )
     def update_target(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -441,6 +445,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
         """
+        context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.TARGET_STATUS_NOT_SUCCESS.value,
+        }  # type: Dict[str, str]
+        return json.dumps(body)
 
     @route(path_pattern='/summary/.+', methods=[GET])
     def target_summary(
