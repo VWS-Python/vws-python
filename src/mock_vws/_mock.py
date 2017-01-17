@@ -99,7 +99,7 @@ def content_length_header(
     kwargs: Dict
 ) -> str:
     """
-    Parse a target ID in a URL path and give the method a target argument.
+    Set the `Content-Length` header to the length
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -109,9 +109,6 @@ def content_length_header(
 
     Returns:
         The result of calling the endpoint.
-        If a target ID is given in the path then the wrapped function is given
-        an extra argument - the matching target.
-        A `NOT_FOUND` response if there is no matching target.
     """
     _, context = args
 
