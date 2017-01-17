@@ -26,3 +26,4 @@ class ResultCodes(Values):
     FAIL = ValueConstant('Fail')
     TARGET_STATUS_PROCESSING = ValueConstant('TargetStatusProcessing')
     REQUEST_QUOTA_REACHED = ValueConstant('RequestQuotaReached')
+    TARGET_STATUS_NOT_SUCCESS = ValueConstant('TargetStatusNotSuccess')

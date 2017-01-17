@@ -20,20 +20,6 @@ from tests.mock_vws.utils import (
 from tests.utils import VuforiaServerCredentials
 
 
-def assert_valid_target_id(target_id: str) -> None:
-    """
-    Assert that a given Target ID is in a valid format.
-
-    Args:
-        target_id: The Target ID to check.
-
-    Raises:
-        AssertionError: The Target ID is not in a valid format.
-    """
-    assert len(target_id) == 32
-    assert all(char in hexdigits for char in target_id)
-
-
 def assert_success(response: Response) -> None:
     """
     Assert that the given response is a success response for adding a
@@ -50,7 +36,9 @@ def assert_success(response: Response) -> None:
     )
     expected_keys = {'result_code', 'transaction_id', 'target_id'}
     assert response.json().keys() == expected_keys
-    assert_valid_target_id(target_id=response.json()['target_id'])
+    target_id = response.json()['target_id']
+    assert len(target_id) == 32
+    assert all(char in hexdigits for char in target_id)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
