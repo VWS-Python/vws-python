@@ -487,7 +487,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def target_summary(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
-        context: _Context,
+        context: _Context,  # pylint: disable=unused-argument
         target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
@@ -496,3 +496,17 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
+        body = {
+            'status': '',
+            'result_code': '',
+            'transaction_id': '',
+            'database_name': '',
+            'target_name': '',
+            'upload_date': '',
+            'active_flag': '',
+            'tracking_rating': '',
+            'total_recos': '',
+            'current_month_recos': '',
+            'previous_month_recos': '',
+        }
+        return json.dumps(body)
