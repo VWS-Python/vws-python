@@ -4,7 +4,6 @@ Utilities for tests for the VWS mock.
 
 import datetime
 import json
-import pytz
 import email.utils
 from string import hexdigits
 from typing import Any, Dict, Optional
