@@ -498,8 +498,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {
             'status': '',
-            'result_code': '',
-            'transaction_id': '',
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.SUCCESS.value,
             'database_name': '',
             'target_name': '',
             'upload_date': '',

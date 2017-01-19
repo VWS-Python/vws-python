@@ -2,12 +2,15 @@
 Tests for the mock of the target summary endpoint.
 """
 
+import pytest
 from urllib.parse import urljoin
 
-import pytest
 import requests
+from requests import codes
 from requests_mock import GET
 
+from common.constants import ResultCodes
+from tests.mock_vws.utils import assert_vws_response
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
@@ -68,3 +71,9 @@ class TestTargetSummary:
         }
 
         assert response.json().keys() == expected_keys
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
