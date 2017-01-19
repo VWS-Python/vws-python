@@ -56,6 +56,12 @@ class TestTargetSummary:
             data='',
         )
 
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
         expected_keys = {
             'status',
             'result_code',
@@ -72,8 +78,4 @@ class TestTargetSummary:
 
         assert response.json().keys() == expected_keys
 
-        assert_vws_response(
-            response=response,
-            status_code=codes.OK,
-            result_code=ResultCodes.SUCCESS,
-        )
+        assert response.json().target_name == 
