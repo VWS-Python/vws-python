@@ -24,7 +24,7 @@ class TestTargetSummary:
         target_id: str,
     ) -> None:
         """
-        XXX
+        A target summary is returned.
         """
         content_type = 'application/json'
         date = rfc_1123_date()
