@@ -154,7 +154,7 @@ def assert_vws_response(
     )
     current_date = datetime.datetime.now()
     time_difference = abs(current_date - datetime_from_response)
-    assert time_difference < datetime.timedelta(seconds=1)
+    assert time_difference < datetime.timedelta(seconds=2)
 
 
 def add_target_to_vws(
