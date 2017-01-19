@@ -3,8 +3,8 @@ Utilities for tests for the VWS mock.
 """
 
 import datetime
-import json
 import email.utils
+import json
 from string import hexdigits
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
