@@ -23,8 +23,8 @@ cache: "pip"
 
 before_script:
     # Run linters
-    - "yapf --diff --parallel --recursive . | python -c '
-import sys;
+    - "yapf --diff --parallel --recursive . |
+        python -c 'import sys;
 result = sys.stdin.read();
 assert not result, result;
       '
