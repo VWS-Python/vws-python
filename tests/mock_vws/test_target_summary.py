@@ -78,4 +78,4 @@ class TestTargetSummary:
 
         assert response.json().keys() == expected_keys
 
-        assert response.json().target_name == 
+        assert response.json().status == 'foo'
