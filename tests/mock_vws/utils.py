@@ -2,7 +2,10 @@
 Utilities for tests for the VWS mock.
 """
 
+import datetime
 import json
+import pytz
+import email.utils
 from string import hexdigits
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
@@ -138,6 +141,12 @@ def assert_vws_response(
     transaction_id = response.json()['transaction_id']
     assert len(transaction_id) == 32
     assert all(char in hexdigits for char in transaction_id)
+    date_response = response.headers['Date']
+    date_from_response = email.utils.parsedate(date_response)
+    datetime_from_response = datetime.datetime(*date_from_response[:6])
+    current_date = datetime.datetime.now()
+    time_difference = abs(current_date - datetime_from_response)
+    assert time_difference < datetime.timedelta(seconds=1)
 
 
 def add_target_to_vws(
