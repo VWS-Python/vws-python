@@ -2,6 +2,8 @@
 Utilities for tests for the VWS mock.
 """
 
+import datetime
+import email.utils
 import json
 from string import hexdigits
 from typing import Any, Dict, Optional
@@ -74,7 +76,7 @@ def assert_vws_failure(
 
     Raises:
         AssertionError: The response is not in the expected VWS error format
-        for the given codes.
+            for the given codes.
     """
     message = 'Expected {expected}, got {actual}.'
     expected_keys = {'transaction_id', 'result_code'}
@@ -111,7 +113,7 @@ def assert_vws_response(
 
     Raises:
         AssertionError: The response is not in the expected VWS format for the
-        given codes.
+            given codes.
     """
     message = 'Expected {expected}, got {actual}.'
     assert response.status_code == status_code, message.format(
@@ -138,6 +140,21 @@ def assert_vws_response(
     transaction_id = response.json()['transaction_id']
     assert len(transaction_id) == 32
     assert all(char in hexdigits for char in transaction_id)
+    date_response = response.headers['Date']
+    date_from_response = email.utils.parsedate(date_response)
+    assert date_from_response is not None
+    year, month, day, hour, minute, second, _, _, _ = date_from_response
+    datetime_from_response = datetime.datetime(
+        year=year,
+        month=month,
+        day=day,
+        hour=hour,
+        minute=minute,
+        second=second,
+    )
+    current_date = datetime.datetime.now()
+    time_difference = abs(current_date - datetime_from_response)
+    assert time_difference < datetime.timedelta(seconds=2)
 
 
 def add_target_to_vws(

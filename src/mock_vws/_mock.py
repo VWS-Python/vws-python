@@ -2,6 +2,7 @@
 A fake implementation of VWS.
 """
 
+import email.utils
 import json
 import random
 import uuid
@@ -92,14 +93,14 @@ def parse_target_id(
 
 
 @wrapt.decorator
-def content_length_header(
+def headers(
     wrapped: Callable[..., str],
     instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
     """
-    Set the `Content-Length` header to the length
+    Set the `Content-Length` and `Date` headers.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -114,6 +115,8 @@ def content_length_header(
 
     result = wrapped(*args, **kwargs)
     context.headers['Content-Length'] = str(len(result))
+    date = email.utils.formatdate(None, localtime=False, usegmt=True)
+    context.headers['Date'] = date
     return result
 
 
@@ -200,7 +203,7 @@ def route(
                 validate_not_invalid_json,
                 validate_date,
                 validate_auth_header_exists,
-                content_length_header,
+                headers,
             ]
         else:
             decorators = [
@@ -221,7 +224,7 @@ def route(
                 validate_date,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
-                content_length_header,
+                headers,
             ]
 
         for decorator in decorators:
