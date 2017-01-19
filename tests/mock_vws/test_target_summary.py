@@ -54,10 +54,6 @@ class TestTargetSummary:
         )
 
         expected_keys = {
-            'result_code',
-        }
-
-        expected_keys = {
             'status',
             'result_code',
             'transaction_id',
