@@ -142,7 +142,16 @@ def assert_vws_response(
     assert all(char in hexdigits for char in transaction_id)
     date_response = response.headers['Date']
     date_from_response = email.utils.parsedate(date_response)
-    datetime_from_response = datetime.datetime(*date_from_response[:6])
+    assert date_from_response is not None
+    year, month, day, hour, minute, second, _, _, _ = date_from_response
+    datetime_from_response = datetime.datetime(
+        year=year,
+        month=month,
+        day=day,
+        hour=hour,
+        minute=minute,
+        second=second,
+    )
     current_date = datetime.datetime.now()
     time_difference = abs(current_date - datetime_from_response)
     assert time_difference < datetime.timedelta(seconds=1)
