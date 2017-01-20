@@ -488,7 +488,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
-        target: Target,  # pylint: disable=unused-argument
+        target: Target,
     ) -> str:
         """
         Get a summary report for a target.
@@ -501,7 +501,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
             'database_name': '',
-            'target_name': '',
+            'target_name': target.name,
             'upload_date': '',
             'active_flag': '',
             'tracking_rating': '',
