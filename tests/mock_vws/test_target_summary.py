@@ -12,7 +12,7 @@ from requests_mock import GET
 from common.constants import ResultCodes
 from tests.mock_vws.utils import assert_vws_response
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import authorization_header, rfc_1123_date
+from vws._request_utils import target_api_request
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -29,31 +29,14 @@ class TestTargetSummary:
         """
         A target summary is returned.
         """
-        content_type = 'application/json'
-        date = rfc_1123_date()
         request_path = '/summary/' + target_id
 
-        authorization_string = authorization_header(
+        response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
             method=GET,
             content=b'',
-            content_type=content_type,
-            date=date,
             request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=GET,
-            url=urljoin('https://vws.vuforia.com/', request_path),
-            headers=headers,
-            data='',
         )
 
         assert_vws_response(
@@ -79,3 +62,13 @@ class TestTargetSummary:
         assert response.json().keys() == expected_keys
 
         assert response.json()['status'] == 'processing'
+
+    @pytest.mark.parametrize('active_flag', [True, False])
+    def test_active_flag(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
+    ) -> None:
+        """
+        XXX
+        """
