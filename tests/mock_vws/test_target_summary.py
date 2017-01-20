@@ -2,9 +2,9 @@
 Tests for the mock of the target summary endpoint.
 """
 
-import pytest
 from urllib.parse import urljoin
 
+import pytest
 import requests
 from requests import codes
 from requests_mock import GET
