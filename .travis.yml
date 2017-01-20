@@ -23,7 +23,12 @@ cache: "pip"
 
 before_script:
     # Run linters
-    - "yapf --diff --parallel --recursive . | python -c \"import sys; assert 'reformatted' not in sys.stdin.read()\""
+    - "yapf --diff --parallel --recursive . |
+        python -c 'import sys;
+result = sys.stdin.read();
+assert not result, result;
+      '
+      "
     - "flake8 ."
     - "pylint src/vws"
     - "pylint src/mock_vws"
