@@ -236,7 +236,7 @@ def route(
     return decorator
 
 
-class Target:
+class Target:  # pylint: disable=too-many-instance-attributes
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
