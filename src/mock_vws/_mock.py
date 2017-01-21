@@ -496,13 +496,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
+
+        upload_date = target.upload_date.strftime
         body = {
             'status': target.status,
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
             'database_name': '',
             'target_name': target.name,
-            'upload_date': '',
+            'upload_date': upload_date,
             'active_flag': target.active_flag,
             'tracking_rating': '',
             'total_recos': '',
