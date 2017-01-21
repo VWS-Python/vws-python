@@ -74,3 +74,36 @@ class TestTargetSummary:
         assert response.json().keys() == expected_keys
         assert response.json()['status'] == 'processing'
         assert response.json()['target_name'] == name
+
+    @pytest.mark.parametrize('active_flag', [True, False])
+    def test_active_flag(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+        active_flag: bool,
+    ) -> None:
+        """
+        The active flag of the target is returned.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        target_response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={
+                'name': 'example',
+                'width': 1,
+                'image': image_data_encoded,
+                'active_flag': active_flag,
+            }
+        )
+
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/summary/' + target_response.json()['target_id'],
+        )
+
+        assert response.json()['active_flag'] == active_flag
