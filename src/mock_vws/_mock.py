@@ -2,6 +2,7 @@
 A fake implementation of VWS.
 """
 
+import datetime
 import email.utils
 import json
 import random
@@ -259,6 +260,7 @@ class Target:
             reco_rating (str): An empty string (for now according to the
                 documentation).
             status (str): The status of the target.
+            upload_date: The time that the target was created.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
@@ -267,6 +269,7 @@ class Target:
         self.tracking_rating = random.randint(0, 5)
         self.reco_rating = ''
         self.status = 'processing'
+        self.upload_date = datetime.datetime.now()  # type: datetime.datetime
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -496,15 +499,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
         """
-
-        upload_date = target.upload_date.strftime
         body = {
             'status': target.status,
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
             'database_name': '',
             'target_name': target.name,
-            'upload_date': upload_date,
+            'upload_date': target.upload_date.strftime('%Y-%m-%d'),
             'active_flag': target.active_flag,
             'tracking_rating': '',
             'total_recos': '',
