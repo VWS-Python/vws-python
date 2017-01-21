@@ -3,6 +3,7 @@ Tests for the mock of the target summary endpoint.
 """
 
 import base64
+import datetime
 import io
 
 import pytest
@@ -34,6 +35,8 @@ class TestTargetSummary:
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
+        date_before_add_target = datetime.datetime.now().date()
+
         target_response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data={
@@ -42,6 +45,8 @@ class TestTargetSummary:
                 'image': image_data_encoded,
             }
         )
+
+        date_after_add_target = datetime.datetime.now().date()
 
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
@@ -74,6 +79,13 @@ class TestTargetSummary:
         assert response.json().keys() == expected_keys
         assert response.json()['status'] == 'processing'
         assert response.json()['target_name'] == name
+
+        # In case the date changes while adding a target
+        # we allow the date before and after adding the target.
+        assert response.json()['upload_date'] in (
+            date_before_add_target.strftime('%Y-%m-%d'),
+            date_after_add_target.strftime('%Y-%m-%d'),
+        )
 
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag(
