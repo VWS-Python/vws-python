@@ -81,7 +81,6 @@ class TestTargetSummary:
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
         active_flag: bool,
-        target_id: str,
     ) -> None:
         """
         The active flag of the target is returned.

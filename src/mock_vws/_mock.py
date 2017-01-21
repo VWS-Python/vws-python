@@ -503,7 +503,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'database_name': '',
             'target_name': target.name,
             'upload_date': '',
-            'active_flag': '',
+            'active_flag': target.active_flag,
             'tracking_rating': '',
             'total_recos': '',
             'current_month_recos': '',
