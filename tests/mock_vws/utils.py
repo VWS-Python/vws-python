@@ -78,12 +78,7 @@ def assert_vws_failure(
         AssertionError: The response is not in the expected VWS error format
             for the given codes.
     """
-    message = 'Expected {expected}, got {actual}.'
-    expected_keys = {'transaction_id', 'result_code'}
-    assert response.json().keys() == expected_keys, message.format(
-        expected=expected_keys,
-        actual=response.json().keys(),
-    )
+    assert response.json().keys() == {'transaction_id', 'result_code'}
     assert_vws_response(
         response=response,
         status_code=status_code,
@@ -115,16 +110,9 @@ def assert_vws_response(
         AssertionError: The response is not in the expected VWS format for the
             given codes.
     """
-    message = 'Expected {expected}, got {actual}.'
-    assert response.status_code == status_code, message.format(
-        expected=status_code,
-        actual=response.status_code,
-    )
+    assert response.status_code == status_code
     response_result_code = response.json()['result_code']
-    assert response_result_code == result_code.value, message.format(
-        expected=result_code.value,
-        actual=response_result_code,
-    )
+    assert response_result_code == result_code.value
     response_header_keys = {
         'Connection',
         'Content-Length',
