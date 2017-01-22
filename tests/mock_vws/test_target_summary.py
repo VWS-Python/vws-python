@@ -90,6 +90,9 @@ class TestTargetSummary:
             date_after_add_target.strftime('%Y-%m-%d'),
         )
 
+        tracking_rating = 1
+        assert response.json()['tracking_rating'] == tracking_rating
+
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag(
         self,
