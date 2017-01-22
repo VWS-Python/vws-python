@@ -35,9 +35,20 @@ def _image_file(file_format: str, color_space: str) -> io.BytesIO:
         color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
     """
     image_buffer = io.BytesIO()
-    width = 1
-    height = 1
-    image = Image.new(color_space, (width, height))
+    width = 500
+    height = 500
+    import random
+    red = random.randint(0, 255)
+    green = random.randint(0, 255)
+    blue = random.randint(0, 255)
+    image = Image.new(color_space, (width, height), color=(red, green, blue))
+    pixels = image.load()
+    for i in range(height):
+        for j in range(width):
+            red = random.randint(0, 255)
+            green = random.randint(0, 255)
+            blue = random.randint(0, 255)
+            pixels[i, j] = (red, blue, green)
     image.save(image_buffer, file_format)
     image_buffer.seek(0)
     return image_buffer
@@ -48,6 +59,9 @@ def png_rgb() -> io.BytesIO:
     """
     Return a PNG file in the RGB color space.
     """
+    # with open('/Users/Adam/Desktop/foo.png', 'rb') as f:
+    #     image_buffer = io.BytesIO(f.read())
+    #     return image_buffer
     return _image_file(file_format='PNG', color_space='RGB')
 
 

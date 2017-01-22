@@ -187,3 +187,44 @@ class TestGetRecord:
 
         target_record = response.json()['target_record']
         assert target_record['active_flag'] is True
+
+    def test_get_target_foo(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        Details of a target are returned.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        name = 'my_example_name'
+        width = 1234
+
+        data = {
+            'name': name,
+            'width': width,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type='application/json',
+        )
+
+        target_id = response.json()['target_id']
+
+        for i in range(30):
+            response = get_target(
+                target_id=target_id,
+                vuforia_server_credentials=vuforia_server_credentials
+            )
+
+            target_record = response.json()['target_record']
+            print(response.json()['status'])
+            print(target_record['tracking_rating'])
+            from time import sleep
+            sleep(2)

@@ -392,6 +392,7 @@ def validate_image_format(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.BAD_IMAGE.value,
     }
+    import pdb; pdb.set_trace()
     return json.dumps(body)
 
 
@@ -438,6 +439,7 @@ def validate_image_color_space(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.BAD_IMAGE.value,
     }
+    import pdb; pdb.set_trace()
     return json.dumps(body)
 
 
@@ -529,6 +531,7 @@ def validate_image_is_image(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.BAD_IMAGE.value,
         }
+        import pdb; pdb.set_trace()
         return json.dumps(body)
 
     return wrapped(*args, **kwargs)
