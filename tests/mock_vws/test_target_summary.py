@@ -78,6 +78,8 @@ class TestTargetSummary:
 
         assert response.json().keys() == expected_keys
         assert response.json()['status'] == 'processing'
+        assert response.json()['database_name'] == (
+            vuforia_server_credentials.database_name)
         assert response.json()['target_name'] == name
 
         # In case the date changes while adding a target
