@@ -53,3 +53,7 @@ class TestSummary:
             'total_recos',
             'transaction_id',
         }
+
+        assert response.json()['name'] == (
+            vuforia_server_credentials.database_name
+        )
