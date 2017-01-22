@@ -15,6 +15,7 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
     Return VWS credentials from environment variables.
     """
     credentials = VuforiaServerCredentials(
+        database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     )  # type: VuforiaServerCredentials

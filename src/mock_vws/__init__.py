@@ -83,6 +83,7 @@ class MockVWS(ContextDecorator):
             ``self``.
         """
         fake_target_api = MockVuforiaTargetAPI(
+            database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
             access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
         )
@@ -90,7 +91,6 @@ class MockVWS(ContextDecorator):
         headers = {
             'Connection': 'keep-alive',
             'Content-Type': 'application/json',
-            'Date': '',
             'Server': 'nginx',
         }
         with Mocker(real_http=self.real_http) as mock:
