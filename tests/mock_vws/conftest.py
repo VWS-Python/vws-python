@@ -25,6 +25,7 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
+
 def _image_file(file_format: str, color_space: str) -> io.BytesIO:
     """
     Return an image file in the given format and color space.
