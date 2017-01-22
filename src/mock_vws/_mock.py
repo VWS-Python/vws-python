@@ -279,19 +279,26 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    def __init__(self, access_key: str, secret_key: str) -> None:
+    def __init__(
+        self, access_key: str, secret_key: str, database_name: str
+    ) -> None:
         """
         Args:
+            database_name: The name of a VWS target manager database name.
             access_key: A VWS access key.
             secret_key: A VWS secret key.
 
         Attributes:
+            database_name: The name of a VWS target manager database name.
             access_key: A VWS access key.
             secret_key: A VWS secret key.
+            targets: The ``Target``s in the database.
             routes: The `Route`s to be used in the mock.
         """
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
+
+        self.database_name = database_name
 
         self.targets = []  # type: List[Target]
         self.routes = ROUTES  # type: Set[Route]
@@ -503,7 +510,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'status': target.status,
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
-            'database_name': '',
+            'database_name': self.database_name,
             'target_name': target.name,
             'upload_date': target.upload_date.strftime('%Y-%m-%d'),
             'active_flag': target.active_flag,
