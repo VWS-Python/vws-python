@@ -219,7 +219,7 @@ class TestGetRecord:
 
         target_id = response.json()['target_id']
 
-        for i in range(20):
+        for _ in range(20):
             response = get_target(
                 target_id=target_id,
                 vuforia_server_credentials=vuforia_server_credentials
