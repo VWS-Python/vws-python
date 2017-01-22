@@ -90,7 +90,6 @@ class MockVWS(ContextDecorator):
         headers = {
             'Connection': 'keep-alive',
             'Content-Type': 'application/json',
-            'Date': '',
             'Server': 'nginx',
         }
         with Mocker(real_http=self.real_http) as mock:
