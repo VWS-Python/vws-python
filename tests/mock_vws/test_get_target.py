@@ -12,7 +12,7 @@ import pytest
 from requests import Response, codes
 from requests_mock import GET
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaServerCredentials,
     add_target_to_vws,
@@ -111,7 +111,7 @@ class TestGetRecord:
 
         assert set(target_record.keys()) == expected_target_record_keys
         assert target_id == target_record['target_id']
-        assert response.json()['status'] == 'processing'
+        assert response.json()['status'] == TargetStatuses.PROCESSING.value
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
@@ -225,9 +225,9 @@ class TestGetRecord:
                 vuforia_server_credentials=vuforia_server_credentials
             )
 
-            if response.json()['status'] != 'processing':
+            if response.json()['status'] != TargetStatuses.PROCESSING.value:
                 break
 
             sleep(0.1)
 
-        assert response.json()['status'] == 'failed'
+        assert response.json()['status'] == TargetStatuses.FAILED.value
