@@ -46,6 +46,8 @@ class TestTargetSummary:
             }
         )
 
+        target_id = target_response.json()['target_id']
+
         date_after_add_target = datetime.datetime.now().date()
 
         response = target_api_request(
@@ -53,7 +55,7 @@ class TestTargetSummary:
             secret_key=vuforia_server_credentials.secret_key,
             method=GET,
             content=b'',
-            request_path='/summary/' + target_response.json()['target_id'],
+            request_path='/summary/' + target_id,
         )
 
         assert_vws_response(
@@ -90,7 +92,16 @@ class TestTargetSummary:
             date_after_add_target.strftime('%Y-%m-%d'),
         )
 
-        tracking_rating = 1
+        get_target_response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/targets/' + target_id,
+        )
+
+        target_record = get_target_response.json()['target_record']
+        tracking_rating = target_record['tracking_rating']
         assert response.json()['tracking_rating'] == tracking_rating
 
     @pytest.mark.parametrize('active_flag', [True, False])
