@@ -13,6 +13,6 @@ pytest-cov==2.4.0  # Measure code coverage
 pytest-envfiles==0.1.0  # Use files for environment variables for tests
 pytest==3.0.5  # Test runners
 retrying==1.3.3  # Rety flaky tests
-sphinx==1.5.1  # Build documentation
+sphinx==1.5.2  # Build documentation
 sphinx_rtd_theme==0.1.10a0  # Theme for documentation
 yapf==0.15.1  # Automatic formatting for Python
