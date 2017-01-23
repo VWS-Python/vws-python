@@ -228,6 +228,11 @@ def wait_for_target_processed(
     """
     Wait up to 15 seconds (arbitrary) for a target to get past the processing
     stage.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        target_id: The ID of the target to wait for.
     """
     for _ in range(150):
         response = get_vws_target(
@@ -239,3 +244,5 @@ def wait_for_target_processed(
             return
 
         sleep(0.1)
+
+    raise Exception("Wait not long enough.")
