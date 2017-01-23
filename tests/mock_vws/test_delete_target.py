@@ -58,7 +58,7 @@ class TestDelete:
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
-        XXX
+        When a target has finished processing, it can be deleted.
         """
         wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
