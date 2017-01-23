@@ -11,7 +11,11 @@ from requests import codes
 from requests_mock import GET
 
 from common.constants import ResultCodes, TargetStatuses
-from tests.mock_vws.utils import add_target_to_vws, assert_vws_response
+from tests.mock_vws.utils import (
+    add_target_to_vws,
+    assert_vws_response,
+    wait_for_target_processed,
+)
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
@@ -90,6 +94,14 @@ class TestTargetSummary:
         assert response.json()['upload_date'] in (
             date_before_add_target.strftime('%Y-%m-%d'),
             date_after_add_target.strftime('%Y-%m-%d'),
+        )
+
+        # The tracking rating may change during processing.
+        # Therefore we wait until processing ends.
+
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
         )
 
         get_target_response = target_api_request(
