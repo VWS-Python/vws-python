@@ -222,7 +222,7 @@ def get_vws_target(
     )
 
 
-@timeout_decorator.timeout(seconds=15)
+@timeout_decorator.timeout(seconds=30)
 def wait_for_target_processed(
     vuforia_server_credentials: VuforiaServerCredentials,
     target_id: str,
