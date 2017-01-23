@@ -6,16 +6,22 @@ import datetime
 import email.utils
 import json
 from string import hexdigits
+from time import sleep
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
 import requests
+import timeout_decorator
 from requests import Response
-from requests_mock import POST
+from requests_mock import GET, POST
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import authorization_header, rfc_1123_date
+from vws._request_utils import (
+    authorization_header,
+    rfc_1123_date,
+    target_api_request,
+)
 
 
 class Endpoint:
@@ -191,3 +197,56 @@ def add_target_to_vws(
     )
 
     return response
+
+
+def get_vws_target(
+    target_id: str, vuforia_server_credentials: VuforiaServerCredentials
+) -> Response:
+    """
+    Helper to make a request to the endpoint to get a target record.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        target_id: The ID of the target to return a record for.
+
+    Returns:
+        The response returned by the API.
+    """
+    return target_api_request(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=GET,
+        content=b'',
+        request_path='/targets/' + target_id,
+    )
+
+
+@timeout_decorator.timeout(seconds=15)
+def wait_for_target_processed(
+    vuforia_server_credentials: VuforiaServerCredentials,
+    target_id: str,
+) -> None:
+    """
+    Wait up to 15 seconds (arbitrary) for a target to get past the processing
+    stage.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        target_id: The ID of the target to wait for.
+
+    Raises:
+        TimeoutError: The target remained in the processing stage for more
+            than 15 seconds.
+    """
+    while True:
+        response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        if response.json()['status'] != TargetStatuses.PROCESSING.value:
+            return
+
+        sleep(0.1)
