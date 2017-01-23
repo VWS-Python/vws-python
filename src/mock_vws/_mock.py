@@ -374,14 +374,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, str]
 
-        target_id = request.path.split('/')[-1]
-        for target in self.targets:
-            if target.target_id == target_id:
-                context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
-                body = {
-                    'transaction_id': uuid.uuid4().hex,
-                    'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
-                }
+        context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
+        }
         return json.dumps(body)
 
     @route(path_pattern='/summary', methods=[GET])
