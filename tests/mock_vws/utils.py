@@ -245,4 +245,4 @@ def wait_for_target_processed(
 
         sleep(0.1)
 
-    raise Exception("Wait not long enough.")
+    raise Exception("Wait not long enough.")  # pragma: no cover
