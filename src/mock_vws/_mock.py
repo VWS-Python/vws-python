@@ -254,9 +254,6 @@ class Target:
             target_id (str): The unique ID of the target.
             active_flag (bool): Whether or not the target is active for query.
             width (int): The width of the image in scene unit.
-            tracking_rating (int): The rating of the target recognition image
-                for tracking purposes. In this implementation that is just a
-                random integer between 0 and 5.
             reco_rating (str): An empty string (for now according to the
                 documentation).
             upload_date: The time that the target was created.
@@ -265,9 +262,9 @@ class Target:
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.tracking_rating = random.randint(0, 5)
         self.reco_rating = ''
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
+        self._tracking_rating = random.randint(0, 5)
 
     @property
     def status(self) -> str:
@@ -282,6 +279,19 @@ class Target:
             return TargetStatuses.FAILED.value
 
         return TargetStatuses.PROCESSING.value
+
+    @property
+    def tracking_rating(self) -> int:
+        """
+        Return the tracking rating of the target recognition image.
+
+        In this implementation that is just a random integer between 0 and 5.
+        The rating is -1 while the target is being processed.
+        """
+        if self.status == TargetStatuses.PROCESSING.value:
+            return -1
+
+        return self._tracking_rating
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -534,7 +544,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'target_name': target.name,
             'upload_date': target.upload_date.strftime('%Y-%m-%d'),
             'active_flag': target.active_flag,
-            'tracking_rating': '',
+            'tracking_rating': target.tracking_rating,
             'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',
