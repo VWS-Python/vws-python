@@ -362,9 +362,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(
         self,
-        request: _RequestObjectProxy,
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target: Target,
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Delete a target.
@@ -384,7 +384,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/summary', methods=[GET])
     def database_summary(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
     ) -> str:
         """
