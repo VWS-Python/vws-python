@@ -10,7 +10,7 @@ import pytest
 from requests import codes
 from requests_mock import GET
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import add_target_to_vws, assert_vws_response
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
@@ -79,7 +79,7 @@ class TestTargetSummary:
         }
 
         assert response.json().keys() == expected_keys
-        assert response.json()['status'] == 'processing'
+        assert response.json()['status'] == TargetStatuses.PROCESSING.value
         assert response.json()['database_name'] == (
             vuforia_server_credentials.database_name
         )

@@ -23,7 +23,7 @@ from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 
 from ._validators import (
     validate_active_flag,
@@ -236,7 +236,7 @@ def route(
     return decorator
 
 
-class Target:  # pylint: disable=too-many-instance-attributes
+class Target:
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
@@ -259,7 +259,6 @@ class Target:  # pylint: disable=too-many-instance-attributes
                 random integer between 0 and 5.
             reco_rating (str): An empty string (for now according to the
                 documentation).
-            status (str): The status of the target.
             upload_date: The time that the target was created.
         """
         self.name = name
@@ -268,8 +267,21 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.width = width
         self.tracking_rating = random.randint(0, 5)
         self.reco_rating = ''
-        self.status = 'processing'
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
+
+    @property
+    def status(self) -> str:
+        """
+        Return the status of the target.
+
+        For now this waits half a second (arbitrary) before changing the
+        status from 'processing' to 'failed'.
+        """
+        processing_time = datetime.timedelta(seconds=0.5)
+        if (datetime.datetime.now() - self.upload_date) > processing_time:
+            return TargetStatuses.FAILED.value
+
+        return TargetStatuses.PROCESSING.value
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
