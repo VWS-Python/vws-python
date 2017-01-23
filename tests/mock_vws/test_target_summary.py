@@ -96,12 +96,45 @@ class TestTargetSummary:
             date_after_add_target.strftime('%Y-%m-%d'),
         )
 
+        # While processing the tracking rating is -1.
+        assert response.json()['tracking_rating'] == -1
+
+    def test_after_processing(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        After processing is completed, the tracking rating is in the range of
+        0 to 5.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        target_response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={
+                'name': 'example',
+                'width': 1,
+                'image': image_data_encoded,
+            }
+        )
+
+        target_id = target_response.json()['target_id']
+
         # The tracking rating may change during processing.
         # Therefore we wait until processing ends.
-
         wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
             target_id=target_id,
+        )
+
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/summary/' + target_id,
         )
 
         get_target_response = target_api_request(
@@ -115,6 +148,8 @@ class TestTargetSummary:
         target_record = get_target_response.json()['target_record']
         tracking_rating = target_record['tracking_rating']
         assert response.json()['tracking_rating'] == tracking_rating
+        assert response.json()['tracking_rating'] in range(5)
+        assert response.json()['status'] == TargetStatuses.FAILED.value
 
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag(
