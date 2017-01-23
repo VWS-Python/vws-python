@@ -23,7 +23,7 @@ from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 
 from ._validators import (
     validate_active_flag,
@@ -236,7 +236,7 @@ def route(
     return decorator
 
 
-class Target:  # pylint: disable=too-many-instance-attributes
+class Target:
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
@@ -279,9 +279,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
         """
         processing_time = datetime.timedelta(seconds=0.5)
         if (datetime.datetime.now() - self.upload_date) > processing_time:
-            return 'failed'
+            return TargetStatuses.FAILED.value
 
-        return 'processing'
+        return TargetStatuses.PROCESSING.value
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
