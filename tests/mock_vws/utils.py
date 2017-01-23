@@ -11,6 +11,7 @@ from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
 import requests
+import timeout_decorator
 from requests import Response
 from requests_mock import GET, POST
 
@@ -221,6 +222,7 @@ def get_vws_target(
     )
 
 
+@timeout_decorator.timeout(seconds=15)
 def wait_for_target_processed(
     vuforia_server_credentials: VuforiaServerCredentials,
     target_id: str,
@@ -233,8 +235,12 @@ def wait_for_target_processed(
         vuforia_server_credentials: The credentials to use to connect to
             Vuforia.
         target_id: The ID of the target to wait for.
+
+    Raises:
+        TimeoutError: The target remained in the processing stage for more
+            than 15 seconds.
     """
-    for _ in range(150):
+    while True:
         response = get_vws_target(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
@@ -244,5 +250,3 @@ def wait_for_target_processed(
             return
 
         sleep(0.1)
-
-    raise Exception("Wait not long enough.")  # pragma: no cover
