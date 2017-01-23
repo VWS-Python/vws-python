@@ -374,10 +374,21 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, str]
 
-        context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+        if target.status == TargetStatuses.PROCESSING.value:
+            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
+            }
+            return json.dumps(body)
+
+        self.targets = [
+            item for item in self.targets if item.target_id != target.target_id
+        ]
+
         body = {
             'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
+            'result_code': ResultCodes.SUCCESS.value,
         }
         return json.dumps(body)
 
