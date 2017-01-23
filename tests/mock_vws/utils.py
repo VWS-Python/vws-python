@@ -222,13 +222,13 @@ def get_vws_target(
     )
 
 
-@timeout_decorator.timeout(seconds=15)
+@timeout_decorator.timeout(seconds=60)
 def wait_for_target_processed(
     vuforia_server_credentials: VuforiaServerCredentials,
     target_id: str,
 ) -> None:
     """
-    Wait up to 15 seconds (arbitrary) for a target to get past the processing
+    Wait up to one minute (arbitrary) for a target to get past the processing
     stage.
 
     Args:
