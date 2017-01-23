@@ -12,10 +12,10 @@ from requests import codes
 
 from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
+    VuforiaServerCredentials,
     add_target_to_vws,
     assert_vws_response,
     get_vws_target,
-    VuforiaServerCredentials,
     wait_for_target_processed,
 )
 
