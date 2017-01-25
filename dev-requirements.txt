@@ -9,6 +9,7 @@ mypy-lang==0.4.6  # Type checking
 pydocstyle==1.1.1  # Lint docstrings
 pyenchant==1.6.8  # Bindings for a spellchecking sytem
 pylint==1.6.5  # Lint
+pyroma==2.2  # Packaging best practices checker
 pytest-cov==2.4.0  # Measure code coverage
 pytest-envfiles==0.1.0  # Use files for environment variables for tests
 pytest==3.0.6  # Test runners
