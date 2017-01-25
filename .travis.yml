@@ -29,11 +29,8 @@ result = sys.stdin.read();
 assert not result, result;
       '
       "
-	# Pyroma checks packaging. It gives a status code of 0 if there are <= 2
-	# issues.
-	#
-	# This requires there to be 0 issues.
-	- "pyroma . |
+    # Require 0 pyroma errors. It usually exits with status 0 on <= 8 errors.
+    - "pyroma . |
         python -c 'import sys;
 result = sys.stdin.read();
 assert 'Final rating: 10/10' in result, result;
