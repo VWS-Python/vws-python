@@ -37,7 +37,8 @@ assert not result, result;
         python -c 'import sys;
 result = sys.stdin.read();
 assert 'Final rating: 10/10' in result, result;
-	"
+      '
+      "
     - "flake8 ."
     - "pylint src/vws"
     - "pylint src/mock_vws"
