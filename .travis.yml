@@ -33,7 +33,7 @@ assert not result, result;
     - "pyroma . |
         python -c 'import sys;
 result = sys.stdin.read();
-assert \'Final rating: 10/10\' in result, result;
+assert \"Final rating: 10/10\" in result, result;
       '
       "
     - "flake8 ."
