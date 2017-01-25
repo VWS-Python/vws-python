@@ -148,7 +148,7 @@ class TestTargetSummary:
         target_record = get_target_response.json()['target_record']
         tracking_rating = target_record['tracking_rating']
         assert response.json()['tracking_rating'] == tracking_rating
-        assert response.json()['tracking_rating'] in range(5)
+        assert response.json()['tracking_rating'] in range(6)
         assert response.json()['status'] == TargetStatuses.FAILED.value
 
     @pytest.mark.parametrize('active_flag', [True, False])
