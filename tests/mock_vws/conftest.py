@@ -84,7 +84,7 @@ def png_large(
 @pytest.fixture
 def jpeg_cmyk() -> io.BytesIO:
     """
-    Return a 1x1 PNG file in the CMYK color space.
+    Return a 1x1 JPEG file in the CMYK color space.
     """
     return _image_file(file_format='JPEG', color_space='CMYK')
 
