@@ -161,3 +161,8 @@ The mock responds much more quickly than the real Vuforia Web Services.
 
 Targets are assigned a rating between 0 and 5 of how good they are for tracking purposes.
 In the mock this is a random number between 0 and 5.
+
+Image targets which are not suited to detection are given 'Fail' statuses.
+The criteria for these images is not defined by the Vuforia documentation.
+This mock is more forgiving than the real Vuforia Web Services;
+in the mock, only images which consist completely of one color are given 'Fail' statuses.
