@@ -5,6 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 import base64
 import io
 import os
+import random
 import uuid
 # This is used in a type hint which linters not pick up on.
 from typing import Any  # noqa: F401 pylint: disable=unused-import
@@ -37,7 +38,6 @@ def _image_file(file_format: str, color_space: str) -> io.BytesIO:
     image_buffer = io.BytesIO()
     width = 500
     height = 500
-    import random
     red = random.randint(0, 255)
     green = random.randint(0, 255)
     blue = random.randint(0, 255)
@@ -50,6 +50,21 @@ def _image_file(file_format: str, color_space: str) -> io.BytesIO:
             blue = random.randint(0, 255)
             pixels[i, j] = (red, blue, green)
     image.save(image_buffer, file_format)
+    image_buffer.seek(0)
+    return image_buffer
+
+
+@pytest.fixture
+def png_rgb_small() -> io.BytesIO:
+    """
+    Return a PNG file in the RGB color space.
+    """
+    color_space = 'RGB'
+    width = 1
+    height = 1
+    image = Image.new(color_space, (width, height))
+    image_buffer = io.BytesIO()
+    image.save(image_buffer, 'PNG')
     image_buffer.seek(0)
     return image_buffer
 

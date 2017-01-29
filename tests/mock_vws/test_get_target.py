@@ -161,11 +161,14 @@ class TestGetRecord:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
+        png_rgb_small,
     ) -> None:
         """
         When a 1x1 image is given, the status changes from 'processing' to
         failed after some time.
         """
+        import PIL
+        import pdb; pdb.set_trace()
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
