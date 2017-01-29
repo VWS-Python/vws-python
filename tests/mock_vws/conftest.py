@@ -25,7 +25,9 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-def _image_file(file_format: str, color_space: str) -> io.BytesIO:
+def _image_file(
+    file_format: str, color_space: str, width: int, height: int
+) -> io.BytesIO:
     """
     Return an image file in the given format and color space.
 
@@ -33,10 +35,10 @@ def _image_file(file_format: str, color_space: str) -> io.BytesIO:
         file_format: See
             http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
         color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
+        width: The width, in pixels of the image.
+        height: The width, in pixels of the image.
     """
     image_buffer = io.BytesIO()
-    width = 1
-    height = 1
     image = Image.new(color_space, (width, height))
     image.save(image_buffer, file_format)
     image_buffer.seek(0)
@@ -48,7 +50,7 @@ def png_rgb() -> io.BytesIO:
     """
     Return a 1x1 PNG file in the RGB color space.
     """
-    return _image_file(file_format='PNG', color_space='RGB')
+    return _image_file(file_format='PNG', color_space='RGB', width=1, height=1)
 
 
 @pytest.fixture
@@ -56,7 +58,7 @@ def png_greyscale() -> io.BytesIO:
     """
     Return a 1x1 PNG file in the greyscale color space.
     """
-    return _image_file(file_format='PNG', color_space='L')
+    return _image_file(file_format='PNG', color_space='L', width=1, height=1)
 
 
 @pytest.fixture()
@@ -86,7 +88,9 @@ def jpeg_cmyk() -> io.BytesIO:
     """
     Return a 1x1 JPEG file in the CMYK color space.
     """
-    return _image_file(file_format='JPEG', color_space='CMYK')
+    return _image_file(
+        file_format='JPEG', color_space='CMYK', width=1, height=1
+    )
 
 
 @pytest.fixture
@@ -94,7 +98,9 @@ def jpeg_rgb() -> io.BytesIO:
     """
     Return a 1x1 JPEG file in the RGB color space.
     """
-    return _image_file(file_format='JPEG', color_space='RGB')
+    return _image_file(
+        file_format='JPEG', color_space='RGB', width=1, height=1
+    )
 
 
 @pytest.fixture
@@ -105,7 +111,9 @@ def tiff_rgb() -> io.BytesIO:
     This is given as an option which is not supported by Vuforia as Vuforia
     supports only JPEG and PNG files.
     """
-    return _image_file(file_format='TIFF', color_space='RGB')
+    return _image_file(
+        file_format='TIFF', color_space='RGB', width=1, height=1
+    )
 
 
 @pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale', 'png_large'])
