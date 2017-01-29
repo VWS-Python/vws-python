@@ -26,9 +26,13 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
-def _image_file(file_format: str, color_space: str) -> io.BytesIO:
+def _image_file(
+    file_format: str, color_space: str, width: int, height: int
+) -> io.BytesIO:
     """
     Return an image file in the given format and color space.
+
+    The image file is filled with randomly colored pixels.
 
     Args:
         file_format: See
@@ -36,56 +40,44 @@ def _image_file(file_format: str, color_space: str) -> io.BytesIO:
         color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
     """
     image_buffer = io.BytesIO()
-    width = 500
-    height = 500
-    red = random.randint(0, 255)
-    green = random.randint(0, 255)
-    blue = random.randint(0, 255)
-    image = Image.new(color_space, (width, height), color=(red, green, blue))
+    image = Image.new(color_space, (width, height))
     pixels = image.load()
     for i in range(height):
         for j in range(width):
             red = random.randint(0, 255)
             green = random.randint(0, 255)
             blue = random.randint(0, 255)
-            pixels[i, j] = (red, blue, green)
+            if color_space != 'L':
+                pixels[i, j] = (red, green, blue)
     image.save(image_buffer, file_format)
     image_buffer.seek(0)
     return image_buffer
 
 
 @pytest.fixture
-def png_rgb_small() -> io.BytesIO:
+def png_rgb_success() -> io.BytesIO:
     """
-    Return a PNG file in the RGB color space.
+    Return a PNG file in the RGB color space which is expected to have a .
     """
-    color_space = 'RGB'
-    width = 1
-    height = 1
-    image = Image.new(color_space, (width, height))
-    image_buffer = io.BytesIO()
-    image.save(image_buffer, 'PNG')
-    image_buffer.seek(0)
-    return image_buffer
+    return _image_file(
+        file_format='PNG', color_space='RGB', width=5, height=5
+    )
 
 
 @pytest.fixture
 def png_rgb() -> io.BytesIO:
     """
-    Return a PNG file in the RGB color space.
+    Return 1x1 PNG file in the RGB color space.
     """
-    # with open('/Users/Adam/Desktop/foo.png', 'rb') as f:
-    #     image_buffer = io.BytesIO(f.read())
-    #     return image_buffer
-    return _image_file(file_format='PNG', color_space='RGB')
+    return _image_file(file_format='PNG', color_space='RGB', width=1, height=1)
 
 
 @pytest.fixture
 def png_greyscale() -> io.BytesIO:
     """
-    Return a PNG file in the greyscale color space.
+    Return a 1x1 PNG file in the greyscale color space.
     """
-    return _image_file(file_format='PNG', color_space='L')
+    return _image_file(file_format='PNG', color_space='L', width=1, height=1)
 
 
 @pytest.fixture()
@@ -113,34 +105,43 @@ def png_large(
 @pytest.fixture
 def jpeg_cmyk() -> io.BytesIO:
     """
-    Return a PNG file in the CMYK color space.
+    Return a 1x1 JPEG file in the CMYK color space.
     """
-    return _image_file(file_format='JPEG', color_space='CMYK')
+    return _image_file(
+        file_format='JPEG', color_space='CMYK', width=1, height=1
+    )
 
 
 @pytest.fixture
 def jpeg_rgb() -> io.BytesIO:
     """
-    Return a JPEG file in the RGB color space.
+    Return a 1z1 JPEG file in the RGB color space.
     """
-    return _image_file(file_format='JPEG', color_space='RGB')
+    return _image_file(
+        file_format='JPEG', color_space='RGB', width=1, height=1
+    )
 
 
 @pytest.fixture
 def tiff_rgb() -> io.BytesIO:
     """
-    Return a TIFF file in the RGB color space.
+    Return a 1x1 TIFF file in the RGB color space.
 
     This is given as an option which is not supported by Vuforia as Vuforia
     supports only JPEG and PNG files.
     """
-    return _image_file(file_format='TIFF', color_space='RGB')
+    return _image_file(
+        file_format='TIFF', color_space='RGB', width=1, height=1
+    )
 
 
 @pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale', 'png_large'])
 def image_file(request: SubRequest) -> io.BytesIO:
     """
     Return an image file which is expected to work on Vuforia.
+
+    "work" means that this will be added as a target. However, this may or may
+    not
     """
     return request.getfixturevalue(request.param)
 
