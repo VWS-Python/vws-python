@@ -27,3 +27,16 @@ class ResultCodes(Values):
     TARGET_STATUS_PROCESSING = ValueConstant('TargetStatusProcessing')
     REQUEST_QUOTA_REACHED = ValueConstant('RequestQuotaReached')
     TARGET_STATUS_NOT_SUCCESS = ValueConstant('TargetStatusNotSuccess')
+
+
+class TargetStatuses(Values):
+    """
+    Constants representing VWS target statuses.
+
+    See the 'status' field in
+    https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
+    """
+
+    PROCESSING = ValueConstant('processing')
+    SUCCESS = ValueConstant('success')
+    FAILED = ValueConstant('failed')

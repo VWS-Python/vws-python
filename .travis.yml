@@ -27,6 +27,13 @@ before_script:
         python -c 'import sys;
 result = sys.stdin.read();
 assert not result, result;
+     ' ''
+/"
+    # Require 0 pyroma errors. It usually exits with status 0 on <= 8 errors.
+    - "pyroma . |
+        python -c 'import sys;
+result = sys.stdin.read();
+assert \"Final rating: 10/10\" in result, result;
       '
       "
     - "flake8 ."

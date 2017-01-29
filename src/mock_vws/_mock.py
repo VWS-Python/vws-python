@@ -23,7 +23,7 @@ from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 
 from ._validators import (
     validate_active_flag,
@@ -236,7 +236,7 @@ def route(
     return decorator
 
 
-class Target:  # pylint: disable=too-many-instance-attributes
+class Target:
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
@@ -254,22 +254,44 @@ class Target:  # pylint: disable=too-many-instance-attributes
             target_id (str): The unique ID of the target.
             active_flag (bool): Whether or not the target is active for query.
             width (int): The width of the image in scene unit.
-            tracking_rating (int): The rating of the target recognition image
-                for tracking purposes. In this implementation that is just a
-                random integer between 0 and 5.
             reco_rating (str): An empty string (for now according to the
                 documentation).
-            status (str): The status of the target.
             upload_date: The time that the target was created.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.tracking_rating = random.randint(0, 5)
         self.reco_rating = ''
-        self.status = 'processing'
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
+        self._tracking_rating = random.randint(0, 5)
+
+    @property
+    def status(self) -> str:
+        """
+        Return the status of the target.
+
+        For now this waits half a second (arbitrary) before changing the
+        status from 'processing' to 'failed'.
+        """
+        processing_time = datetime.timedelta(seconds=0.5)
+        if (datetime.datetime.now() - self.upload_date) > processing_time:
+            return TargetStatuses.FAILED.value
+
+        return TargetStatuses.PROCESSING.value
+
+    @property
+    def tracking_rating(self) -> int:
+        """
+        Return the tracking rating of the target recognition image.
+
+        In this implementation that is just a random integer between 0 and 5.
+        The rating is -1 while the target is being processed.
+        """
+        if self.status == TargetStatuses.PROCESSING.value:
+            return -1
+
+        return self._tracking_rating
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
@@ -350,9 +372,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(path_pattern='/targets/.+', methods=[DELETE])
     def delete_target(
         self,
-        request: _RequestObjectProxy,
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target: Target,
+        target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
         Delete a target.
@@ -362,20 +384,28 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, str]
 
-        target_id = request.path.split('/')[-1]
-        for target in self.targets:
-            if target.target_id == target_id:
-                context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
-                body = {
-                    'transaction_id': uuid.uuid4().hex,
-                    'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
-                }
+        if target.status == TargetStatuses.PROCESSING.value:
+            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
+            }
+            return json.dumps(body)
+
+        self.targets = [
+            item for item in self.targets if item.target_id != target.target_id
+        ]
+
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.SUCCESS.value,
+        }
         return json.dumps(body)
 
     @route(path_pattern='/summary', methods=[GET])
     def database_summary(
         self,
-        request: _RequestObjectProxy,  # noqa: E501 pylint: disable=unused-argument
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
     ) -> str:
         """
@@ -514,7 +544,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'target_name': target.name,
             'upload_date': target.upload_date.strftime('%Y-%m-%d'),
             'active_flag': target.active_flag,
-            'tracking_rating': '',
+            'tracking_rating': target.tracking_rating,
             'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',

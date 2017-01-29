@@ -8,39 +8,16 @@ import base64
 import io
 
 import pytest
-from requests import Response, codes
-from requests_mock import GET
+from requests import codes
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaServerCredentials,
     add_target_to_vws,
     assert_vws_response,
+    get_vws_target,
+    wait_for_target_processed,
 )
-from vws._request_utils import target_api_request
-
-
-def get_target(
-    target_id: str, vuforia_server_credentials: VuforiaServerCredentials
-) -> Response:
-    """
-    Helper to make a request to the endpoint to get a target record.
-
-    Args:
-        vuforia_server_credentials: The credentials to use to connect to
-            Vuforia.
-        target_id: The ID of the target to return a record for.
-
-    Returns:
-        The response returned by the API.
-    """
-    return target_api_request(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
-        method=GET,
-        content=b'',
-        request_path='/targets/' + target_id,
-    )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -49,7 +26,7 @@ class TestGetRecord:
     Tests for getting a target record.
     """
 
-    def test_get_target(
+    def test_get_vws_target(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
@@ -77,7 +54,7 @@ class TestGetRecord:
         )
 
         target_id = response.json()['target_id']
-        response = get_target(
+        response = get_vws_target(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
         )
@@ -110,7 +87,7 @@ class TestGetRecord:
 
         assert set(target_record.keys()) == expected_target_record_keys
         assert target_id == target_record['target_id']
-        assert response.json()['status'] == 'processing'
+        assert response.json()['status'] == TargetStatuses.PROCESSING.value
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
@@ -128,23 +105,19 @@ class TestGetRecord:
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        name = 'my_example_name'
-        width = 1234
-
         data = {
-            'name': name,
-            'width': width,
+            'name': 'my_example_name',
+            'width': 1234,
             'image': image_data_encoded,
         }
 
         response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
-            content_type='application/json',
         )
 
         target_id = response.json()['target_id']
-        response = get_target(
+        response = get_vws_target(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
         )
@@ -163,12 +136,9 @@ class TestGetRecord:
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        name = 'my_example_name'
-        width = 1234
-
         data = {
-            'name': name,
-            'width': width,
+            'name': 'my_example_name',
+            'width': 1234,
             'image': image_data_encoded,
             'active_flag': None,
         }
@@ -176,11 +146,10 @@ class TestGetRecord:
         response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
-            content_type='application/json',
         )
 
         target_id = response.json()['target_id']
-        response = get_target(
+        response = get_vws_target(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
         )
@@ -188,43 +157,40 @@ class TestGetRecord:
         target_record = response.json()['target_record']
         assert target_record['active_flag'] is True
 
-    def test_get_target_foo(
+    def test_fail_status(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        Details of a target are returned.
+        When a 1x1 image is given, the status changes from 'processing' to
+        failed after some time.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        name = 'my_example_name'
-        width = 1234
-
         data = {
-            'name': name,
-            'width': width,
+            'name': 'my_example_name',
+            'width': 1234,
             'image': image_data_encoded,
-            'active_flag': False,
+            'active_flag': None,
         }
 
         response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
-            content_type='application/json',
         )
 
         target_id = response.json()['target_id']
 
-        for i in range(30):
-            response = get_target(
-                target_id=target_id,
-                vuforia_server_credentials=vuforia_server_credentials
-            )
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
 
-            target_record = response.json()['target_record']
-            print(response.json()['status'])
-            print(target_record['tracking_rating'])
-            from time import sleep
-            sleep(2)
+        response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert response.json()['status'] == TargetStatuses.FAILED.value

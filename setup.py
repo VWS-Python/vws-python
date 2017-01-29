@@ -19,12 +19,16 @@ setup(
     name="VWS Python",
     version="0.1",
     author="Adam Dangoor",
+    author_email='adamdangoor@gmail.com',
     description="Interact with the Vuforia Web Services (VWS) API.",
     long_description=long_description,
     license='MIT',
     packages=find_packages(
         where='src', exclude='common'
     ),
+    zip_safe=False,
+    url='http://vws-python.readthedocs.io',
+    keywords='vuforia mock fake client',
     package_dir={'': 'src'},
     install_requires=install_requires,
     extras_require={"dev": dev_requires, },
@@ -32,5 +36,6 @@ setup(
         'Operating System :: POSIX',
         'Environment :: Web Environment',
         'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 3.5',
     ],
 )
