@@ -91,6 +91,7 @@ class TestGetRecord:
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
+        # Tracking rating is -1 while processing
         assert target_record['tracking_rating'] == -1
         assert target_record['reco_rating'] == ''
 
@@ -179,7 +180,7 @@ class TestGetRecord:
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
-
+G
         target_id = response.json()['target_id']
 
         wait_for_target_processed(
@@ -193,3 +194,5 @@ class TestGetRecord:
         )
 
         assert response.json()['status'] == TargetStatuses.FAILED.value
+        # Tracking rating is 0 when status is 'failed'
+        assert response.json()['target_record']['tracking_rating'] == 0

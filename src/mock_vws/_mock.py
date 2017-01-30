@@ -291,6 +291,9 @@ class Target:
         if self.status == TargetStatuses.PROCESSING.value:
             return -1
 
+        if self.status == TargetStatuses.FAILED.value:
+            return 0
+
         return self._tracking_rating
 
 
