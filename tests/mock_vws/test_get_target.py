@@ -180,7 +180,7 @@ class TestGetRecord:
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
-G
+
         target_id = response.json()['target_id']
 
         wait_for_target_processed(
