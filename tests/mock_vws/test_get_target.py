@@ -193,3 +193,44 @@ class TestGetRecord:
         )
 
         assert response.json()['status'] == TargetStatuses.FAILED.value
+
+    def test_success_status(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb_success: io.BytesIO,
+    ) -> None:
+        """
+        When a random, large enough image is given, the status changes from
+        'processing' to 'success' after some time.
+
+        The mock is much more lenient than the real implementation of VWS.
+        The test image does not prove that what is counted as a success in the
+        mock will be counted as a success in the real implementation.
+        """
+        image_data = png_rgb_success.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'my_example_name',
+            'width': 1234,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert response.json()['status'] == TargetStatuses.SUCCESS.value

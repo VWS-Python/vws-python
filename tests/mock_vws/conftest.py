@@ -5,6 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 import base64
 import io
 import os
+import random
 import uuid
 # This is used in a type hint which linters not pick up on.
 from typing import Any  # noqa: F401 pylint: disable=unused-import
@@ -31,6 +32,8 @@ def _image_file(
     """
     Return an image file in the given format and color space.
 
+    The image file is filled with randomly colored pixels.
+
     Args:
         file_format: See
             http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
@@ -40,9 +43,27 @@ def _image_file(
     """
     image_buffer = io.BytesIO()
     image = Image.new(color_space, (width, height))
+    pixels = image.load()
+    for i in range(height):
+        for j in range(width):
+            red = random.randint(0, 255)
+            green = random.randint(0, 255)
+            blue = random.randint(0, 255)
+            if color_space != 'L':
+                pixels[i, j] = (red, green, blue)
     image.save(image_buffer, file_format)
     image_buffer.seek(0)
     return image_buffer
+
+
+@pytest.fixture
+def png_rgb_success() -> io.BytesIO:
+    """
+    Return a PNG file in the RGB color space which is expected to have a .
+    """
+    return _image_file(
+        file_format='PNG', color_space='RGB', width=5, height=5
+    )
 
 
 @pytest.fixture
@@ -120,6 +141,9 @@ def tiff_rgb() -> io.BytesIO:
 def image_file(request: SubRequest) -> io.BytesIO:
     """
     Return an image file which is expected to work on Vuforia.
+
+    "work" means that this will be added as a target. However, this may or may
+    not
     """
     return request.getfixturevalue(request.param)
 
