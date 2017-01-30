@@ -164,7 +164,7 @@ class TestGetRecord:
     ) -> None:
         """
         When a 1x1 image is given, the status changes from 'processing' to
-        failed after some time.
+        'failed' after some time.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -173,7 +173,6 @@ class TestGetRecord:
             'name': 'my_example_name',
             'width': 1234,
             'image': image_data_encoded,
-            'active_flag': None,
         }
 
         response = add_target_to_vws(
