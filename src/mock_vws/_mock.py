@@ -7,6 +7,7 @@ import email.utils
 import json
 import random
 import uuid
+import statistics
 from typing import (  # noqa: F401
     Callable,
     Dict,
@@ -18,6 +19,7 @@ from typing import (  # noqa: F401
 )
 
 import wrapt
+from PIL import Image, ImageStat
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
@@ -275,10 +277,16 @@ class Target:
         status from 'processing' to 'failed'.
         """
         processing_time = datetime.timedelta(seconds=0.5)
-        if (datetime.datetime.now() - self.upload_date) > processing_time:
-            return TargetStatuses.FAILED.value
+        if (datetime.datetime.now() - self.upload_date) <= processing_time:
+            return TargetStatuses.PROCESSING.value
 
-        return TargetStatuses.PROCESSING.value
+        image = Image(self._image)
+        image_stat = ImageStat(image)
+
+        average_std_dev = statistics.mean(image_stat.stddev)
+
+        import pdb; pdb.set_trace()
+        return TargetStatuses.FAILED.value
 
     @property
     def tracking_rating(self) -> int:
