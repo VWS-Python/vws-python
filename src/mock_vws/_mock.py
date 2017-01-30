@@ -299,7 +299,7 @@ class Target:
         if self.status == TargetStatuses.PROCESSING.value:
             return -1
 
-        return self._tracking_rating
+        return 0
 
 
 class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
