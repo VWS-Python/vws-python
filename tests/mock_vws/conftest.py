@@ -61,9 +61,7 @@ def png_rgb_success() -> io.BytesIO:
     """
     Return a PNG file in the RGB color space which is expected to have a .
     """
-    return _image_file(
-        file_format='PNG', color_space='RGB', width=5, height=5
-    )
+    return _image_file(file_format='PNG', color_space='RGB', width=5, height=5)
 
 
 @pytest.fixture
