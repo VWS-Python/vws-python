@@ -5,6 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 import base64
 import io
 import os
+import random
 import uuid
 # This is used in a type hint which linters not pick up on.
 from typing import Any  # noqa: F401 pylint: disable=unused-import
@@ -31,6 +32,8 @@ def _image_file(
     """
     Return an image file in the given format and color space.
 
+    The image file is filled with randomly colored pixels.
+
     Args:
         file_format: See
             http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
@@ -40,6 +43,14 @@ def _image_file(
     """
     image_buffer = io.BytesIO()
     image = Image.new(color_space, (width, height))
+    pixels = image.load()
+    for i in range(height):
+        for j in range(width):
+            red = random.randint(0, 255)
+            green = random.randint(0, 255)
+            blue = random.randint(0, 255)
+            if color_space != 'L':
+                pixels[i, j] = (red, green, blue)
     image.save(image_buffer, file_format)
     image_buffer.seek(0)
     return image_buffer
