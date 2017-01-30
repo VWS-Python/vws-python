@@ -38,6 +38,8 @@ def _image_file(
         file_format: See
             http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
         color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
+        width: The width, in pixels of the image.
+        height: The width, in pixels of the image.
     """
     image_buffer = io.BytesIO()
     image = Image.new(color_space, (width, height))
@@ -67,7 +69,7 @@ def png_rgb_success() -> io.BytesIO:
 @pytest.fixture
 def png_rgb() -> io.BytesIO:
     """
-    Return 1x1 PNG file in the RGB color space.
+    Return a 1x1 PNG file in the RGB color space.
     """
     return _image_file(file_format='PNG', color_space='RGB', width=1, height=1)
 
@@ -115,7 +117,7 @@ def jpeg_cmyk() -> io.BytesIO:
 @pytest.fixture
 def jpeg_rgb() -> io.BytesIO:
     """
-    Return a 1z1 JPEG file in the RGB color space.
+    Return a 1x1 JPEG file in the RGB color space.
     """
     return _image_file(
         file_format='JPEG', color_space='RGB', width=1, height=1
