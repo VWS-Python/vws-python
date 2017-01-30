@@ -194,6 +194,8 @@ class TestGetRecord:
         )
 
         assert response.json()['status'] == TargetStatuses.FAILED.value
+        # Tracking rating is 0 when status is 'failed'
+        assert response.json()['target_record']['tracking_rating'] == 0
 
     def test_success_status(
         self,
@@ -235,5 +237,6 @@ class TestGetRecord:
         )
 
         assert response.json()['status'] == TargetStatuses.SUCCESS.value
-        # Tracking rating is 0 when status is 'failed'
-        assert response.json()['target_record']['tracking_rating'] == 0
+        # Tracking rating is >0  when status is 'success'
+        tracking_rating = response.json()['target_record']['tracking_rating']
+        assert tracking_rating in range(5)
