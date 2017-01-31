@@ -290,7 +290,7 @@ def validate_width(
     width_positive = width_is_number and width >= 0
 
     if not width_positive:
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,

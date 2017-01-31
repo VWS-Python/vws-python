@@ -2,10 +2,13 @@
 A fake implementation of VWS.
 """
 
+import base64
 import datetime
 import email.utils
+import io
 import json
 import random
+import statistics
 import uuid
 from typing import (  # noqa: F401
     Callable,
@@ -18,6 +21,7 @@ from typing import (  # noqa: F401
 )
 
 import wrapt
+from PIL import Image, ImageStat
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
@@ -240,31 +244,38 @@ class Target:
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
+
+    Attributes:
+        reco_rating (str): An empty string (for now according to the
+            documentation).
     """
 
-    def __init__(self, name: str, active_flag: bool, width: float) -> None:
+    reco_rating = ''
+
+    def __init__(
+        self, name: str, active_flag: bool, width: float, image: io.BytesIO
+    ) -> None:
         """
         Args:
             name: The name of the target.
             active_flag: Whether or not the target is active for query.
             width: The width of the image in scene unit.
+            image: The image associated with the target.
 
         Attributes:
             name (str): The name of the target.
             target_id (str): The unique ID of the target.
             active_flag (bool): Whether or not the target is active for query.
             width (int): The width of the image in scene unit.
-            reco_rating (str): An empty string (for now according to the
-                documentation).
             upload_date: The time that the target was created.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.reco_rating = ''
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
         self._tracking_rating = random.randint(0, 5)
+        self._image = image
 
     @property
     def status(self) -> str:
@@ -272,24 +283,41 @@ class Target:
         Return the status of the target.
 
         For now this waits half a second (arbitrary) before changing the
-        status from 'processing' to 'failed'.
+        status from 'processing' to 'failed' or 'success'.
+
+        The status depends on the standard deviation of the color bands.
+        How VWS determines this is unknown, but it relates to how suitable the
+        target is for detection.
         """
         processing_time = datetime.timedelta(seconds=0.5)
-        if (datetime.datetime.now() - self.upload_date) > processing_time:
-            return TargetStatuses.FAILED.value
+        if (datetime.datetime.now() - self.upload_date) <= processing_time:
+            return TargetStatuses.PROCESSING.value
 
-        return TargetStatuses.PROCESSING.value
+        image = Image.open(self._image)
+        image_stat = ImageStat.Stat(image)
+
+        average_std_dev = statistics.mean(image_stat.stddev)
+
+        if average_std_dev > 5:
+            return TargetStatuses.SUCCESS.value
+
+        return TargetStatuses.FAILED.value
 
     @property
     def tracking_rating(self) -> int:
         """
         Return the tracking rating of the target recognition image.
 
-        In this implementation that is just a random integer between 0 and 5.
+        In this implementation that is just a random integer between 0 and 5
+        if the target status is 'success'.
+        The rating is 0 if the target status is 'failed'.
         The rating is -1 while the target is being processed.
         """
         if self.status == TargetStatuses.PROCESSING.value:
             return -1
+
+        if self.status == TargetStatuses.SUCCESS.value:
+            return self._tracking_rating
 
         return 0
 
@@ -343,7 +371,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         name = request.json()['name']
 
         if any(target.name == name for target in self.targets):
-            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_NAME_EXIST.value,
@@ -354,9 +382,14 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         if active_flag is None:
             active_flag = True
 
+        image = request.json()['image']
+        decoded = base64.b64decode(image)
+        image_file = io.BytesIO(decoded)
+
         new_target = Target(
             name=request.json()['name'],
             width=request.json()['width'],
+            image=image_file,
             active_flag=active_flag,
         )
         self.targets.append(new_target)
@@ -374,7 +407,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target: Target,  # pylint: disable=unused-argument
+        target: Target,
     ) -> str:
         """
         Delete a target.

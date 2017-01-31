@@ -159,5 +159,13 @@ There is no attempt to make the image matching realistic.
 
 The mock responds much more quickly than the real Vuforia Web Services.
 
+Targets in the mock are set to 'processing' for half a second.
+In the real Vuforia Web Services, this takes varying lengths of time.
+
 Targets are assigned a rating between 0 and 5 of how good they are for tracking purposes.
 In the mock this is a random number between 0 and 5.
+
+Image targets which are not suited to detection are given 'failed' statuses.
+The criteria for these images is not defined by the Vuforia documentation.
+The mock is more forgiving than the real Vuforia Web Services.
+Therefore, an image given a 'success' status by the mock may not be given a 'success' status by the real Vuforia Web Services.

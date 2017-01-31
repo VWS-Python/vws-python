@@ -57,6 +57,15 @@ def _image_file(
 
 
 @pytest.fixture
+def png_rgb_success() -> io.BytesIO:
+    """
+    Return a PNG file in the RGB color space which is expected to have a
+    'success' status when added to a target.
+    """
+    return _image_file(file_format='PNG', color_space='RGB', width=5, height=5)
+
+
+@pytest.fixture
 def png_rgb() -> io.BytesIO:
     """
     Return a 1x1 PNG file in the RGB color space.
@@ -131,6 +140,9 @@ def tiff_rgb() -> io.BytesIO:
 def image_file(request: SubRequest) -> io.BytesIO:
     """
     Return an image file which is expected to work on Vuforia.
+
+    "work" means that this will be added as a target. However, this may or may
+    not result in target with a 'success' status.
     """
     return request.getfixturevalue(request.param)
 

@@ -196,3 +196,56 @@ class TestGetRecord:
         assert response.json()['status'] == TargetStatuses.FAILED.value
         # Tracking rating is 0 when status is 'failed'
         assert response.json()['target_record']['tracking_rating'] == 0
+
+    def test_success_status(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb_success: io.BytesIO,
+    ) -> None:
+        """
+        When a random, large enough image is given, the status changes from
+        'processing' to 'success' after some time.
+
+        The mock is much more lenient than the real implementation of VWS.
+        The test image does not prove that what is counted as a success in the
+        mock will be counted as a success in the real implementation.
+        """
+        image_data = png_rgb_success.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'my_example_name',
+            'width': 1234,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert response.json()['status'] == TargetStatuses.SUCCESS.value
+        # Tracking rating is between 0 and 5 when status is 'success'
+        tracking_rating = response.json()['target_record']['tracking_rating']
+        assert tracking_rating in range(5)
+
+        # The tracking rating stays stable across requests
+        response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+        new_target_record = response.json()['target_record']
+        new_tracking_rating = new_target_record['tracking_rating']
+        assert new_tracking_rating == tracking_rating
