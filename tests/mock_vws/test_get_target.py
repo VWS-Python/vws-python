@@ -91,7 +91,8 @@ class TestGetRecord:
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
-        assert target_record['tracking_rating'] in {-1, 0, 1, 2, 3, 4, 5}
+        # Tracking rating is -1 while processing
+        assert target_record['tracking_rating'] == -1
         assert target_record['reco_rating'] == ''
 
     def test_active_flag_not_set(
@@ -193,3 +194,5 @@ class TestGetRecord:
         )
 
         assert response.json()['status'] == TargetStatuses.FAILED.value
+        # Tracking rating is 0 when status is 'failed'
+        assert response.json()['target_record']['tracking_rating'] == 0
