@@ -237,7 +237,7 @@ class TestGetRecord:
         )
 
         assert response.json()['status'] == TargetStatuses.SUCCESS.value
-        # Tracking rating is > 0  when status is 'success'
+        # Tracking rating is between 0 and 5 when status is 'success'
         tracking_rating = response.json()['target_record']['tracking_rating']
         assert tracking_rating in range(5)
 
