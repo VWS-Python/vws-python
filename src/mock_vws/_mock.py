@@ -8,8 +8,8 @@ import email.utils
 import io
 import json
 import random
-import uuid
 import statistics
+import uuid
 from typing import (  # noqa: F401
     Callable,
     Dict,
