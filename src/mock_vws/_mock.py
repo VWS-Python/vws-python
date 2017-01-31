@@ -2,8 +2,10 @@
 A fake implementation of VWS.
 """
 
+import base64
 import datetime
 import email.utils
+import io
 import json
 import random
 import uuid
@@ -244,12 +246,15 @@ class Target:
     https://developer.vuforia.com/target-manager.
     """
 
-    def __init__(self, name: str, active_flag: bool, width: float) -> None:
+    def __init__(
+        self, name: str, active_flag: bool, width: float, image: io.BytesIO
+    ) -> None:
         """
         Args:
             name: The name of the target.
             active_flag: Whether or not the target is active for query.
             width: The width of the image in scene unit.
+            image: The image associated with the target.
 
         Attributes:
             name (str): The name of the target.
@@ -267,6 +272,7 @@ class Target:
         self.reco_rating = ''
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
         self._tracking_rating = random.randint(0, 5)
+        self._image = image
 
     @property
     def status(self) -> str:
@@ -362,9 +368,14 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         if active_flag is None:
             active_flag = True
 
+        image = request.json()['image']
+        decoded = base64.b64decode(image)
+        image_file = io.BytesIO(decoded)
+
         new_target = Target(
             name=request.json()['name'],
             width=request.json()['width'],
+            image=image_file,
             active_flag=active_flag,
         )
         self.targets.append(new_target)
