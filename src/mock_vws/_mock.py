@@ -244,7 +244,13 @@ class Target:
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
+
+    Attributes:
+        reco_rating (str): An empty string (for now according to the
+            documentation).
     """
+
+    reco_rating = ''
 
     def __init__(
         self, name: str, active_flag: bool, width: float, image: io.BytesIO
@@ -261,15 +267,12 @@ class Target:
             target_id (str): The unique ID of the target.
             active_flag (bool): Whether or not the target is active for query.
             width (int): The width of the image in scene unit.
-            reco_rating (str): An empty string (for now according to the
-                documentation).
             upload_date: The time that the target was created.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.reco_rating = ''
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
         self._tracking_rating = random.randint(0, 5)
         self._image = image
