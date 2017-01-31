@@ -351,7 +351,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         name = request.json()['name']
 
         if any(target.name == name for target in self.targets):
-            context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_NAME_EXIST.value,
@@ -382,7 +382,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-        target: Target,  # pylint: disable=unused-argument
+        target: Target,
     ) -> str:
         """
         Delete a target.
