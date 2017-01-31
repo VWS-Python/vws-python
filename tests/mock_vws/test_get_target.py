@@ -237,6 +237,15 @@ class TestGetRecord:
         )
 
         assert response.json()['status'] == TargetStatuses.SUCCESS.value
-        # Tracking rating is >0  when status is 'success'
+        # Tracking rating is > 0  when status is 'success'
         tracking_rating = response.json()['target_record']['tracking_rating']
         assert tracking_rating in range(5)
+
+        # The tracking rating stays stable across requests
+        response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+        new_target_record = response.json()['target_record']
+        new_tracking_rating = new_target_record['tracking_rating']
+        assert new_tracking_rating == tracking_rating

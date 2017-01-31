@@ -280,18 +280,24 @@ class Target:
         Return the status of the target.
 
         For now this waits half a second (arbitrary) before changing the
-        status from 'processing' to 'failed'.
+        status from 'processing' to 'failed' or 'success'.
+
+        The status depends on the standard deviation of the color bands.
+        How VWS determines this is unknown, but it relates to how suitable the
+        target is for detection.
         """
         processing_time = datetime.timedelta(seconds=0.5)
         if (datetime.datetime.now() - self.upload_date) <= processing_time:
             return TargetStatuses.PROCESSING.value
 
-        image = Image(self._image)
-        image_stat = ImageStat(image)
+        image = Image.open(self._image)
+        image_stat = ImageStat.Stat(image)
 
         average_std_dev = statistics.mean(image_stat.stddev)
 
-        import pdb; pdb.set_trace()
+        if average_std_dev > 5:
+            return TargetStatuses.SUCCESS.value
+
         return TargetStatuses.FAILED.value
 
     @property
@@ -299,11 +305,16 @@ class Target:
         """
         Return the tracking rating of the target recognition image.
 
-        In this implementation that is just a random integer between 0 and 5.
+        In this implementation that is just a random integer between 0 and 5
+        if the target status is 'success'.
+        The rating is 0 if the target status is 'failed'.
         The rating is -1 while the target is being processed.
         """
         if self.status == TargetStatuses.PROCESSING.value:
             return -1
+
+        if self.status == TargetStatuses.SUCCESS.value:
+            return self._tracking_rating
 
         return 0
 
