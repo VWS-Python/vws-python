@@ -96,7 +96,7 @@ class TestContentTypes:
         content_type: str,
     ) -> None:
         """
-        Any `Content-Type` header is allowed.
+        The `Content-Type` header does not change the response.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -121,8 +121,34 @@ class TestContentTypes:
             content_type=content_type
         )
 
+        # Code is FORBIDDEN because the target is processing
         assert_vws_response(
             response=response,
             status_code=codes.FORBIDDEN,
             result_code=ResultCodes.TARGET_STATUS_NOT_SUCCESS,
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestWidth:
+    pass
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestTargetName:
+    pass
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestActiveFlag:
+    pass
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestUnexpectedData:
+    pass
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestApplicationMetadata:
+    pass
