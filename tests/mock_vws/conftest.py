@@ -23,7 +23,7 @@ from common.constants import ResultCodes
 from mock_vws import MockVWS
 from tests.mock_vws.utils import Endpoint, add_target_to_vws
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import authorization_header, rfc_1123_date
+from vws._request_utils import target_api_request
 
 
 def _image_file(
@@ -175,31 +175,16 @@ def _delete_target(
     Raises:
         AssertionError: The deletion was not a success.
     """
-    date = rfc_1123_date()
-
-    authorization_string = authorization_header(
+    response = target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=DELETE,
         content=b'',
-        content_type='',
-        date=date,
         request_path='/targets/{target}'.format(target=target),
     )
 
-    headers = {
-        "Authorization": authorization_string,
-        "Date": date,
-    }
-
-    response = requests.request(
-        method=DELETE,
-        url='https://vws.vuforia.com/targets/{target}'.format(target=target),
-        headers=headers,
-        data=b'',
-    )
-
     result_code = response.json()['result_code']
+
     error_message = (
         'Deleting a target failed. '
         'The result code returned was: {result_code}. '
@@ -225,29 +210,14 @@ def _delete_all_targets(
         vuforia_server_credentials: The credentials to the Vuforia target
             database to delete all targets in.
     """
-    date = rfc_1123_date()
-
-    authorization_string = authorization_header(
+    response = target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=GET,
         content=b'',
-        content_type='',
-        date=date,
         request_path='/targets',
     )
 
-    headers = {
-        "Authorization": authorization_string,
-        "Date": date,
-    }
-
-    response = requests.request(
-        method=GET,
-        url='https://vws.vuforia.com/targets',
-        headers=headers,
-        data=b'',
-    )
     targets = response.json()['results']
 
     for target in targets:
