@@ -281,7 +281,12 @@ class Target:
     @property
     def _post_processing_status(self) -> TargetStatuses:
         """
-        XXX
+        Return the status of the target, or what it will be when processing is
+        finished.
+
+        The status depends on the standard deviation of the color bands.
+        How VWS determines this is unknown, but it relates to how suitable the
+        target is for detection.
         """
         image = Image.open(self._image)
         image_stat = ImageStat.Stat(image)
@@ -330,7 +335,7 @@ class Target:
         """
         pre_rating_time = datetime.timedelta(
             # That this is half of the total processing time is unrealistic.
-            # In VWS it changes regularly.
+            # In VWS it is not a constant percentage.
             seconds=self._processing_time_seconds / 2
         )
 
