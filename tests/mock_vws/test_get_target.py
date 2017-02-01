@@ -91,8 +91,8 @@ class TestGetRecord:
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
-        # Tracking rating is -1 while processing
-        assert target_record['tracking_rating'] == -1
+        # Tracking rating may be -1 while processing
+        assert target_record['tracking_rating'] in range(-1, 6)
         assert target_record['reco_rating'] == ''
 
     def test_active_flag_not_set(
@@ -239,7 +239,7 @@ class TestGetRecord:
         assert response.json()['status'] == TargetStatuses.SUCCESS.value
         # Tracking rating is between 0 and 5 when status is 'success'
         tracking_rating = response.json()['target_record']['tracking_rating']
-        assert tracking_rating in range(5)
+        assert tracking_rating in range(6)
 
         # The tracking rating stays stable across requests
         response = get_vws_target(
