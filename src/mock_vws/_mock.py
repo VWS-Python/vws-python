@@ -251,6 +251,7 @@ class Target:
     """
 
     reco_rating = ''
+    _processing_time_seconds = 0.5
 
     def __init__(
         self, name: str, active_flag: bool, width: float, image: io.BytesIO
@@ -278,6 +279,21 @@ class Target:
         self._image = image
 
     @property
+    def _post_processing_status(self) -> TargetStatuses:
+        """
+        XXX
+        """
+        image = Image.open(self._image)
+        image_stat = ImageStat.Stat(image)
+
+        average_std_dev = statistics.mean(image_stat.stddev)
+
+        if average_std_dev > 5:
+            return TargetStatuses.SUCCESS
+
+        return TargetStatuses.FAILED
+
+    @property
     def status(self) -> str:
         """
         Return the status of the target.
@@ -289,19 +305,16 @@ class Target:
         How VWS determines this is unknown, but it relates to how suitable the
         target is for detection.
         """
-        processing_time = datetime.timedelta(seconds=0.5)
-        if (datetime.datetime.now() - self.upload_date) <= processing_time:
+        processing_time = datetime.timedelta(
+            seconds=self._processing_time_seconds
+        )
+
+        time_since_upload = datetime.datetime.now() - self.upload_date
+
+        if time_since_upload <= processing_time:
             return TargetStatuses.PROCESSING.value
 
-        image = Image.open(self._image)
-        image_stat = ImageStat.Stat(image)
-
-        average_std_dev = statistics.mean(image_stat.stddev)
-
-        if average_std_dev > 5:
-            return TargetStatuses.SUCCESS.value
-
-        return TargetStatuses.FAILED.value
+        return self._post_processing_status.value
 
     @property
     def tracking_rating(self) -> int:
@@ -311,12 +324,22 @@ class Target:
         In this implementation that is just a random integer between 0 and 5
         if the target status is 'success'.
         The rating is 0 if the target status is 'failed'.
-        The rating is -1 while the target is being processed.
+        The rating is -1 for a short time while the target is being processed.
+        The real VWS seems to give -1 for a short time while processing, then
+        the real rating, even while it is still processing.
         """
-        if self.status == TargetStatuses.PROCESSING.value:
+        pre_rating_time = datetime.timedelta(
+            # That this is half of the total processing time is unrealistic.
+            # In VWS it changes regularly.
+            seconds=self._processing_time_seconds / 2
+        )
+
+        time_since_upload = datetime.datetime.now() - self.upload_date
+
+        if time_since_upload <= pre_rating_time:
             return -1
 
-        if self.status == TargetStatuses.SUCCESS.value:
+        if self._post_processing_status == TargetStatuses.SUCCESS:
             return self._tracking_rating
 
         return 0
