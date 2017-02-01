@@ -138,6 +138,7 @@ class TestUnexpectedData:
     """
     Tests for passing data which is not allowed to the endpoint.
     """
+
     def test_invalid_extra_data(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
@@ -153,9 +154,7 @@ class TestUnexpectedData:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={
-                'extra_thing': 1,
-            },
+            data={'extra_thing': 1},
             target_id=target_id,
         )
 
