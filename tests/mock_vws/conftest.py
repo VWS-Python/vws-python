@@ -12,7 +12,6 @@ from typing import Any  # noqa: F401 pylint: disable=unused-import
 from typing import Generator
 
 import pytest
-import requests
 from _pytest.fixtures import SubRequest
 from PIL import Image
 from requests import codes
