@@ -14,7 +14,12 @@ from requests import Response, codes
 from requests_mock import PUT
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import add_target_to_vws, assert_vws_response
+from tests.mock_vws.utils import (
+    add_target_to_vws,
+    assert_vws_failure,
+    assert_vws_response,
+    wait_for_target_processed,
+)
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import authorization_header, rfc_1123_date
 
@@ -125,4 +130,37 @@ class TestContentTypes:
             response=response,
             status_code=codes.FORBIDDEN,
             result_code=ResultCodes.TARGET_STATUS_NOT_SUCCESS,
+        )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestUnexpectedData:
+    """
+    Tests for passing data which is not allowed to the endpoint.
+    """
+    def test_invalid_extra_data(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
+    ) -> None:
+        """
+        A `BAD_REQUEST` response is returned when unexpected data is given.
+        """
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={
+                'extra_thing': 1,
+            },
+            target_id=target_id,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
         )
