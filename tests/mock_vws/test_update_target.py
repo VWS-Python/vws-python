@@ -136,6 +136,7 @@ class TestUpdate:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
+        png_rgb_success: io.BytesIO,
         content_type: str,
     ) -> None:
         """
@@ -164,10 +165,27 @@ class TestUpdate:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'name': 'Adam'},
+            data={
+                'name': 'changed',
+                'width': 2,
+                'image': png_rgb_success,
+                'active_flag': False,
+                # TODO: There's no way to test this...
+                # TODO: Set this as new metadata string
+                'application_metadata': ''
+
+            },
             target_id=target_id,
             content_type=content_type
         )
+
+    def test_no_fields_given(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+        content_type: str,
+    ) -> None:
+        pass
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
