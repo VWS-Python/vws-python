@@ -174,7 +174,6 @@ class TestUpdate:
                 # TODO: There's no way to test this...
                 # TODO: Set this as new metadata string
                 'application_metadata': ''
-
             },
             target_id=target_id,
             content_type=content_type
@@ -209,6 +208,7 @@ class TestUnexpectedData:
     """
     Tests for passing data which is not allowed to the endpoint.
     """
+
     def test_invalid_extra_data(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
@@ -217,7 +217,6 @@ class TestUnexpectedData:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
         """
-
         wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
             target_id=target_id,
@@ -225,9 +224,7 @@ class TestUnexpectedData:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={
-                'extra_thing': 1,
-            },
+            data={'extra_thing': 1},
             target_id=target_id,
         )
 
