@@ -228,13 +228,15 @@ def _delete_all_targets(
 
 @pytest.fixture()
 def target_id(
-    png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
+    png_rgb_success: io.BytesIO,  # pylint: disable=redefined-outer-name
     vuforia_server_credentials: VuforiaServerCredentials,
 ) -> None:
     """
     The target ID of a target in the database.
+
+    The target is one which will have a 'success' status when processed.
     """
-    image_data = png_rgb.read()
+    image_data = png_rgb_success.read()
     image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
     data = {
