@@ -18,6 +18,7 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
     assert_vws_response,
+    get_vws_target,
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
@@ -189,11 +190,6 @@ class TestUpdate:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestWidth:
-    pass
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestTargetName:
     pass
 
@@ -243,3 +239,94 @@ class TestApplicationMetadata:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestImage:
     pass
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestWidth:
+    """
+    Tests for the target width field.
+    """
+
+    @pytest.mark.parametrize(
+        'width',
+        [-1, '10', None],
+        ids=['Negative', 'Wrong Type', 'None'],
+    )
+    def test_width_invalid(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        width: Any,
+        target_id: str,
+    ) -> None:
+        """
+        The width must be a non-negative number.
+        """
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        original_width = response.json()['target_record']['width']
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'width': width},
+            target_id=target_id,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        new_width = response.json()['target_record']['width']
+
+        assert new_width == original_width
+
+    @pytest.mark.parametrize(
+        'width', [0, 0.1], ids=['Zero width', 'Float width']
+    )
+    def test_width_valid(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        width: Any,
+        target_id: str,
+    ) -> None:
+        """
+        Non-negative numbers are valid widths.
+        """
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'width': width},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        new_width = response.json()['target_record']['width']
+        assert new_width == width

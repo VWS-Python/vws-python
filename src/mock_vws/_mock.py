@@ -563,13 +563,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(
         path_pattern='/targets/.+',
         methods=[PUT],
-        optional_keys={'name'},
+        optional_keys={'width', 'name'},
     )
     def update_target(
         self,
-        request: _RequestObjectProxy,  # pylint: disable=unused-argument
+        request: _RequestObjectProxy,
         context: _Context,
-        target: Target,  # pylint: disable=unused-argument
+        target: Target,
     ) -> str:
         """
         Update a target.
@@ -577,11 +577,23 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
         """
-        context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+        body = {}  # type: Dict[str, str]
+
+        if target.status != TargetStatuses.SUCCESS.value:
+            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.TARGET_STATUS_NOT_SUCCESS.value,
+            }
+            return json.dumps(body)
+
+        if 'width' in request.json():
+            target.width = request.json()['width']
+
         body = {
+            'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.TARGET_STATUS_NOT_SUCCESS.value,
-        }  # type: Dict[str, str]
+        }
         return json.dumps(body)
 
     @route(path_pattern='/summary/.+', methods=[GET])
