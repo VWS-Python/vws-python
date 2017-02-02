@@ -563,7 +563,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(
         path_pattern='/targets/.+',
         methods=[PUT],
-        optional_keys={'width'},
+        optional_keys={'width', 'name'},
     )
     def update_target(
         self,
