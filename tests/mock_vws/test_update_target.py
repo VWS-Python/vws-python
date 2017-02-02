@@ -180,7 +180,6 @@ class TestWidth:
     def test_width_invalid(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        png_rgb: io.BytesIO,
         width: Any,
         target_id: str,
     ) -> None:
@@ -226,7 +225,6 @@ class TestWidth:
     def test_width_valid(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        png_rgb: io.BytesIO,
         width: Any,
         target_id: str,
     ) -> None:
