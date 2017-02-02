@@ -223,7 +223,7 @@ class TestWidth:
     @pytest.mark.parametrize(
         'width', [0, 0.1], ids=['Zero width', 'Float width']
     )
-    def test_width_valid_2(
+    def test_width_valid(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
