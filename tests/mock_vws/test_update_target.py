@@ -195,11 +195,6 @@ class TestTargetName:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestActiveFlag:
-    pass
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestUnexpectedData:
     """
     Tests for passing data which is not allowed to the endpoint.
@@ -310,7 +305,7 @@ class TestWidth:
             vuforia_server_credentials=vuforia_server_credentials,
             target_id=target_id,
         )
-
+ 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
             data={'width': width},
