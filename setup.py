@@ -29,7 +29,9 @@ setup(
     keywords='vuforia mock fake client',
     package_dir={'': 'src'},
     install_requires=install_requires,
-    extras_require={"dev": dev_requires, },
+    extras_require={
+        "dev": dev_requires,
+    },
     classifiers=[
         'Operating System :: POSIX',
         'Environment :: Web Environment',

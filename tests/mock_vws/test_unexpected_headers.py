@@ -55,7 +55,9 @@ class TestAuthorizationHeader:
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
         """
-        headers = {"Date": rfc_1123_date(), }
+        headers = {
+            "Date": rfc_1123_date(),
+        }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
 
