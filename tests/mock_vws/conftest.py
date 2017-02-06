@@ -193,8 +193,7 @@ def _delete_target(
     ).format(result_code=result_code)
 
     acceptable_results = (
-        ResultCodes.SUCCESS.value,
-        ResultCodes.UNKNOWN_TARGET.value,
+        ResultCodes.SUCCESS.value, ResultCodes.UNKNOWN_TARGET.value,
     )
     assert result_code in acceptable_results, error_message
 
