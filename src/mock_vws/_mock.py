@@ -590,6 +590,17 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         if 'width' in request.json():
             target.width = request.json()['width']
 
+        if 'active_flag' in request.json():
+            active_flag = request.json()['active_flag']
+            if active_flag is None:
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.FAIL.value,
+                }
+                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+                return json.dumps(body)
+            target.active_flag = active_flag
+
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
