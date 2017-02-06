@@ -273,7 +273,7 @@ class TestActiveFlag:
         desired_active_flag: bool,
     ) -> None:
         """
-        Setting the active flag to a boolean value changes it.
+        Setting the active flag to a Boolean value changes it.
         """
         image_data = png_rgb_success.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
