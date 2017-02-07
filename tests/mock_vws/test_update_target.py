@@ -582,7 +582,7 @@ class TestTargetName:
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
-        Only one target can have a given name.
+        Updating a target with its own name does not give an error.
         """
         image_data = png_rgb_success.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
