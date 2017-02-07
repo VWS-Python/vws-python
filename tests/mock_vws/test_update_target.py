@@ -613,6 +613,13 @@ class TestTargetName:
 
         assert_vws_failure(
             response=response,
-            status_code=codes.FORBIDDEN,
-            result_code=ResultCodes.TARGET_NAME_EXIST,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
         )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        assert response.json()['target_record']['name'] == name
