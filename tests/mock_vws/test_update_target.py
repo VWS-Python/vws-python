@@ -587,8 +587,10 @@ class TestTargetName:
         image_data = png_rgb_success.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
+        name = 'example'
+
         data = {
-            'name': 'example',
+            'name': name,
             'width': 1,
             'image': image_data_encoded,
         }
@@ -607,7 +609,7 @@ class TestTargetName:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'name': 'example'},
+            data={'name': name},
             target_id=target_id,
         )
 
