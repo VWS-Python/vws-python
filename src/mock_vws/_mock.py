@@ -563,7 +563,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(
         path_pattern='/targets/.+',
         methods=[PUT],
-        optional_keys={'width', 'name', 'active_flag'},
+        optional_keys={'width', 'name', 'active_flag', 'application_metadata'},
     )
     def update_target(
         self,
@@ -600,6 +600,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 return json.dumps(body)
             target.active_flag = active_flag
+
+        if 'application_metadata' in request.json():
+            if request.json()['application_metadata'] is None:
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.FAIL.value,
+                }
+                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+                return json.dumps(body)
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
