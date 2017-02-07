@@ -228,11 +228,6 @@ class TestUnexpectedData:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestApplicationMetadata:
-    pass
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestImage:
     pass
 
