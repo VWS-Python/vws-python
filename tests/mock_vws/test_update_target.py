@@ -296,7 +296,7 @@ class TestWidth:
             vuforia_server_credentials=vuforia_server_credentials,
             target_id=target_id,
         )
- 
+
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
             data={'width': width},
