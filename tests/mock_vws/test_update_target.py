@@ -466,7 +466,7 @@ class TestTargetName:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'target_name': name},
+            data={'name': name},
             target_id=target_id,
         )
 
@@ -475,6 +475,13 @@ class TestTargetName:
             status_code=codes.OK,
             result_code=ResultCodes.SUCCESS,
         )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        assert response.json()['target_record']['name'] == name
 
     @pytest.mark.parametrize(
         'name',
@@ -497,7 +504,7 @@ class TestTargetName:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'target_name': name},
+            data={'name': name},
             target_id=target_id,
         )
 
@@ -559,7 +566,7 @@ class TestTargetName:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'target_name': first_target_name},
+            data={'name': first_target_name},
             target_id=second_target_id,
         )
 
@@ -600,7 +607,7 @@ class TestTargetName:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'target_name': 'example'},
+            data={'name': 'example'},
             target_id=target_id,
         )
 
