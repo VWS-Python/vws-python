@@ -518,11 +518,11 @@ class TestTargetName:
         image_data = png_rgb_success.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        name = 'example_name'
-        another_name = 'another_example_name'
+        first_target_name = 'example_name'
+        second_target_name = 'another_example_name'
 
         data = {
-            'name': name,
+            'name': first_target_name,
             'width': 1,
             'image': image_data_encoded,
         }
@@ -534,8 +534,13 @@ class TestTargetName:
 
         first_target_id = response.json()['target_id']
 
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=first_target_id,
+        )
+
         other_data = {
-            'name': another_name,
+            'name': second_target_name,
             'width': 1,
             'image': image_data_encoded,
         }
@@ -546,6 +551,17 @@ class TestTargetName:
         )
 
         second_target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=second_target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'target_name': first_target_name},
+            target_id=second_target_id,
+        )
 
         assert_vws_failure(
             response=response,
