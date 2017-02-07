@@ -451,7 +451,7 @@ class TestApplicationMetadata:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'application_metadata': not_base64_encoded},
+            data={'application_metadata': str(not_base64_encoded)},
             target_id=target_id,
         )
 
