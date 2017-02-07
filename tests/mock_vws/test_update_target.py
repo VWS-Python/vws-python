@@ -380,39 +380,15 @@ class TestApplicationMetadata:
             result_code=ResultCodes.SUCCESS,
         )
 
-    def test_null(
-        self,
-        vuforia_server_credentials: VuforiaServerCredentials,
-        target_id: str,
-    ) -> None:
-        """
-        NULL is valid application metadata.
-        """
-        wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
-            target_id=target_id,
-        )
-
-        response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
-            data={'application_metadata': None},
-            target_id=target_id,
-        )
-
-        assert_vws_response(
-            response=response,
-            status_code=codes.OK,
-            result_code=ResultCodes.SUCCESS,
-        )
-
+    @pytest.mark.parametrize('invalid_metadata', [1, None])
     def test_invalid_type(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         target_id: str,
+        invalid_metadata: Union[int, None],
     ) -> None:
         """
-        Values which are not a string or NULL are not valid application
-        metadata.
+        Non-string values cannot be given as valid application metadata.
         """
         wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
@@ -421,7 +397,7 @@ class TestApplicationMetadata:
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'application_metadata': 1},
+            data={'application_metadata': invalid_metadata},
             target_id=target_id,
         )
 
