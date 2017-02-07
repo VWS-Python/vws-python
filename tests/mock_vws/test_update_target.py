@@ -460,3 +460,155 @@ class TestApplicationMetadata:
             status_code=codes.UNPROCESSABLE_ENTITY,
             result_code=ResultCodes.FAIL,
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestTargetName:
+    """
+    Tests for the target name field.
+    """
+
+    @pytest.mark.parametrize(
+        'name', [
+            'a',
+            'a' * 64,
+        ], ids=['Short name', 'Long name']
+    )
+    def test_name_valid(
+        self,
+        name: str,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
+    ) -> None:
+        """
+        Names between 1 and 64 characters in length are valid.
+        """
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'target_name': name},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+    @pytest.mark.parametrize(
+        'name',
+        [1, '', 'a' * 65, None],
+        ids=['Wrong Type', 'Empty', 'Too Long', 'None'],
+    )
+    def test_name_invalid(
+        self,
+        name: str,
+        target_id: str,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        A target's name must be a string of length 0 < N < 65.
+        """
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'target_name': name},
+            target_id=target_id,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+    def test_existing_target_name(
+        self,
+        png_rgb_success: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        Only one target can have a given name.
+        """
+        image_data = png_rgb_success.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        name = 'example_name'
+        another_name = 'another_example_name'
+
+        data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        first_target_id = response.json()['target_id']
+
+        other_data = {
+            'name': another_name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=other_data,
+        )
+
+        second_target_id = response.json()['target_id']
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.TARGET_NAME_EXIST,
+        )
+
+    def test_same_name_given(
+        self,
+        target_id: str,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
+        """
+        Only one target can have a given name.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        name = 'example_name'
+        another_name = 'another_example_name'
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.TARGET_NAME_EXIST,
+        )
