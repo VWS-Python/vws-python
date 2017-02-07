@@ -610,6 +610,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
                 return json.dumps(body)
 
+        if 'name' in request.json():
+            name = request.json()['name']
+            other_targets = set(self.targets) - set([target])
+            if any(other.name == name for other in other_targets):
+                context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+                body = {
+                    'transaction_id': uuid.uuid4().hex,
+                    'result_code': ResultCodes.TARGET_NAME_EXIST.value,
+                }
+                return json.dumps(body)
+            target.name = name
+
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
