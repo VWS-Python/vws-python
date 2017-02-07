@@ -191,11 +191,6 @@ class TestUpdate:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestTargetName:
-    pass
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestUnexpectedData:
     """
     Tests for passing data which is not allowed to the endpoint.
