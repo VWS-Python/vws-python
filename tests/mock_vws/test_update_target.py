@@ -571,32 +571,37 @@ class TestTargetName:
 
     def test_same_name_given(
         self,
-        target_id: str,
-        vuforia_server_credentials: VuforiaServerCredentials
+        png_rgb_success: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         Only one target can have a given name.
         """
-        image_data = png_rgb.read()
+        image_data = png_rgb_success.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        name = 'example_name'
-        another_name = 'another_example_name'
-
         data = {
-            'name': 'example_name',
+            'name': 'example',
             'width': 1,
             'image': image_data_encoded,
         }
 
-        add_target_to_vws(
+        response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
 
-        response = add_target_to_vws(
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'target_name': 'example'},
+            target_id=target_id,
         )
 
         assert_vws_failure(
