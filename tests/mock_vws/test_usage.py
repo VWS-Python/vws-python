@@ -9,6 +9,7 @@ import requests
 from requests_mock.exceptions import NoMockAddress
 
 from mock_vws import MockVWS
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import rfc_1123_date
 
 
@@ -104,7 +105,9 @@ class TestPersistence:
     Tests for usage patterns of the mock.
     """
 
-    def test_context_manager(self) -> None:
+    def test_context_manager(
+        self, vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
         When the context manager is used, targets are not persisted between
         invocations.
@@ -115,7 +118,9 @@ class TestPersistence:
         with MockVWS():
             assert True
 
-    def test_decorator(self) -> None:
+    def test_decorator(
+        self, vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
         When the decorator is used, targets are not persisted between
         invocations.
