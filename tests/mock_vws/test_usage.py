@@ -170,6 +170,9 @@ class TestPersistence:
 
         @MockVWS()
         def create() -> str:
+            """
+            Create a new target and return its id.
+            """
             response = add_target_to_vws(
                 vuforia_server_credentials=vuforia_server_credentials,
                 data=data,
@@ -187,6 +190,9 @@ class TestPersistence:
 
         @MockVWS()
         def verify(target_id: str) -> None:
+            """
+            Assert that there is no target with the given id.
+            """
             response = get_vws_target(
                 vuforia_server_credentials=vuforia_server_credentials,
                 target_id=target_id,
