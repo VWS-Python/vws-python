@@ -135,52 +135,6 @@ class TestUpdate:
             result_code=ResultCodes.TARGET_STATUS_NOT_SUCCESS,
         )
 
-    def test_updating_multiple_fields(
-        self,
-        vuforia_server_credentials: VuforiaServerCredentials,
-        png_rgb: io.BytesIO,
-        png_rgb_success: io.BytesIO,
-        content_type: str,
-    ) -> None:
-        """
-        XXX
-        """
-        image_data = png_rgb.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
-        data = {
-            'name': 'example',
-            'width': 1,
-            'image': image_data_encoded,
-        }
-
-        response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
-        )
-
-        target_id = response.json()['target_id']
-
-        wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
-            target_id=target_id,
-        )
-
-        response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
-            data={
-                'name': 'changed',
-                'width': 2,
-                'image': png_rgb_success,
-                'active_flag': False,
-                # TODO: There's no way to test this...
-                # TODO: Set this as new metadata string
-                'application_metadata': ''
-            },
-            target_id=target_id,
-            content_type=content_type
-        )
-
     def test_no_fields_given(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
