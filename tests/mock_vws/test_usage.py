@@ -2,6 +2,8 @@
 Tests for the usage of the mock.
 """
 
+import base64
+import io
 import socket
 
 import pytest
@@ -10,6 +12,7 @@ from requests_mock.exceptions import NoMockAddress
 
 from mock_vws import MockVWS
 from tests.utils import VuforiaServerCredentials
+from tests.mock_vws.utils import add_target_to_vws, get_vws_target
 from vws._request_utils import rfc_1123_date
 
 
@@ -106,20 +109,36 @@ class TestPersistence:
     """
 
     def test_context_manager(
-        self, vuforia_server_credentials: VuforiaServerCredentials
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
     ) -> None:
         """
         When the context manager is used, targets are not persisted between
         invocations.
         """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
         with MockVWS():
-            pass
+            add_target_to_vws(
+                vuforia_server_credentials=vuforia_server_credentials,
+                data=data,
+            )
 
         with MockVWS():
             assert True
 
     def test_decorator(
-        self, vuforia_server_credentials: VuforiaServerCredentials
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
     ) -> None:
         """
         When the decorator is used, targets are not persisted between
