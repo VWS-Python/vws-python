@@ -12,8 +12,8 @@ from requests import codes
 from requests_mock.exceptions import NoMockAddress
 
 from mock_vws import MockVWS
-from tests.utils import VuforiaServerCredentials
 from tests.mock_vws.utils import add_target_to_vws, get_vws_target
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import rfc_1123_date
 
 
