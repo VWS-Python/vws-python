@@ -269,13 +269,14 @@ class Target:
             active_flag (bool): Whether or not the target is active for query.
             width (int): The width of the image in scene unit.
             upload_date: The time that the target was created.
+            last_modified_date: The time that the target was last modified.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
-        self.last_modified_date = datetime.datetime.now()
+        self.last_modified_date = self.upload_date
         self._tracking_rating = random.randint(0, 5)
         self._image = image
 
