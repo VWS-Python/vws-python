@@ -109,9 +109,22 @@ class TestPersistence:
         When the context manager is used, targets are not persisted between
         invocations.
         """
+        with MockVWS():
+            pass
+
+        with MockVWS():
+            assert True
 
     def test_decorator(self) -> None:
         """
         When the decorator is used, targets are not persisted between
         invocations.
         """
+
+        @MockVWS()
+        def create() -> None:
+            pass
+
+        @MockVWS()
+        def verify() -> None:
+            pass
