@@ -625,3 +625,192 @@ class TestTargetName:
         )
 
         assert response.json()['target_record']['name'] == name
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestImage:
+    """
+    Tests for the image parameter.
+
+    The specification for images is documented in "Supported Images" on
+    https://library.vuforia.com/articles/Training/Image-Target-Guide
+    """
+
+    def test_image_valid(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        image_file: io.BytesIO,
+    ) -> None:
+        """
+        JPEG and PNG files in the RGB and greyscale color spaces are
+        allowed. The image must be under a threshold.
+
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
+        """
+        image_data = image_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+            content_type='application/json',
+        )
+
+        assert_success(response=response)
+
+    def test_bad_image(
+        self,
+        bad_image_file: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        A `BAD_REQUEST` response is returned if an image which is not a JPEG
+        or PNG file is given, or if the given image is not in the greyscale or
+        RGB color space.
+        """
+        image_data = bad_image_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.BAD_IMAGE,
+        )
+
+    def test_too_large(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_large: io.BytesIO,
+    ) -> None:
+        """
+        An `ImageTooLarge` result is returned if the image is above a certain
+        threshold.
+
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
+        """
+        original_data = png_large.getvalue()
+        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+        too_large_file = io.BytesIO(longer_data)
+
+        image_data = too_large_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.IMAGE_TOO_LARGE,
+        )
+
+    def test_not_base64_encoded(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        If the given image is not decodable as base64 data then a `Fail`
+        result is returned.
+        """
+        not_base64_encoded = b'a'
+
+        with pytest.raises(binascii.Error):
+            base64.b64decode(not_base64_encoded)
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': str(not_base64_encoded),
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.FAIL,
+        )
+
+    def test_not_image(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        If the given image is not an image file then a `BadImage` result is
+        returned.
+        """
+        not_image_data = b'not_image_data'
+        image_data_encoded = base64.b64encode(not_image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.BAD_IMAGE,
+        )
+
+    @pytest.mark.parametrize('invalid_type_image', [1, None])
+    def test_invalid_type(
+        self,
+        invalid_type_image: Any,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        If the given image is NULL, a `Fail` result is returned.
+        """
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': invalid_type_image,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
