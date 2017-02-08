@@ -167,7 +167,7 @@ class TestUpdate:
             target_id=target_id,
         )
 
-        # Targets go back to processing after
+        # Targets go back to processing after being updated.
         assert response.json()['status'] == TargetStatuses.PROCESSING.value
 
         wait_for_target_processed(
