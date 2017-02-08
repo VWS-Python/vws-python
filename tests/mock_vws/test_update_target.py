@@ -160,7 +160,7 @@ class TestUnexpectedData:
             target_id=target_id,
         )
 
-        assert_vws_failure(
+        assert_vws_response(
             response=response,
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
@@ -640,6 +640,7 @@ class TestImage:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         image_file: io.BytesIO,
+        target_id: str,
     ) -> None:
         """
         JPEG and PNG files in the RGB and greyscale color spaces are
