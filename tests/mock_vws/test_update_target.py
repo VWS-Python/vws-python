@@ -652,24 +652,28 @@ class TestImage:
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        data = {
-            'name': 'example',
-            'width': 1,
-            'image': image_data_encoded,
-        }
-
-        response = add_target_to_vws(
+        wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
-            content_type='application/json',
+            target_id=target_id,
         )
 
-        assert_success(response=response)
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'image': image_data_encoded},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
 
     def test_bad_image(
         self,
         bad_image_file: io.BytesIO,
         vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned if an image which is not a JPEG
@@ -679,15 +683,15 @@ class TestImage:
         image_data = bad_image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        data = {
-            'name': 'example_name',
-            'width': 1,
-            'image': image_data_encoded,
-        }
-
-        response = add_target_to_vws(
+        wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'image': image_data_encoded},
+            target_id=target_id,
         )
 
         assert_vws_failure(
@@ -700,6 +704,7 @@ class TestImage:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_large: io.BytesIO,
+        target_id: str,
     ) -> None:
         """
         An `ImageTooLarge` result is returned if the image is above a certain
@@ -715,15 +720,15 @@ class TestImage:
         image_data = too_large_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        data = {
-            'name': 'example_name',
-            'width': 1,
-            'image': image_data_encoded,
-        }
-
-        response = add_target_to_vws(
+        wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'image': image_data_encoded},
+            target_id=target_id,
         )
 
         assert_vws_failure(
@@ -735,6 +740,7 @@ class TestImage:
     def test_not_base64_encoded(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
     ) -> None:
         """
         If the given image is not decodable as base64 data then a `Fail`
@@ -745,15 +751,15 @@ class TestImage:
         with pytest.raises(binascii.Error):
             base64.b64decode(not_base64_encoded)
 
-        data = {
-            'name': 'example_name',
-            'width': 1,
-            'image': str(not_base64_encoded),
-        }
-
-        response = add_target_to_vws(
+        wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'image': str(not_base64_encoded)},
+            target_id=target_id,
         )
 
         assert_vws_failure(
@@ -765,6 +771,7 @@ class TestImage:
     def test_not_image(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
     ) -> None:
         """
         If the given image is not an image file then a `BadImage` result is
@@ -773,15 +780,15 @@ class TestImage:
         not_image_data = b'not_image_data'
         image_data_encoded = base64.b64encode(not_image_data).decode('ascii')
 
-        data = {
-            'name': 'example_name',
-            'width': 1,
-            'image': image_data_encoded,
-        }
-
-        response = add_target_to_vws(
+        wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'image': image_data_encoded},
+            target_id=target_id,
         )
 
         assert_vws_failure(
@@ -793,21 +800,22 @@ class TestImage:
     @pytest.mark.parametrize('invalid_type_image', [1, None])
     def test_invalid_type(
         self,
-        invalid_type_image: Any,
+        invalid_type_image: Union[int, None],
+        target_id: str,
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
-        If the given image is NULL, a `Fail` result is returned.
+        If the given image is not a string, a `Fail` result is returned.
         """
-        data = {
-            'name': 'example_name',
-            'width': 1,
-            'image': invalid_type_image,
-        }
-
-        response = add_target_to_vws(
+        wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
-            data=data,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'image': invalid_type_image},
+            target_id=target_id,
         )
 
         assert_vws_failure(
