@@ -223,11 +223,6 @@ class TestUnexpectedData:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestImage:
-    pass
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestWidth:
     """
     Tests for the target width field.
