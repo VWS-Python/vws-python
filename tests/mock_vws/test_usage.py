@@ -97,3 +97,21 @@ class TestUsage:
         with MockVWS(real_http=True):
             with pytest.raises(requests.exceptions.ConnectionError):
                 request_unmocked_address()
+
+
+class TestPersistence:
+    """
+    Tests for usage patterns of the mock.
+    """
+
+    def test_context_manager(self) -> None:
+        """
+        When the context manager is used, targets are not persisted between
+        invocations.
+        """
+
+    def test_decorator(self) -> None:
+        """
+        When the decorator is used, targets are not persisted between
+        invocations.
+        """
