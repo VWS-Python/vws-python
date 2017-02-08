@@ -8,6 +8,7 @@ import socket
 
 import pytest
 import requests
+from requests import codes
 from requests_mock.exceptions import NoMockAddress
 
 from mock_vws import MockVWS
@@ -127,13 +128,27 @@ class TestPersistence:
         }
 
         with MockVWS():
-            add_target_to_vws(
+            response = add_target_to_vws(
                 vuforia_server_credentials=vuforia_server_credentials,
                 data=data,
             )
 
+            target_id = response.json()['target_id']
+
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.OK
+
         with MockVWS():
-            assert True
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.NOT_FOUND
 
     def test_decorator(
         self,
@@ -155,14 +170,29 @@ class TestPersistence:
 
         @MockVWS()
         def create() -> str:
-            add_target_to_vws(
+            response = add_target_to_vws(
                 vuforia_server_credentials=vuforia_server_credentials,
                 data=data,
             )
 
+            target_id = response.json()['target_id']
+
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.OK
+            return target_id
+
         @MockVWS()
         def verify(target_id: str) -> None:
-            pass
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.NOT_FOUND
 
         target_id = create()
         verify(target_id=target_id)
