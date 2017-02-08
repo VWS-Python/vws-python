@@ -275,6 +275,7 @@ class Target:
         self.active_flag = active_flag
         self.width = width
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
+        self.last_modified_date = datetime.datetime.now()
         self._tracking_rating = random.randint(0, 5)
         self._image = image
 
@@ -314,9 +315,9 @@ class Target:
             seconds=self._processing_time_seconds
         )
 
-        time_since_upload = datetime.datetime.now() - self.upload_date
+        time_since_change = datetime.datetime.now() - self.last_modified_date
 
-        if time_since_upload <= processing_time:
+        if time_since_change <= processing_time:
             return TargetStatuses.PROCESSING.value
 
         return self._post_processing_status.value
@@ -627,6 +628,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 }
                 return json.dumps(body)
             target.name = name
+
+        target.last_modified_date = datetime.datetime.now()
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
