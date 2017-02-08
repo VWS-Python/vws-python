@@ -14,7 +14,7 @@ import requests
 from requests import Response, codes
 from requests_mock import PUT
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
@@ -161,6 +161,26 @@ class TestUpdate:
         )
 
         assert response.json().keys() == {'result_code', 'transaction_id'}
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        # Targets go back to processing after
+        assert response.json()['status'] == TargetStatuses.PROCESSING.value
+
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        assert response.json()['status'] == TargetStatuses.SUCCESS.value
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
