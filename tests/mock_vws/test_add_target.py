@@ -472,7 +472,7 @@ class TestImage:
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
-        If the given image is NULL, a `Fail` result is returned.
+        If the given image is not a string, a `Fail` result is returned.
         """
         data = {
             'name': 'example_name',
