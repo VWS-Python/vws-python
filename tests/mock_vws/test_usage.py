@@ -144,11 +144,25 @@ class TestPersistence:
         When the decorator is used, targets are not persisted between
         invocations.
         """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
 
         @MockVWS()
-        def create() -> None:
-            pass
+        def create() -> str:
+            add_target_to_vws(
+                vuforia_server_credentials=vuforia_server_credentials,
+                data=data,
+            )
 
         @MockVWS()
-        def verify() -> None:
+        def verify(target_id: str) -> None:
             pass
+
+        target_id = create()
+        verify(target_id=target_id)
