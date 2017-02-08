@@ -76,7 +76,7 @@ class MockVWS(ContextDecorator):
 
     def __call__(self, func: Callable[..., Any]) -> Any:
         """
-        Override call to allow function to return any type.
+        Override call to allow a wrapped function to return any type.
         """
         return super().__call__(func)
 
