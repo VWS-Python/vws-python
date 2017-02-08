@@ -129,7 +129,7 @@ class TestUpdate:
         )
 
         # Code is FORBIDDEN because the target is processing
-        assert_vws_response(
+        assert_vws_failure(
             response=response,
             status_code=codes.FORBIDDEN,
             result_code=ResultCodes.TARGET_STATUS_NOT_SUCCESS,
@@ -184,10 +184,29 @@ class TestUpdate:
     def test_no_fields_given(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        png_rgb: io.BytesIO,
-        content_type: str,
+        target_id: str,
     ) -> None:
-        pass
+        """
+        No data fields are required.
+        """
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        assert response.json().keys() == {'result_code', 'transaction_id'}
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -215,7 +234,7 @@ class TestUnexpectedData:
             target_id=target_id,
         )
 
-        assert_vws_response(
+        assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
@@ -394,7 +413,7 @@ class TestActiveFlag:
             target_id=target_id,
         )
 
-        assert_vws_response(
+        assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
