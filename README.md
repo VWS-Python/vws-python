@@ -129,7 +129,10 @@ with MockVWS():
 ```
 
 However, an exception will be raised if any requests to unmocked addresses are made.
-This can be changd by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
+
+## Allowing HTTP requests to unmocked addresses
+
+This can be done by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
 
 For example:
 
@@ -150,6 +153,42 @@ with MockVWS(real_http=True):
     # Again, no exception is raised.
     requests.get('http://example.com')
 ```
+
+## Mocking error states
+
+Sometimes Vuforia is in an error state, where requests don't work.
+You may want your application to handle these states gracefully, and so it is possible to make the mock emulate these states.
+
+To change the state, use the `state` parameter when calling the mock.
+
+This parameter can take one of the following states.
+
+```python
+import requests
+from mock_vws import MockVWS
+
+@MockVWS(real_http=True)
+def my_function():
+    # This will use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+    # No exception is raised when a request is made to an unmocked address.
+    requests.get('http://example.com')
+
+with MockVWS(real_http=True):
+    # This will also use the Vuforia mock.
+    requests.get('https://vws.vuforia.com/summary')
+    # Again, no exception is raised.
+    requests.get('http://example.com')
+```
+
+These error states are:
+* The service is unavailable,
+* There is an internal status error
+* The request quota has been reached
+
+The mock is tested against the real Vuforia Web Services.
+This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.
+However, the mocks of these error states are based on observations as they cannot be reliably reproduced.
 
 ## Differences between the mock and the real Vuforia Web Services
 
