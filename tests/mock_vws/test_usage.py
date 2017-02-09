@@ -97,3 +97,8 @@ class TestUsage:
         with MockVWS(real_http=True):
             with pytest.raises(requests.exceptions.ConnectionError):
                 request_unmocked_address()
+
+    def test_states(self) -> None:
+
+        import pdb; pdb.set_trace()
+        pass

@@ -161,30 +161,25 @@ You may want your application to handle these states gracefully, and so it is po
 
 To change the state, use the `state` parameter when calling the mock.
 
-This parameter can take one of the following states.
-
 ```python
 import requests
-from mock_vws import MockVWS
+from mock_vws import MockVWS, States
 
-@MockVWS(real_http=True)
+@MockVWS(state=States.REQUEST_QUOTA_REACHED)
 def my_function():
-    # This will use the Vuforia mock.
-    requests.get('https://vws.vuforia.com/summary')
-    # No exception is raised when a request is made to an unmocked address.
-    requests.get('http://example.com')
-
-with MockVWS(real_http=True):
-    # This will also use the Vuforia mock.
-    requests.get('https://vws.vuforia.com/summary')
-    # Again, no exception is raised.
-    requests.get('http://example.com')
+    ...
 ```
 
-These error states are:
-* The service is unavailable,
-* There is an internal status error
-* The request quota has been reached
+These states available in `States` are:
+* `WORKING`.
+  This is the default state of the mock.
+* `PROJECT_INACTIVE`.
+  This happens when the license key has been deleted.
+* `SERVICE_UNAVAILABLE`.
+* `REQUEST_QUOTA_REACHED`.
+  There is a limit of 10, 000 requests per day against the Vuforia Web Services.
+  The mock allows an unlimited number of requests.
+* `INTERNAL_STATUS_ERROR`.
 
 The mock is tested against the real Vuforia Web Services.
 This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.
