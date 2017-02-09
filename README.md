@@ -169,3 +169,6 @@ Image targets which are not suited to detection are given 'failed' statuses.
 The criteria for these images is not defined by the Vuforia documentation.
 The mock is more forgiving than the real Vuforia Web Services.
 Therefore, an image given a 'success' status by the mock may not be given a 'success' status by the real Vuforia Web Services.
+
+The mock does not check whether the server access and secret keys are valid.
+It only checks whether the keys used to set up the mock instance match those used to create requests.
