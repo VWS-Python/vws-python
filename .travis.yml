@@ -58,8 +58,8 @@ assert \"Final rating: 10/10\" in result, result;
     - "touch vuforia_secrets.env"
 
 script:
-	# Only run the tests against the real Vuforia on one Python version.
-	- "if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pytest -vvv --cov=src --cov=tests; fi"
+    # Only run the tests against the real Vuforia on one Python version.
+    - "if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pytest -vvv --cov=src --cov=tests; fi"
     - "if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then SKIP_REAL=1 pytest -vvv; fi"
 
 after_success:
