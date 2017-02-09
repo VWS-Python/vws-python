@@ -57,7 +57,7 @@ assert \"Final rating: 10/10\" in result, result;
     - "touch vuforia_secrets.env"
 
 script:
-    - "pytest -vvv --cov=src --exitfirst --cov=tests"
+    - "pytest -vvv --cov=src --cov=tests"
 
 after_success:
     - "coveralls"
