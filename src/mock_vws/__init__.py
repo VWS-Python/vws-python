@@ -71,13 +71,16 @@ class MockVWS(ContextDecorator):
         ...         pass
     """
 
-    def __init__(self, real_http: bool=False) -> None:
+    def __init__(
+        self, real_http: bool=False, state: States=States.WORKING
+    ) -> None:
         """
         Args:
             real_http: Whether or not to forward requests to the real server if
                 they are not handled by the mock.
                 See
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
+            state: The state of the services being mocked.
 
         Attributes:
             real_http (bool): Whether or not to forward requests to the real
