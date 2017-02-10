@@ -240,7 +240,7 @@ def route(
     return decorator
 
 
-class Target:
+class Target:  # pylint: disable=too-many-instance-attributes
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
@@ -269,12 +269,14 @@ class Target:
             active_flag (bool): Whether or not the target is active for query.
             width (int): The width of the image in scene unit.
             upload_date: The time that the target was created.
+            last_modified_date: The time that the target was last modified.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
         self.upload_date = datetime.datetime.now()  # type: datetime.datetime
+        self.last_modified_date = self.upload_date
         self._tracking_rating = random.randint(0, 5)
         self._image = image
 
@@ -314,9 +316,9 @@ class Target:
             seconds=self._processing_time_seconds
         )
 
-        time_since_upload = datetime.datetime.now() - self.upload_date
+        time_since_change = datetime.datetime.now() - self.last_modified_date
 
-        if time_since_upload <= processing_time:
+        if time_since_change <= processing_time:
             return TargetStatuses.PROCESSING.value
 
         return self._post_processing_status.value
@@ -627,6 +629,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 }
                 return json.dumps(body)
             target.name = name
+
+        target.last_modified_date = datetime.datetime.now()
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
