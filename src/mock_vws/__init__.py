@@ -8,7 +8,7 @@ from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
 from typing import Optional  # noqa: F401 This is used in a type hint.
-from typing import Tuple, TypeVar, Pattern
+from typing import Any, Callable, Tuple, TypeVar, Pattern
 
 from requests_mock.mocker import Mocker
 
@@ -73,6 +73,12 @@ class MockVWS(ContextDecorator):
         super().__init__()
         self.real_http = real_http
         self.mock = None  # type: Optional[Mocker]
+
+    def __call__(self, func: Callable[..., Any]) -> Any:
+        """
+        Override call to allow a wrapped function to return any type.
+        """
+        return super().__call__(func)
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """
