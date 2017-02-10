@@ -6,6 +6,7 @@ language: "python"
 
 python:
   - "3.5"
+  - "3.6"
 
 addons:
   apt:
@@ -57,7 +58,9 @@ assert \"Final rating: 10/10\" in result, result;
     - "touch vuforia_secrets.env"
 
 script:
-    - "pytest -vvv --cov=src --cov=tests"
+    # Only run the tests against the real Vuforia on one Python version.
+    - "if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pytest --exitfirst -vvv --cov=src --cov=tests; fi"
+    - "if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then SKIP_REAL=1 pytest --exitfirst -vvv; fi"
 
 after_success:
     - "coveralls"

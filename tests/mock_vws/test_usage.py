@@ -2,13 +2,18 @@
 Tests for the usage of the mock.
 """
 
+import base64
+import io
 import socket
 
 import pytest
 import requests
+from requests import codes
 from requests_mock.exceptions import NoMockAddress
 
 from mock_vws import MockVWS
+from tests.mock_vws.utils import add_target_to_vws, get_vws_target
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import rfc_1123_date
 
 
@@ -102,3 +107,102 @@ class TestUsage:
 
         import pdb; pdb.set_trace()
         pass
+
+class TestPersistence:
+    """
+    Tests for usage patterns of the mock.
+    """
+
+    def test_context_manager(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        When the context manager is used, targets are not persisted between
+        invocations.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        with MockVWS():
+            response = add_target_to_vws(
+                vuforia_server_credentials=vuforia_server_credentials,
+                data=data,
+            )
+
+            target_id = response.json()['target_id']
+
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.OK
+
+        with MockVWS():
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.NOT_FOUND
+
+    def test_decorator(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        When the decorator is used, targets are not persisted between
+        invocations.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        @MockVWS()
+        def create() -> str:
+            """
+            Create a new target and return its id.
+            """
+            response = add_target_to_vws(
+                vuforia_server_credentials=vuforia_server_credentials,
+                data=data,
+            )
+
+            target_id = response.json()['target_id']
+
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.OK
+            return target_id
+
+        @MockVWS()
+        def verify(target_id: str) -> None:
+            """
+            Assert that there is no target with the given id.
+            """
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.NOT_FOUND
+
+        target_id = create()
+        verify(target_id=target_id)
