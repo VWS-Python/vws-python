@@ -88,10 +88,12 @@ class MockVWS(ContextDecorator):
                 See
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             mock: None or an `requests_mock` object used for mocking Vuforia.
+            state: The state of the services being mocked.
         """
         super().__init__()
         self.real_http = real_http
         self.mock = None  # type: Optional[Mocker]
+        self.state = state
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """
@@ -113,14 +115,28 @@ class MockVWS(ContextDecorator):
             'Server': 'nginx',
         }
         with Mocker(real_http=self.real_http) as mock:
-            for route in fake_target_api.routes:
-                for http_method in route.methods:
-                    mock.register_uri(
-                        method=http_method,
-                        url=_target_endpoint_pattern(route.path_pattern),
-                        text=getattr(fake_target_api, route.route_name),
-                        headers=headers,
-                    )
+            if self.state == States.WORKING:
+                for route in fake_target_api.routes:
+                    for http_method in route.methods:
+                        mock.register_uri(
+                            method=http_method,
+                            url=_target_endpoint_pattern(route.path_pattern),
+                            text=getattr(fake_target_api, route.route_name),
+                            headers=headers,
+                        )
+
+            if self.state == States.PROJECT_INACTIVE:
+                pass
+
+            if self.state == States.SERVICE_UNAVAILABLE:
+                pass
+
+            if self.state == States.REQUEST_QUOTA_REACHED:
+                pass
+
+            if self.state == States.INTERNAL_STATUS_ERROR:
+                pass
+
         self.mock = mock
         self.mock.start()
         return self
