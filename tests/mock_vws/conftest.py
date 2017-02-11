@@ -216,6 +216,11 @@ def _delete_all_targets(
         request_path='/targets',
     )
 
+    if 'results' not in response.json():  # pragma: no cover
+        print('Results not found.')
+        print('Response is:')
+        print(response.json())
+
     targets = response.json()['results']
 
     for target in targets:

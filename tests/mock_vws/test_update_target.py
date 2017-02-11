@@ -14,7 +14,7 @@ import requests
 from requests import Response, codes
 from requests_mock import PUT
 
-from common.constants import ResultCodes
+from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
@@ -76,9 +76,9 @@ def update_target(
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestContentTypes:
+class TestUpdate:
     """
-    Tests for the `Content-Type` header.
+    Tests for updating targets.
     """
 
     @pytest.mark.parametrize(
@@ -103,7 +103,7 @@ class TestContentTypes:
         content_type: str,
     ) -> None:
         """
-        Any `Content-Type` header is allowed.
+        The `Content-Type` header does not change the response.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -128,11 +128,59 @@ class TestContentTypes:
             content_type=content_type
         )
 
-        assert_vws_response(
+        # Code is FORBIDDEN because the target is processing
+        assert_vws_failure(
             response=response,
             status_code=codes.FORBIDDEN,
             result_code=ResultCodes.TARGET_STATUS_NOT_SUCCESS,
         )
+
+    def test_no_fields_given(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
+    ) -> None:
+        """
+        No data fields are required.
+        """
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        assert response.json().keys() == {'result_code', 'transaction_id'}
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        # Targets go back to processing after being updated.
+        assert response.json()['status'] == TargetStatuses.PROCESSING.value
+
+        wait_for_target_processed(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=target_id,
+        )
+
+        assert response.json()['status'] == TargetStatuses.SUCCESS.value
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -160,7 +208,7 @@ class TestUnexpectedData:
             target_id=target_id,
         )
 
-        assert_vws_response(
+        assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
@@ -339,7 +387,7 @@ class TestActiveFlag:
             target_id=target_id,
         )
 
-        assert_vws_response(
+        assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
