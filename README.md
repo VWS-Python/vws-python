@@ -165,7 +165,7 @@ To change the state, use the `state` parameter when calling the mock.
 import requests
 from mock_vws import MockVWS, States
 
-@MockVWS(state=States.REQUEST_QUOTA_REACHED)
+@MockVWS(state=States.PROJECT_INACTIVE)
 def my_function():
     ...
 ```
@@ -175,11 +175,6 @@ These states available in `States` are:
   This is the default state of the mock.
 * `PROJECT_INACTIVE`.
   This happens when the license key has been deleted.
-* `SERVICE_UNAVAILABLE`.
-* `REQUEST_QUOTA_REACHED`.
-  There is a limit of 10, 000 requests per day against the Vuforia Web Services.
-  The mock allows an unlimited number of requests.
-* `INTERNAL_STATUS_ERROR`.
 
 The mock is tested against the real Vuforia Web Services.
 This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.

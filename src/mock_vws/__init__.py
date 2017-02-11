@@ -28,10 +28,6 @@ class States(Names):
     # A project is inactive if the license key has been deleted.
     PROJECT_INACTIVE = NamedConstant()
 
-    SERVICE_UNAVAILABLE = NamedConstant()
-    REQUEST_QUOTA_REACHED = NamedConstant()
-    INTERNAL_STATUS_ERROR = NamedConstant()
-
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
     """
@@ -114,6 +110,7 @@ class MockVWS(ContextDecorator):
             'Content-Type': 'application/json',
             'Server': 'nginx',
         }
+
         with Mocker(real_http=self.real_http) as mock:
             if self.state == States.WORKING:
                 for route in fake_target_api.routes:
