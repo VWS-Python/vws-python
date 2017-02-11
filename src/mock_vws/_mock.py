@@ -28,7 +28,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from common.constants import ResultCodes, TargetStatuses
-from mock_vws import States
+from ._constants import States
 
 from ._validators import (
     validate_active_flag,

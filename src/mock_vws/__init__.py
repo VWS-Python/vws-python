@@ -10,23 +10,12 @@ from urllib.parse import urljoin
 from typing import Optional  # noqa: F401 This is used in a type hint.
 from typing import Any, Callable, Tuple, TypeVar, Pattern
 
-from constantly import NamedConstant, Names
 from requests_mock.mocker import Mocker
 
+from ._constants import States
 from ._mock import MockVuforiaTargetAPI
 
 _MOCK_VWS_TYPE = TypeVar('_MOCK_VWS_TYPE', bound='MockVWS')
-
-
-class States(Names):
-    """
-    Constants representing various web service states.
-    """
-
-    WORKING = NamedConstant()
-
-    # A project is inactive if the license key has been deleted.
-    PROJECT_INACTIVE = NamedConstant()
 
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
