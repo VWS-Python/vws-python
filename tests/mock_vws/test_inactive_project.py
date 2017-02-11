@@ -4,7 +4,7 @@ Tests for inactive projects.
 
 import pytest
 
-from tests.mock_vws.utils import Endpoint
+from tests.mock_vws.utils import assert_vws_response, Endpoint
 from tests.utils import VuforiaServerCredentials
 from vws.request_utils import target_api_request
 
@@ -21,7 +21,8 @@ class TestInactiveProject:
         vuforia_inactive_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
-        X
+        A response for an inactive project describes that the project is
+        inactive.
         """
         response = target_api_request(
             access_key=vuforia_inactive_server_credentials.access_key,
@@ -32,3 +33,9 @@ class TestInactiveProject:
         )
 
         import pdb; pdb.set_trace()
+
+        assert_vws_response(
+            response=response,
+            status_code='X',
+            result_code='X',
+        )
