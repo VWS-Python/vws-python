@@ -19,7 +19,7 @@ from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
 
 from common.constants import ResultCodes
-from mock_vws import MockVWS
+from mock_vws import MockVWS, States
 from tests.mock_vws.utils import Endpoint, add_target_to_vws
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
@@ -310,7 +310,7 @@ def verify_mock_vuforia_inactive(
     if use_real_vuforia:
         yield
     else:
-        with MockVWS():
+        with MockVWS(state=States.PROJECT_INACTIVE):
             yield
 
 
