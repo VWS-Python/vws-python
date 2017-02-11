@@ -372,6 +372,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             database_name: The name of a VWS target manager database name.
             access_key: A VWS access key.
             secret_key: A VWS secret key.
+            state: XXX.
 
         Attributes:
             database_name: The name of a VWS target manager database name.
@@ -379,6 +380,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             secret_key: A VWS secret key.
             targets: The ``Target``s in the database.
             routes: The `Route`s to be used in the mock.
+            state: XXX.
         """
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
