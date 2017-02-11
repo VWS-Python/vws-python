@@ -86,7 +86,7 @@ class TestContentTypes:
             content_type=content_type,
         )
 
-        assert_success(response=response)
+        assert_success(response=respon<Up>se)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
