@@ -4,7 +4,7 @@ Tests for inactive projects.
 
 import pytest
 
-from tests.mock_vws.utils import assert_vws_response, Endpoint
+from tests.mock_vws.utils import assert_vws_failure, Endpoint
 from tests.utils import VuforiaServerCredentials
 from vws.request_utils import target_api_request
 
@@ -32,9 +32,7 @@ class TestInactiveProject:
             request_path=endpoint.example_path,
         )
 
-        import pdb; pdb.set_trace()
-
-        assert_vws_response(
+        assert_vws_failure(
             response=response,
             status_code='X',
             result_code='X',
