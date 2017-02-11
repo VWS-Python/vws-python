@@ -28,6 +28,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from common.constants import ResultCodes, TargetStatuses
+from mock_vws import States
 
 from ._validators import (
     validate_active_flag,
@@ -360,7 +361,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
 
     def __init__(
-        self, access_key: str, secret_key: str, database_name: str
+        self,
+        access_key: str,
+        secret_key: str,
+        database_name: str,
+        state: States,
     ) -> None:
         """
         Args:
