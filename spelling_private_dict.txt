@@ -36,6 +36,7 @@ str
 todo
 unmocked
 url
+usefixtures
 validators
 vuforia
 vws
