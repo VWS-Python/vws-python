@@ -291,10 +291,7 @@ def verify_mock_vuforia(
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-def verify_mock_vuforia_inactive(
-    request: SubRequest,
-    vuforia_inactive_server_credentials: VuforiaServerCredentials,
-) -> Generator:
+def verify_mock_vuforia_inactive(request: SubRequest) -> Generator:
     """
     Using this fixture in a test will make it run twice. Once with the real
     Vuforia in an inactive state, and once with the mock in an inactive state.
