@@ -477,6 +477,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
+        processing_images = len(
+            [
+                target for target in self.targets
+                if target.status == TargetStatuses.PROCESSING.value
+            ]
+        )
+
         body = {}  # type: Dict[str, Union[str, int]]
 
         body = {
@@ -490,7 +497,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',
-            'processing_images': 0,
+            'processing_images': processing_images,
             'reco_threshold': '',
             'request_quota': '',
             'request_usage': '',
