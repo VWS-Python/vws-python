@@ -103,6 +103,7 @@ class TestDatabaseSummary:
     def test_processing_images(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
     ) -> None:
         """
         The number of images in the processing state is returned.
@@ -127,6 +128,20 @@ class TestDatabaseSummary:
                     return
 
         wait_for_no_processing()
+
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
 
         # An image does not last long in processing.
         # Therefore, we don't wait the usual delay.
