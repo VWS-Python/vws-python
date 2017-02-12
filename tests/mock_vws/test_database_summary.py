@@ -93,10 +93,13 @@ class TestDatabaseSummary:
         assert response.json()['failed_images'] == 0
         assert response.json()['processing_images'] == 0
 
-    @pytest.mark.usefixtures('target_id')
     def test_processing_images(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
+        # We ignore the following error because we need the target to be
+        # created. We don't use `usefixtures` because we already use that on
+        # the class.
+        target_id: str,  # pylint: disable=unused-argument
     ) -> None:
         """
         The number of images in the processing state is returned.
