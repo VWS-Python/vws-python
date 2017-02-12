@@ -11,6 +11,8 @@ class ResultCodes(Values):
 
     See
     https://library.vuforia.com/articles/Solution/How-To-Interperete-VWS-API-Result-Codes
+
+    Some codes here are not documented in the above link.
     """
 
     SUCCESS = ValueConstant('Success')
@@ -27,6 +29,7 @@ class ResultCodes(Values):
     TARGET_STATUS_PROCESSING = ValueConstant('TargetStatusProcessing')
     REQUEST_QUOTA_REACHED = ValueConstant('RequestQuotaReached')
     TARGET_STATUS_NOT_SUCCESS = ValueConstant('TargetStatusNotSuccess')
+    PROJECT_INACTIVE = ValueConstant('ProjectInactive')
 
 
 class TargetStatuses(Values):
