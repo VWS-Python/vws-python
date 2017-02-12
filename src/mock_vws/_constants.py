@@ -9,4 +9,5 @@ class States(Names):
     """
     Constants representing various web service states.
     """
+
     WORKING = NamedConstant()
