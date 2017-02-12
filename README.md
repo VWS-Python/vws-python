@@ -58,7 +58,7 @@ pytest
 ## Connecting to Vuforia
 
 To connect to Vuforia,
-a Vuforia target database must be created via the Vuforia Web UI.
+Vuforia target databases must be created via the Vuforia Web UI.
 Then, secret keys must be set as environment variables.
 
 The test infrastructure allows those keys to be set in the file `vuforia_secrets.env`.
@@ -72,6 +72,10 @@ Then, add a database from the [Target Manager](https://developer.vuforia.com/tar
 
 To find the environment variables to set in the `vuforia_secrets.env` file,
 visit the Target Database in the Target Manager and view the "Database Access Keys".
+
+Two databases are necessary in order to run all the tests.
+One of those must be an inactive project.
+To create an inactive project, delete the license key associated with a database.
 
 Targets sometimes get stuck at the "Processing" stage meaning that they cannot be deleted.
 When this happens, create a new target database to use for testing.
@@ -153,6 +157,32 @@ with MockVWS(real_http=True):
     # Again, no exception is raised.
     requests.get('http://example.com')
 ```
+
+## Mocking error states
+
+Sometimes Vuforia is in an error state, where requests don't work.
+You may want your application to handle these states gracefully, and so it is possible to make the mock emulate these states.
+
+To change the state, use the `state` parameter when calling the mock.
+
+```python
+import requests
+from mock_vws import MockVWS, States
+
+@MockVWS(state=States.PROJECT_INACTIVE)
+def my_function():
+    ...
+```
+
+These states available in `States` are:
+* `WORKING`.
+  This is the default state of the mock.
+* `PROJECT_INACTIVE`.
+  This happens when the license key has been deleted.
+
+The mock is tested against the real Vuforia Web Services.
+This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.
+However, the mocks of these error states are based on observations as they cannot be reliably reproduced.
 
 ## Differences between the mock and the real Vuforia Web Services
 

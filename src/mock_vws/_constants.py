@@ -11,3 +11,6 @@ class States(Names):
     """
 
     WORKING = NamedConstant()
+
+    # A project is inactive if the license key has been deleted.
+    PROJECT_INACTIVE = NamedConstant()
