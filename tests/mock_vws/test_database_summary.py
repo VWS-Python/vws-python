@@ -113,3 +113,19 @@ class TestDatabaseSummary:
         assert response.json()['inactive_images'] == 0
         assert response.json()['failed_images'] == 0
         assert response.json()['processing_images'] == 0
+
+    def test_failed_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        XXX
+        """
+
+    def test_inactive_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        XXX
+        """
