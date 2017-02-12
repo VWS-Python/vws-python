@@ -484,13 +484,21 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             ]
         )
 
+        active_images = len(
+            [
+                target for target in self.targets
+                if target.status == TargetStatuses.SUCCESS.value
+                and target.active_flag
+            ]
+        )
+
         body = {}  # type: Dict[str, Union[str, int]]
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
             'name': self.database_name,
-            'active_images': 0,
+            'active_images': active_images,
             'inactive_images': 0,
             'failed_images': 0,
             'target_quota': '',

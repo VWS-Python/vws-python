@@ -87,3 +87,29 @@ class TestDatabaseSummary:
         assert response.json()['inactive_images'] == 0
         assert response.json()['failed_images'] == 0
         assert response.json()['processing_images'] == 1
+
+    def test_active_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
+    ) -> None:
+        """
+        The number of images in the processing state is returned.
+        """
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
+
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/summary',
+        )
+
+        assert response.json()['active_images'] == 1
+        assert response.json()['inactive_images'] == 0
+        assert response.json()['failed_images'] == 0
+        assert response.json()['processing_images'] == 0
