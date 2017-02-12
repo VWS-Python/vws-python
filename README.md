@@ -129,7 +129,10 @@ with MockVWS():
 ```
 
 However, an exception will be raised if any requests to unmocked addresses are made.
-This can be changd by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
+
+## Allowing HTTP requests to unmocked addresses
+
+This can be done by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
 
 For example:
 
@@ -169,3 +172,6 @@ Image targets which are not suited to detection are given 'failed' statuses.
 The criteria for these images is not defined by the Vuforia documentation.
 The mock is more forgiving than the real Vuforia Web Services.
 Therefore, an image given a 'success' status by the mock may not be given a 'success' status by the real Vuforia Web Services.
+
+The mock does not check whether the server access and secret keys are valid.
+It only checks whether the keys used to set up the mock instance match those used to create requests.

@@ -12,6 +12,7 @@ from typing import Any, Callable, Tuple, TypeVar, Pattern
 
 from requests_mock.mocker import Mocker
 
+from ._constants import States
 from ._mock import MockVuforiaTargetAPI
 
 _MOCK_VWS_TYPE = TypeVar('_MOCK_VWS_TYPE', bound='MockVWS')
@@ -55,13 +56,16 @@ class MockVWS(ContextDecorator):
         ...         pass
     """
 
-    def __init__(self, real_http: bool=False) -> None:
+    def __init__(
+        self, real_http: bool=False, state: States=States.WORKING
+    ) -> None:
         """
         Args:
             real_http: Whether or not to forward requests to the real server if
                 they are not handled by the mock.
                 See
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
+            state: The state of the services being mocked.
 
         Attributes:
             real_http (bool): Whether or not to forward requests to the real
@@ -99,6 +103,7 @@ class MockVWS(ContextDecorator):
             'Content-Type': 'application/json',
             'Server': 'nginx',
         }
+
         with Mocker(real_http=self.real_http) as mock:
             for route in fake_target_api.routes:
                 for http_method in route.methods:
@@ -108,6 +113,7 @@ class MockVWS(ContextDecorator):
                         text=getattr(fake_target_api, route.route_name),
                         headers=headers,
                     )
+
         self.mock = mock
         self.mock.start()
         return self
