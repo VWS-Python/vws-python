@@ -492,6 +492,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             ]
         )
 
+        failed_images = len(
+            [
+                target for target in self.targets
+                if target.status == TargetStatuses.FAILED.value
+            ]
+        )
+
         body = {}  # type: Dict[str, Union[str, int]]
 
         body = {
@@ -500,7 +507,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'name': self.database_name,
             'active_images': active_images,
             'inactive_images': 0,
-            'failed_images': 0,
+            'failed_images': failed_images,
             'target_quota': '',
             'total_recos': '',
             'current_month_recos': '',
