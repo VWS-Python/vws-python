@@ -175,6 +175,7 @@ def my_function():
 ```
 
 These states available in `States` are:
+
 * `WORKING`.
   This is the default state of the mock.
 * `PROJECT_INACTIVE`.
