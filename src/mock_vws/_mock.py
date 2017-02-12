@@ -477,7 +477,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, str]
+        body = {}  # type: Dict[str, Union[str, int]]
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
