@@ -13,7 +13,7 @@ from vws._request_utils import target_api_request
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestSummary:
+class TestDatabaseSummary:
     """
     Tests for the mock of the database summary endpoint at `GET /summary`.
     """
@@ -57,3 +57,8 @@ class TestSummary:
         assert response.json()['name'] == (
             vuforia_server_credentials.database_name
         )
+
+        assert response.json()['active_images'] == 0
+        assert response.json()['inactive_images'] == 0
+        assert response.json()['failed_images'] == 0
+        assert response.json()['processing_images'] == 0
