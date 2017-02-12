@@ -73,10 +73,12 @@ class MockVWS(ContextDecorator):
                 See
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             mock: None or an `requests_mock` object used for mocking Vuforia.
+            state: The state of the services being mocked.
         """
         super().__init__()
         self.real_http = real_http
         self.mock = None  # type: Optional[Mocker]
+        self.state = state
 
     def __call__(self, func: Callable[..., Any]) -> Any:
         """
