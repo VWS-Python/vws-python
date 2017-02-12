@@ -487,8 +487,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         active_images = len(
             [
                 target for target in self.targets
-                if target.status == TargetStatuses.SUCCESS.value
-                and target.active_flag
+                if target.status == TargetStatuses.SUCCESS.value and
+                target.active_flag
             ]
         )
 
@@ -502,8 +502,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         inactive_images = len(
             [
                 target for target in self.targets
-                if target.status == TargetStatuses.SUCCESS.value
-                and not target.active_flag
+                if target.status == TargetStatuses.SUCCESS.value and
+                not target.active_flag
             ]
         )
 

@@ -21,7 +21,6 @@ from tests.mock_vws.utils import (
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
-
 # It takes some time for images to be shown as inactive.
 # We therefore wait to confirm that an image is shown as inactive (or not).
 # 90 seconds is an arbitrary amount of time to wait.
