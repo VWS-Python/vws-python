@@ -73,7 +73,7 @@ Then, add a database from the [Target Manager](https://developer.vuforia.com/tar
 To find the environment variables to set in the `vuforia_secrets.env` file,
 visit the Target Database in the Target Manager and view the "Database Access Keys".
 
-Two databases are necessary in order to run all.
+Two databases are necessary in order to run all the tests.
 One of those must be an inactive project.
 To create an inactive project, delete the license key associated with a database.
 
