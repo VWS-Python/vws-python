@@ -22,21 +22,26 @@ from vws._request_utils import target_api_request
 
 
 def database_summary(
-    vuforia_server_credentials: VuforiaServerCredentials
+    vuforia_server_credentials: VuforiaServerCredentials,
+    wait_seconds: int=120,
 ) -> requests.Response:
     """
-    Return the response of a request to the database summary endpoint.
+    Return the response of a request to the database summary endpoint after a
+    given delay.
+
+    It takes some time for the summary endpoint to catch up.
+    We therefore wait to confirm that an image is detailed (or not).
+    120 seconds is an arbitrary amount of time to wait.
+
+    The mock does not have such a delay.
 
     Args:
         vuforia_server_credentials: The credentials to use to connect to
             Vuforia.
+        wait_seconds: The number of seconds to wait before getting the database
+            summary.
     """
-    # It takes some time for the summary endpoint to catch up.
-    # We therefore wait to confirm that an image is shown as inactive (or not).
-    # 120 seconds is an arbitrary amount of time to wait.
-    #
-    # The mock does not have such a delay.
-    sleep(120)
+    sleep(wait_seconds)
 
     return target_api_request(
         access_key=vuforia_server_credentials.access_key,
