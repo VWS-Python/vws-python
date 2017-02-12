@@ -98,7 +98,7 @@ class MockVWS(ContextDecorator):
             database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
             access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
             secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
-            state=States.PROJECT_INACTIVE,
+            state=self.state,
         )
 
         headers = {
