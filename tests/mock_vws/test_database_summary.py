@@ -8,6 +8,7 @@ from time import sleep
 
 import pytest
 import requests
+import timeout_decorator
 from requests import codes
 from requests_mock import GET
 
@@ -23,7 +24,7 @@ from vws._request_utils import target_api_request
 
 def database_summary(
     vuforia_server_credentials: VuforiaServerCredentials,
-    wait_seconds: int=120,
+    wait_seconds: float=120,
 ) -> requests.Response:
     """
     Return the response of a request to the database summary endpoint after a
@@ -102,18 +103,57 @@ class TestDatabaseSummary:
     def test_processing_images(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        # We ignore the following error because we need the target to be
-        # created. We don't use `usefixtures` because we already use that on
-        # the class.
-        target_id: str,  # pylint: disable=unused-argument
     ) -> None:
         """
         The number of images in the processing state is returned.
         """
-        response = database_summary(
-            vuforia_server_credentials=vuforia_server_credentials
-        )
+        # We first confirm that there are no existing processing images in the
+        # summary.
+        @timeout_decorator.timeout(seconds=120)
+        def wait_for_no_processing() -> None:
+            """
+            Returns once there are no processing images.
 
+            Raises:
+                TimeoutError: Processing images were found in every request for
+                    two minutes.
+            """
+            while True:
+                response = database_summary(
+                    vuforia_server_credentials=vuforia_server_credentials,
+                    wait_seconds=0.2,
+                )
+                if not response.json()['processing_images']:
+                    return
+
+        wait_for_no_processing()
+
+        # An image does not last long in processing.
+        # Therefore, we don't wait the usual delay.
+        #
+        # However, as the summary endpoint is often behind,
+        # we don't assume that the processing image will be detailed
+        # immediately.
+        # Therefore we check on a loop that it is detailed.
+
+        @timeout_decorator.timeout(seconds=120)
+        def wait_for_processing_image() -> requests.Response:
+            """
+            Returns a response from a database summary call, once there is at
+                least one processing image.
+
+            Raises:
+                TimeoutError: No processing image was found in two minutes.
+            """
+            while True:
+                response = database_summary(
+                    vuforia_server_credentials=vuforia_server_credentials,
+                    wait_seconds=0.2,
+                )
+                if response.json()['processing_images']:
+                    return response
+
+        response = wait_for_processing_image()
         assert response.json()['active_images'] == 0
         assert response.json()['inactive_images'] == 0
         assert response.json()['failed_images'] == 0
