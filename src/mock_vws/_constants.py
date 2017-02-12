@@ -9,6 +9,7 @@ class States(Names):
     """
     Constants representing various web service states.
     """
+
     WORKING = NamedConstant()
 
     # A project is inactive if the license key has been deleted.
