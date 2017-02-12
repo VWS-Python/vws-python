@@ -238,7 +238,7 @@ class TestDatabaseSummary:
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        An image with a 'failed'
+        An image with a 'failed' status does not show as inactive.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -269,6 +269,6 @@ class TestDatabaseSummary:
         )
 
         assert response.json()['active_images'] == 0
-        assert response.json()['inactive_images'] == 1
-        assert response.json()['failed_images'] == 0
+        assert response.json()['inactive_images'] == 0
+        assert response.json()['failed_images'] == 1
         assert response.json()['processing_images'] == 0
