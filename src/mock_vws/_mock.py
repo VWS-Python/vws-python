@@ -28,6 +28,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from common.constants import ResultCodes, TargetStatuses
+from ._constants import States
 
 from ._validators import (
     validate_active_flag,
@@ -360,13 +361,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     """
 
     def __init__(
-        self, access_key: str, secret_key: str, database_name: str
+        self,
+        access_key: str,
+        secret_key: str,
+        database_name: str,
+        state: States,
     ) -> None:
         """
         Args:
             database_name: The name of a VWS target manager database name.
             access_key: A VWS access key.
             secret_key: A VWS secret key.
+            state: The state of the services being mocked.
 
         Attributes:
             database_name: The name of a VWS target manager database name.
@@ -374,14 +380,16 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             secret_key: A VWS secret key.
             targets: The ``Target``s in the database.
             routes: The `Route`s to be used in the mock.
+            state: The state of the services being mocked.
         """
+        self.database_name = database_name
+
         self.access_key = access_key  # type: str
         self.secret_key = secret_key  # type: str
 
-        self.database_name = database_name
-
         self.targets = []  # type: List[Target]
         self.routes = ROUTES  # type: Set[Route]
+        self.state = state
 
     @route(
         path_pattern='/targets',
