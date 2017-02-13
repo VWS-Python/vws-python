@@ -21,7 +21,6 @@ from tests.mock_vws.utils import (
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
-
 # It takes some time for the summary endpoint to catch up with reality.
 # We therefore wait to confirm that an image is detailed (or not).
 # 150 seconds is an arbitrary amount of time to wait.
