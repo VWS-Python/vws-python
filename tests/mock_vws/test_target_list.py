@@ -22,7 +22,9 @@ class TestTargetList:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
-        """It is possible to get a success response."""
+        """
+        It is possible to get a success response.
+        """
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
             secret_key=vuforia_server_credentials.secret_key,
@@ -55,3 +57,31 @@ class TestTargetList:
             request_path='/targets',
         )
         assert response.json()['results'] == [target_id]
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        vuforia_inactive_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        The project's active state does not affect the target list.
+        """
+        response = target_api_request(
+            access_key=vuforia_inactive_server_credentials.access_key,
+            secret_key=vuforia_inactive_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/targets',
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
