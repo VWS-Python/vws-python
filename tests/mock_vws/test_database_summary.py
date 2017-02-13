@@ -8,7 +8,6 @@ from time import sleep
 
 import pytest
 import requests
-import timeout_decorator
 from requests import codes
 from requests_mock import GET
 
