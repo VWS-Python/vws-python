@@ -24,7 +24,7 @@ from vws._request_utils import target_api_request
 
 def database_summary(
     vuforia_server_credentials: VuforiaServerCredentials,
-    wait_seconds: float=120,
+    wait_seconds: float=150,
 ) -> requests.Response:
     """
     Return the response of a request to the database summary endpoint after a
@@ -32,7 +32,7 @@ def database_summary(
 
     It takes some time for the summary endpoint to catch up.
     We therefore wait to confirm that an image is detailed (or not).
-    120 seconds is an arbitrary amount of time to wait.
+    150 seconds is an arbitrary amount of time to wait.
 
     The mock does not have such a delay.
 
