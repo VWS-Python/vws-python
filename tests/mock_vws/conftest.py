@@ -19,7 +19,7 @@ from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
 
 from common.constants import ResultCodes
-from mock_vws import MockVWS
+from mock_vws import MockVWS, States
 from tests.mock_vws.utils import Endpoint, add_target_to_vws
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
@@ -287,6 +287,40 @@ def verify_mock_vuforia(
         yield
     else:
         with MockVWS():
+            yield
+
+
+@pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
+def verify_mock_vuforia_inactive(
+    request: SubRequest,
+    inactive_server_credentials: VuforiaServerCredentials,
+) -> Generator:
+    """
+    Using this fixture in a test will make it run twice. Once with the real
+    Vuforia in an inactive state, and once with the mock in an inactive state.
+
+    This is useful for verifying the mock.
+    """
+    skip_real = os.getenv('SKIP_REAL') == '1'
+    skip_mock = os.getenv('SKIP_MOCK') == '1'
+
+    use_real_vuforia = request.param
+
+    if use_real_vuforia and skip_real:  # pragma: no cover
+        pytest.skip()
+
+    if not use_real_vuforia and skip_mock:  # pragma: no cover
+        pytest.skip()
+
+    if use_real_vuforia:
+        yield
+    else:
+        with MockVWS(
+            state=States.PROJECT_INACTIVE,
+            database_name=inactive_server_credentials.database_name,
+            access_key=inactive_server_credentials.access_key.decode('ascii'),
+            secret_key=inactive_server_credentials.secret_key.decode('ascii'),
+        ):
             yield
 
 
