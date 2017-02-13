@@ -23,10 +23,10 @@ from vws._request_utils import target_api_request
 
 # It takes some time for the summary endpoint to catch up with reality.
 # We therefore wait to confirm that an image is detailed (or not).
-# 150 seconds is an arbitrary amount of time to wait.
+# 120 seconds is an arbitrary amount of time to wait.
 #
 # The mock does not have such a delay.
-_WAIT_SECONDS = 150
+_WAIT_SECONDS = 120
 
 
 def database_summary(
