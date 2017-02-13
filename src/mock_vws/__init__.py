@@ -71,7 +71,9 @@ class MockVWS(ContextDecorator):
                 See
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             state: The state of the services being mocked.
-            XXX
+            database_name: The name of the mock VWS target manager database.
+            access_key: A VWS access key for the mock.
+            secret_key: A VWS secret key for the mock.
 
         Attributes:
             real_http (bool): Whether or not to forward requests to the real
@@ -80,7 +82,9 @@ class MockVWS(ContextDecorator):
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             mock: None or an `requests_mock` object used for mocking Vuforia.
             state: The state of the services being mocked.
-            XXX
+            database_name: The name of the mock VWS target manager database.
+            access_key: A VWS access key for the mock.
+            secret_key: A VWS secret key for the mock.
         """
         super().__init__()
         self.real_http = real_http
