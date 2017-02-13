@@ -291,7 +291,10 @@ def verify_mock_vuforia(
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
-def verify_mock_vuforia_inactive(request: SubRequest) -> Generator:
+def verify_mock_vuforia_inactive(
+    request: SubRequest,
+    inactive_server_credentials: VuforiaServerCredentials,
+) -> Generator:
     """
     Using this fixture in a test will make it run twice. Once with the real
     Vuforia in an inactive state, and once with the mock in an inactive state.
@@ -312,7 +315,12 @@ def verify_mock_vuforia_inactive(request: SubRequest) -> Generator:
     if use_real_vuforia:
         yield
     else:
-        with MockVWS(state=States.PROJECT_INACTIVE):
+        with MockVWS(
+            state=States.PROJECT_INACTIVE,
+            database_name=inactive_server_credentials.database_name,
+            access_key=inactive_server_credentials.access_key.decode('ascii'),
+            secret_key=inactive_server_credentials.secret_key.decode('ascii'),
+        ):
             yield
 
 

@@ -57,7 +57,12 @@ class MockVWS(ContextDecorator):
     """
 
     def __init__(
-        self, real_http: bool=False, state: States=States.WORKING
+        self,
+        real_http: bool=False,
+        state: States=States.WORKING,
+        database_name: str=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
+        access_key: str=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
+        secret_key: str=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     ) -> None:
         """
         Args:
@@ -66,6 +71,7 @@ class MockVWS(ContextDecorator):
                 See
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             state: The state of the services being mocked.
+            XXX
 
         Attributes:
             real_http (bool): Whether or not to forward requests to the real
@@ -74,11 +80,15 @@ class MockVWS(ContextDecorator):
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             mock: None or an `requests_mock` object used for mocking Vuforia.
             state: The state of the services being mocked.
+            XXX
         """
         super().__init__()
         self.real_http = real_http
         self.mock = None  # type: Optional[Mocker]
         self.state = state
+        self.database_name = database_name
+        self.access_key = access_key
+        self.secret_key = secret_key
 
     def __call__(self, func: Callable[..., Any]) -> Any:
         """
@@ -95,9 +105,9 @@ class MockVWS(ContextDecorator):
             ``self``.
         """
         fake_target_api = MockVuforiaTargetAPI(
-            database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
-            access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
-            secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
+            database_name=self.database_name,
+            access_key=self.access_key,
+            secret_key=self.secret_key,
             state=self.state,
         )
 
