@@ -369,7 +369,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     ) -> None:
         """
         Args:
-            database_name: The name of a VWS target manager database name.
+            database_name: The name of a VWS target manager database.
             access_key: A VWS access key.
             secret_key: A VWS secret key.
             state: The state of the services being mocked.
