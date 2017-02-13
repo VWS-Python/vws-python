@@ -22,19 +22,21 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
 
+# It takes some time for the summary endpoint to catch up with reality.
+# We therefore wait to confirm that an image is detailed (or not).
+# 150 seconds is an arbitrary amount of time to wait.
+#
+# The mock does not have such a delay.
+_WAIT_SECONDS = 150
+
+
 def database_summary(
     vuforia_server_credentials: VuforiaServerCredentials,
-    wait_seconds: float=150,
+    wait_seconds: float=_WAIT_SECONDS,
 ) -> requests.Response:
     """
     Return the response of a request to the database summary endpoint after a
     given delay.
-
-    It takes some time for the summary endpoint to catch up.
-    We therefore wait to confirm that an image is detailed (or not).
-    150 seconds is an arbitrary amount of time to wait.
-
-    The mock does not have such a delay.
 
     Args:
         vuforia_server_credentials: The credentials to use to connect to
@@ -110,7 +112,7 @@ class TestDatabaseSummary:
         """
         # We first confirm that there are no existing processing images in the
         # summary.
-        @timeout_decorator.timeout(seconds=120)
+        @timeout_decorator.timeout(seconds=_WAIT_SECONDS)
         def wait_for_no_processing() -> None:
             """
             Returns once there are no processing images.
@@ -151,7 +153,7 @@ class TestDatabaseSummary:
         # immediately.
         # Therefore we check on a loop that it is detailed.
 
-        @timeout_decorator.timeout(seconds=120)
+        @timeout_decorator.timeout(seconds=_WAIT_SECONDS)
         def wait_for_processing_image() -> requests.Response:
             """
             Returns a response from a database summary call, once there is at
@@ -163,7 +165,7 @@ class TestDatabaseSummary:
             while True:
                 response = database_summary(
                     vuforia_server_credentials=vuforia_server_credentials,
-                    wait_seconds=0.2,
+                    wait_seconds=0.1,
                 )
                 if response.json()['processing_images']:
                     return response
