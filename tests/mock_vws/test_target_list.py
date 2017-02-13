@@ -67,14 +67,14 @@ class TestInactiveProject:
 
     def test_inactive_project(
         self,
-        vuforia_inactive_server_credentials: VuforiaServerCredentials,
+        inactive_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         The project's active state does not affect the target list.
         """
         response = target_api_request(
-            access_key=vuforia_inactive_server_credentials.access_key,
-            secret_key=vuforia_inactive_server_credentials.secret_key,
+            access_key=inactive_server_credentials.access_key,
+            secret_key=inactive_server_credentials.secret_key,
             method=GET,
             content=b'',
             request_path='/targets',

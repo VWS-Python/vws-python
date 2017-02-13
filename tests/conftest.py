@@ -23,7 +23,7 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
 
 
 @pytest.fixture()
-def vuforia_inactive_server_credentials() -> VuforiaServerCredentials:
+def inactive_server_credentials() -> VuforiaServerCredentials:
     """
     Return VWS credentials for an inactive project from environment variables.
     """
