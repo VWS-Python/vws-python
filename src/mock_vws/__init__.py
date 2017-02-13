@@ -56,7 +56,7 @@ class MockVWS(ContextDecorator):
         ...         pass
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         real_http: bool=False,
         state: States=States.WORKING,
