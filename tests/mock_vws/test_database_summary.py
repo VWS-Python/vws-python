@@ -13,7 +13,7 @@ from vws._request_utils import target_api_request
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestSummary:
+class TestDatabaseSummary:
     """
     Tests for the mock of the database summary endpoint at `GET /summary`.
     """
