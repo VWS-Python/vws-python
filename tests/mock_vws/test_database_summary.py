@@ -63,7 +63,9 @@ class TestDatabaseSummary:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
-        """It is possible to get a success response."""
+        """
+        It is possible to get a success response.
+        """
         response = database_summary(
             vuforia_server_credentials=vuforia_server_credentials
         )
