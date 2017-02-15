@@ -3,6 +3,7 @@ Tests for the mock of the database summary endpoint.
 """
 
 import pytest
+import requests
 from requests import codes
 from requests_mock import GET
 
@@ -12,8 +13,27 @@ from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
 
+def database_summary(
+    vuforia_server_credentials: VuforiaServerCredentials,
+) -> requests.Response:
+    """
+    Return the response of a request to the database summary endpoint.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+    """
+    return target_api_request(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=GET,
+        content=b'',
+        request_path='/summary',
+    )
+
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestSummary:
+class TestDatabaseSummary:
     """
     Tests for the mock of the database summary endpoint at `GET /summary`.
     """
@@ -22,13 +42,11 @@ class TestSummary:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
-        """It is possible to get a success response."""
-        response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary',
+        """
+        It is possible to get a success response.
+        """
+        response = database_summary(
+            vuforia_server_credentials=vuforia_server_credentials
         )
 
         assert_vws_response(

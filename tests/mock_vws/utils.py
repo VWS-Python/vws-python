@@ -249,7 +249,7 @@ def wait_for_target_processed(
         if response.json()['status'] != TargetStatuses.PROCESSING.value:
             return
 
-        # We wait 0.2 seconds rather than 0.1 to decrease the number of calls
-        # made to the API, to decrease the likelihood of hitting the request
-        # quota.
+        # We wait 0.2 seconds rather than less than that to decrease the number
+        # of calls made to the API, to decrease the likelihood of hitting the
+        # request quota.
         sleep(0.2)
