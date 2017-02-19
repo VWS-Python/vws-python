@@ -136,6 +136,7 @@ class TestDatabaseSummary:
             inactive_images=0,
             failed_images=0,
             processing_images=0,
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
