@@ -2,8 +2,11 @@
 Tests for the mock of the database summary endpoint.
 """
 
+from time import sleep
+
 import pytest
 import requests
+import timeout_decorator
 from requests import codes
 from requests_mock import GET
 
@@ -30,6 +33,57 @@ def database_summary(
         content=b'',
         request_path='/summary',
     )
+
+
+@timeout_decorator.timeout(seconds=200)
+def wait_for_image_numbers(
+    vuforia_server_credentials: VuforiaServerCredentials,
+    active_images: int,
+    inactive_images: int,
+    failed_images: int,
+    processing_images: int,
+) -> None:
+    """
+    Wait up to 200 seconds (arbitrary) for the number of images in various
+    categories to match the expected number.
+
+    This is necessary because the database summary endpoint lags behind the
+    real data.
+
+    This is susceptible to false positives because if, for example, we expect
+    no images, and the endpoint adds images with a delay, we will not know.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+        active_images: The expected number of active images.
+        inactive_images: The expected number of inactive images.
+        failed_images: The expected number of failed images.
+        processing_images: The expected number of processing images.
+
+    Raises:
+        TimeoutError: The numbers of images in various categories do not match
+            within the time limit.
+    """
+    while True:
+        response = database_summary(
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        if all(
+            [
+                active_images == response.json()['active_images'],
+                inactive_images == response.json()['inactive_images'],
+                failed_images == response.json()['failed_images'],
+                processing_images == response.json()['processing_images'],
+            ]
+        ):
+            return
+
+        # We wait 0.2 seconds rather than less than that to decrease the number
+        # of calls made to the API, to decrease the likelihood of hitting the
+        # request quota.
+        sleep(0.2)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -76,7 +130,10 @@ class TestDatabaseSummary:
             vuforia_server_credentials.database_name
         )
 
-        assert response.json()['active_images'] == 0
-        assert response.json()['inactive_images'] == 0
-        assert response.json()['failed_images'] == 0
-        assert response.json()['processing_images'] == 0
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=0,
+            inactive_images=0,
+            failed_images=0,
+            processing_images=0,
+        )
