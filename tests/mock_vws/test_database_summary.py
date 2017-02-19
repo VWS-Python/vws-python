@@ -77,18 +77,18 @@ def wait_for_image_numbers(
             vuforia_server_credentials=vuforia_server_credentials
         )
 
+        requirements = {
+            requirement: value for requirement, value in requirements.items()
+            if response.json()[requirement] != value
+        }
 
-        for requirement in requirements:
-            if response.json()[requirement] == requirements[requirement]:
-                requirements.pop(requirement)
-
-        if not requirements:
+        if not requirements:  # pragma: no cover
             return
 
         # We wait 0.2 seconds rather than less than that to decrease the number
         # of calls made to the API, to decrease the likelihood of hitting the
         # request quota.
-        sleep(0.2)
+        sleep(0.2)  # pragma: no cover
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
