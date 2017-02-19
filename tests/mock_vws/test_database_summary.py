@@ -65,19 +65,23 @@ def wait_for_image_numbers(
         TimeoutError: The numbers of images in various categories do not match
             within the time limit.
     """
+    requirements = {
+        'active_images': active_images,
+        'inactive_images': inactive_images,
+        'failed_images': failed_images,
+        'processing_images': processing_images,
+    }
+
     while True:
         response = database_summary(
             vuforia_server_credentials=vuforia_server_credentials
         )
 
-        if all(
-            [
-                active_images == response.json()['active_images'],
-                inactive_images == response.json()['inactive_images'],
-                failed_images == response.json()['failed_images'],
-                processing_images == response.json()['processing_images'],
-            ]
-        ):
+        for requirement in requirements:
+            if response.json()[requirement] == requirements[requirement]:
+                requirements.pop(requirement)
+
+        if not requirements:
             return
 
         # We wait 0.2 seconds rather than less than that to decrease the number
