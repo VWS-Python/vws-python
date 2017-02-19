@@ -240,3 +240,26 @@ class TestDatabaseSummary:
         assert response.json()['inactive_images'] == 0
         assert response.json()['failed_images'] == 1
         assert response.json()['processing_images'] == 0
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        inactive_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        The project's active state does not affect the database summary.
+        """
+        response = database_summary(
+            vuforia_server_credentials=inactive_server_credentials,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
