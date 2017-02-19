@@ -78,7 +78,8 @@ def wait_for_image_numbers(
         )
 
         requirements = {
-            requirement: value for requirement, value in requirements.items()
+            requirement: value
+            for requirement, value in requirements.items()
             if response.json()[requirement] != value
         }
 
