@@ -35,7 +35,7 @@ def database_summary(
     )
 
 
-@timeout_decorator.timeout(seconds=200)
+@timeout_decorator.timeout(seconds=300)
 def wait_for_image_numbers(
     vuforia_server_credentials: VuforiaServerCredentials,
     active_images: int,
@@ -44,7 +44,7 @@ def wait_for_image_numbers(
     processing_images: int,
 ) -> None:
     """
-    Wait up to 200 seconds (arbitrary) for the number of images in various
+    Wait up to 300 seconds (arbitrary) for the number of images in various
     categories to match the expected number.
 
     This is necessary because the database summary endpoint lags behind the
@@ -76,6 +76,7 @@ def wait_for_image_numbers(
         response = database_summary(
             vuforia_server_credentials=vuforia_server_credentials
         )
+
 
         for requirement in requirements:
             if response.json()[requirement] == requirements[requirement]:
