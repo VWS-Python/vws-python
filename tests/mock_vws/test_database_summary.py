@@ -75,3 +75,8 @@ class TestDatabaseSummary:
         assert response.json()['name'] == (
             vuforia_server_credentials.database_name
         )
+
+        assert response.json()['active_images'] == 0
+        assert response.json()['inactive_images'] == 0
+        assert response.json()['failed_images'] == 0
+        assert response.json()['processing_images'] == 0
