@@ -502,7 +502,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             ]
         )
 
-
         inactive_images = len(
             [
                 target for target in self.targets
@@ -511,6 +510,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             ]
         )
         
+
         processing_images = 0
 
         body = {

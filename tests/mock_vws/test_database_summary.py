@@ -190,7 +190,7 @@ class TestDatabaseSummary:
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        The number of images with a 'fail' status is returned.
+        The number of images with a 'failed' status is returned.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -213,14 +213,13 @@ class TestDatabaseSummary:
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
-        response = database_summary(
-            vuforia_server_credentials=vuforia_server_credentials
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=0,
+            inactive_images=0,
+            failed_images=1,
+            processing_images=0,
         )
-
-        assert response.json()['active_images'] == 0
-        assert response.json()['inactive_images'] == 0
-        assert response.json()['failed_images'] == 1
-        assert response.json()['processing_images'] == 0
 
     def test_inactive_images(
         self,
