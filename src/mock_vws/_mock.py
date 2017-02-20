@@ -569,6 +569,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
+        similar_targets = []
+
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.SUCCESS.value,
+            'similar_targets': similar_targets,
+        }
+
+        return json.dumps(body)
 
     @route(
         path_pattern='/targets/.+',
