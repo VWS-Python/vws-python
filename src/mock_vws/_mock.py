@@ -586,7 +586,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def get_duplicates(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
-        context: _Context,
+        context: _Context,  # pylint: disable=unused-argument
         target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
@@ -595,6 +595,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
+        similar_targets = []  # type: List[str]
+
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.SUCCESS.value,
+            'similar_targets': similar_targets,
+        }
+
+        return json.dumps(body)
 
     @route(
         path_pattern='/targets/.+',
