@@ -485,6 +485,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
+        body = {}  # type: Dict[str, Union[str, int]]
+
         active_images = len(
             [
                 target for target in self.targets
@@ -510,8 +512,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         )
         
         processing_images = 0
-
-        body = {}  # type: Dict[str, Union[str, int]]
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
