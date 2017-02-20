@@ -21,17 +21,30 @@ from tests.mock_vws.utils import (
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
+# It takes some time for the summary endpoint to catch up with reality.
+# We therefore wait to confirm that an image is detailed (or not).
+# 120 seconds is an arbitrary amount of time to wait.
+#
+# The mock does not have such a delay.
+_WAIT_SECONDS = 120
+
 
 def database_summary(
     vuforia_server_credentials: VuforiaServerCredentials,
+    wait_seconds: float=_WAIT_SECONDS,
 ) -> requests.Response:
     """
-    Return the response of a request to the database summary endpoint.
+    Return the response of a request to the database summary endpoint after a
+    given delay.
 
     Args:
         vuforia_server_credentials: The credentials to use to connect to
             Vuforia.
+        wait_seconds: The number of seconds to wait before getting the database
+            summary.
     """
+    sleep(wait_seconds)
+
     return target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
@@ -207,6 +220,85 @@ class TestDatabaseSummary:
             failed_images=1,
             processing_images=0,
         )
+
+    def test_inactive_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb_success: io.BytesIO,
+    ) -> None:
+        """
+        The number of images with a False active_flag and a 'success' status is
+        returned.
+        """
+        image_data = png_rgb_success.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
+
+        response = database_summary(
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert response.json()['active_images'] == 0
+        assert response.json()['inactive_images'] == 1
+        assert response.json()['failed_images'] == 0
+        assert response.json()['processing_images'] == 0
+
+    def test_inactive_failed(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        An image with a 'failed' status does not show as inactive.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
+
+        response = database_summary(
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert response.json()['active_images'] == 0
+        assert response.json()['inactive_images'] == 0
+        assert response.json()['failed_images'] == 1
+        assert response.json()['processing_images'] == 0
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
