@@ -560,7 +560,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     def get_duplicates(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
-        context: _Context,
+        context: _Context,  # pylint: disable=unused-argument
         target: Target,  # pylint: disable=unused-argument
     ) -> str:
         """
