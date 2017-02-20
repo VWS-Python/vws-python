@@ -206,3 +206,6 @@ Therefore, an image given a 'success' status by the mock may not be given a 'suc
 
 The mock does not check whether the server access and secret keys are valid.
 It only checks whether the keys used to set up the mock instance match those used to create requests.
+
+The database summary in the real Vuforia Web Services takes some time to account for images.
+The mock is accurate immediately.
