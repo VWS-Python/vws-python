@@ -507,6 +507,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 not target.active_flag
             ]
         )
+        
+        processing_images = 0
 
         body = {}  # type: Dict[str, Union[str, int]]
 
@@ -521,7 +523,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',
-            'processing_images': 0,
+            'processing_images': processing_images,
             'reco_threshold': '',
             'request_quota': '',
             'request_usage': '',
