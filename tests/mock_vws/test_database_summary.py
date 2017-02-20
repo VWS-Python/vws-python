@@ -285,6 +285,22 @@ class TestDatabaseSummary:
             processing_images=0,
         )
 
+    def test_processing_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+        target_id: str,
+    ) -> None:
+        """
+        The number of images in the processing state is returned.
+        """
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=0,
+            inactive_images=0,
+            failed_images=0,
+            processing_images=1,
+        )
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
 class TestInactiveProject:
