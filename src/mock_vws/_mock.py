@@ -500,6 +500,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             ]
         )
 
+
         inactive_images = len(
             [
                 target for target in self.targets

@@ -169,21 +169,20 @@ class TestDatabaseSummary:
         target_id: str,
     ) -> None:
         """
-        The number of images in the processing state is returned.
+        The number of images in the active state is returned.
         """
         wait_for_target_processed(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
-        response = database_summary(
-            vuforia_server_credentials=vuforia_server_credentials
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=1,
+            inactive_images=0,
+            failed_images=0,
+            processing_images=0,
         )
-
-        assert response.json()['active_images'] == 1
-        assert response.json()['inactive_images'] == 0
-        assert response.json()['failed_images'] == 0
-        assert response.json()['processing_images'] == 0
 
     def test_failed_images(
         self,
