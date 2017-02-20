@@ -494,8 +494,15 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 target.active_flag
             ]
         )
+
+        failed_images = len(
+            [
+                target for target in self.targets
+                if target.status == TargetStatuses.FAILED.value
+            ]
+        )
+
         inactive_images = 0
-        failed_images = 0
         processing_images = 0
 
         body = {
