@@ -208,6 +208,85 @@ class TestDatabaseSummary:
             processing_images=0,
         )
 
+    def test_inactive_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb_success: io.BytesIO,
+    ) -> None:
+        """
+        The number of images with a False active_flag and a 'success' status is
+        returned.
+        """
+        image_data = png_rgb_success.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
+
+        response = database_summary(
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert response.json()['active_images'] == 0
+        assert response.json()['inactive_images'] == 1
+        assert response.json()['failed_images'] == 0
+        assert response.json()['processing_images'] == 0
+
+    def test_inactive_failed(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        An image with a 'failed' status does not show as inactive.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
+
+        response = database_summary(
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert response.json()['active_images'] == 0
+        assert response.json()['inactive_images'] == 0
+        assert response.json()['failed_images'] == 1
+        assert response.json()['processing_images'] == 0
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
 class TestInactiveProject:
