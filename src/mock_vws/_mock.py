@@ -485,20 +485,25 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, str]
+        body = {}  # type: Dict[str, Union[str, int]]
+
+        active_images = 0
+        inactive_images = 0
+        failed_images = 0
+        processing_images = 0
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
             'name': self.database_name,
-            'active_images': '',
-            'inactive_images': '',
-            'failed_images': '',
+            'active_images': active_images,
+            'inactive_images': inactive_images,
+            'failed_images': failed_images,
             'target_quota': '',
             'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',
-            'processing_images': '',
+            'processing_images': processing_images,
             'reco_threshold': '',
             'request_quota': '',
             'request_usage': '',
