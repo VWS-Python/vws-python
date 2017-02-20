@@ -487,7 +487,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         body = {}  # type: Dict[str, Union[str, int]]
 
-        active_images = 0
+        active_images = len(
+            [
+                target for target in self.targets
+                if target.status == TargetStatuses.SUCCESS.value and
+                target.active_flag
+            ]
+        )
         inactive_images = 0
         failed_images = 0
         processing_images = 0

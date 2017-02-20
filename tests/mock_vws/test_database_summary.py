@@ -11,7 +11,7 @@ from requests import codes
 from requests_mock import GET
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import assert_vws_response
+from tests.mock_vws.utils import assert_vws_response, wait_for_target_processed
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
@@ -139,6 +139,27 @@ class TestDatabaseSummary:
         wait_for_image_numbers(
             vuforia_server_credentials=vuforia_server_credentials,
             active_images=0,
+            inactive_images=0,
+            failed_images=0,
+            processing_images=0,
+        )
+
+    def test_active_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        target_id: str,
+    ) -> None:
+        """
+        The number of images in the active state is returned.
+        """
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
+
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=1,
             inactive_images=0,
             failed_images=0,
             processing_images=0,
