@@ -239,10 +239,6 @@ class TestDatabaseSummary:
             vuforia_server_credentials=vuforia_server_credentials,
         )
 
-        response = database_summary(
-            vuforia_server_credentials=vuforia_server_credentials
-        )
-
         wait_for_image_numbers(
             vuforia_server_credentials=vuforia_server_credentials,
             active_images=0,
@@ -279,10 +275,6 @@ class TestDatabaseSummary:
         wait_for_target_processed(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials,
-        )
-
-        response = database_summary(
-            vuforia_server_credentials=vuforia_server_credentials
         )
 
         wait_for_image_numbers(
