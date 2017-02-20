@@ -243,10 +243,13 @@ class TestDatabaseSummary:
             vuforia_server_credentials=vuforia_server_credentials
         )
 
-        assert response.json()['active_images'] == 0
-        assert response.json()['inactive_images'] == 1
-        assert response.json()['failed_images'] == 0
-        assert response.json()['processing_images'] == 0
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=0,
+            inactive_images=1,
+            failed_images=0,
+            processing_images=0,
+        )
 
     def test_inactive_failed(
         self,
@@ -282,10 +285,13 @@ class TestDatabaseSummary:
             vuforia_server_credentials=vuforia_server_credentials
         )
 
-        assert response.json()['active_images'] == 0
-        assert response.json()['inactive_images'] == 0
-        assert response.json()['failed_images'] == 1
-        assert response.json()['processing_images'] == 0
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=0,
+            inactive_images=0,
+            failed_images=1,
+            processing_images=0,
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
