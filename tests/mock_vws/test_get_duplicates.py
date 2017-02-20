@@ -22,7 +22,7 @@ class TestDuplicates:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         target_id: str,
-    ):
+    ) -> None:
         """
         If there are no similar images to the given target, an empty list is
         returned.

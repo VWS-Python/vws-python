@@ -569,7 +569,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
-        similar_targets = []
+        similar_targets = []  # type: List[str]
 
         body = {
             'transaction_id': uuid.uuid4().hex,
