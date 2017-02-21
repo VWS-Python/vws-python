@@ -55,6 +55,7 @@ assert \"Final rating: 10/10\" in result, result;
     # Create an environment file used by `pytest-envfiles`.
     # We don't add to this because we have environment variables set in the CI
     # config.
+    - "if [ \"$TRAVIS_BRANCH\" = \"master\"]; then something; fi"
     - "touch vuforia_secrets.env"
 
 script:
