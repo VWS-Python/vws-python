@@ -288,6 +288,8 @@ class TestDatabaseSummary:
     def test_processing_images(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
+        # We use `target_id` to create a target in the processing state.
+        target_id: str,  # pylint: disable=unused-argument
     ) -> None:
         """
         The number of images in the processing state is returned.
