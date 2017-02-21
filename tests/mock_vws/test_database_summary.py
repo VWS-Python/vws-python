@@ -302,6 +302,7 @@ class TestDatabaseSummary:
             processing_images=1,
         )
 
+
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
 class TestInactiveProject:
     """
