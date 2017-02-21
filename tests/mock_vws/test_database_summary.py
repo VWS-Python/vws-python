@@ -288,8 +288,6 @@ class TestDatabaseSummary:
     def test_processing_images(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        png_rgb: io.BytesIO,
-        target_id: str,
     ) -> None:
         """
         The number of images in the processing state is returned.
