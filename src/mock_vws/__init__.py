@@ -60,7 +60,7 @@ class MockVWS(ContextDecorator):
         self,
         real_http: bool=False,
         state: States=States.WORKING,
-        database_name: str=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
+        database_name: str,
         access_key: str=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key: str=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     ) -> None:

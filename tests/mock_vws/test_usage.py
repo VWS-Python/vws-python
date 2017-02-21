@@ -8,11 +8,17 @@ import socket
 
 import pytest
 import requests
+from hypothesis import given
+from hypothesis.strategies import text
 from requests import codes
 from requests_mock.exceptions import NoMockAddress
 
 from mock_vws import MockVWS
-from tests.mock_vws.utils import add_target_to_vws, get_vws_target
+from tests.mock_vws.utils import (
+    add_target_to_vws,
+    database_summary,
+    get_vws_target,
+)
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import rfc_1123_date
 
@@ -103,6 +109,19 @@ class TestUsage:
             with pytest.raises(requests.exceptions.ConnectionError):
                 request_unmocked_address()
 
+
+class TestDatabaseName:
+    """
+    Tests for the database name.
+    """
+
+    @given(database_name=text())
+    def test_database_name(self, database_name):
+        """
+        XXX
+        """
+        with MockVWS(database_name=database_name):
+            
 
 class TestPersistence:
     """
