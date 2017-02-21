@@ -56,6 +56,10 @@ assert \"Final rating: 10/10\" in result, result;
     # We don't add to this because we have environment variables set in the CI
     # config.
     - "touch vuforia_secrets.env"
+    # We use a different database for `master` builds.
+    - "if [ \"$TRAVIS_BRANCH\" = \"master\"]; then VUFORIA_TARGET_MANAGER_DATABASE_NAME=$MASTER_VUFORIA_TARGET_MANAGER_DATABASE_NAME; fi"
+    - "if [ \"$TRAVIS_BRANCH\" = \"master\"]; then VUFORIA_SERVER_ACCESS_KEY=$MASTER_VUFORIA_SERVER_ACCESS_KEY; fi"
+    - "if [ \"$TRAVIS_BRANCH\" = \"master\"]; then VUFORIA_SERVER_SECRET_KEY=$MASTER_VUFORIA_SERVER_ACCESS_KEY; fi"
 
 script:
     # Only run the tests against the real Vuforia on one Python version.
