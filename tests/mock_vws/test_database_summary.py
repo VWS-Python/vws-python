@@ -7,10 +7,8 @@ import io
 from time import sleep
 
 import pytest
-import requests
 import timeout_decorator
 from requests import codes
-from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import (
@@ -20,7 +18,6 @@ from tests.mock_vws.utils import (
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import target_api_request
 
 
 @timeout_decorator.timeout(seconds=300)
