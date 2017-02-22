@@ -158,6 +158,11 @@ with MockVWS(real_http=True):
     requests.get('http://example.com')
 ```
 
+## Setting the database name
+
+This can be done with the `database_name` parameter.
+By default this is a random string.
+
 ## Mocking error states
 
 Sometimes Vuforia is in an error state, where requests don't work.

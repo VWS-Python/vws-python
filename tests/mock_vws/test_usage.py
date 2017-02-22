@@ -115,13 +115,41 @@ class TestDatabaseName:
     Tests for the database name.
     """
 
-    @given(database_name=text())
-    def test_database_name(self, database_name):
+    def test_default(
+        self, vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
         """
-        XXX
+        By default, the database has a random name.
+        """
+        with MockVWS():
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            first_database_name = response.json()['name']
+
+        with MockVWS():
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            second_database_name = response.json()['name']
+
+        assert first_database_name != second_database_name
+
+    @given(database_name=text())
+    def test_custom_name(
+        self,
+        database_name: str,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
+        """
+        It is possible to set a custom database name.
         """
         with MockVWS(database_name=database_name):
-            
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            assert response.json()['name'] == database_name
+
 
 class TestPersistence:
     """

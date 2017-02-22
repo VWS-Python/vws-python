@@ -291,25 +291,6 @@ def verify_mock_vuforia(
         ):
             yield
 
-def database_summary(
-    vuforia_server_credentials: VuforiaServerCredentials,
-) -> requests.Response:
-    """
-    Return the response of a request to the database summary endpoint.
-
-    Args:
-        vuforia_server_credentials: The credentials to use to connect to
-            Vuforia.
-    """
-    return target_api_request(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
-        method=GET,
-        content=b'',
-        request_path='/summary',
-    )
-
-
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia_inactive(
