@@ -88,7 +88,16 @@ Set either `SKIP_MOCK` or `SKIP_REAL` to `1` to skip tests against the mock, or 
 
 Tests are run on Travis CI.
 The configuration for this is in `.travis.yml`.
+
 Travis CI is set up with environment variables for connecting to Vuforia.
+These variables include those from `vuforia_secrets.env`.
+They also include another set of variables especially for running the tests on the `master` branch.
+The tests are run daily against the `master` branch.
+This means that when the daily request quota is used, the `master` branch may show as failing on the `README`.
+Using the request quota on the `master` branch also leaves fewer requests for regular development.
+Therefore, `master` is given its own Vuforia database with separate limits.
+
+These include the variables from `vuforia_secrets.env` prefixed with `MASTER_`.
 
 All targets are deleted from the database beween each test.
 Therefore there may be conflicts if the test suite is run concurrently as Travis CI is configured to connect to one Vuforia database.
@@ -98,7 +107,7 @@ As such, Travis CI is configured not to run multiple instances of the test suite
 
 To build the documentation, first install the dependencies:
 
-    pip install -e .[dev]
+    pip install --upgrade --editable .[dev]
 
 Then use `make`:
 
