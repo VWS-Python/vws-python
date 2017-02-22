@@ -124,8 +124,8 @@ class MockVWS(ContextDecorator):
                         headers=headers,
                     )
 
-        self.mock = mock
-        self.mock.start()
+        self._mock = mock
+        self._mock.start()
         return self
 
     def __exit__(self, *exc: Tuple[None, None, None]) -> bool:
@@ -135,5 +135,5 @@ class MockVWS(ContextDecorator):
         Returns:
             False
         """
-        self.mock.stop()
+        self._mock.stop()
         return False
