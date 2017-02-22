@@ -76,27 +76,16 @@ class MockVWS(ContextDecorator):
                 By default this is a random string.
             access_key: A VWS access key for the mock.
             secret_key: A VWS secret key for the mock.
-
-        Attributes:
-            real_http (bool): Whether or not to forward requests to the real
-                server if they are not handled by the mock.
-                See
-                http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
-            mock: None or an `requests_mock` object used for mocking Vuforia.
-            state: The state of the services being mocked.
-            database_name: The name of the mock VWS target manager database.
-            access_key: A VWS access key for the mock.
-            secret_key: A VWS secret key for the mock.
         """
         super().__init__()
-        self.real_http = real_http
-        self.mock = None  # type: Optional[Mocker]
-        self.state = state
+        self._real_http = real_http
+        self._mock = None  # type: Optional[Mocker]
+        self._state = state
         if database_name is None:
             database_name = uuid.uuid4().hex
-        self.database_name = database_name
-        self.access_key = access_key
-        self.secret_key = secret_key
+        self._database_name = database_name
+        self._access_key = access_key
+        self._secret_key = secret_key
 
     def __call__(self, func: Callable[..., Any]) -> Any:
         """
@@ -113,10 +102,10 @@ class MockVWS(ContextDecorator):
             ``self``.
         """
         fake_target_api = MockVuforiaTargetAPI(
-            database_name=self.database_name,
-            access_key=self.access_key,
-            secret_key=self.secret_key,
-            state=self.state,
+            database_name=self._database_name,
+            access_key=self._access_key,
+            secret_key=self._secret_key,
+            state=self._state,
         )
 
         headers = {
@@ -125,7 +114,7 @@ class MockVWS(ContextDecorator):
             'Server': 'nginx',
         }
 
-        with Mocker(real_http=self.real_http) as mock:
+        with Mocker(real_http=self._real_http) as mock:
             for route in fake_target_api.routes:
                 for http_method in route.methods:
                     mock.register_uri(
