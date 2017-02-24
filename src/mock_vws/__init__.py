@@ -4,6 +4,7 @@ Tools for using a fake implementation of Vuforia.
 
 import os
 import re
+import uuid
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
@@ -60,7 +61,7 @@ class MockVWS(ContextDecorator):
         self,
         real_http: bool=False,
         state: States=States.WORKING,
-        database_name: str=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
+        database_name: Optional[str]=None,
         access_key: str=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key: str=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     ) -> None:
@@ -72,6 +73,7 @@ class MockVWS(ContextDecorator):
                 http://requests-mock.readthedocs.io/en/latest/mocker.html#real-http-requests
             state: The state of the services being mocked.
             database_name: The name of the mock VWS target manager database.
+                By default this is a random string.
             access_key: A VWS access key for the mock.
             secret_key: A VWS secret key for the mock.
         """
@@ -79,6 +81,8 @@ class MockVWS(ContextDecorator):
         self._real_http = real_http
         self._mock = None  # type: Optional[Mocker]
         self._state = state
+        if database_name is None:
+            database_name = uuid.uuid4().hex
         self._database_name = database_name
         self._access_key = access_key
         self._secret_key = secret_key
