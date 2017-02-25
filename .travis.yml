@@ -58,9 +58,10 @@ before_script:
 #     - "touch vuforia_secrets.env"
     # We use a different database for `master` builds.
     - "if [ \"$TRAVIS_BRANCH\" = \"master\" ]; then echo 'Hello'; fi"
-    - "if [ \"$TRAVIS_BRANCH\" = \"master\" ]; then VUFORIA_TARGET_MANAGER_DATABASE_NAME=$MASTER_VUFORIA_TARGET_MANAGER_DATABASE_NAME; fi"
-    - "if [ \"$TRAVIS_BRANCH\" = \"master\" ]; then VUFORIA_SERVER_ACCESS_KEY=$MASTER_VUFORIA_SERVER_ACCESS_KEY; fi"
-    - "if [ \"$TRAVIS_BRANCH\" = \"master\" ]; then VUFORIA_SERVER_SECRET_KEY=$MASTER_VUFORIA_SERVER_ACCESS_KEY; fi"
+    - "echo $TRAVIS_BRANCH"
+    # - "if [ \"$TRAVIS_BRANCH\" = \"master\" ]; then export VUFORIA_TARGET_MANAGER_DATABASE_NAME=$MASTER_VUFORIA_TARGET_MANAGER_DATABASE_NAME; fi"
+    # - "if [ \"$TRAVIS_BRANCH\" = \"master\" ]; then export VUFORIA_SERVER_ACCESS_KEY=$MASTER_VUFORIA_SERVER_ACCESS_KEY; fi"
+    # - "if [ \"$TRAVIS_BRANCH\" = \"master\" ]; then export VUFORIA_SERVER_SECRET_KEY=$MASTER_VUFORIA_SERVER_ACCESS_KEY; fi"
 
 script:
     # Only run the tests against the real Vuforia on one Python version.
