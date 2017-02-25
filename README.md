@@ -143,6 +143,16 @@ with MockVWS():
 
 However, an exception will be raised if any requests to unmocked addresses are made.
 
+## Authentication
+
+Connecting to the Vuforia Web Services requires an access key and a secret key.
+The mock also requires these keys as it provides realistic authentication support.
+
+By default, the mock uses the following credentials:
+
+* The access key is `e93b08383581402688b2e37d127aba90`.
+* The secret key is `5dce606ef41641d79b0055b373f4c6f8`.
+
 ## Allowing HTTP requests to unmocked addresses
 
 This can be done by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
