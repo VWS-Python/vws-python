@@ -6,56 +6,56 @@ language: "python"
 
 python:
   - "3.5"
-#   - "3.6"
-#
-# addons:
-#   apt:
-#     packages:
-#     - "enchant"
-#
-# before_install:
-#     - "pip install --upgrade pip setuptools"
-#
-# install:
-#   - "pip install --upgrade --editable .[dev]"
-#   - "npm install -g markdownlint-cli"
+  - "3.6"
+
+addons:
+  apt:
+    packages:
+    - "enchant"
+
+before_install:
+    - "pip install --upgrade pip setuptools"
+
+install:
+  - "pip install --upgrade --editable .[dev]"
+  - "npm install -g markdownlint-cli"
 
 cache: "pip"
 
 before_script:
     # Run linters
-#     - "yapf --diff --parallel --recursive . |
-#         python -c 'import sys;
-# result = sys.stdin.read();
-# assert not result, result;
-#      ' ''
-# /"
-#     # Require 0 pyroma errors. It usually exits with status 0 on <= 8 errors.
-#     - "pyroma . |
-#         python -c 'import sys;
-# result = sys.stdin.read();
-# assert \"Final rating: 10/10\" in result, result;
-#       '
-#       "
-#     - "flake8 ."
-#     - "pylint src/vws"
-#     - "pylint src/mock_vws"
-#     # Less strict linting for tests.
-#     - "pylint --rcfile=tests-pylintrc tests"
-#     - "mypy src/ tests/"
-#     - "markdownlint --config .markdownlint.json README.md"
-#     # Check for uploaded secrets
-#     - "dodgy"
-#     # Make sure that imports are sorted as expected.
-#     - "isort --recursive --check-only"
-#     - "doc8 --config doc8.ini"
-#     # Build documentation HTML.
-#     - "make -C docs clean html"
-#     - "pydocstyle"
-#     # Create an environment file used by `pytest-envfiles`.
-#     # We don't add to this because we have environment variables set in the CI
-#     # config.
-#     - "touch vuforia_secrets.env"
+    - "yapf --diff --parallel --recursive . |
+        python -c 'import sys;
+result = sys.stdin.read();
+assert not result, result;
+     ' ''
+/"
+    # Require 0 pyroma errors. It usually exits with status 0 on <= 8 errors.
+    - "pyroma . |
+        python -c 'import sys;
+result = sys.stdin.read();
+assert \"Final rating: 10/10\" in result, result;
+      '
+      "
+    - "flake8 ."
+    - "pylint src/vws"
+    - "pylint src/mock_vws"
+    # Less strict linting for tests.
+    - "pylint --rcfile=tests-pylintrc tests"
+    - "mypy src/ tests/"
+    - "markdownlint --config .markdownlint.json README.md"
+    # Check for uploaded secrets
+    - "dodgy"
+    # Make sure that imports are sorted as expected.
+    - "isort --recursive --check-only"
+    - "doc8 --config doc8.ini"
+    # Build documentation HTML.
+    - "make -C docs clean html"
+    - "pydocstyle"
+    # Create an environment file used by `pytest-envfiles`.
+    # We don't add to this because we have environment variables set in the CI
+    # config.
+    - "touch vuforia_secrets.env"
     # We use a different database for `master` builds.
     - "if [ \"$TRAVIS_BRANCH\" = \"master\" -a \"$TRAVIS_PULL_REQUEST\" = \"false\" ]; then
         echo 'Using Vuforia credentials for $MASTER_VUFORIA_TARGET_MANAGER_DATABASE_NAME';
@@ -66,8 +66,8 @@ before_script:
 
 script:
     # Only run the tests against the real Vuforia on one Python version.
-    # - "if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pytest --exitfirst -vvv --cov=src --cov=tests; fi"
-    # - "if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then SKIP_REAL=1 pytest --exitfirst -vvv; fi"
+    - "if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pytest --exitfirst -vvv --cov=src --cov=tests; fi"
+    - "if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then SKIP_REAL=1 pytest --exitfirst -vvv; fi"
 
 after_success:
     - "coveralls"
