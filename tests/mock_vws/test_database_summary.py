@@ -7,38 +7,17 @@ import io
 from time import sleep
 
 import pytest
-import requests
 import timeout_decorator
 from requests import codes
-from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_response,
+    database_summary,
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
-from vws._request_utils import target_api_request
-
-
-def database_summary(
-    vuforia_server_credentials: VuforiaServerCredentials,
-) -> requests.Response:
-    """
-    Return the response of a request to the database summary endpoint.
-
-    Args:
-        vuforia_server_credentials: The credentials to use to connect to
-            Vuforia.
-    """
-    return target_api_request(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
-        method=GET,
-        content=b'',
-        request_path='/summary',
-    )
 
 
 @timeout_decorator.timeout(seconds=300)

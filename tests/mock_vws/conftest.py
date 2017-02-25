@@ -286,7 +286,9 @@ def verify_mock_vuforia(
         )
         yield
     else:
-        with MockVWS():
+        with MockVWS(
+            database_name=vuforia_server_credentials.database_name,
+        ):
             yield
 
 

@@ -8,11 +8,17 @@ import socket
 
 import pytest
 import requests
+from hypothesis import given
+from hypothesis.strategies import text
 from requests import codes
 from requests_mock.exceptions import NoMockAddress
 
 from mock_vws import MockVWS
-from tests.mock_vws.utils import add_target_to_vws, get_vws_target
+from tests.mock_vws.utils import (
+    add_target_to_vws,
+    database_summary,
+    get_vws_target,
+)
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import rfc_1123_date
 
@@ -102,6 +108,47 @@ class TestUsage:
         with MockVWS(real_http=True):
             with pytest.raises(requests.exceptions.ConnectionError):
                 request_unmocked_address()
+
+
+class TestDatabaseName:
+    """
+    Tests for the database name.
+    """
+
+    def test_default(
+        self, vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
+        """
+        By default, the database has a random name.
+        """
+        with MockVWS():
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            first_database_name = response.json()['name']
+
+        with MockVWS():
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            second_database_name = response.json()['name']
+
+        assert first_database_name != second_database_name
+
+    @given(database_name=text())
+    def test_custom_name(
+        self,
+        database_name: str,
+        vuforia_server_credentials: VuforiaServerCredentials
+    ) -> None:
+        """
+        It is possible to set a custom database name.
+        """
+        with MockVWS(database_name=database_name):
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            assert response.json()['name'] == database_name
 
 
 class TestPersistence:
