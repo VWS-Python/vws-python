@@ -253,11 +253,17 @@ class TestPersistence:
 
 class TestCredentials:
     """
-    XXX
+    Tests for setting credentials for the mock.
     """
 
     def test_default(self) -> None:
+        """
+        By default the mock uses an documented access key and secret key.
+        """
         pass
 
     def test_custom_credentials(self) -> None:
+        """
+        It is possible to set custom credentials.
+        """
         pass
