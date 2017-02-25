@@ -256,14 +256,19 @@ class TestCredentials:
     Tests for setting credentials for the mock.
     """
 
+    @MockVWS()
     def test_default(self) -> None:
         """
         By default the mock uses an documented access key and secret key.
         """
         pass
 
-    def test_custom_credentials(self) -> None:
+    @given(access_key=text(), secret_key=text())
+    def test_custom_credentials(
+        self, access_key: str, secret_key: str
+    ) -> None:
         """
         It is possible to set custom credentials.
         """
-        pass
+        with MockVWS(access_key=access_key, secret_key=secret_key):
+            pass
