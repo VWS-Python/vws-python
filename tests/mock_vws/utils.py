@@ -222,6 +222,25 @@ def get_vws_target(
     )
 
 
+def database_summary(
+    vuforia_server_credentials: VuforiaServerCredentials,
+) -> Response:
+    """
+    Return the response of a request to the database summary endpoint.
+
+    Args:
+        vuforia_server_credentials: The credentials to use to connect to
+            Vuforia.
+    """
+    return target_api_request(
+        access_key=vuforia_server_credentials.access_key,
+        secret_key=vuforia_server_credentials.secret_key,
+        method=GET,
+        content=b'',
+        request_path='/summary',
+    )
+
+
 @timeout_decorator.timeout(seconds=60)
 def wait_for_target_processed(
     vuforia_server_credentials: VuforiaServerCredentials,
