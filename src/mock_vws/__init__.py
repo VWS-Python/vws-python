@@ -62,8 +62,8 @@ class MockVWS(ContextDecorator):
         real_http: bool=False,
         state: States=States.WORKING,
         database_name: Optional[str]=None,
-        access_key: str=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
-        secret_key: str=os.environ['VUFORIA_SERVER_SECRET_KEY'],
+        access_key: str='e93b08383581402688b2e37d127aba90',
+        secret_key: str='5dce606ef41641d79b0055b373f4c6f8',
     ) -> None:
         """
         Args:
@@ -74,8 +74,10 @@ class MockVWS(ContextDecorator):
             state: The state of the services being mocked.
             database_name: The name of the mock VWS target manager database.
                 By default this is a random string.
-            access_key: A VWS access key for the mock.
-            secret_key: A VWS secret key for the mock.
+            access_key: A VWS access key for the mock. By default this is
+                `e93b08383581402688b2e37d127aba90`.
+            secret_key: A VWS secret key for the mock. By default this is
+                `5dce606ef41641d79b0055b373f4c6f8`.
         """
         super().__init__()
         self._real_http = real_http
