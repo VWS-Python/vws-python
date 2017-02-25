@@ -58,12 +58,9 @@ before_script:
 #     - "touch vuforia_secrets.env"
     # We use a different database for `master` builds.
     - "if [ \"$TRAVIS_BRANCH\" = \"master\" -a \"$TRAVIS_PULL_REQUEST\" = \"false\" ]; then
+        echo 'Using Vuforia credentials for $MASTER_VUFORIA_TARGET_MANAGER_DATABASE_NAME';
         export VUFORIA_TARGET_MANAGER_DATABASE_NAME=$MASTER_VUFORIA_TARGET_MANAGER_DATABASE_NAME;
-       fi"
-    - "if [ \"$TRAVIS_BRANCH\" = \"master\" -a \"$TRAVIS_PULL_REQUEST\" = \"false\" ]; then
         export VUFORIA_VUFORIA_SERVER_ACCESS_KEY=$MASTER_VUFORIA_VUFORIA_SERVER_ACCESS_KEY;
-       fi"
-    - "if [ \"$TRAVIS_BRANCH\" = \"master\" -a \"$TRAVIS_PULL_REQUEST\" = \"false\" ]; then
         export VUFORIA_VUFORIA_SERVER_SECRET_KEY=$MASTER_VUFORIA_VUFORIA_SERVER_SECRET_KEY;
        fi"
 
