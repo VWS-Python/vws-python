@@ -249,3 +249,15 @@ class TestPersistence:
 
         target_id = create()
         verify(target_id=target_id)
+
+
+class TestCredentials:
+    """
+    XXX
+    """
+
+    def test_default(self) -> None:
+        pass
+
+    def test_custom_credentials(self) -> None:
+        pass
