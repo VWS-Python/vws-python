@@ -8,7 +8,7 @@ from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
 from typing import Optional  # noqa: F401 This is used in a type hint.
-from typing import Any, Callable, Tuple, TypeVar, Pattern
+from typing import Any, Callable, Dict, Tuple, TypeVar, Pattern
 
 import wrapt
 import inspect
@@ -95,7 +95,7 @@ class MockVWS(ContextDecorator):
         Override call to allow a wrapped function to return any type.
         """
 
-        def argspec_factory(wrapped):
+        def argspec_factory(wrapped: Callable) -> inspect.FullArgSpec:
             argspec = inspect.getfullargspec(wrapped)
 
             if 'access_key' not in argspec.args:
@@ -104,9 +104,9 @@ class MockVWS(ContextDecorator):
             argspec.args.remove('access_key')
             args = argspec.args + ['access_key']
             if argspec.defaults is None:
-                defaults = ('ACCESS_KEY_NONE',)
+                defaults = ('ACCESS_KEY_NONE', )
             else:
-                defaults = argspec.defaults + ('ACCESS_KEY',)
+                defaults = argspec.defaults + ('ACCESS_KEY', )
 
             return inspect.FullArgSpec(
                 args=args,
@@ -118,12 +118,15 @@ class MockVWS(ContextDecorator):
                 annotations=argspec.annotations,
             )
 
-        def session(wrapped):
+        def session(wrapped: Callable) -> Any:
             @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
-            def _session(wrapped, instance, args, kwargs):
+            def _session(
+                wrapped: Callable, instance: Any, args: Tuple, kwargs: Dict
+            ) -> Any:
                 with self._recreate_cm():
                     kwargs['access_key'] = 'foo'
                     return wrapped(*args, **kwargs)
+
             return _session(wrapped)
 
         return session(func)
