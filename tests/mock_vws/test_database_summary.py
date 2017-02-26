@@ -29,6 +29,7 @@ def wait_for_image_numbers(
     processing_images: int,
 ) -> None:
     """
+    # FOO
     Wait up to 300 seconds (arbitrary) for the number of images in various
     categories to match the expected number.
 
