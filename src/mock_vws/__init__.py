@@ -93,7 +93,46 @@ class MockVWS(ContextDecorator):
         """
         Override call to allow a wrapped function to return any type.
         """
-        return super().__call__(func)
+        from functools import wraps, partial
+        import wrapt
+        import inspect
+
+        from decorator import decorator
+        # import pdb; pdb.set_trace()
+
+        # def argspec_factory(wrapped):
+        #     argspec = inspect.getargspec(wrapped)
+        #
+        #     args = argspec.args[1:]
+        #     defaults = argspec.defaults and argspec.defaults[-len(argspec.args):]
+        #
+        #     return inspect.ArgSpec(args, argspec.varargs,
+        #             argspec.keywords, defaults)
+        #
+        # @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
+        # def _session(wrapped, instance, args, kwargs):
+        #     with transaction() as session:
+        #         return wrapped(session, *args, **kwargs)
+
+        # @decorator
+        # def inner(func, *args, **kw):
+        #     with self._recreate_cm():
+        #         kw['access_key'] = 1
+        #         import pdb; pdb.set_trace()
+        #         return func(*args, **kw)
+        #
+        @wraps(func)
+        def inner(*args, **kwds):
+            with self._recreate_cm():
+                return func(*args, **kwds)
+        return inner
+
+        @wrapt.decorator
+        def inner(wrapped, instance, args, kwargs):
+            with self._recreate_cm():
+                return wrapped(*args, **kwargs)
+
+        return inner(func)
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """

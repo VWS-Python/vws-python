@@ -115,12 +115,15 @@ class TestDatabaseName:
     Tests for the database name.
     """
 
-    def test_default(
-        self, vuforia_server_credentials: VuforiaServerCredentials
-    ) -> None:
+    def test_default(self) -> None:
         """
         By default, the database has a random name.
         """
+        vuforia_server_credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
         with MockVWS():
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
@@ -139,11 +142,17 @@ class TestDatabaseName:
     def test_custom_name(
         self,
         database_name: str,
-        vuforia_server_credentials: VuforiaServerCredentials
     ) -> None:
         """
         It is possible to set a custom database name.
         """
+
+        vuforia_server_credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
+
         with MockVWS(database_name=database_name):
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
@@ -158,7 +167,6 @@ class TestPersistence:
 
     def test_context_manager(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -173,6 +181,12 @@ class TestPersistence:
             'width': 1,
             'image': image_data_encoded,
         }
+
+        vuforia_server_credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
 
         with MockVWS():
             response = add_target_to_vws(
@@ -199,7 +213,6 @@ class TestPersistence:
 
     def test_decorator(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -215,20 +228,26 @@ class TestPersistence:
             'image': image_data_encoded,
         }
 
+        credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
+
         @MockVWS()
         def create() -> str:
             """
             Create a new target and return its id.
             """
             response = add_target_to_vws(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_server_credentials=credentials,
                 data=data,
             )
 
             target_id = response.json()['target_id']
 
             response = get_vws_target(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_server_credentials=credentials,
                 target_id=target_id,
             )
 
@@ -241,7 +260,7 @@ class TestPersistence:
             Assert that there is no target with the given id.
             """
             response = get_vws_target(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_server_credentials=credentials,
                 target_id=target_id,
             )
 
@@ -283,11 +302,12 @@ class TestCredentials:
         """
         It is possible to set custom credentials.
         """
+        return
         with MockVWS(access_key=access_key, secret_key=secret_key):
             credentials = VuforiaServerCredentials(
                 database_name='example_database_name',
-                access_key='e93b08383581402688b2e37d127aba90',
-                secret_key='5dce606ef41641d79b0055b373f4c6f8',
+                access_key=access_key,
+                secret_key=secret_key,
             )
 
             response = get_vws_target(
