@@ -93,81 +93,33 @@ class MockVWS(ContextDecorator):
         """
         Override call to allow a wrapped function to return any type.
         """
-        from functools import wraps, partial
         import wrapt
         import inspect
-
-        from decorator import decorator
-
-        class sig(wrapt.AdapterFactory):
-            def __call__(self, function):
-                argspec = inspect.getargspec(function)
-                args = argspec.args
-                # import pdb; pdb.set_trace()
-                argspec.keywords.append('access_key')
-                # defaults = argspec.defaults and argspec.defaults[-len(
-                #     argspec.args
-                # ):]
-
-                return inspect.ArgSpec(
-                    args, argspec.varargs, argspec.keywords, argspec.defaults
-                )
-
-        # def sig2(access_key): pass
-
-        # import pdb; pdb.set_trace()
-
-        # def argspec_factory(wrapped):
-        #     argspec = inspect.getargspec(wrapped)
-        #
-        #     args = argspec.args[1:]
-        #     defaults = argspec.defaults and argspec.defaults[-len(argspec.args):]
-        #
-        #     return inspect.ArgSpec(args, argspec.varargs,
-        #             argspec.keywords, defaults)
-        #
-        # @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
-        # def _session(wrapped, instance, args, kwargs):
-        #     with transaction() as session:
-        #         return wrapped(session, *args, **kwargs)
-
-        # @decorator
-        # def inner(func, *args, **kw):
-        #     with self._recreate_cm():
-        #         kw['access_key'] = 1
-        #         import pdb; pdb.set_trace()
-        #         return func(*args, **kw)
-        #
-        # @wraps(func)
-        # def inner(*args, **kwds):
-        #     with self._recreate_cm():
-        #         return func(*args, **kwds)
-        # return inner
 
         def argspec_factory(wrapped):
             argspec = inspect.getfullargspec(wrapped)
 
-            kwonlyargs = []
-            kwonlydefaults = {'access_key': 1}
-            defaults = ('1', )
+            if 'access_key' not in argspec.args:
+                raise Exception("NEEDS ACCESS KEY")
 
-            # import pdb; pdb.set_trace()
+            argspec.args.remove('access_key')
+            args = argspec.args + ['access_key']
+            if argspec.defaults is None:
+                defaults = ('ACCESS_KEY_NONE',)
+            else:
+                defaults = argspec.defaults + ('ACCESS_KEY',)
+
             return inspect.FullArgSpec(
-                args=argspec.args,
+                args=args,
                 varargs=argspec.varargs,
                 varkw=argspec.varkw,
                 defaults=defaults,
-                kwonlyargs=kwonlyargs,
-                kwonlydefaults=kwonlydefaults,
+                kwonlyargs=argspec.kwonlyargs,
+                kwonlydefaults=argspec.kwonlydefaults,
                 annotations=argspec.annotations,
             )
-            # return argspec
-            # import pdb; pdb.set_trace()
-            # return inspect.ArgSpec(args, argspec.varargs,
-            #         argspec.varkw, defaults)
 
         def session(wrapped):
-            # @wrapt.decorator(adapter=sig())
             @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
             def _session(wrapped, instance, args, kwargs):
                 with self._recreate_cm():

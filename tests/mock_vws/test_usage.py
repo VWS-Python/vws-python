@@ -67,254 +67,256 @@ class TestUsage:
         Using the mock as a decorator stops any requests made with `requests`
         to non-Vuforia addresses, but not to mocked Vuforia endpoints.
         """
+        assert access_key == 'foo'
         with pytest.raises(NoMockAddress):
             request_unmocked_address()
 
         # No exception is raised when making a request to a mocked endpoint.
         request_mocked_address()
 
-#     @MockVWS(real_http=True)
-#     def test_decorator_real_http(self) -> None:
-#         """
-#         When the `real_http` parameter given to the decorator is set to `True`,
-#         requests made to unmocked addresses are not stopped.
-#         """
-#         with pytest.raises(requests.exceptions.ConnectionError):
-#             request_unmocked_address()
-#
-#     def test_context_manager(self) -> None:
-#         """
-#         Using the mock as a context manager stops any requests made with
-#         `requests` to non-Vuforia addresses, but not to mocked Vuforia
-#         endpoints.
-#         """
-#         with MockVWS():
-#             with pytest.raises(NoMockAddress):
-#                 request_unmocked_address()
-#
-#             # No exception is raised when making a request to a mocked
-#             # endpoint.
-#             request_mocked_address()
-#
-#         # The mocking stops when the context manager stops.
-#         with pytest.raises(requests.exceptions.ConnectionError):
-#             request_unmocked_address()
-#
-#     def test_real_http(self) -> None:
-#         """
-#         When the `real_http` parameter given to the context manager is set to
-#         `True`, requests made to unmocked addresses are not stopped.
-#         """
-#         with MockVWS(real_http=True):
-#             with pytest.raises(requests.exceptions.ConnectionError):
-#                 request_unmocked_address()
-#
-#
-# class TestDatabaseName:
-#     """
-#     Tests for the database name.
-#     """
-#
-#     def test_default(self) -> None:
-#         """
-#         By default, the database has a random name.
-#         """
-#         vuforia_server_credentials = VuforiaServerCredentials(
-#             database_name='example_database_name',
-#             access_key='e93b08383581402688b2e37d127aba90',
-#             secret_key='5dce606ef41641d79b0055b373f4c6f8',
-#         )
-#         with MockVWS():
-#             response = database_summary(
-#                 vuforia_server_credentials=vuforia_server_credentials,
-#             )
-#             first_database_name = response.json()['name']
-#
-#         with MockVWS():
-#             response = database_summary(
-#                 vuforia_server_credentials=vuforia_server_credentials,
-#             )
-#             second_database_name = response.json()['name']
-#
-#         assert first_database_name != second_database_name
-#
-#     @given(database_name=text())
-#     def test_custom_name(
-#         self,
-#         database_name: str,
-#     ) -> None:
-#         """
-#         It is possible to set a custom database name.
-#         """
-#
-#         vuforia_server_credentials = VuforiaServerCredentials(
-#             database_name='example_database_name',
-#             access_key='e93b08383581402688b2e37d127aba90',
-#             secret_key='5dce606ef41641d79b0055b373f4c6f8',
-#         )
-#
-#         with MockVWS(database_name=database_name):
-#             response = database_summary(
-#                 vuforia_server_credentials=vuforia_server_credentials,
-#             )
-#             assert response.json()['name'] == database_name
-#
-#
-# class TestPersistence:
-#     """
-#     Tests for usage patterns of the mock.
-#     """
-#
-#     def test_context_manager(
-#         self,
-#         png_rgb: io.BytesIO,
-#     ) -> None:
-#         """
-#         When the context manager is used, targets are not persisted between
-#         invocations.
-#         """
-#         image_data = png_rgb.read()
-#         image_data_encoded = base64.b64encode(image_data).decode('ascii')
-#
-#         data = {
-#             'name': 'example',
-#             'width': 1,
-#             'image': image_data_encoded,
-#         }
-#
-#         vuforia_server_credentials = VuforiaServerCredentials(
-#             database_name='example_database_name',
-#             access_key='e93b08383581402688b2e37d127aba90',
-#             secret_key='5dce606ef41641d79b0055b373f4c6f8',
-#         )
-#
-#         with MockVWS():
-#             response = add_target_to_vws(
-#                 vuforia_server_credentials=vuforia_server_credentials,
-#                 data=data,
-#             )
-#
-#             target_id = response.json()['target_id']
-#
-#             response = get_vws_target(
-#                 vuforia_server_credentials=vuforia_server_credentials,
-#                 target_id=target_id,
-#             )
-#
-#             assert response.status_code == codes.OK
-#
-#         with MockVWS():
-#             response = get_vws_target(
-#                 vuforia_server_credentials=vuforia_server_credentials,
-#                 target_id=target_id,
-#             )
-#
-#             assert response.status_code == codes.NOT_FOUND
-#
-#     def test_decorator(
-#         self,
-#         png_rgb: io.BytesIO,
-#     ) -> None:
-#         """
-#         When the decorator is used, targets are not persisted between
-#         invocations.
-#         """
-#         image_data = png_rgb.read()
-#         image_data_encoded = base64.b64encode(image_data).decode('ascii')
-#
-#         data = {
-#             'name': 'example',
-#             'width': 1,
-#             'image': image_data_encoded,
-#         }
-#
-#         credentials = VuforiaServerCredentials(
-#             database_name='example_database_name',
-#             access_key='e93b08383581402688b2e37d127aba90',
-#             secret_key='5dce606ef41641d79b0055b373f4c6f8',
-#         )
-#
-#         @MockVWS()
-#         def create() -> str:
-#             """
-#             Create a new target and return its id.
-#             """
-#             response = add_target_to_vws(
-#                 vuforia_server_credentials=credentials,
-#                 data=data,
-#             )
-#
-#             target_id = response.json()['target_id']
-#
-#             response = get_vws_target(
-#                 vuforia_server_credentials=credentials,
-#                 target_id=target_id,
-#             )
-#
-#             assert response.status_code == codes.OK
-#             return target_id
-#
-#         @MockVWS()
-#         def verify(target_id: str) -> None:
-#             """
-#             Assert that there is no target with the given id.
-#             """
-#             response = get_vws_target(
-#                 vuforia_server_credentials=credentials,
-#                 target_id=target_id,
-#             )
-#
-#             assert response.status_code == codes.NOT_FOUND
-#
-#         target_id = create()
-#         verify(target_id=target_id)
-#
-#
-# class TestCredentials:
-#     """
-#     Tests for setting credentials for the mock.
-#     """
-#
-#     @MockVWS()
-#     def test_default(self) -> None:
-#         """
-#         By default the mock uses an documented access key and secret key.
-#         """
-#         credentials = VuforiaServerCredentials(
-#             database_name='example_database_name',
-#             access_key='e93b08383581402688b2e37d127aba90',
-#             secret_key='5dce606ef41641d79b0055b373f4c6f8',
-#         )
-#
-#         response = get_vws_target(
-#             vuforia_server_credentials=credentials,
-#             target_id='example_id',
-#         )
-#
-#         # This shows that the response does not give an authentication error
-#         # which is what would happen if the keys were incorrect.
-#         assert response.status_code == codes.NOT_FOUND
-#
-#     @given(access_key=text(), secret_key=text())
-#     def test_custom_credentials(
-#         self, access_key: str, secret_key: str, vuforia_server_credentials
-#     ) -> None:
-#         """
-#         It is possible to set custom credentials.
-#         """
-#         return
-#         with MockVWS(access_key=access_key, secret_key=secret_key):
-#             credentials = VuforiaServerCredentials(
-#                 database_name='example_database_name',
-#                 access_key=access_key,
-#                 secret_key=secret_key,
-#             )
-#
-#             response = get_vws_target(
-#                 vuforia_server_credentials=credentials,
-#                 target_id='example_id',
-#             )
-#
-#             # This shows that the response does not give an authentication
-#             # error which is what would happen if the keys were incorrect.
-#             assert response.status_code == codes.NOT_FOUND
+    @MockVWS(real_http=True)
+    def test_decorator_real_http(self, access_key) -> None:
+        """
+        When the `real_http` parameter given to the decorator is set to `True`,
+        requests made to unmocked addresses are not stopped.
+        """
+        with pytest.raises(requests.exceptions.ConnectionError):
+            request_unmocked_address()
+
+    def test_context_manager(self) -> None:
+        """
+        Using the mock as a context manager stops any requests made with
+        `requests` to non-Vuforia addresses, but not to mocked Vuforia
+        endpoints.
+        """
+        with MockVWS():
+            with pytest.raises(NoMockAddress):
+                request_unmocked_address()
+
+            # No exception is raised when making a request to a mocked
+            # endpoint.
+            request_mocked_address()
+
+        # The mocking stops when the context manager stops.
+        with pytest.raises(requests.exceptions.ConnectionError):
+            request_unmocked_address()
+
+    def test_real_http(self) -> None:
+        """
+        When the `real_http` parameter given to the context manager is set to
+        `True`, requests made to unmocked addresses are not stopped.
+        """
+        with MockVWS(real_http=True):
+            with pytest.raises(requests.exceptions.ConnectionError):
+                request_unmocked_address()
+
+
+class TestDatabaseName:
+    """
+    Tests for the database name.
+    """
+
+    def test_default(self) -> None:
+        """
+        By default, the database has a random name.
+        """
+        vuforia_server_credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
+        with MockVWS():
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            first_database_name = response.json()['name']
+
+        with MockVWS():
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            second_database_name = response.json()['name']
+
+        assert first_database_name != second_database_name
+
+    @given(database_name=text())
+    def test_custom_name(
+        self,
+        database_name: str,
+    ) -> None:
+        """
+        It is possible to set a custom database name.
+        """
+
+        vuforia_server_credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
+
+        with MockVWS(database_name=database_name):
+            response = database_summary(
+                vuforia_server_credentials=vuforia_server_credentials,
+            )
+            assert response.json()['name'] == database_name
+
+
+class TestPersistence:
+    """
+    Tests for usage patterns of the mock.
+    """
+
+    def test_context_manager(
+        self,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        When the context manager is used, targets are not persisted between
+        invocations.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        vuforia_server_credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
+
+        with MockVWS():
+            response = add_target_to_vws(
+                vuforia_server_credentials=vuforia_server_credentials,
+                data=data,
+            )
+
+            target_id = response.json()['target_id']
+
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.OK
+
+        with MockVWS():
+            response = get_vws_target(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.NOT_FOUND
+
+    def test_decorator(
+        self,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        When the decorator is used, targets are not persisted between
+        invocations.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
+
+        @MockVWS()
+        def create(access_key, plop='adam') -> str:
+            """
+            Create a new target and return its id.
+            """
+            assert plop == 'adam'
+            response = add_target_to_vws(
+                vuforia_server_credentials=credentials,
+                data=data,
+            )
+
+            target_id = response.json()['target_id']
+
+            response = get_vws_target(
+                vuforia_server_credentials=credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.OK
+            return target_id
+
+        @MockVWS()
+        def verify(junk, target_id: str, access_key, something) -> None:
+            """
+            Assert that there is no target with the given id.
+            """
+            assert junk == 'junk'
+            response = get_vws_target(
+                vuforia_server_credentials=credentials,
+                target_id=target_id,
+            )
+
+            assert response.status_code == codes.NOT_FOUND
+
+        target_id = create()
+        verify('junk', target_id=target_id, something='adam')
+
+
+class TestCredentials:
+    """
+    Tests for setting credentials for the mock.
+    """
+
+    @MockVWS()
+    def test_default(self, access_key) -> None:
+        """
+        By default the mock uses an documented access key and secret key.
+        """
+        credentials = VuforiaServerCredentials(
+            database_name='example_database_name',
+            access_key='e93b08383581402688b2e37d127aba90',
+            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        )
+
+        response = get_vws_target(
+            vuforia_server_credentials=credentials,
+            target_id='example_id',
+        )
+
+        # This shows that the response does not give an authentication error
+        # which is what would happen if the keys were incorrect.
+        assert response.status_code == codes.NOT_FOUND
+
+    def test_custom_credentials(
+        self, access_key: str, vuforia_server_credentials
+    ) -> None:
+        """
+        It is possible to set custom credentials.
+        """
+        return
+        with MockVWS(access_key=access_key, secret_key=secret_key):
+            credentials = VuforiaServerCredentials(
+                database_name='example_database_name',
+                access_key=access_key,
+                secret_key=secret_key,
+            )
+
+            response = get_vws_target(
+                vuforia_server_credentials=credentials,
+                target_id='example_id',
+            )
+
+            # This shows that the response does not give an authentication
+            # error which is what would happen if the keys were incorrect.
+            assert response.status_code == codes.NOT_FOUND
