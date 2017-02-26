@@ -298,25 +298,26 @@ class TestCredentials:
         # which is what would happen if the keys were incorrect.
         assert response.status_code == codes.NOT_FOUND
 
+    @MockVWS(access_key='adam')
     def test_custom_credentials(
-        self, access_key: str, vuforia_server_credentials
+        self, access_key, vuforia_server_credentials
     ) -> None:
         """
         It is possible to set custom credentials.
         """
         return
-        with MockVWS(access_key=access_key, secret_key=secret_key):
-            credentials = VuforiaServerCredentials(
-                database_name='example_database_name',
-                access_key=access_key,
-                secret_key=secret_key,
-            )
-
-            response = get_vws_target(
-                vuforia_server_credentials=credentials,
-                target_id='example_id',
-            )
-
-            # This shows that the response does not give an authentication
-            # error which is what would happen if the keys were incorrect.
-            assert response.status_code == codes.NOT_FOUND
+        # with MockVWS(access_key=access_key, secret_key=secret_key):
+        #     credentials = VuforiaServerCredentials(
+        #         database_name='example_database_name',
+        #         access_key=access_key,
+        #         secret_key=secret_key,
+        #     )
+        #
+        #     response = get_vws_target(
+        #         vuforia_server_credentials=credentials,
+        #         target_id='example_id',
+        #     )
+        #
+        #     # This shows that the response does not give an authentication
+        #     # error which is what would happen if the keys were incorrect.
+        #     assert response.status_code == codes.NOT_FOUND
