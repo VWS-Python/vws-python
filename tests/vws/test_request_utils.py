@@ -152,10 +152,7 @@ class TestTargetAPIRequest:
     """Tests for `target_api_request`."""
 
     @MockVWS(access_key='access_key', secret_key='secret_key')
-    def test_success(
-        self,
-        vuforia_server_credentials: VuforiaServerCredentials,
-    ) -> None:
+    def test_success(self) -> None:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
