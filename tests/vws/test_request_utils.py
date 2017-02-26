@@ -14,7 +14,6 @@ from requests import codes
 from requests_mock import GET
 
 from mock_vws import MockVWS
-from tests.utils import VuforiaServerCredentials
 from vws._request_utils import (
     authorization_header,
     compute_hmac_base64,
