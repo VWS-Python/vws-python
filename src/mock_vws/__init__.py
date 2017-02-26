@@ -2,7 +2,6 @@
 Tools for using a fake implementation of Vuforia.
 """
 
-import os
 import re
 import uuid
 from contextlib import ContextDecorator
@@ -11,6 +10,8 @@ from urllib.parse import urljoin
 from typing import Optional  # noqa: F401 This is used in a type hint.
 from typing import Any, Callable, Tuple, TypeVar, Pattern
 
+import wrapt
+import inspect
 from requests_mock.mocker import Mocker
 
 from ._constants import States
@@ -93,8 +94,6 @@ class MockVWS(ContextDecorator):
         """
         Override call to allow a wrapped function to return any type.
         """
-        import wrapt
-        import inspect
 
         def argspec_factory(wrapped):
             argspec = inspect.getfullargspec(wrapped)
