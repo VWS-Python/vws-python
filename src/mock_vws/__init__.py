@@ -144,11 +144,34 @@ class MockVWS(ContextDecorator):
         #         return func(*args, **kwds)
         # return inner
 
+        def argspec_factory(wrapped):
+            argspec = inspect.getfullargspec(wrapped)
+
+            kwonlyargs = []
+            kwonlydefaults = {'access_key': 1}
+            defaults = ('1', )
+
+            # import pdb; pdb.set_trace()
+            return inspect.FullArgSpec(
+                args=argspec.args,
+                varargs=argspec.varargs,
+                varkw=argspec.varkw,
+                defaults=defaults,
+                kwonlyargs=kwonlyargs,
+                kwonlydefaults=kwonlydefaults,
+                annotations=argspec.annotations,
+            )
+            # return argspec
+            # import pdb; pdb.set_trace()
+            # return inspect.ArgSpec(args, argspec.varargs,
+            #         argspec.varkw, defaults)
+
         def session(wrapped):
             # @wrapt.decorator(adapter=sig())
-            @wrapt.decorator()
+            @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
             def _session(wrapped, instance, args, kwargs):
                 with self._recreate_cm():
+                    kwargs['access_key'] = 'foo'
                     return wrapped(*args, **kwargs)
             return _session(wrapped)
 
