@@ -113,7 +113,7 @@ class MockVWS(ContextDecorator):
                     args, argspec.varargs, argspec.keywords, argspec.defaults
                 )
 
-        def sig2(access_key): pass
+        # def sig2(access_key): pass
 
         # import pdb; pdb.set_trace()
 
@@ -144,15 +144,15 @@ class MockVWS(ContextDecorator):
         #         return func(*args, **kwds)
         # return inner
 
-        @wrapt.decorator(adapter=sig2)
-        def inner(wrapped, instance, args, kwargs):
-            def _execute(*_args, access_key, **_kwargs):
-                # kwargs['access_key'] = 'foo'
+        def session(wrapped):
+            # @wrapt.decorator(adapter=sig())
+            @wrapt.decorator()
+            def _session(wrapped, instance, args, kwargs):
                 with self._recreate_cm():
-                    return wrapped(access_key, *args, **kwargs)
-            return _execute(*args, access_key='boo', **kwargs)
+                    return wrapped(*args, **kwargs)
+            return _session(wrapped)
 
-        return inner(func)
+        return session(func)
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """

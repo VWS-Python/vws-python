@@ -62,7 +62,7 @@ class TestUsage:
     """
 
     @MockVWS()
-    def test_decorator(self, access_key) -> None:
+    def test_decorator(self) -> None:
         """
         Using the mock as a decorator stops any requests made with `requests`
         to non-Vuforia addresses, but not to mocked Vuforia endpoints.
@@ -297,7 +297,7 @@ class TestCredentials:
 
     @given(access_key=text(), secret_key=text())
     def test_custom_credentials(
-        self, access_key: str, secret_key: str
+        self, access_key: str, secret_key: str, vuforia_server_credentials
     ) -> None:
         """
         It is possible to set custom credentials.
