@@ -121,11 +121,11 @@ class MockVWS(ContextDecorator):
         #         import pdb; pdb.set_trace()
         #         return func(*args, **kw)
         #
-        @wraps(func)
-        def inner(*args, **kwds):
-            with self._recreate_cm():
-                return func(*args, **kwds)
-        return inner
+        # @wraps(func)
+        # def inner(*args, **kwds):
+        #     with self._recreate_cm():
+        #         return func(*args, **kwds)
+        # return inner
 
         @wrapt.decorator
         def inner(wrapped, instance, args, kwargs):
