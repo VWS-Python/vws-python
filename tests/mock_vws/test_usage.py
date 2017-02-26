@@ -282,4 +282,30 @@ class TestPersistence:
         verify(target_id=target_id)
 
 
-# TODO Test custom access / secret key
+class TestCredentials:
+    """
+    Tests for setting credentials for the mock.
+    """
+
+    def test_default(self) -> None:
+        """
+        By default the mock uses a random access key and secret key.
+        """
+        with MockVWS() as mock:
+            first_access_key = mock.access_key
+            first_secret_key = mock.secret_key
+
+        with MockVWS() as mock:
+            assert mock.access_key != first_access_key
+            assert mock.secret_key != first_secret_key
+
+    @given(access_key=text(), secret_key=text())
+    def test_custom_credentials(
+        self, access_key: str, secret_key: str
+    ) -> None:
+        """
+        It is possible to set custom credentials.
+        """
+        with MockVWS(access_key=access_key, secret_key=secret_key) as mock:
+            assert mock.access_key == access_key
+            assert mock.secret_key == secret_key
