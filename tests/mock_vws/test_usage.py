@@ -330,3 +330,34 @@ class TestCredentials:
             # This shows that the response does not give an authentication
             # error which is what would happen if the keys were incorrect.
             assert response.status_code == codes.NOT_FOUND
+
+    @MockVWS()
+    def test_credentials_passed(self, access_key, secret_key):
+        """
+        XXX
+        """
+        pass
+
+    @MockVWS()
+    def test_with_pytest_fixtures(
+        self, access_key, secret_key, vuforia_server_credentials
+    ):
+        pass
+
+    @MockVWS()
+    def test_with_hypothesis(self, access_key, hypothesis_variable):
+        pass
+
+    @MockVWS()
+    def test_with_defaults(self, access_key, secret_key, thing=1):
+        pass
+
+    def test_with_other_variables(self):
+        @MockVWS()
+        def func(access_key, secret_key, other_var):
+            pass
+
+    def test_missing_vars(self):
+        @MockVWS
+        def func():
+            pass
