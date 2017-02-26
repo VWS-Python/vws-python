@@ -62,7 +62,7 @@ class TestUsage:
     """
 
     @MockVWS()
-    def test_decorator(self) -> None:
+    def test_decorator(self, access_key) -> None:
         """
         Using the mock as a decorator stops any requests made with `requests`
         to non-Vuforia addresses, but not to mocked Vuforia endpoints.

@@ -98,6 +98,23 @@ class MockVWS(ContextDecorator):
         import inspect
 
         from decorator import decorator
+
+        class sig(wrapt.AdapterFactory):
+            def __call__(self, function):
+                argspec = inspect.getargspec(function)
+                args = argspec.args
+                import pdb; pdb.set_trace()
+                argspec.args.append('access_key2')
+                defaults = argspec.defaults and argspec.defaults[-len(
+                    argspec.args
+                ):]
+
+                return inspect.ArgSpec(
+                    args, argspec.varargs, argspec.keywords, defaults
+                )
+
+        def sig2(access_key): pass
+
         # import pdb; pdb.set_trace()
 
         # def argspec_factory(wrapped):
@@ -127,10 +144,13 @@ class MockVWS(ContextDecorator):
         #         return func(*args, **kwds)
         # return inner
 
-        @wrapt.decorator
+        @wrapt.decorator(adapter=sig2)
         def inner(wrapped, instance, args, kwargs):
-            with self._recreate_cm():
-                return wrapped(*args, **kwargs)
+            def _execute(*_args, access_key, **_kwargs):
+                # kwargs['access_key'] = 'foo'
+                with self._recreate_cm():
+                    return wrapped(access_key, *args, **kwargs)
+            return _execute(*args, access_key='boo', **kwargs)
 
         return inner(func)
 
