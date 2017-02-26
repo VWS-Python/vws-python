@@ -5,6 +5,7 @@ Tests for the usage of the mock.
 import base64
 import io
 import socket
+import string
 import uuid
 
 import pytest
@@ -299,7 +300,12 @@ class TestCredentials:
             assert mock.access_key != first_access_key
             assert mock.secret_key != first_secret_key
 
-    @given(access_key=text(), secret_key=text())
+    # We limit this to ascii letters because some characters are not allowed
+    # in request headers (e.g. a leading space).
+    @given(
+        access_key=text(alphabet=string.ascii_letters),
+        secret_key=text(alphabet=string.ascii_letters)
+    )
     def test_custom_credentials(
         self, access_key: str, secret_key: str
     ) -> None:
@@ -309,3 +315,18 @@ class TestCredentials:
         with MockVWS(access_key=access_key, secret_key=secret_key) as mock:
             assert mock.access_key == access_key
             assert mock.secret_key == secret_key
+
+            credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=access_key,
+                secret_key=secret_key,
+            )
+
+            response = get_vws_target(
+                vuforia_server_credentials=credentials,
+                target_id=uuid.uuid4().hex,
+            )
+
+            # This shows that the response does not give an authentication
+            # error which is what would happen if the keys were incorrect.
+            assert response.status_code == codes.NOT_FOUND
