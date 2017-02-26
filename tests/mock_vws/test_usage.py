@@ -5,6 +5,7 @@ Tests for the usage of the mock.
 import base64
 import io
 import socket
+import uuid
 
 import pytest
 import requests
@@ -115,19 +116,28 @@ class TestDatabaseName:
     Tests for the database name.
     """
 
-    def test_default(
-        self, vuforia_server_credentials: VuforiaServerCredentials
-    ) -> None:
+    def test_default(self) -> None:
         """
         By default, the database has a random name.
         """
-        with MockVWS():
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
+
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
             )
             first_database_name = response.json()['name']
 
-        with MockVWS():
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
             )
@@ -139,12 +149,16 @@ class TestDatabaseName:
     def test_custom_name(
         self,
         database_name: str,
-        vuforia_server_credentials: VuforiaServerCredentials
     ) -> None:
         """
         It is possible to set a custom database name.
         """
-        with MockVWS(database_name=database_name):
+        with MockVWS(database_name=database_name) as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=database_name,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
             )
@@ -158,7 +172,6 @@ class TestPersistence:
 
     def test_context_manager(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -174,7 +187,13 @@ class TestPersistence:
             'image': image_data_encoded,
         }
 
-        with MockVWS():
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
+
             response = add_target_to_vws(
                 vuforia_server_credentials=vuforia_server_credentials,
                 data=data,
@@ -189,7 +208,13 @@ class TestPersistence:
 
             assert response.status_code == codes.OK
 
-        with MockVWS():
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
+
             response = get_vws_target(
                 vuforia_server_credentials=vuforia_server_credentials,
                 target_id=target_id,
@@ -215,7 +240,10 @@ class TestPersistence:
             'image': image_data_encoded,
         }
 
-        @MockVWS()
+        @MockVWS(
+            access_key=vuforia_server_credentials.access_key.decode('ascii'),
+            secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
+        )
         def create() -> str:
             """
             Create a new target and return its id.
@@ -235,7 +263,10 @@ class TestPersistence:
             assert response.status_code == codes.OK
             return target_id
 
-        @MockVWS()
+        @MockVWS(
+            access_key=vuforia_server_credentials.access_key.decode('ascii'),
+            secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
+        )
         def verify(target_id: str) -> None:
             """
             Assert that there is no target with the given id.
@@ -249,3 +280,6 @@ class TestPersistence:
 
         target_id = create()
         verify(target_id=target_id)
+
+
+# TODO Test custom access / secret key

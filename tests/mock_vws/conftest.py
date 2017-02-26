@@ -288,6 +288,8 @@ def verify_mock_vuforia(
     else:
         with MockVWS(
             database_name=vuforia_server_credentials.database_name,
+            access_key=vuforia_server_credentials.access_key.decode('ascii'),
+            secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
         ):
             yield
 

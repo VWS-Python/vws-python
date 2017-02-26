@@ -151,7 +151,7 @@ class TestAuthorizationHeader:
 class TestTargetAPIRequest:
     """Tests for `target_api_request`."""
 
-    @MockVWS()
+    @MockVWS(access_key='access_key', secret_key='secret_key')
     def test_success(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
@@ -159,8 +159,8 @@ class TestTargetAPIRequest:
         """It is possible to get a success response from a VWS endpoint which
         requires authorization."""
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=b'access_key',
+            secret_key=b'secret_key',
             method=GET,
             content=b'',
             request_path='/summary',
