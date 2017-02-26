@@ -103,14 +103,14 @@ class MockVWS(ContextDecorator):
             def __call__(self, function):
                 argspec = inspect.getargspec(function)
                 args = argspec.args
-                import pdb; pdb.set_trace()
-                argspec.args.append('access_key2')
-                defaults = argspec.defaults and argspec.defaults[-len(
-                    argspec.args
-                ):]
+                # import pdb; pdb.set_trace()
+                argspec.keywords.append('access_key')
+                # defaults = argspec.defaults and argspec.defaults[-len(
+                #     argspec.args
+                # ):]
 
                 return inspect.ArgSpec(
-                    args, argspec.varargs, argspec.keywords, defaults
+                    args, argspec.varargs, argspec.keywords, argspec.defaults
                 )
 
         def sig2(access_key): pass
