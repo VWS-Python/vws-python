@@ -5,6 +5,8 @@ Tests for the usage of the mock.
 import base64
 import io
 import socket
+import string
+import uuid
 
 import pytest
 import requests
@@ -120,18 +122,24 @@ class TestDatabaseName:
         """
         By default, the database has a random name.
         """
-        vuforia_server_credentials = VuforiaServerCredentials(
-            database_name='example_database_name',
-            access_key='e93b08383581402688b2e37d127aba90',
-            secret_key='5dce606ef41641d79b0055b373f4c6f8',
-        )
-        with MockVWS():
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
+
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
             )
             first_database_name = response.json()['name']
 
-        with MockVWS():
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
             )
@@ -147,14 +155,13 @@ class TestDatabaseName:
         """
         It is possible to set a custom database name.
         """
+        with MockVWS(database_name=database_name) as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=database_name,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
 
-        vuforia_server_credentials = VuforiaServerCredentials(
-            database_name='example_database_name',
-            access_key='e93b08383581402688b2e37d127aba90',
-            secret_key='5dce606ef41641d79b0055b373f4c6f8',
-        )
-
-        with MockVWS(database_name=database_name):
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
             )
@@ -183,13 +190,13 @@ class TestPersistence:
             'image': image_data_encoded,
         }
 
-        vuforia_server_credentials = VuforiaServerCredentials(
-            database_name='example_database_name',
-            access_key='e93b08383581402688b2e37d127aba90',
-            secret_key='5dce606ef41641d79b0055b373f4c6f8',
-        )
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
 
-        with MockVWS():
             response = add_target_to_vws(
                 vuforia_server_credentials=vuforia_server_credentials,
                 data=data,
@@ -204,7 +211,13 @@ class TestPersistence:
 
             assert response.status_code == codes.OK
 
-        with MockVWS():
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+            )
+
             response = get_vws_target(
                 vuforia_server_credentials=vuforia_server_credentials,
                 target_id=target_id,
@@ -229,14 +242,11 @@ class TestPersistence:
             'image': image_data_encoded,
         }
 
-        credentials = VuforiaServerCredentials(
-            database_name='example_database_name',
-            access_key='e93b08383581402688b2e37d127aba90',
-            secret_key='5dce606ef41641d79b0055b373f4c6f8',
+        @MockVWS(
+            access_key=vuforia_server_credentials.access_key.decode('ascii'),
+            secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
         )
-
-        @MockVWS()
-        def create(access_key, plop='adam') -> str:
+        def create() -> str:
             """
             Create a new target and return its id.
             """
@@ -256,8 +266,11 @@ class TestPersistence:
             assert response.status_code == codes.OK
             return target_id
 
-        @MockVWS()
-        def verify(junk, target_id: str, access_key, something) -> None:
+        @MockVWS(
+            access_key=vuforia_server_credentials.access_key.decode('ascii'),
+            secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
+        )
+        def verify(target_id: str) -> None:
             """
             Assert that there is no target with the given id.
             """
@@ -270,7 +283,7 @@ class TestPersistence:
             assert response.status_code == codes.NOT_FOUND
 
         target_id = create()
-        verify('junk', target_id=target_id, something='adam')
+        verify(target_id=target_id)
 
 
 class TestCredentials:
@@ -278,46 +291,45 @@ class TestCredentials:
     Tests for setting credentials for the mock.
     """
 
-    @MockVWS()
-    def test_default(self, access_key) -> None:
+    def test_default(self) -> None:
         """
-        By default the mock uses an documented access key and secret key.
+        By default the mock uses a random access key and secret key.
         """
-        credentials = VuforiaServerCredentials(
-            database_name='example_database_name',
-            access_key='e93b08383581402688b2e37d127aba90',
-            secret_key='5dce606ef41641d79b0055b373f4c6f8',
-        )
+        with MockVWS() as mock:
+            first_access_key = mock.access_key
+            first_secret_key = mock.secret_key
 
-        response = get_vws_target(
-            vuforia_server_credentials=credentials,
-            target_id='example_id',
-        )
+        with MockVWS() as mock:
+            assert mock.access_key != first_access_key
+            assert mock.secret_key != first_secret_key
 
-        # This shows that the response does not give an authentication error
-        # which is what would happen if the keys were incorrect.
-        assert response.status_code == codes.NOT_FOUND
-
-    @MockVWS(access_key='adam')
+    # We limit this to ASCII letters because some characters are not allowed
+    # in request headers (e.g. a leading space).
+    @given(
+        access_key=text(alphabet=string.ascii_letters),
+        secret_key=text(alphabet=string.ascii_letters)
+    )
     def test_custom_credentials(
-        self, access_key, vuforia_server_credentials
+        self, access_key: str, secret_key: str
     ) -> None:
         """
         It is possible to set custom credentials.
         """
-        return
-        # with MockVWS(access_key=access_key, secret_key=secret_key):
-        #     credentials = VuforiaServerCredentials(
-        #         database_name='example_database_name',
-        #         access_key=access_key,
-        #         secret_key=secret_key,
-        #     )
-        #
-        #     response = get_vws_target(
-        #         vuforia_server_credentials=credentials,
-        #         target_id='example_id',
-        #     )
-        #
-        #     # This shows that the response does not give an authentication
-        #     # error which is what would happen if the keys were incorrect.
-        #     assert response.status_code == codes.NOT_FOUND
+        with MockVWS(access_key=access_key, secret_key=secret_key) as mock:
+            assert mock.access_key == access_key
+            assert mock.secret_key == secret_key
+
+            credentials = VuforiaServerCredentials(
+                database_name=uuid.uuid4().hex,
+                access_key=access_key,
+                secret_key=secret_key,
+            )
+
+            response = get_vws_target(
+                vuforia_server_credentials=credentials,
+                target_id=uuid.uuid4().hex,
+            )
+
+            # This shows that the response does not give an authentication
+            # error which is what would happen if the keys were incorrect.
+            assert response.status_code == codes.NOT_FOUND
