@@ -167,6 +167,25 @@ with MockVWS(real_http=True):
     requests.get('http://example.com')
 ```
 
+## Authentication
+
+Connecting to the Vuforia Web Services requires an access key and a secret key.
+The mock also requires these keys as it provides realistic authentication support.
+
+By default, the mock uses random strings as the access and secret keys.
+
+It is possible to access these keys when using the context manager as follows:
+
+```python
+from mock_vws import MockVWS
+
+with MockVWS() as mock:
+    access_key = mock.access_key
+    secret_key = mock.secret_key
+```
+
+To set custom keys, set the `access_key` and `secret_key` parameters in either the decorator or context manager's instantiation.
+
 ## Setting the database name
 
 This can be done with the `database_name` parameter.
