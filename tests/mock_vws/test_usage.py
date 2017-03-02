@@ -344,12 +344,10 @@ class TestCredentials:
                 access_key=access_key, secret_key=secret_key
             )
 
-            # This shows that the response does not give an authentication
-            # error which is what would happen if the keys were incorrect.
-            assert response.status_code == codes.NOT_FOUND
-
     @MockVWS()
-    def test_credentials_passed(self, access_key, secret_key):
+    def test_credentials_passed(
+        self, access_key: str, secret_key: str
+    ) -> None:
         """
         XXX
         """
@@ -357,24 +355,31 @@ class TestCredentials:
 
     @MockVWS()
     def test_with_pytest_fixtures(
-        self, access_key, secret_key, vuforia_server_credentials
-    ):
+        self,
+        access_key: str,
+        secret_key: str,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
         pass
 
     @MockVWS()
-    def test_with_hypothesis(self, access_key, hypothesis_variable):
+    def test_with_hypothesis(
+        self, access_key: str, hypothesis_variable: int
+    ) -> None:
         pass
 
     @MockVWS()
-    def test_with_defaults(self, access_key, secret_key, thing=1):
+    def test_with_defaults(
+        self, access_key: str, secret_key: str, thing: int=1
+    ) -> None:
         pass
 
-    def test_with_other_variables(self):
+    def test_with_other_variables(self) -> None:
         @MockVWS()
-        def func(access_key, secret_key, other_var):
+        def func(access_key: str, secret_key: str, other_var: int) -> None:
             pass
 
-    def test_missing_vars(self):
+    def test_missing_vars(self) -> None:
         @MockVWS
-        def func():
+        def func() -> None:
             pass
