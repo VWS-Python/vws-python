@@ -106,11 +106,34 @@ class MockVWS(ContextDecorator):
         Override call to allow a wrapped function to return any type.
         """
         import wrapt
+        import inspect
         from typing import Dict
 
+        def argspec_factory(wrapped: Callable) -> inspect.FullArgSpec:
+            argspec = inspect.getfullargspec(wrapped)
+
+            if 'access_key' not in argspec.args:
+                raise Exception("NEEDS ACCESS KEY")
+
+            argspec.args.remove('access_key')
+            args = argspec.args + ['access_key']
+            if argspec.defaults is None:
+                defaults = ('ACCESS_KEY_NONE', )
+            else:
+                defaults = argspec.defaults + ('ACCESS_KEY', )
+
+            return inspect.FullArgSpec(
+                args=args,
+                varargs=argspec.varargs,
+                varkw=argspec.varkw,
+                defaults=defaults,
+                kwonlyargs=argspec.kwonlyargs,
+                kwonlydefaults=argspec.kwonlydefaults,
+                annotations=argspec.annotations,
+            )
+
         def session(wrapped: Callable) -> Any:
-            # @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
-            @wrapt.decorator()
+            @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
             def _session(
                 wrapped: Callable, instance: Any, args: Tuple, kwargs: Dict
             ) -> Any:
