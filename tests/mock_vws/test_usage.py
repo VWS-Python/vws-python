@@ -351,7 +351,7 @@ class TestCredentials:
         """
         XXX
         """
-        pass
+        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
     @MockVWS()
     def test_with_pytest_fixtures(
@@ -360,26 +360,50 @@ class TestCredentials:
         secret_key: str,
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
-        pass
+        """
+        XXX
+        """
+        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
+    @given(hypothesis_variable=text())
     @MockVWS()
     def test_with_hypothesis(
-        self, access_key: str, hypothesis_variable: int
+        self, access_key: str, secret_key: str, hypothesis_variable: str
     ) -> None:
-        pass
+        """
+        XXX
+        """
+        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
     @MockVWS()
     def test_with_defaults(
         self, access_key: str, secret_key: str, thing: int=1
     ) -> None:
-        pass
+        """
+        XXX
+        """
+        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
     def test_with_other_variables(self) -> None:
+        """
+        XXX
+        """
         @MockVWS()
         def func(access_key: str, secret_key: str, other_var: int) -> None:
-            pass
+            """
+            XXX
+            """
+            assert_valid_credentials(
+                access_key=access_key, secret_key=secret_key
+            )
 
     def test_missing_vars(self) -> None:
+        """
+        XXX
+        """
         @MockVWS
         def func() -> None:
+            """
+            XXX
+            """
             pass
