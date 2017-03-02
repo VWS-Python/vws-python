@@ -46,14 +46,15 @@ class MockVWS(ContextDecorator):
     Examples:
 
         >>> @MockVWS()
-        ... def test_vuforia_example():
+        ... def test_vuforia_example(access_key, secret_key):
         ...     pass
 
         or
 
         >>> def test_vuforia_example():
-        ...     with MockVWS():
-        ...         pass
+        ...     with MockVWS() as m:
+        ...         access_key = m.access_key
+        ...         secret_key = m.secret_key
     """
 
     def __init__(  # pylint: disable=too-many-arguments
