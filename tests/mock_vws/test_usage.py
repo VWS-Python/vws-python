@@ -349,7 +349,7 @@ class TestCredentials:
         self, access_key: str, secret_key: str
     ) -> None:
         """
-        XXX
+        Credentials are passed from the decorator to the test function.
         """
         assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
@@ -357,21 +357,26 @@ class TestCredentials:
     def test_with_pytest_fixtures(
         self,
         access_key: str,
+        target_id: str,
         secret_key: str,
         vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
-        XXX
+        `pytest` fixtures do not interfere with the passed in credentials.
         """
         assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
-    @given(hypothesis_variable=text())
+    @given(hypothesis_variable=text(), other_hypothesis_variable=text())
     @MockVWS()
     def test_with_hypothesis(
-        self, access_key: str, secret_key: str, hypothesis_variable: str
+        self,
+        hypothesis_variable: str,
+        access_key: str,
+        secret_key: str,
+        other_hypothesis_variable: str
     ) -> None:
         """
-        XXX
+        Hypothesis variables do not interfere with the passed in credentials.
         """
         assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
@@ -380,14 +385,16 @@ class TestCredentials:
         self, access_key: str, secret_key: str, thing: int=1
     ) -> None:
         """
-        XXX
+        Function defaults do not interfere with the passed in credentials.
         """
         assert_valid_credentials(access_key=access_key, secret_key=secret_key)
+        assert thing == 1
 
     def test_with_other_variables(self) -> None:
         """
         XXX
         """
+
         @MockVWS()
         def func(access_key: str, secret_key: str, other_var: int) -> None:
             """
@@ -397,13 +404,19 @@ class TestCredentials:
                 access_key=access_key, secret_key=secret_key
             )
 
+        func()
+
     def test_missing_vars(self) -> None:
         """
         XXX
         """
+
         @MockVWS
         def func() -> None:
             """
             XXX
             """
             pass
+
+        with pytest.raises(Exception):
+            func()
