@@ -115,12 +115,14 @@ class MockVWS(ContextDecorator):
             if 'access_key' not in argspec.args:
                 raise Exception("NEEDS ACCESS KEY")
 
-            argspec.args.remove('access_key')
-            args = argspec.args + ['access_key']
+            for key in ['access_key', 'secret_key']:
+                argspec.args.remove(key)
+                args = argspec.args + [key]
+
             if argspec.defaults is None:
-                defaults = ('ACCESS_KEY_NONE', )
+                defaults = ('ACCESS_KEY', 'SECRET_KEY')
             else:
-                defaults = argspec.defaults + ('ACCESS_KEY', )
+                defaults = argspec.defaults + ('ACCESS_KEY', 'SECRET_KEY')
 
             return inspect.FullArgSpec(
                 args=args,
@@ -146,7 +148,7 @@ class MockVWS(ContextDecorator):
 
         return session(func)
 
-        return super().__call__(func)
+        return super().__call__(session(func))
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """

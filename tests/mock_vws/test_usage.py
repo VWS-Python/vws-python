@@ -356,33 +356,6 @@ class TestCredentials:
         assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
     @MockVWS()
-    def test_with_pytest_fixtures(
-        self,
-        access_key: str,
-        target_id: str,
-        secret_key: str,
-        vuforia_server_credentials: VuforiaServerCredentials,
-    ) -> None:
-        """
-        `pytest` fixtures do not interfere with the passed in credentials.
-        """
-        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
-
-    @given(hypothesis_variable=text(), other_hypothesis_variable=text())
-    @MockVWS()
-    def test_with_hypothesis(
-        self,
-        hypothesis_variable: str,
-        access_key: str,
-        secret_key: str,
-        other_hypothesis_variable: str
-    ) -> None:
-        """
-        Hypothesis variables do not interfere with the passed in credentials.
-        """
-        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
-
-    @MockVWS()
     def test_with_defaults(
         self, access_key: str, secret_key: str, thing: int=1
     ) -> None:
@@ -392,9 +365,9 @@ class TestCredentials:
         assert_valid_credentials(access_key=access_key, secret_key=secret_key)
         assert thing == 1
 
-    def test_with_other_variables(self) -> None:
+    def test_with_other_arguments(self) -> None:
         """
-        XXX
+        A decorated function may also take extra arguments.
         """
 
         @MockVWS()
@@ -409,17 +382,47 @@ class TestCredentials:
 
         func(other_var=1)
 
-    def test_missing_vars(self) -> None:
-        """
-        XXX
-        """
+    # @MockVWS()
+    # def test_with_pytest_fixtures(
+    #     self,
+    #     access_key: str,
+    #     target_id: str,
+    #     secret_key: str,
+    #     vuforia_server_credentials: VuforiaServerCredentials,
+    # ) -> None:
+    #     """
+    #     `pytest` fixtures do not interfere with the passed in credentials.
+    #     """
+    #     assert_valid_credentials(access_key=access_key, secret_key=secret_key)
 
-        @MockVWS
-        def func() -> None:
-            """
-            XXX
-            """
-            pass
+    # @given(hypothesis_variable=text(), other_hypothesis_variable=text())
+    # @MockVWS()
+    # def test_with_hypothesis(
+    #     self,
+    #     hypothesis_variable: str,
+    #     access_key: str,
+    #     secret_key: str,
+    #     other_hypothesis_variable: str
+    # ) -> None:
+    #     """
+    #     Hypothesis variables do not interfere with the passed in credentials.
+    #     """
+    #     assert_valid_credentials(access_key=access_key, secret_key=secret_key)
+    #
+    #
 
-        with pytest.raises(Exception):
-            func()
+    # def test_missing_vars(self) -> None:
+    #     """
+    #     XXX
+    #     """
+    #
+    #     @MockVWS
+    #     def func(access_key) -> None:
+    #         """
+    #         XXX
+    #         """
+    #         pass
+    #
+    #     func()
+    #     # with pytest.raises(Exception):
+    #     #     func()
