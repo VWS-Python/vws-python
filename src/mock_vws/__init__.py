@@ -105,6 +105,24 @@ class MockVWS(ContextDecorator):
         """
         Override call to allow a wrapped function to return any type.
         """
+        import wrapt
+        from typing import Dict
+
+        def session(wrapped: Callable) -> Any:
+            # @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
+            @wrapt.decorator()
+            def _session(
+                wrapped: Callable, instance: Any, args: Tuple, kwargs: Dict
+            ) -> Any:
+                with self._recreate_cm():
+                    kwargs['access_key'] = self.access_key
+                    kwargs['secret_key'] = self.secret_key
+                    return wrapped(*args, **kwargs)
+
+            return _session(wrapped)
+
+        return session(func)
+
         return super().__call__(func)
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
