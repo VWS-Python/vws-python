@@ -2,7 +2,6 @@
 Tools for using a fake implementation of Vuforia.
 """
 
-import os
 import re
 import uuid
 from contextlib import ContextDecorator

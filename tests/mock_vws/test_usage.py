@@ -300,7 +300,7 @@ class TestCredentials:
             assert mock.access_key != first_access_key
             assert mock.secret_key != first_secret_key
 
-    # We limit this to ascii letters because some characters are not allowed
+    # We limit this to ASCII letters because some characters are not allowed
     # in request headers (e.g. a leading space).
     @given(
         access_key=text(alphabet=string.ascii_letters),
