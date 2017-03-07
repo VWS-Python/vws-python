@@ -342,6 +342,7 @@ class TestCredentials:
         with MockVWS(access_key=access_key, secret_key=secret_key) as mock:
             assert mock.access_key == access_key
             assert mock.secret_key == secret_key
+
             assert_valid_credentials(
                 access_key=access_key, secret_key=secret_key
             )
