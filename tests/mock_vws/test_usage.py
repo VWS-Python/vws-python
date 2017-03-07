@@ -58,6 +58,31 @@ def request_mocked_address() -> None:
     )
 
 
+def assert_valid_credentials(access_key: str, secret_key: str) -> None:
+    """
+    Given credentials, assert that they can authenticate with a Vuforia
+    database.
+
+    Raises:
+        AssertionError: The given credentials fail to authenticate with a
+            Vuforia database.
+    """
+    credentials = VuforiaServerCredentials(
+        database_name=uuid.uuid4().hex,
+        access_key=access_key,
+        secret_key=secret_key,
+    )
+
+    response = get_vws_target(
+        vuforia_server_credentials=credentials,
+        target_id=uuid.uuid4().hex,
+    )
+
+    # This shows that the response does not give an authentication
+    # error which is what would happen if the keys were incorrect.
+    assert response.status_code == codes.NOT_FOUND
+
+
 class TestUsage:
     """
     Tests for usage patterns of the mock.
@@ -316,17 +341,6 @@ class TestCredentials:
             assert mock.access_key == access_key
             assert mock.secret_key == secret_key
 
-            credentials = VuforiaServerCredentials(
-                database_name=uuid.uuid4().hex,
-                access_key=access_key,
-                secret_key=secret_key,
+            assert_valid_credentials(
+                access_key=access_key, secret_key=secret_key
             )
-
-            response = get_vws_target(
-                vuforia_server_credentials=credentials,
-                target_id=uuid.uuid4().hex,
-            )
-
-            # This shows that the response does not give an authentication
-            # error which is what would happen if the keys were incorrect.
-            assert response.status_code == codes.NOT_FOUND
