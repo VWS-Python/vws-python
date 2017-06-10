@@ -223,8 +223,8 @@ class TestWidth:
 
     @pytest.mark.parametrize(
         'width',
-        [-1, '10', None],
-        ids=['Negative', 'Wrong Type', 'None'],
+        [-1, '10', None, 0],
+        ids=['Negative', 'Wrong Type', 'None', 'Zero'],
     )
     def test_width_invalid(
         self,
@@ -233,7 +233,7 @@ class TestWidth:
         target_id: str,
     ) -> None:
         """
-        The width must be a non-negative number.
+        The width must be a number greater than zero.
         """
         wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
@@ -268,22 +268,20 @@ class TestWidth:
 
         assert new_width == original_width
 
-    @pytest.mark.parametrize(
-        'width', [0, 0.1], ids=['Zero width', 'Float width']
-    )
     def test_width_valid(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        width: Any,
         target_id: str,
     ) -> None:
         """
-        Non-negative numbers are valid widths.
+        Positive numbers are valid widths.
         """
         wait_for_target_processed(
             vuforia_server_credentials=vuforia_server_credentials,
             target_id=target_id,
         )
+
+        width = 0.01
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
