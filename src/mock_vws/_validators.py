@@ -287,7 +287,7 @@ def validate_width(
     width = request.json().get('width')
 
     width_is_number = isinstance(width, numbers.Number)
-    width_positive = width_is_number and width >= 0
+    width_positive = width_is_number and width > 0
 
     if not width_positive:
         context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
