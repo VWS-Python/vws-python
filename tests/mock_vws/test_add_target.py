@@ -135,7 +135,7 @@ class TestWidth:
 
     @pytest.mark.parametrize(
         'width',
-        [-1, '10', None],
+        [-1, '10', None, 0],
         ids=['Negative', 'Wrong Type', 'None'],
     )
     def test_width_invalid(
@@ -145,7 +145,7 @@ class TestWidth:
         width: Any
     ) -> None:
         """
-        The width must be a non-negative number.
+        The width must be a number greater than zero.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -167,14 +167,10 @@ class TestWidth:
             result_code=ResultCodes.FAIL,
         )
 
-    @pytest.mark.parametrize(
-        'width', [0, 0.1], ids=['Zero width', 'Float width']
-    )
     def test_width_valid(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
-        width: Any
     ) -> None:
         """
         Non-negative numbers are valid widths.
@@ -184,7 +180,7 @@ class TestWidth:
 
         data = {
             'name': 'example',
-            'width': width,
+            'width': 0.01,
             'image': image_data_encoded,
         }
 
