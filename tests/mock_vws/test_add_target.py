@@ -136,7 +136,7 @@ class TestWidth:
     @pytest.mark.parametrize(
         'width',
         [-1, '10', None, 0],
-        ids=['Negative', 'Wrong Type', 'None'],
+        ids=['Negative', 'Wrong Type', 'None', 'Zero'],
     )
     def test_width_invalid(
         self,
