@@ -84,7 +84,8 @@ class TestTargetSummary:
 
         assert response.json().keys() == expected_keys
         assert response.json()['status'] == TargetStatuses.PROCESSING.value
-        assert response.json()['database_name'] == (
+        response_database_name = response.json()['database_name']
+        assert response_database_name == (
             vuforia_server_credentials.database_name
         )
         assert response.json()['target_name'] == name
