@@ -39,6 +39,6 @@ url
 usefixtures
 validators
 vuforia
-vuforias
+vuforia's
 vws
 xxx
