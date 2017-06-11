@@ -89,7 +89,7 @@ class TestUsage:
     """
 
     @MockVWS()
-    def test_decorator(self) -> None:
+    def test_decorator(self, access_key: str, secret_key: str) -> None:
         """
         Using the mock as a decorator stops any requests made with `requests`
         to non-Vuforia addresses, but not to mocked Vuforia endpoints.
@@ -101,7 +101,9 @@ class TestUsage:
         request_mocked_address()
 
     @MockVWS(real_http=True)
-    def test_decorator_real_http(self) -> None:
+    def test_decorator_real_http(
+        self, access_key: str, secret_key: str
+    ) -> None:
         """
         When the `real_http` parameter given to the decorator is set to `True`,
         requests made to unmocked addresses are not stopped.
@@ -270,7 +272,7 @@ class TestPersistence:
             access_key=vuforia_server_credentials.access_key.decode('ascii'),
             secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
         )
-        def create() -> str:
+        def create(access_key: str, secret_key: str) -> str:
             """
             Create a new target and return its id.
             """
@@ -293,7 +295,7 @@ class TestPersistence:
             access_key=vuforia_server_credentials.access_key.decode('ascii'),
             secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
         )
-        def verify(target_id: str) -> None:
+        def verify(target_id: str, access_key: str, secret_key: str) -> None:
             """
             Assert that there is no target with the given id.
             """
@@ -344,3 +346,84 @@ class TestCredentials:
             assert_valid_credentials(
                 access_key=access_key, secret_key=secret_key
             )
+
+    @MockVWS()
+    def test_credentials_passed(
+        self, access_key: str, secret_key: str
+    ) -> None:
+        """
+        Credentials are passed from the decorator to the test function.
+        """
+        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
+
+    @MockVWS()
+    def test_with_defaults(
+        self, access_key: str, secret_key: str, thing: int=1
+    ) -> None:
+        """
+        Function defaults do not interfere with the passed in credentials.
+        """
+        assert_valid_credentials(access_key=access_key, secret_key=secret_key)
+        assert thing == 1
+
+    def test_with_other_arguments(self) -> None:
+        """
+        A decorated function may also take extra arguments.
+        """
+
+        @MockVWS()
+        def func(access_key: str, secret_key: str, other_var: int) -> None:
+            """
+            XXX
+            """
+            assert_valid_credentials(
+                access_key=access_key, secret_key=secret_key
+            )
+            assert other_var == 1
+
+        func(other_var=1)
+
+    # @MockVWS()
+    # def test_with_pytest_fixtures(
+    #     self,
+    #     access_key: str,
+    #     target_id: str,
+    #     secret_key: str,
+    #     vuforia_server_credentials: VuforiaServerCredentials,
+    # ) -> None:
+    #     """
+    #     `pytest` fixtures do not interfere with the passed in credentials.
+    #     """
+    #     assert_valid_credentials(access_key=access_key, secret_key=secret_key)
+
+    # @given(hypothesis_variable=text(), other_hypothesis_variable=text())
+    # @MockVWS()
+    # def test_with_hypothesis(
+    #     self,
+    #     hypothesis_variable: str,
+    #     access_key: str,
+    #     secret_key: str,
+    #     other_hypothesis_variable: str
+    # ) -> None:
+    #     """
+    #     Hypothesis variables do not interfere with the passed in credentials.
+    #     """
+    #     assert_valid_credentials(access_key=access_key, secret_key=secret_key)
+    #
+    #
+
+    # def test_missing_vars(self) -> None:
+    #     """
+    #     XXX
+    #     """
+    #
+    #     @MockVWS
+    #     def func(access_key) -> None:
+    #         """
+    #         XXX
+    #         """
+    #         pass
+    #
+    #     func()
+    #     # with pytest.raises(Exception):
+    #     #     func()

@@ -46,14 +46,15 @@ class MockVWS(ContextDecorator):
     Examples:
 
         >>> @MockVWS()
-        ... def test_vuforia_example():
+        ... def test_vuforia_example(access_key, secret_key):
         ...     pass
 
         or
 
         >>> def test_vuforia_example():
-        ...     with MockVWS():
-        ...         pass
+        ...     with MockVWS() as m:
+        ...         access_key = m.access_key
+        ...         secret_key = m.secret_key
     """
 
     def __init__(  # pylint: disable=too-many-arguments
@@ -104,7 +105,50 @@ class MockVWS(ContextDecorator):
         """
         Override call to allow a wrapped function to return any type.
         """
-        return super().__call__(func)
+        import wrapt
+        import inspect
+        from typing import Dict
+
+        def argspec_factory(wrapped: Callable) -> inspect.FullArgSpec:
+            argspec = inspect.getfullargspec(wrapped)
+
+            if 'access_key' not in argspec.args:
+                raise Exception("NEEDS ACCESS KEY")
+
+            for key in ['access_key', 'secret_key']:
+                argspec.args.remove(key)
+                args = argspec.args + [key]
+
+            if argspec.defaults is None:
+                defaults = ('ACCESS_KEY', 'SECRET_KEY')
+            else:
+                defaults = argspec.defaults + ('ACCESS_KEY', 'SECRET_KEY')
+
+            return inspect.FullArgSpec(
+                args=args,
+                varargs=argspec.varargs,
+                varkw=argspec.varkw,
+                defaults=defaults,
+                kwonlyargs=argspec.kwonlyargs,
+                kwonlydefaults=argspec.kwonlydefaults,
+                annotations=argspec.annotations,
+            )
+
+        def session(wrapped: Callable) -> Any:
+            @wrapt.decorator(adapter=wrapt.adapter_factory(argspec_factory))
+            def _session(
+                wrapped: Callable, instance: Any, args: Tuple, kwargs: Dict
+            ) -> Any:
+                with self._recreate_cm():
+                    kwargs['access_key'] = self.access_key
+                    kwargs['secret_key'] = self.secret_key
+                    return wrapped(*args, **kwargs)
+
+            return _session(wrapped)
+
+        return session(func)
+
+        return super().__call__(session(func))
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """
