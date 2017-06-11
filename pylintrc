@@ -82,8 +82,8 @@ disable=line-too-long,
         missing-return-type-doc,
         # Let YAPF deal with this
         bad-continuation,
-		# Let YAPF deal with this
-		bad-whitespace,
+        # Let YAPF deal with this
+        bad-whitespace,
 
 [REPORTS]
 
