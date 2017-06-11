@@ -2,9 +2,11 @@ api
 args
 ascii
 bool
+boolean
 cmyk
 datetime
 decodable
+dict
 foo
 github
 greyscale
@@ -21,6 +23,7 @@ kwargs
 linters
 mb
 metadata
+mockvws
 noqa
 plugins
 png

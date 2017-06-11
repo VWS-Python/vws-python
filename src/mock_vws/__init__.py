@@ -104,7 +104,7 @@ class MockVWS(ContextDecorator):
         """
         Override call to allow a wrapped function to return any type.
         """
-        return super().__call__(func)
+        return super(MockVWS, self).__call__(func)
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """
