@@ -89,11 +89,12 @@ class TestUsage:
     """
 
     @MockVWS()
-    def test_decorator(self) -> None:
+    def test_decorator(self, access_key) -> None:
         """
         Using the mock as a decorator stops any requests made with `requests`
         to non-Vuforia addresses, but not to mocked Vuforia endpoints.
         """
+        assert access_key == 'foo'
         with pytest.raises(NoMockAddress):
             request_unmocked_address()
 
@@ -101,7 +102,7 @@ class TestUsage:
         request_mocked_address()
 
     @MockVWS(real_http=True)
-    def test_decorator_real_http(self) -> None:
+    def test_decorator_real_http(self, access_key) -> None:
         """
         When the `real_http` parameter given to the decorator is set to `True`,
         requests made to unmocked addresses are not stopped.
@@ -185,6 +186,7 @@ class TestDatabaseName:
                 access_key=mock.access_key,
                 secret_key=mock.secret_key,
             )
+
             response = database_summary(
                 vuforia_server_credentials=vuforia_server_credentials,
             )
@@ -250,7 +252,6 @@ class TestPersistence:
 
     def test_decorator(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -274,15 +275,16 @@ class TestPersistence:
             """
             Create a new target and return its id.
             """
+            assert plop == 'adam'
             response = add_target_to_vws(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_server_credentials=credentials,
                 data=data,
             )
 
             target_id = response.json()['target_id']
 
             response = get_vws_target(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_server_credentials=credentials,
                 target_id=target_id,
             )
 
@@ -297,8 +299,9 @@ class TestPersistence:
             """
             Assert that there is no target with the given id.
             """
+            assert junk == 'junk'
             response = get_vws_target(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_server_credentials=credentials,
                 target_id=target_id,
             )
 
