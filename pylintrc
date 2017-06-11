@@ -79,6 +79,7 @@ disable=line-too-long,
         # We don't need everything to be documented because of mypy
         missing-type-doc,
         missing-returns-doc,
+        missing-return-type-doc,
         # Let YAPF deal with this
         bad-continuation,
 
