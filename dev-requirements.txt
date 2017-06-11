@@ -1,20 +1,20 @@
 coveralls==1.1 # Upload coverage data
-doc8==0.7.0  # Lint docs
+doc8==0.8.0  # Lint docs
 dodgy==0.1.9  # Look for uploaded secrets
 flake8==3.3.0  # Lint
-freezegun==0.3.8  # Freeze time in tests
-hypothesis==3.7.0  # Generate test cases
-isort==4.2.5  # Lint imports
+freezegun==0.3.9  # Freeze time in tests
+hypothesis==3.11.2  # Generate test cases
+isort==4.2.15  # Lint imports
 mypy-lang==0.4.6  # Type checking
 pydocstyle==1.1.1  # Lint docstrings
 pyenchant==1.6.8  # Bindings for a spellchecking sytem
 pylint==1.6.5  # Lint
 pyroma==2.2  # Packaging best practices checker
-pytest-cov==2.4.0  # Measure code coverage
+pytest-cov==2.5.1  # Measure code coverage
 pytest-envfiles==0.1.0  # Use files for environment variables for tests
-pytest==3.0.7  # Test runners
+pytest==3.1.2  # Test runners
 retrying==1.3.3  # Retry flaky tests
-sphinx==1.5.3  # Build documentation
+sphinx==1.6.2  # Build documentation
 sphinx-rtd-theme==0.2.4  # Theme for documentation
 timeout-decorator==0.3.3  # Decorate functions to time out.
 yapf==0.16.2  # Automatic formatting for Python
