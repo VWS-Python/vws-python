@@ -6,7 +6,7 @@ freezegun==0.3.9  # Freeze time in tests
 hypothesis==3.11.2  # Generate test cases
 isort==4.2.15  # Lint imports
 mypy-lang==0.4.6  # Type checking
-pydocstyle==2.0.0  # Lint docstrings
+pydocstyle==1.1.1  # Lint docstrings
 pyenchant==1.6.8  # Bindings for a spellchecking sytem
 pylint==1.6.5  # Lint
 pyroma==2.2  # Packaging best practices checker
