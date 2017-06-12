@@ -44,7 +44,6 @@ class MockVWS(ContextDecorator):
     This can be used as a context manager or as a decorator.
 
     Examples:
-
         >>> @MockVWS()
         ... def test_vuforia_example():
         ...     pass
@@ -100,7 +99,10 @@ class MockVWS(ContextDecorator):
         self.access_key = access_key
         self.secret_key = secret_key
 
-    def __call__(self, func: Callable[..., Any]) -> Any:
+    def __call__(  # pylint: disable=useless-super-delegation
+        self,
+        func: Callable[..., Any],
+    ) -> Any:
         """
         Override call to allow a wrapped function to return any type.
         """
@@ -129,7 +131,7 @@ class MockVWS(ContextDecorator):
 
         with Mocker(real_http=self._real_http) as mock:
             for route in fake_target_api.routes:
-                for http_method in route.methods:
+                for http_method in route.http_methods:
                     mock.register_uri(
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
