@@ -157,7 +157,7 @@ def add_target_to_vws(
     content_type: str='application/json',
 ) -> Response:
     """
-    Helper to make a request to the endpoint to add a target.
+    Return a response from a request to the endpoint to add a target.
 
     Args:
         vuforia_server_credentials: The credentials to use to connect to
@@ -203,7 +203,7 @@ def get_vws_target(
     target_id: str, vuforia_server_credentials: VuforiaServerCredentials
 ) -> Response:
     """
-    Helper to make a request to the endpoint to get a target record.
+    Return a response from a request to the endpoint to get a target record.
 
     Args:
         vuforia_server_credentials: The credentials to use to connect to

@@ -2,7 +2,6 @@
 Tools for using a fake implementation of Vuforia.
 """
 
-import os
 import re
 import uuid
 from contextlib import ContextDecorator
@@ -45,7 +44,6 @@ class MockVWS(ContextDecorator):
     This can be used as a context manager or as a decorator.
 
     Examples:
-
         >>> @MockVWS()
         ... def test_vuforia_example():
         ...     pass
@@ -61,9 +59,9 @@ class MockVWS(ContextDecorator):
         self,
         real_http: bool=False,
         state: States=States.WORKING,
+        access_key: Optional[str]=None,
+        secret_key: Optional[str]=None,
         database_name: Optional[str]=None,
-        access_key: str=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
-        secret_key: str=os.environ['VUFORIA_SERVER_SECRET_KEY'],
     ) -> None:
         """
         Args:
@@ -76,22 +74,39 @@ class MockVWS(ContextDecorator):
                 By default this is a random string.
             access_key: A VWS access key for the mock.
             secret_key: A VWS secret key for the mock.
+
+        Attributes:
+            access_key: A VWS access key for the mock.
+            secret_key: A VWS secret key for the mock.
         """
         super().__init__()
+
+        if database_name is None:
+            database_name = uuid.uuid4().hex
+
+        if access_key is None:
+            access_key = uuid.uuid4().hex
+
+        if secret_key is None:
+            secret_key = uuid.uuid4().hex
+
         self._real_http = real_http
         self._mock = None  # type: Optional[Mocker]
         self._state = state
-        if database_name is None:
-            database_name = uuid.uuid4().hex
-        self._database_name = database_name
-        self._access_key = access_key
-        self._secret_key = secret_key
 
-    def __call__(self, func: Callable[..., Any]) -> Any:
+        self._database_name = database_name
+
+        self.access_key = access_key
+        self.secret_key = secret_key
+
+    def __call__(  # pylint: disable=useless-super-delegation
+        self,
+        func: Callable[..., Any],
+    ) -> Any:
         """
         Override call to allow a wrapped function to return any type.
         """
-        return super().__call__(func)
+        return super(MockVWS, self).__call__(func)
 
     def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
         """
@@ -103,8 +118,8 @@ class MockVWS(ContextDecorator):
         """
         fake_target_api = MockVuforiaTargetAPI(
             database_name=self._database_name,
-            access_key=self._access_key,
-            secret_key=self._secret_key,
+            access_key=self.access_key,
+            secret_key=self.secret_key,
             state=self._state,
         )
 
@@ -116,7 +131,7 @@ class MockVWS(ContextDecorator):
 
         with Mocker(real_http=self._real_http) as mock:
             for route in fake_target_api.routes:
-                for http_method in route.methods:
+                for http_method in route.http_methods:
                     mock.register_uri(
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),

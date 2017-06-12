@@ -134,26 +134,30 @@ class Route:
     later.
     """
 
-    def __init__(self, route_name: str, path_pattern: str,
-                 methods: List[str]) -> None:
+    def __init__(
+        self,
+        route_name: str,
+        path_pattern: str,
+        http_methods: List[str],
+    ) -> None:
         """
         Args:
             route_name: The name of the method.
             path_pattern: The end part of a URL pattern. E.g. `/targets` or
                 `/targets/.+`.
-            methods: HTTP methods that map to the route function.
+            http_methods: HTTP methods that map to the route function.
 
         Attributes:
             route_name: The name of the method.
             path_pattern: The end part of a URL pattern. E.g. `/targets` or
                 `/targets/.+`.
-            methods: HTTP methods that map to the route function.
+            http_methods: HTTP methods that map to the route function.
             endpoint: The method `requests_mock` should call when the endpoint
                 is requested.
         """
         self.route_name = route_name
         self.path_pattern = path_pattern
-        self.methods = methods
+        self.http_methods = http_methods
 
 
 ROUTES = set([])
@@ -161,7 +165,7 @@ ROUTES = set([])
 
 def route(
     path_pattern: str,
-    methods: List[str],
+    http_methods: List[str],
     mandatory_keys: Optional[Set[str]]=None,
     optional_keys: Optional[Set[str]]=None
 ) -> Callable[..., Callable]:
@@ -171,7 +175,7 @@ def route(
     Args:
         path_pattern: The end part of a URL pattern. E.g. `/targets` or
             `/targets/.+`.
-        methods: HTTP methods that map to the route function.
+        http_methods: HTTP methods that map to the route function.
         mandatory_keys: Keys required by the endpoint.
         optional_keys: Keys which are not required by the endpoint but which
             are allowed.
@@ -191,7 +195,7 @@ def route(
             Route(
                 route_name=method.__name__,
                 path_pattern=path_pattern,
-                methods=methods,
+                http_methods=http_methods,
             )
         )
 
@@ -393,7 +397,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     @route(
         path_pattern='/targets',
-        methods=[POST],
+        http_methods=[POST],
         mandatory_keys={'image', 'width', 'name'},
         optional_keys={'active_flag', 'application_metadata'},
     )
@@ -440,7 +444,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/targets/.+', methods=[DELETE])
+    @route(path_pattern='/targets/.+', http_methods=[DELETE])
     def delete_target(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -473,7 +477,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/summary', methods=[GET])
+    @route(path_pattern='/summary', http_methods=[GET])
     def database_summary(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -535,7 +539,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/targets', methods=[GET])
+    @route(path_pattern='/targets', http_methods=[GET])
     def target_list(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -556,7 +560,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }  # type: Dict[str, Union[str, List[str]]]
         return json.dumps(body)
 
-    @route(path_pattern='/targets/.+', methods=[GET])
+    @route(path_pattern='/targets/.+', http_methods=[GET])
     def get_target(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -586,7 +590,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/duplicates/.+', methods=[GET])
+    @route(path_pattern='/duplicates/.+', http_methods=[GET])
     def get_duplicates(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -611,7 +615,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     @route(
         path_pattern='/targets/.+',
-        methods=[PUT],
+        http_methods=[PUT],
         optional_keys={
             'active_flag',
             'application_metadata',
@@ -685,7 +689,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/summary/.+', methods=[GET])
+    @route(path_pattern='/summary/.+', http_methods=[GET])
     def target_summary(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument

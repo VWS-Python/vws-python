@@ -117,9 +117,8 @@ class TestDatabaseSummary:
             'transaction_id',
         }
 
-        assert response.json()['name'] == (
-            vuforia_server_credentials.database_name
-        )
+        response_name = response.json()['name']
+        assert response_name == vuforia_server_credentials.database_name
 
         wait_for_image_numbers(
             vuforia_server_credentials=vuforia_server_credentials,

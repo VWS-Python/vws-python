@@ -234,9 +234,9 @@ def _delete_all_targets(
 def target_id(
     png_rgb_success: io.BytesIO,  # pylint: disable=redefined-outer-name
     vuforia_server_credentials: VuforiaServerCredentials,
-) -> None:
+) -> str:
     """
-    The target ID of a target in the database.
+    Return the target ID of a target in the database.
 
     The target is one which will have a 'success' status when processed.
     """
@@ -264,7 +264,7 @@ def verify_mock_vuforia(
     vuforia_server_credentials: VuforiaServerCredentials,
 ) -> Generator:
     """
-    Using this fixture in a test will make it run twice. Once with the real
+    Test functions which use this fixture are run twice. Once with the real
     Vuforia, and once with the mock.
 
     This is useful for verifying the mock.
@@ -288,6 +288,8 @@ def verify_mock_vuforia(
     else:
         with MockVWS(
             database_name=vuforia_server_credentials.database_name,
+            access_key=vuforia_server_credentials.access_key.decode('ascii'),
+            secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
         ):
             yield
 
@@ -298,7 +300,7 @@ def verify_mock_vuforia_inactive(
     inactive_server_credentials: VuforiaServerCredentials,
 ) -> Generator:
     """
-    Using this fixture in a test will make it run twice. Once with the real
+    Test functions which use this fixture are run twice. Once with the real
     Vuforia in an inactive state, and once with the mock in an inactive state.
 
     This is useful for verifying the mock.

@@ -1,9 +1,13 @@
 api
 args
+ascii
 bool
+boolean
 cmyk
+connectionerror
 datetime
 decodable
+dict
 foo
 github
 greyscale
@@ -20,6 +24,7 @@ kwargs
 linters
 mb
 metadata
+mockvws
 noqa
 plugins
 png
@@ -38,5 +43,6 @@ url
 usefixtures
 validators
 vuforia
+vuforia's
 vws
 xxx
