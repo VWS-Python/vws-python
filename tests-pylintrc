@@ -82,6 +82,8 @@ disable=
     duplicate-code,
     too-many-locals,
     locally-disabled,
+    # Let YAPF deal with this
+    bad-whitespace,
 
 [REPORTS]
 

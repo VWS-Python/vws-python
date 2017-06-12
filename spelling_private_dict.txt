@@ -4,6 +4,7 @@ ascii
 bool
 boolean
 cmyk
+connectionerror
 datetime
 decodable
 dict

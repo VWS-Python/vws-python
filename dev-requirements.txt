@@ -8,7 +8,7 @@ isort==4.2.15  # Lint imports
 mypy-lang==0.4.6  # Type checking
 pydocstyle==2.0.0  # Lint docstrings
 pyenchant==1.6.8  # Bindings for a spellchecking sytem
-pylint==1.6.5  # Lint
+pylint==1.7.1  # Lint
 pyroma==2.2  # Packaging best practices checker
 pytest-cov==2.5.1  # Measure code coverage
 pytest-envfiles==0.1.0  # Use files for environment variables for tests
