@@ -7,7 +7,7 @@ hypothesis==3.13.0  # Generate test cases
 isort==4.2.15  # Lint imports
 mypy-lang==0.4.6  # Type checking
 pydocstyle==2.0.0  # Lint docstrings
-pyenchant==1.6.8  # Bindings for a spellchecking sytem
+pyenchant==1.6.9  # Bindings for a spellchecking sytem
 pylint==1.7.2  # Lint
 pyroma==2.2  # Packaging best practices checker
 pytest-cov==2.5.1  # Measure code coverage
