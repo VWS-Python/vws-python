@@ -37,7 +37,7 @@ def request_unmocked_address() -> None:
             addresses.
     """
     sock = socket.socket()
-    sock.bind(("", 0))
+    sock.bind(('', 0))
     port = sock.getsockname()[1]
     sock.close()
     address = 'http://localhost:{free_port}'.format(free_port=port)

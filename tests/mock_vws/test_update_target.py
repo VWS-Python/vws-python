@@ -60,8 +60,8 @@ def update_target(
     )
 
     headers = {
-        "Authorization": authorization_string,
-        "Date": date,
+        'Authorization': authorization_string,
+        'Date': date,
         'Content-Type': content_type,
     }
 

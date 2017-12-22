@@ -43,8 +43,8 @@ class TestInvalidGivenID:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
+            'Authorization': authorization_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type

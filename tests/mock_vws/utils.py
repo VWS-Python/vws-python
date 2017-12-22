@@ -184,8 +184,8 @@ def add_target_to_vws(
     )
 
     headers = {
-        "Authorization": authorization_string,
-        "Date": date,
+        'Authorization': authorization_string,
+        'Date': date,
         'Content-Type': content_type,
     }
 
