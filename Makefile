@@ -3,6 +3,8 @@ SHELL := /bin/bash -euxo pipefail
 .PHONY: lint
 lint:
 	check-manifest .
+	doc8 --config doc8.ini
+	dodgy
 	flake8 .
 	isort --recursive --check-only
 	mypy src/ tests/

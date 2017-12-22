@@ -23,31 +23,10 @@ install:
 cache: "pip"
 
 before_script:
-    # Run linters
-    - "yapf --diff --recursive ."
-    # Require 0 pyroma errors. It usually exits with status 0 on <= 8 errors.
-    - "pyroma . |
-        python -c 'import sys;
-result = sys.stdin.read();
-assert \"Final rating: 10/10\" in result, result;
-      '
-      "
-    - "flake8 ."
-    - "pylint *.py"
-    - "pylint src/vws"
-    - "pylint src/mock_vws"
-    # Less strict linting for tests.
-    - "pylint --rcfile=tests-pylintrc tests"
-    - "mypy src/ tests/"
+    - "make lint"
     - "markdownlint --config .markdownlint.json README.md"
-    # Check for uploaded secrets
-    - "dodgy"
-    # Make sure that imports are sorted as expected.
-    - "isort --recursive --check-only"
-    - "doc8 --config doc8.ini"
     # Build documentation HTML.
     - "make -C docs clean html"
-    - "pydocstyle"
     # Create an environment file used by `pytest-envfiles`.
     # We don't add to this because we have environment variables set in the CI
     # config.
