@@ -142,7 +142,7 @@ class TestWidth:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
-        width: Any
+        width: Any,
     ) -> None:
         """
         The width must be a number greater than zero.
@@ -209,7 +209,7 @@ class TestTargetName:
         self,
         name: str,
         png_rgb: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         Names between 1 and 64 characters in length are valid.
@@ -240,7 +240,7 @@ class TestTargetName:
         self,
         name: str,
         png_rgb: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.

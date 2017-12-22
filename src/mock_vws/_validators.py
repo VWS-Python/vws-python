@@ -28,7 +28,7 @@ def validate_active_flag(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the active flag data given to the endpoint.
@@ -71,7 +71,7 @@ def validate_not_invalid_json(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate that there is either no JSON given or the JSON given is valid.
@@ -127,7 +127,7 @@ def validate_auth_header_exists(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate that there is an authorization header given to a VWS endpoint.
@@ -208,7 +208,7 @@ def validate_date(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the date header given to a VWS endpoint.
@@ -260,7 +260,7 @@ def validate_width(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the width argument given to a VWS endpoint.
@@ -305,7 +305,7 @@ def validate_name(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the name argument given to a VWS endpoint.
@@ -350,7 +350,7 @@ def validate_image_format(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the format of the image given to a VWS endpoint.
@@ -396,7 +396,7 @@ def validate_image_color_space(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the color space of the image given to a VWS endpoint.
@@ -442,7 +442,7 @@ def validate_image_size(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the file size of the image given to a VWS endpoint.
@@ -488,7 +488,7 @@ def validate_image_is_image(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate that the given image data is actually an image file.
@@ -535,7 +535,7 @@ def validate_image_encoding(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate that the given image data can be base64 decoded.
@@ -579,7 +579,7 @@ def validate_image_data_type(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate that the given image data is a string.
@@ -678,7 +678,7 @@ def validate_metadata_encoding(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate that the given application metadata can be base64 decoded.
@@ -725,7 +725,7 @@ def validate_metadata_type(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate that the given application metadata is a string or NULL.
