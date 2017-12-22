@@ -33,6 +33,7 @@ assert \"Final rating: 10/10\" in result, result;
       '
       "
     - "flake8 ."
+    - "pylint *.py"
     - "pylint src/vws"
     - "pylint src/mock_vws"
     # Less strict linting for tests.

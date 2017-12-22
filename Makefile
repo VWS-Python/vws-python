@@ -9,7 +9,10 @@ lint:
 	pip-extra-reqs src/
 	pip-missing-reqs src/
 	pydocstyle
-	pylint *.py src/dcos_e2e/ tests/
+	pylint *.py
+	pylint src/vws
+	pylint src/mock_vws
+	pylint --rcfile=tests-pylintrc tests
 	pyroma .
 	vulture . --min-confidence 100
 	yapf --diff --recursive src/ tests/
