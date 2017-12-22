@@ -7,6 +7,7 @@ cmyk
 connectionerror
 datetime
 decodable
+dev
 dict
 foo
 github
@@ -38,6 +39,7 @@ rfc
 rgb
 str
 todo
+txt
 unmocked
 url
 usefixtures
