@@ -5,7 +5,7 @@ flake8==3.5.0  # Lint
 freezegun==0.3.9  # Freeze time in tests
 hypothesis==3.44.3  # Generate test cases
 isort==4.2.15  # Lint imports
-mypy-lang==0.5.0  # Type checking
+mypy==0.560  # Type checking
 pydocstyle==2.1.1  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
 pylint==1.8.1  # Lint
