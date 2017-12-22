@@ -7,12 +7,7 @@ import io
 import os
 import random
 import uuid
-# This is used in a type hint which linters not pick up on.
-from typing import (  # noqa: F401 pylint: disable=unused-import
-    Any,
-    Dict,
-    Generator,
-)
+from typing import Any, Dict, Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -155,7 +150,7 @@ def image_file(request: SubRequest) -> io.BytesIO:
     "work" means that this will be added as a target. However, this may or may
     not result in target with a 'success' status.
     """
-    file_bytes_io = request.getfixturevalue(request.param)  # type: io.BytesIO
+    file_bytes_io: io.BytesIO = request.getfixturevalue(request.param)
     return file_bytes_io
 
 
@@ -166,7 +161,7 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     expected to cause a `BadImage` result when an attempt is made to add it to
     the target database.
     """
-    file_bytes_io = request.getfixturevalue(request.param)  # type: io.BytesIO
+    file_bytes_io: io.BytesIO = request.getfixturevalue(request.param)
     return file_bytes_io
 
 
