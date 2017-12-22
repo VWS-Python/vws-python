@@ -13,6 +13,8 @@ import pytest
 import requests
 from requests import Response, codes
 from requests_mock import PUT
+
+from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
@@ -21,8 +23,6 @@ from tests.mock_vws.utils import (
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
-
-from common.constants import ResultCodes, TargetStatuses
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
