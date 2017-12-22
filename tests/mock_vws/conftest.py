@@ -111,7 +111,10 @@ def jpeg_cmyk() -> io.BytesIO:
     Return a 1x1 JPEG file in the CMYK color space.
     """
     return _image_file(
-        file_format='JPEG', color_space='CMYK', width=1, height=1
+        file_format='JPEG',
+        color_space='CMYK',
+        width=1,
+        height=1,
     )
 
 
@@ -121,7 +124,10 @@ def jpeg_rgb() -> io.BytesIO:
     Return a 1x1 JPEG file in the RGB color space.
     """
     return _image_file(
-        file_format='JPEG', color_space='RGB', width=1, height=1
+        file_format='JPEG',
+        color_space='RGB',
+        width=1,
+        height=1,
     )
 
 
@@ -134,7 +140,10 @@ def tiff_rgb() -> io.BytesIO:
     supports only JPEG and PNG files.
     """
     return _image_file(
-        file_format='TIFF', color_space='RGB', width=1, height=1
+        file_format='TIFF',
+        color_space='RGB',
+        width=1,
+        height=1,
     )
 
 
@@ -146,7 +155,8 @@ def image_file(request: SubRequest) -> io.BytesIO:
     "work" means that this will be added as a target. However, this may or may
     not result in target with a 'success' status.
     """
-    return io.BytesIO(request.getfixturevalue(request.param))
+    file_bytes_io = request.getfixturevalue(request.param)  # type: io.BytesIO
+    return file_bytes_io
 
 
 @pytest.fixture(params=['tiff_rgb', 'jpeg_cmyk'])
@@ -156,7 +166,8 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     expected to cause a `BadImage` result when an attempt is made to add it to
     the target database.
     """
-    return io.BytesIO(request.getfixturevalue(request.param))
+    file_bytes_io = request.getfixturevalue(request.param)  # type: io.BytesIO
+    return file_bytes_io
 
 
 @retry(
