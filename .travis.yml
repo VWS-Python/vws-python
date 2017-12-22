@@ -5,8 +5,12 @@ sudo: false
 language: "python"
 
 python:
-  - "3.5"
   - "3.6"
+
+env:
+  matrix:
+    - SKIP_REAL=1
+    - SKIP_MOCK=1
 
 addons:
   apt:
@@ -14,11 +18,11 @@ addons:
     - "enchant"
 
 before_install:
-    - "pip install --upgrade pip setuptools"
+    - "travis_retry pip install --upgrade pip setuptools"
 
 install:
-  - "pip install --upgrade --editable .[dev]"
-  - "npm install -g markdownlint-cli"
+  - "travis_retry pip install --upgrade --editable .[dev]"
+  - "travis_retry npm install -g markdownlint-cli"
 
 cache: "pip"
 
@@ -40,9 +44,7 @@ before_script:
        fi"
 
 script:
-    # Only run the tests against the real Vuforia on one Python version.
-    - "if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then pytest --exitfirst -vvv --cov=src --cov=tests; fi"
-    - "if [[ $TRAVIS_PYTHON_VERSION != 3.6 ]]; then SKIP_REAL=1 pytest --exitfirst -vvv; fi"
+    - "pytest --exitfirst -vvv --cov=src --cov=tests"
 
 after_success:
-    - "coveralls"
+    - "coverage"

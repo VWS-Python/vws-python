@@ -35,6 +35,7 @@ readme
 readthedocs
 refactoring
 regex
+reimplementation
 rfc
 rgb
 str
