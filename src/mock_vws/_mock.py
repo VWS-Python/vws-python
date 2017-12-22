@@ -55,7 +55,7 @@ def parse_target_id(
     wrapped: Callable[..., str],
     instance: 'MockVuforiaTargetAPI',
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Parse a target ID in a URL path and give the method a target argument.
