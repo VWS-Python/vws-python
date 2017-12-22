@@ -57,7 +57,7 @@ class TestAuthorizationHeader:
         is given.
         """
         headers = {
-            "Date": rfc_1123_date(),
+            'Date': rfc_1123_date(),
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -84,8 +84,8 @@ class TestAuthorizationHeader:
         signature_string = 'gibberish'
 
         headers = {
-            "Authorization": signature_string,
-            "Date": date,
+            'Authorization': signature_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -171,8 +171,8 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date_incorrect_format,
+            'Authorization': authorization_string,
+            'Date': date_incorrect_format,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -221,8 +221,8 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
+            'Authorization': authorization_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -275,8 +275,8 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
+            'Authorization': authorization_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
