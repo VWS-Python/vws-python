@@ -93,7 +93,7 @@ class TestAuthorizationHeader:
         content: bytes,
         content_type: str,
         date: str,
-        request_path: str
+        request_path: str,
     ) -> None:
         """
         This is mostly a reimplementation of the header creation. The real

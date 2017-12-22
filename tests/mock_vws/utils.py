@@ -154,7 +154,7 @@ def assert_vws_response(
 def add_target_to_vws(
     vuforia_server_credentials: VuforiaServerCredentials,
     data: Dict[str, Any],
-    content_type: str='application/json',
+    content_type: str = 'application/json',
 ) -> Response:
     """
     Return a response from a request to the endpoint to add a target.
