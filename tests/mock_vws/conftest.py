@@ -482,7 +482,7 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
     """
-    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
 
 
@@ -500,7 +500,7 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which does not take any JSON data.
     """
-    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
 
 
@@ -512,7 +512,7 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes JSON data.
     """
-    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
 
 
@@ -532,5 +532,5 @@ def endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint.
     """
-    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
