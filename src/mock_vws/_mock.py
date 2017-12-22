@@ -324,9 +324,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
         time_since_change = datetime.datetime.now() - self.last_modified_date
 
         if time_since_change <= processing_time:
-            return TargetStatuses.PROCESSING.value
+            return str(TargetStatuses.PROCESSING.value)
 
-        return self._post_processing_status.value
+        return str(self._post_processing_status.value)
 
     @property
     def tracking_rating(self) -> int:

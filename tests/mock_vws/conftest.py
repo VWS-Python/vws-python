@@ -146,7 +146,7 @@ def image_file(request: SubRequest) -> io.BytesIO:
     "work" means that this will be added as a target. However, this may or may
     not result in target with a 'success' status.
     """
-    return request.getfixturevalue(request.param)
+    return io.BytesIO(request.getfixturevalue(request.param))
 
 
 @pytest.fixture(params=['tiff_rgb', 'jpeg_cmyk'])
@@ -156,7 +156,7 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     expected to cause a `BadImage` result when an attempt is made to add it to
     the target database.
     """
-    return request.getfixturevalue(request.param)
+    return io.BytesIO(request.getfixturevalue(request.param))
 
 
 @retry(
@@ -164,7 +164,8 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     wait_fixed=3 * 1000,
 )
 def _delete_target(
-    vuforia_server_credentials: VuforiaServerCredentials, target: str
+    vuforia_server_credentials: VuforiaServerCredentials,
+    target: str,
 ) -> None:
     """
     Delete a given target.
@@ -259,7 +260,7 @@ def target_id(
         content_type='application/json',
     )
 
-    return response.json()['target_id']
+    return str(response.json()['target_id'])
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])

@@ -279,7 +279,7 @@ class TestPersistence:
                 data=data,
             )
 
-            target_id = response.json()['target_id']
+            target_id = str(response.json()['target_id'])
 
             response = get_vws_target(
                 vuforia_server_credentials=vuforia_server_credentials,
