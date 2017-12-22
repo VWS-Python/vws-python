@@ -5,7 +5,7 @@ Constants used to make the VWS mock and wrapper.
 from constantly import ValueConstant, Values
 
 
-class ResultCodes(Values):
+class ResultCodes(Values):  # type: ignore
     """
     Constants representing various VWS result codes.
 

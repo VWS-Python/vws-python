@@ -213,13 +213,14 @@ def get_vws_target(
     Returns:
         The response returned by the API.
     """
-    return target_api_request(
+    response = target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=GET,
         content=b'',
         request_path='/targets/' + target_id,
-    )
+    )  # type: Response
+    return response
 
 
 def database_summary(
@@ -232,13 +233,14 @@ def database_summary(
         vuforia_server_credentials: The credentials to use to connect to
             Vuforia.
     """
-    return target_api_request(
+    response = target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=GET,
         content=b'',
         request_path='/summary',
-    )
+    )  # type: Response
+    return response
 
 
 @timeout_decorator.timeout(seconds=60)

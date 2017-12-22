@@ -476,7 +476,8 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
     """
-    return request.getfixturevalue(request.param)
+    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint
 
 
 @pytest.fixture(
@@ -493,8 +494,8 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which does not take any JSON data.
     """
-    return request.getfixturevalue(request.param)
-
+    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint
 
 @pytest.fixture(params=[
     'add_target',
@@ -504,7 +505,8 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes JSON data.
     """
-    return request.getfixturevalue(request.param)
+    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint
 
 
 @pytest.fixture(
@@ -523,4 +525,5 @@ def endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint.
     """
-    return request.getfixturevalue(request.param)
+    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint
