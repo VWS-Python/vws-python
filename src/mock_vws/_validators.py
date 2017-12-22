@@ -672,7 +672,7 @@ def validate_keys(
         }
         return json.dumps(body)
 
-    wrapper_func = wrapper  # type: Callable[..., Any]
+    wrapper_func: Callable[..., Any] = wrapper
     return wrapper_func
 
 
