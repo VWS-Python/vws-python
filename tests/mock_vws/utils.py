@@ -241,7 +241,7 @@ def database_summary(
     )
 
 
-@timeout_decorator.timeout(seconds=60)
+@timeout_decorator.timeout(seconds=120)
 def wait_for_target_processed(
     vuforia_server_credentials: VuforiaServerCredentials,
     target_id: str,
