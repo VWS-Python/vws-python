@@ -1,7 +1,8 @@
 coveralls==1.1 # Upload coverage data
 doc8==0.8.0  # Lint docs
 dodgy==0.1.9  # Look for uploaded secrets
-flake8==3.3.0  # Lint
+flake8==3.5.0  # Lint
+flake8-quotes==0.13.0  # Require single quotes
 freezegun==0.3.9  # Freeze time in tests
 hypothesis==3.12.0  # Generate test cases
 isort==4.2.15  # Lint imports
