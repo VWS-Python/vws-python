@@ -241,13 +241,13 @@ def database_summary(
     )
 
 
-@timeout_decorator.timeout(seconds=60)
+@timeout_decorator.timeout(seconds=120)
 def wait_for_target_processed(
     vuforia_server_credentials: VuforiaServerCredentials,
     target_id: str,
 ) -> None:
     """
-    Wait up to one minute (arbitrary) for a target to get past the processing
+    Wait up to two minutes (arbitrary) for a target to get past the processing
     stage.
 
     Args:
@@ -257,7 +257,7 @@ def wait_for_target_processed(
 
     Raises:
         TimeoutError: The target remained in the processing stage for more
-            than 15 seconds.
+            than two minutes.
     """
     while True:
         response = get_vws_target(
