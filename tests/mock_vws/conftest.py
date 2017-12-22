@@ -20,11 +20,11 @@ from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
-from tests.mock_vws.utils import Endpoint, add_target_to_vws
-from tests.utils import VuforiaServerCredentials
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS, States
+from tests.mock_vws.utils import Endpoint, add_target_to_vws
+from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
 
@@ -476,8 +476,8 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
     """
-    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
-    return endpoint
+    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint_fixture
 
 
 @pytest.fixture(
@@ -494,8 +494,9 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which does not take any JSON data.
     """
-    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
-    return endpoint
+    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint_fixture
+
 
 @pytest.fixture(params=[
     'add_target',
@@ -505,8 +506,8 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes JSON data.
     """
-    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
-    return endpoint
+    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint_fixture
 
 
 @pytest.fixture(
@@ -525,5 +526,5 @@ def endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint.
     """
-    endpoint = request.getfixturevalue(request.param)  # type: Endpoint
-    return endpoint
+    endpoint_fixture = request.getfixturevalue(request.param)  # type: Endpoint
+    return endpoint_fixture

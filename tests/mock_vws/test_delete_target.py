@@ -5,14 +5,14 @@ Tests for deleting targets.
 import pytest
 from requests import codes
 from requests_mock import DELETE
+
+from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     assert_vws_failure,
     get_vws_target,
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
-
-from common.constants import ResultCodes
 from vws._request_utils import target_api_request
 
 

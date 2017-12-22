@@ -32,7 +32,7 @@ class ResultCodes(Values):  # type: ignore
     PROJECT_INACTIVE = ValueConstant('ProjectInactive')
 
 
-class TargetStatuses(Values):
+class TargetStatuses(Values):  # type: ignore
     """
     Constants representing VWS target statuses.
 

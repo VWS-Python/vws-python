@@ -10,14 +10,14 @@ from typing import Any, Union
 
 import pytest
 from requests import Response, codes
+
+from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
     assert_vws_response,
 )
 from tests.utils import VuforiaServerCredentials
-
-from common.constants import ResultCodes
 
 
 def assert_success(response: Response) -> None:
