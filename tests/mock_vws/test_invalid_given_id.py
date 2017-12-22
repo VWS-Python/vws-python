@@ -5,10 +5,10 @@ Tests for passing invalid endpoints which require a target ID to be given.
 import pytest
 import requests
 from requests import codes
-
-from common.constants import ResultCodes
 from tests.mock_vws.utils import Endpoint, assert_vws_failure
 from tests.utils import VuforiaServerCredentials
+
+from common.constants import ResultCodes
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -43,8 +43,8 @@ class TestInvalidGivenID:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
+            'Authorization': authorization_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type

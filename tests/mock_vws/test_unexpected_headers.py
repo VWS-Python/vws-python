@@ -4,20 +4,20 @@ Tests for when endpoints are called with unexpected header data.
 
 from datetime import datetime, timedelta
 # This is used in a type hint which linters not pick up on.
-from typing import Union  # noqa: F401 pylint: disable=unused-import
+from typing import Dict, Union  # noqa: F401 pylint: disable=unused-import
 
 import pytest
 import requests
 from freezegun import freeze_time
 from requests import codes
-
-from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     Endpoint,
     assert_vws_failure,
     assert_vws_response,
 )
 from tests.utils import VuforiaServerCredentials
+
+from common.constants import ResultCodes
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -56,7 +56,7 @@ class TestAuthorizationHeader:
         is given.
         """
         headers = {
-            "Date": rfc_1123_date(),
+            'Date': rfc_1123_date(),
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -83,8 +83,8 @@ class TestAuthorizationHeader:
         signature_string = 'gibberish'
 
         headers = {
-            "Authorization": signature_string,
-            "Date": date,
+            'Authorization': signature_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -128,7 +128,7 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": signature_string,
+            'Authorization': signature_string,
         }  # type: Dict[str, Union[bytes, str]]
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -149,7 +149,7 @@ class TestDateHeader:
     def test_incorrect_date_format(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        endpoint: Endpoint
+        endpoint: Endpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
@@ -157,7 +157,7 @@ class TestDateHeader:
         """
         with freeze_time(datetime.now()):
             date_incorrect_format = datetime.now(
-            ).strftime("%a %b %d %H:%M:%S %Y")
+            ).strftime('%a %b %d %H:%M:%S %Y')
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
@@ -170,8 +170,8 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date_incorrect_format,
+            'Authorization': authorization_string,
+            'Date': date_incorrect_format,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -220,8 +220,8 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
+            'Authorization': authorization_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -274,8 +274,8 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
+            'Authorization': authorization_string,
+            'Date': date,
         }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type

@@ -14,9 +14,9 @@ import requests
 import timeout_decorator
 from requests import Response
 from requests_mock import GET, POST
+from tests.utils import VuforiaServerCredentials
 
 from common.constants import ResultCodes, TargetStatuses
-from tests.utils import VuforiaServerCredentials
 from vws._request_utils import (
     authorization_header,
     rfc_1123_date,
@@ -154,7 +154,7 @@ def assert_vws_response(
 def add_target_to_vws(
     vuforia_server_credentials: VuforiaServerCredentials,
     data: Dict[str, Any],
-    content_type: str='application/json',
+    content_type: str = 'application/json',
 ) -> Response:
     """
     Return a response from a request to the endpoint to add a target.
@@ -184,8 +184,8 @@ def add_target_to_vws(
     )
 
     headers = {
-        "Authorization": authorization_string,
-        "Date": date,
+        'Authorization': authorization_string,
+        'Date': date,
         'Content-Type': content_type,
     }
 

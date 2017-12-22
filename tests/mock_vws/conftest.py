@@ -8,8 +8,11 @@ import os
 import random
 import uuid
 # This is used in a type hint which linters not pick up on.
-from typing import Any  # noqa: F401 pylint: disable=unused-import
-from typing import Generator
+from typing import (  # noqa: F401 pylint: disable=unused-import
+    Any,
+    Dict,
+    Generator,
+)
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -17,11 +20,11 @@ from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
+from tests.mock_vws.utils import Endpoint, add_target_to_vws
+from tests.utils import VuforiaServerCredentials
 
 from common.constants import ResultCodes
 from mock_vws import MockVWS, States
-from tests.mock_vws.utils import Endpoint, add_target_to_vws
-from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
 
@@ -193,7 +196,8 @@ def _delete_target(
     ).format(result_code=result_code)
 
     acceptable_results = (
-        ResultCodes.SUCCESS.value, ResultCodes.UNKNOWN_TARGET.value,
+        ResultCodes.SUCCESS.value,
+        ResultCodes.UNKNOWN_TARGET.value,
     )
     assert result_code in acceptable_results, error_message
 

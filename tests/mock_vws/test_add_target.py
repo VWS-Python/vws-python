@@ -10,14 +10,14 @@ from typing import Any, Union
 
 import pytest
 from requests import Response, codes
-
-from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
     assert_vws_response,
 )
 from tests.utils import VuforiaServerCredentials
+
+from common.constants import ResultCodes
 
 
 def assert_success(response: Response) -> None:
@@ -142,7 +142,7 @@ class TestWidth:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         png_rgb: io.BytesIO,
-        width: Any
+        width: Any,
     ) -> None:
         """
         The width must be a number greater than zero.
@@ -209,7 +209,7 @@ class TestTargetName:
         self,
         name: str,
         png_rgb: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         Names between 1 and 64 characters in length are valid.
@@ -240,7 +240,7 @@ class TestTargetName:
         self,
         name: str,
         png_rgb: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.
@@ -268,7 +268,7 @@ class TestTargetName:
     def test_existing_target_name(
         self,
         png_rgb: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         Only one target can have a given name.
@@ -499,7 +499,7 @@ class TestActiveFlag:
         self,
         active_flag: Union[bool, None],
         png_rgb: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         Boolean values and NULL are valid active flags.
@@ -526,7 +526,7 @@ class TestActiveFlag:
     def test_invalid(
         self,
         png_rgb: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials
+        vuforia_server_credentials: VuforiaServerCredentials,
     ) -> None:
         """
         Values which are not Boolean values or NULL are not valid active flags.

@@ -69,7 +69,7 @@ def authorization_header(  # pylint: disable=too-many-arguments
         date,
         request_path,
     ]
-    string_to_sign = "\n".join(components_to_sign)
+    string_to_sign = '\n'.join(components_to_sign)
     signature = compute_hmac_base64(
         key=secret_key,
         data=bytes(
@@ -77,7 +77,7 @@ def authorization_header(  # pylint: disable=too-many-arguments
             encoding='utf-8',
         ),
     )
-    auth_header = b"VWS %s:%s" % (access_key, signature)
+    auth_header = b'VWS %s:%s' % (access_key, signature)
     return auth_header
 
 
@@ -86,7 +86,7 @@ def target_api_request(
     secret_key: bytes,
     method: str,
     content: bytes,
-    request_path: str
+    request_path: str,
 ) -> requests.Response:
     """
     Make a request to the Vuforia Target API.
@@ -119,9 +119,9 @@ def target_api_request(
     )
 
     headers = {
-        "Authorization": signature_string,
-        "Date": date,
-        "Content-Type": content_type,
+        'Authorization': signature_string,
+        'Date': date,
+        'Content-Type': content_type,
     }
 
     url = urljoin(base='https://vws.vuforia.com', url=request_path)

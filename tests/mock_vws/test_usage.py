@@ -14,14 +14,14 @@ from hypothesis import given
 from hypothesis.strategies import text
 from requests import codes
 from requests_mock.exceptions import NoMockAddress
-
-from mock_vws import MockVWS
 from tests.mock_vws.utils import (
     add_target_to_vws,
     database_summary,
     get_vws_target,
 )
 from tests.utils import VuforiaServerCredentials
+
+from mock_vws import MockVWS
 from vws._request_utils import rfc_1123_date
 
 
@@ -37,7 +37,7 @@ def request_unmocked_address() -> None:
             addresses.
     """
     sock = socket.socket()
-    sock.bind(("", 0))
+    sock.bind(('', 0))
     port = sock.getsockname()[1]
     sock.close()
     address = 'http://localhost:{free_port}'.format(free_port=port)

@@ -13,8 +13,6 @@ import pytest
 import requests
 from requests import Response, codes
 from requests_mock import PUT
-
-from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
@@ -23,6 +21,8 @@ from tests.mock_vws.utils import (
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
+
+from common.constants import ResultCodes, TargetStatuses
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -30,7 +30,7 @@ def update_target(
     vuforia_server_credentials: VuforiaServerCredentials,
     data: Dict[str, Any],
     target_id: str,
-    content_type: str='application/json',
+    content_type: str = 'application/json',
 ) -> Response:
     """
     Helper to make a request to the endpoint to update a target.
@@ -60,8 +60,8 @@ def update_target(
     )
 
     headers = {
-        "Authorization": authorization_string,
-        "Date": date,
+        'Authorization': authorization_string,
+        'Date': date,
         'Content-Type': content_type,
     }
 

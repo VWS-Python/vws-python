@@ -55,7 +55,7 @@ def parse_target_id(
     wrapped: Callable[..., str],
     instance: 'MockVuforiaTargetAPI',
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Parse a target ID in a URL path and give the method a target argument.
@@ -166,8 +166,8 @@ ROUTES = set([])
 def route(
     path_pattern: str,
     http_methods: List[str],
-    mandatory_keys: Optional[Set[str]]=None,
-    optional_keys: Optional[Set[str]]=None
+    mandatory_keys: Optional[Set[str]] = None,
+    optional_keys: Optional[Set[str]] = None,
 ) -> Callable[..., Callable]:
     """
     Register a decorated method so that it can be recognized as a route.
@@ -494,8 +494,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         active_images = len(
             [
                 target for target in self.targets
-                if target.status == TargetStatuses.SUCCESS.value and
-                target.active_flag
+                if target.status == TargetStatuses.SUCCESS.value
+                and target.active_flag
             ]
         )
 
@@ -509,8 +509,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         inactive_images = len(
             [
                 target for target in self.targets
-                if target.status == TargetStatuses.SUCCESS.value and
-                not target.active_flag
+                if target.status == TargetStatuses.SUCCESS.value
+                and not target.active_flag
             ]
         )
 

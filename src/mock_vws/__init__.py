@@ -91,7 +91,7 @@ class MockVWS(ContextDecorator):
             secret_key = uuid.uuid4().hex
 
         self._real_http = real_http
-        self._mock = None  # type: Optional[Mocker]
+        self._mock = Mocker()
         self._state = state
 
         self._database_name = database_name
