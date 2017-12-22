@@ -13,11 +13,11 @@ addons:
     - "enchant"
 
 before_install:
-    - "pip install --upgrade pip setuptools"
+    - "travis_retry pip install --upgrade pip setuptools"
 
 install:
-  - "pip install --upgrade --editable .[dev]"
-  - "npm install -g markdownlint-cli"
+  - "travis_retry pip install --upgrade --editable .[dev]"
+  - "travis_retry npm install -g markdownlint-cli"
 
 cache: "pip"
 
