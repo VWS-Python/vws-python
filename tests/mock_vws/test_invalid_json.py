@@ -148,8 +148,8 @@ class TestInvalidJSON:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
+            'Authorization': authorization_string,
+            'Date': date,
             'Content-Type': endpoint.content_type,
         }
 
