@@ -149,7 +149,7 @@ class TestDateHeader:
     def test_incorrect_date_format(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        endpoint: Endpoint
+        endpoint: Endpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
