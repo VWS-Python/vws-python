@@ -9,8 +9,6 @@ from time import sleep
 import pytest
 import timeout_decorator
 from requests import codes
-
-from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_response,
@@ -18,6 +16,8 @@ from tests.mock_vws.utils import (
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
+
+from common.constants import ResultCodes
 
 
 @timeout_decorator.timeout(seconds=300)
