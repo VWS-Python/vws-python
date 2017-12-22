@@ -86,7 +86,7 @@ def target_api_request(
     secret_key: bytes,
     method: str,
     content: bytes,
-    request_path: str
+    request_path: str,
 ) -> requests.Response:
     """
     Make a request to the Vuforia Target API.
