@@ -8,8 +8,8 @@ import os
 import random
 import uuid
 # This is used in a type hint which linters not pick up on.
-from typing import Any  # noqa: F401 pylint: disable=unused-import
-from typing import Dict, Generator
+from typing import Dict, Any  # noqa: F401 pylint: disable=unused-import
+from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
