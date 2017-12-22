@@ -30,7 +30,7 @@ def update_target(
     vuforia_server_credentials: VuforiaServerCredentials,
     data: Dict[str, Any],
     target_id: str,
-    content_type: str='application/json',
+    content_type: str = 'application/json',
 ) -> Response:
     """
     Helper to make a request to the endpoint to update a target.
