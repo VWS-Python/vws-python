@@ -40,6 +40,6 @@ class TargetStatuses(Values):  # type: ignore
     https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
     """
 
-    PROCESSING: TargetStatuses = ValueConstant('processing')
-    SUCCESS: TargetStatuses = ValueConstant('success')
-    FAILED: TargetStatuses = ValueConstant('failed')
+    PROCESSING = ValueConstant('processing')  # type: TargetStatuses
+    SUCCESS = ValueConstant('success')  # type: TargetStatuses
+    FAILED = ValueConstant('failed')  # type: TargetStatuses

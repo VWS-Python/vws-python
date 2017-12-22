@@ -344,7 +344,7 @@ def add_target() -> Endpoint:
     """
     Return details of the endpoint for adding a target.
     """
-    data = {}  # type: Dict[str, Any]
+    data: Dict[str, Any] = {}
     return Endpoint(
         example_path='/targets',
         method=POST,
@@ -457,7 +457,7 @@ def update_target() -> Endpoint:
     """
     Return details of the endpoint for updating a target.
     """
-    data = {}  # type: Dict[str, Any]
+    data: Dict[str, Any] = {}
     example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
     return Endpoint(
         example_path=example_path,
