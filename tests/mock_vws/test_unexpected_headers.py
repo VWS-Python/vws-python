@@ -129,7 +129,7 @@ class TestDateHeader:
         )
 
         headers = {
-            "Authorization": signature_string,
+            'Authorization': signature_string,
         }  # type: Dict[str, Union[bytes, str]]
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
@@ -158,7 +158,7 @@ class TestDateHeader:
         """
         with freeze_time(datetime.now()):
             date_incorrect_format = datetime.now(
-            ).strftime("%a %b %d %H:%M:%S %Y")
+            ).strftime('%a %b %d %H:%M:%S %Y')
 
         authorization_string = authorization_header(
             access_key=vuforia_server_credentials.access_key,
