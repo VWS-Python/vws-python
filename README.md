@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master)](https://travis-ci.org/adamtheturtle/vws-python)
-[![Coverage Status](https://coveralls.io/repos/github/adamtheturtle/vws-python/badge.svg)](https://coveralls.io/github/adamtheturtle/vws-python)
+[![codecov](https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg)](https://codecov.io/gh/adamtheturtle/vws-python)
 [![Requirements Status](https://requires.io/github/adamtheturtle/vws-python/requirements.svg?branch=master)](https://requires.io/github/adamtheturtle/vws-python/requirements/?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/vws-python/badge/?version=latest)](http://vws-python.readthedocs.io/en/latest/?badge=latest)
 
@@ -13,7 +13,7 @@ See the full documentation at <http://vws-python.readthedocs.io/>.
 
 This package has not yet been uploaded to PyPI.
 
-This requires Python 3.5+.
+This requires Python 3.6+.
 Get in touch with `adamdangoor@gmail.com` if you would like to see this with another language.
 
 # Tests

@@ -5,6 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 import os
 
 import pytest
+
 from tests.utils import VuforiaServerCredentials
 
 

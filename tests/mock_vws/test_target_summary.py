@@ -9,14 +9,14 @@ import io
 import pytest
 from requests import codes
 from requests_mock import GET
+
+from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_response,
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
-
-from common.constants import ResultCodes, TargetStatuses
 from vws._request_utils import target_api_request
 
 
