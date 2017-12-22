@@ -4,7 +4,8 @@ Tests for when endpoints are called with unexpected header data.
 
 from datetime import datetime, timedelta
 # This is used in a type hint which linters not pick up on.
-from typing import Union  # noqa: F401 pylint: disable=unused-import
+from typing import Dict  # noqa: F401 pylint: disable=unused-import
+from typing import Union
 
 import pytest
 import requests
