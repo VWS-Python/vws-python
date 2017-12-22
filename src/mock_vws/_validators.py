@@ -159,7 +159,7 @@ def validate_authorization(
     wrapped: Callable[..., str],
     instance: Any,
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Validate the authorization header given to a VWS endpoint.
@@ -616,8 +616,10 @@ def validate_image_data_type(
     return json.dumps(body)
 
 
-def validate_keys(mandatory_keys: Set[str],
-                  optional_keys: Set[str]) -> Callable:
+def validate_keys(
+    mandatory_keys: Set[str],
+    optional_keys: Set[str],
+) -> Callable:
     """
     Args:
         mandatory_keys: Keys required by the endpoint.
