@@ -388,11 +388,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         self.database_name = database_name
 
-        self.access_key = access_key  # type: str
-        self.secret_key = secret_key  # type: str
+        self.access_key: str = access_key
+        self.secret_key: str = secret_key
 
-        self.targets = []  # type: List[Target]
-        self.routes = ROUTES  # type: Set[Route]
+        self.targets: List[Target] = []
+        self.routes: Set[Route] = ROUTES
         self.state = state
 
     @route(
