@@ -13,7 +13,7 @@ See the full documentation at <http://vws-python.readthedocs.io/>.
 
 This package has not yet been uploaded to PyPI.
 
-This requires Python 3.5+.
+This requires Python 3.6+.
 Get in touch with `adamdangoor@gmail.com` if you would like to see this with another language.
 
 # Tests
