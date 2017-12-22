@@ -2,4 +2,4 @@ constantly==15.1.0  # Symbolic constants.
 pillow==4.3.0  # Image library.
 requests-mock==1.4.0  # Mock `requests`.
 requests==2.18.4
-wrapt==1.10.10  # Make better decorators.
+wrapt==1.10.11  # Make better decorators.
