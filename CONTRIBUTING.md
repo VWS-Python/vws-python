@@ -125,3 +125,8 @@ The database summary from `GET /summary` has is not immediately accurate.
 Some of the [Vuforia Web Services documentation](https://library.vuforia.com/articles/Training/Image-Target-Guide) states that "The size of the input images must 2 MB or less".
 However, other [Vuforia Web Services documentation](https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query) is more accurate:
 "Maximum image size: 2.1 MPixel. 512 KiB for JPEG, 2MiB for PNG".
+
+## Performing a release
+
+There is currently no release process.
+See [this issue](https://github.com/adamtheturtle/vws-python/issues/55) for details.
