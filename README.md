@@ -104,21 +104,13 @@ As such, Travis CI is configured not to run multiple instances of the test suite
 
 Requests made to Vuforia can be mocked.
 Using the mock redirects requests to Vuforia made with `requests` to an in-memory implementation.
-This works for the provided wrapper because the implementation of that uses `requests`.
-
-There are two ways to use the mock, as a decorator and as a context manager.
 
 ```python
 import requests
 from mock_vws import MockVWS
 
-@MockVWS()
-def my_function():
-    # This will use the Vuforia mock.
-    requests.get('https://vws.vuforia.com/summary')
-
 with MockVWS():
-    # This will also use the Vuforia mock.
+    # This will use the Vuforia mock.
     requests.get('https://vws.vuforia.com/summary')
 ```
 
@@ -126,7 +118,7 @@ However, an exception will be raised if any requests to unmocked addresses are m
 
 ## Allowing HTTP requests to unmocked addresses
 
-This can be done by setting the parameter `real_http` to `True` in either the decorator or context manager's instantiation.
+This can be done by setting the parameter `real_http` to `True` in either the context manager's instantiation.
 
 For example:
 
@@ -134,17 +126,10 @@ For example:
 import requests
 from mock_vws import MockVWS
 
-@MockVWS(real_http=True)
-def my_function():
+with MockVWS(real_http=True):
     # This will use the Vuforia mock.
     requests.get('https://vws.vuforia.com/summary')
     # No exception is raised when a request is made to an unmocked address.
-    requests.get('http://example.com')
-
-with MockVWS(real_http=True):
-    # This will also use the Vuforia mock.
-    requests.get('https://vws.vuforia.com/summary')
-    # Again, no exception is raised.
     requests.get('http://example.com')
 ```
 
@@ -165,7 +150,7 @@ with MockVWS() as mock:
     secret_key = mock.secret_key
 ```
 
-To set custom keys, set the `access_key` and `secret_key` parameters in either the decorator or context manager's instantiation.
+To set custom keys, set the `access_key` and `secret_key` parameters in either the context manager's instantiation.
 
 ## Setting the database name
 
@@ -183,9 +168,9 @@ To change the state, use the `state` parameter when calling the mock.
 import requests
 from mock_vws import MockVWS, States
 
-@MockVWS(state=States.PROJECT_INACTIVE)
 def my_function():
-    ...
+    with MockVWS(state=States.PROJECT_INACTIVE) as mock:
+        ...
 ```
 
 These states available in `States` are:
