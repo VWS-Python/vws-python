@@ -58,7 +58,7 @@ def validate_active_flag(
     if active_flag is None or isinstance(active_flag, bool):
         return wrapped(*args, **kwargs)
 
-    context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+    context.status_code = codes.BAD_REQUEST
     body: Dict[str, str] = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
@@ -97,7 +97,7 @@ def validate_not_invalid_json(
         return wrapped(*args, **kwargs)
 
     if request.path == '/summary':
-        context.status_code = codes.UNAUTHORIZED  # pylint: disable=no-member
+        context.status_code = codes.UNAUTHORIZED
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
@@ -105,14 +105,14 @@ def validate_not_invalid_json(
         return json.dumps(body)
 
     if request.method not in (POST, PUT):
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST
         context.headers.pop('Content-Type')
         return ''
 
     try:
         request.json()
     except JSONDecodeError:
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -144,7 +144,7 @@ def validate_auth_header_exists(
     """
     request, context = args
     if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED  # pylint: disable=no-member
+        context.status_code = codes.UNAUTHORIZED
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
@@ -193,7 +193,7 @@ def validate_authorization(
     )
 
     if request.headers['Authorization'] != expected_authorization_header:
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -233,7 +233,7 @@ def validate_date(
             '%a, %d %b %Y %H:%M:%S GMT',
         )
     except (KeyError, ValueError):
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -244,7 +244,7 @@ def validate_date(
     maximum_time_difference = timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:
-        context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+        context.status_code = codes.FORBIDDEN
 
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -290,7 +290,7 @@ def validate_width(
     width_positive = width_is_number and width > 0
 
     if not width_positive:
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -335,7 +335,7 @@ def validate_name(
     name_valid_length = name_is_string and 0 < len(name) < 65
 
     if not name_valid_length:
-        context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -383,7 +383,7 @@ def validate_image_format(
     if pil_image.format in ('PNG', 'JPEG'):
         return wrapped(*args, **kwargs)
 
-    context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+    context.status_code = codes.UNPROCESSABLE_ENTITY
     body = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.BAD_IMAGE.value,
@@ -429,7 +429,7 @@ def validate_image_color_space(
     if pil_image.mode in ('L', 'RGB'):
         return wrapped(*args, **kwargs)
 
-    context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+    context.status_code = codes.UNPROCESSABLE_ENTITY
     body = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.BAD_IMAGE.value,
@@ -475,7 +475,7 @@ def validate_image_size(
     if len(decoded) <= 2359293:
         return wrapped(*args, **kwargs)
 
-    context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+    context.status_code = codes.UNPROCESSABLE_ENTITY
     body = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.IMAGE_TOO_LARGE.value,
@@ -520,7 +520,7 @@ def validate_image_is_image(
     try:
         Image.open(image_file)
     except OSError:
-        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.UNPROCESSABLE_ENTITY
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.BAD_IMAGE.value,
@@ -564,7 +564,7 @@ def validate_image_encoding(
     try:
         base64.b64decode(image)
     except binascii.Error:
-        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.UNPROCESSABLE_ENTITY
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -608,7 +608,7 @@ def validate_image_data_type(
     if isinstance(image, str):
         return wrapped(*args, **kwargs)
 
-    context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+    context.status_code = codes.BAD_REQUEST
     body = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
@@ -665,7 +665,7 @@ def validate_keys(
         if all_given_keys_allowed and all_mandatory_keys_given:
             return wrapped(*args, **kwargs)
 
-        context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+        context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -713,7 +713,7 @@ def validate_metadata_encoding(
     try:
         base64.b64decode(application_metadata)
     except binascii.Error:
-        context.status_code = codes.UNPROCESSABLE_ENTITY  # noqa: E501 pylint: disable=no-member
+        context.status_code = codes.UNPROCESSABLE_ENTITY
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -757,7 +757,7 @@ def validate_metadata_type(
     if application_metadata is None or isinstance(application_metadata, str):
         return wrapped(*args, **kwargs)
 
-    context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
+    context.status_code = codes.BAD_REQUEST
     body = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
