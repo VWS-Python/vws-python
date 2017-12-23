@@ -11,6 +11,7 @@ import timeout_decorator
 from requests import codes
 
 from common.constants import ResultCodes
+from mock_vws import MockVWS
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_response,
@@ -263,22 +264,53 @@ class TestDatabaseSummary:
             processing_images=0,
         )
 
+
+class TestProcessingImages:
+    """
+    Tests for processing images.
+
+    These tests are run only on the mock, and not the real implementation.
+
+    This is because the real implementation is not reliable.
+    This is a documented difference between the mock and the real
+    implementation.
+    """
+
     def test_processing_images(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
-        # We use `target_id` to create a target in the processing state.
-        target_id: str,  # pylint: disable=unused-argument
+        png_rgb_success: io.BytesIO,
     ) -> None:
         """
         The number of images in the processing state is returned.
         """
-        wait_for_image_numbers(
-            vuforia_server_credentials=vuforia_server_credentials,
-            active_images=0,
-            inactive_images=0,
-            failed_images=0,
-            processing_images=1,
-        )
+        image_data = png_rgb_success.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        with MockVWS() as mock:
+            vuforia_server_credentials = VuforiaServerCredentials(
+                access_key=mock.access_key,
+                secret_key=mock.secret_key,
+                database_name=mock.database_name,
+            )
+
+            add_target_to_vws(
+                vuforia_server_credentials=vuforia_server_credentials,
+                data=data,
+            )
+
+            wait_for_image_numbers(
+                vuforia_server_credentials=vuforia_server_credentials,
+                active_images=0,
+                inactive_images=0,
+                failed_images=0,
+                processing_images=1,
+            )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')

@@ -91,7 +91,7 @@ class TestGetRecord:
         assert target_record['active_flag'] is False
         assert target_record['name'] == name
         assert target_record['width'] == width
-        # Tracking rating may be -1 while processing
+        # Tracking rating may be -1 while processing.
         assert target_record['tracking_rating'] in range(-1, 6)
         assert target_record['reco_rating'] == ''
 

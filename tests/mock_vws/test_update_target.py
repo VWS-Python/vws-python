@@ -128,7 +128,7 @@ class TestUpdate:
             content_type=content_type
         )
 
-        # Code is FORBIDDEN because the target is processing
+        # Code is FORBIDDEN because the target is processing.
         assert_vws_failure(
             response=response,
             status_code=codes.FORBIDDEN,
