@@ -299,7 +299,7 @@ class TestProcessingImages:
                 database_name=mock.database_name,
             )
 
-            response = add_target_to_vws(
+            add_target_to_vws(
                 vuforia_server_credentials=vuforia_server_credentials,
                 data=data,
             )
