@@ -273,8 +273,12 @@ class Target:  # pylint: disable=too-many-instance-attributes
             target_id (str): The unique ID of the target.
             active_flag (bool): Whether or not the target is active for query.
             width (int): The width of the image in scene unit.
-            upload_date: The time that the target was created.
-            last_modified_date: The time that the target was last modified.
+            upload_date (datetime.datetime): The time that the target was
+                created.
+            last_modified_date (datetime.datetime): The time that the target
+                was last modified.
+            processed_tracking_rating (int): The tracking rating of the target
+                once it has been processed.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
@@ -282,7 +286,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.width = width
         self.upload_date: datetime.datetime = datetime.datetime.now()
         self.last_modified_date = self.upload_date
-        self._tracking_rating = random.randint(0, 5)
+        self.processed_tracking_rating = random.randint(0, 5)
         self._image = image
 
     @property
@@ -352,7 +356,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
             return -1
 
         if self._post_processing_status == TargetStatuses.SUCCESS:
-            return self._tracking_rating
+            return self.processed_tracking_rating
 
         return 0
 
@@ -680,6 +684,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                 }
                 return json.dumps(body)
             target.name = name
+
+        # In the real implementation, the tracking rating can stay the same.
+        # However, for demonstration purposes, the tracking rating changes but
+        # when the target is updated.
+        available_values = list(set(range(6)) - set([target.tracking_rating]))
+        target.processed_tracking_rating = random.choice(available_values)
 
         target.last_modified_date = datetime.datetime.now()
 
