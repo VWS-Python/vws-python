@@ -657,8 +657,6 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                     'result_code': ResultCodes.FAIL.value,
                 }
                 context.status_code = codes.BAD_REQUEST
-                import requests
-                print(requests.codes.BAD_REQUEST)
                 return json.dumps(body)
             target.active_flag = active_flag
 
