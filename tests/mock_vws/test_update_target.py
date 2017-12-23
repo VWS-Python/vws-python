@@ -869,3 +869,30 @@ class TestImage:
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
         )
+
+    def test_rating(self, ):
+        """
+        Update can == rating change.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        response = update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'name': 'Adam'},
+            target_id=target_id,
+            content_type=content_type
+        )
