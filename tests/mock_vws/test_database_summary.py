@@ -302,7 +302,6 @@ class TestProcessingImages:
             response = add_target_to_vws(
                 vuforia_server_credentials=vuforia_server_credentials,
                 data=data,
-                content_type='application/json',
             )
 
             wait_for_image_numbers(
