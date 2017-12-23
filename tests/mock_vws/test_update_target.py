@@ -875,7 +875,7 @@ class TestImage:
         png_rgb_success: io.BytesIO,
         high_quality_image: io.BytesIO,
         vuforia_server_credentials: VuforiaServerCredentials,
-    ):
+    ) -> None:
         """
         If the target is updated with an image of different quality, the
         tracking rating can change.
