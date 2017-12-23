@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master)](https://travis-ci.org/adamtheturtle/vws-python)
 [![codecov](https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg)](https://codecov.io/gh/adamtheturtle/vws-python)
-[![Requirements Status](https://requires.io/github/adamtheturtle/vws-python/requirements.svg?branch=master)](https://requires.io/github/adamtheturtle/vws-python/requirements/?branch=master)
+[![Updates](https://pyup.io/repos/github/adamtheturtle/vws-python/shield.svg)](https://pyup.io/repos/github/adamtheturtle/vws-python/)
 
 # vws-python
 

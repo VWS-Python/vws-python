@@ -90,3 +90,20 @@ These include the variables from `vuforia_secrets.env` prefixed with `MASTER_`.
 All targets are deleted from the database beween each test.
 Therefore there may be conflicts if the test suite is run concurrently as Travis CI is configured to connect to one Vuforia database.
 As such, Travis CI is configured not to run multiple instances of the test suite concurrently.
+
+## Learnings about VWS
+
+Vuforia Web Services, at the time of writing, does not behave exactly as documented.
+
+The following list includes details of differences between VWS and expected or documented behaviour.
+
+When attempting to delete a target immediately after creating it, a `FORBIDDEN` response is returned.
+This is because the target goes into a processing state.
+
+`image` is required for `POST /targets`, but it is documented as not mandatory.
+
+The `tracking_rating` returned by `GET /targets/<target_id>` can be -1.
+
+The database summary from `GET /summary` has multiple undocumented return fields.
+
+The database summary from `GET /summary` has is not immediately accurate.
