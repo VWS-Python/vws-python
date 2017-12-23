@@ -315,6 +315,9 @@ def verify_mock_vuforia_inactive(
     Vuforia in an inactive state, and once with the mock in an inactive state.
 
     This is useful for verifying the mock.
+
+    To create an inactive project, delete the license key associated with a
+    database.
     """
     skip_real = os.getenv('SKIP_REAL') == '1'
     skip_mock = os.getenv('SKIP_MOCK') == '1'
