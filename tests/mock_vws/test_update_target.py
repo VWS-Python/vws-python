@@ -870,18 +870,17 @@ class TestImage:
             result_code=ResultCodes.FAIL,
         )
 
-    def test_rating(
+    def test_rating_can_change(
         self,
         png_rgb: io.BytesIO,
         high_quality_image: io.BytesIO,
         vuforia_server_credentials: VuforiaServerCredentials,
     ):
         """
-        Update can == rating change.
-        If the target is updated with an image of different quality
+        If the target is updated with an image of different quality, the
+        tracking rating can change.
 
-        "quality" refers to Vuforia's
-
+        "quality" refers to Vuforia's internal rating system.
         The mock randomly assigns a quality and makes sure that the new quality
         is different to the old quality.
         """
