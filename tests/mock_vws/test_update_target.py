@@ -884,25 +884,39 @@ class TestImage:
         The mock randomly assigns a quality and makes sure that the new quality
         is different to the old quality.
         """
-        image_data = png_rgb.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        poor_image = png_rgb.read()
+        poor_image_data_encoded = base64.b64encode(poor_image).decode('ascii')
+
+        good_image = high_quality_image.read()
+        good_image_data_encoded = base64.b64encode(good_image).decode('ascii')
 
         data = {
             'name': 'example',
             'width': 1,
-            'image': image_data_encoded,
+            'image': poor_image_data_encoded,
         }
 
-        response = add_target_to_vws(
+        add_response = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=data,
         )
 
-        target_id = response.json()['target_id']
+        target_id = add_response.json()['target_id']
+
+
+        get_response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
+        # Tracking rating is between 0 and 5 when status is 'success'
+        tracking_rating = response.json()['target_record']['tracking_rating']
+        assert tracking_rating in range(6)
 
         response = update_target(
             vuforia_server_credentials=vuforia_server_credentials,
-            data={'name': 'Adam'},
+            data={'image': good_image_data_encoded},
             target_id=target_id,
             content_type=content_type
         )
