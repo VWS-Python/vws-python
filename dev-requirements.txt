@@ -18,7 +18,7 @@ pytest-cov==2.5.1  # Measure code coverage
 pytest-envfiles==0.1.0  # Use files for environment variables for tests
 pytest==3.1.3  # Test runners
 retrying==1.3.3  # Retry flaky tests
-sphinx==1.6.3  # Build documentation
+sphinx==1.6.5  # Build documentation
 sphinx-rtd-theme==0.2.4  # Theme for documentation
 timeout-decorator==0.3.3  # Decorate functions to time out.
 vulture==0.26
