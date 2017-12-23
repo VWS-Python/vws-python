@@ -47,4 +47,4 @@ script:
     - "pytest --exitfirst -vvv --cov=src --cov=tests"
 
 after_success:
-    - "coverage"
+    - "codecov"
