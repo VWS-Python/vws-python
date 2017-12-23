@@ -6,14 +6,18 @@
 
 Python wrapper for Vuforia Web Services (VWS) API.
 
-# Installation
+## Contributing
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for details on how to contribute to this repository.
+
+## Installation
 
 This package has not yet been uploaded to PyPI.
 
 This requires Python 3.6+.
 Get in touch with `adamdangoor@gmail.com` if you would like to see this with another language.
 
-# Mocking Vuforia
+## Mocking Vuforia
 
 Requests made to Vuforia can be mocked.
 Using the mock redirects requests to Vuforia made with `requests` to an in-memory implementation.
@@ -29,7 +33,7 @@ with MockVWS():
 
 However, an exception will be raised if any requests to unmocked addresses are made.
 
-## Allowing HTTP requests to unmocked addresses
+### Allowing HTTP requests to unmocked addresses
 
 This can be done by setting the parameter `real_http` to `True` in either the context manager's instantiation.
 
@@ -46,7 +50,7 @@ with MockVWS(real_http=True):
     requests.get('http://example.com')
 ```
 
-## Authentication
+### Authentication
 
 Connecting to the Vuforia Web Services requires an access key and a secret key.
 The mock also requires these keys as it provides realistic authentication support.
@@ -65,12 +69,12 @@ with MockVWS() as mock:
 
 To set custom keys, set the `access_key` and `secret_key` parameters in either the context manager's instantiation.
 
-## Setting the database name
+### Setting the database name
 
 This can be done with the `database_name` parameter.
 By default this is a random string.
 
-## Mocking error states
+### Mocking error states
 
 Sometimes Vuforia is in an error state, where requests don't work.
 You may want your application to handle these states gracefully, and so it is possible to make the mock emulate these states.
