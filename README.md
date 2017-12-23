@@ -69,6 +69,9 @@ with MockVWS() as mock:
 
 To set custom keys, set the `access_key` and `secret_key` parameters in either the context manager's instantiation.
 
+The mock does not check whether the server access and secret keys are valid.
+It only checks whether the keys used to set up the mock instance match those used to create requests.
+
 ### Setting the database name
 
 This can be done with the `database_name` parameter.
@@ -130,8 +133,3 @@ Therefore, an image given a 'success' status by the mock may not be given a 'suc
 
 When updating an image for a target on the real Vuforia Web Services, the rating may stay the same.
 The mock changes the rating for a target to a different random number when the image is changed.
-
-### Authentication
-
-The mock does not check whether the server access and secret keys are valid.
-It only checks whether the keys used to set up the mock instance match those used to create requests.

@@ -237,13 +237,11 @@ class TestCredentials:
         """
         By default the mock uses a random access key and secret key.
         """
-        with MockVWS() as mock:
-            first_access_key = mock.access_key
-            first_secret_key = mock.secret_key
-
-        with MockVWS() as mock:
-            assert mock.access_key != first_access_key
-            assert mock.secret_key != first_secret_key
+        with MockVWS() as first_mock:
+            with MockVWS() as second_mock:
+                assert first_mock.access_key != second_mock.access_key
+                assert first_mock.secret_key != second_mock.secret_key
+                assert first_mock.database_name != second_mock.database_name
 
     # We limit this to ASCII letters because some characters are not allowed
     # in request headers (e.g. a leading space).

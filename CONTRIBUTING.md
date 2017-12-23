@@ -108,5 +108,6 @@ The database summary from `GET /summary` has multiple undocumented return fields
 
 The database summary from `GET /summary` has is not immediately accurate.
 
-The [Vuforia Web Services documentation](https://library.vuforia.com/articles/Training/Image-Target-Guide) states that "The size of the input images must 2 MB or less".
-However, the real limit is slightly larger than 2 MB.
+Some of the [Vuforia Web Services documentation](https://library.vuforia.com/articles/Training/Image-Target-Guide) states that "The size of the input images must 2 MB or less".
+However, other [Vuforia Web Services documentation](https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query) is more accurate:
+"Maximum image size: 2.1 MPixel. 512 KiB for JPEG, 2MiB for PNG".

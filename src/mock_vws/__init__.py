@@ -77,6 +77,7 @@ class MockVWS(ContextDecorator):
         Attributes:
             access_key: A VWS access key for the mock.
             secret_key: A VWS secret key for the mock.
+            database_name: The name of the mock VWS target manager database.
         """
         super().__init__()
 
@@ -93,10 +94,9 @@ class MockVWS(ContextDecorator):
         self._mock = Mocker()
         self._state = state
 
-        self._database_name = database_name
-
         self.access_key = access_key
         self.secret_key = secret_key
+        self.database_name = database_name
 
     def __call__(  # pylint: disable=useless-super-delegation
         self,
@@ -116,7 +116,7 @@ class MockVWS(ContextDecorator):
             ``self``.
         """
         fake_target_api = MockVuforiaTargetAPI(
-            database_name=self._database_name,
+            database_name=self.database_name,
             access_key=self.access_key,
             secret_key=self.secret_key,
             state=self._state,
