@@ -107,7 +107,7 @@ The mock attempts to be realistic, but it was built without access to the source
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
 There is no attempt to make the image matching realistic.
 
-### Speed
+### Speed and summary accuracy
 
 The mock responds much more quickly than the real Vuforia Web Services.
 
@@ -115,6 +115,7 @@ Targets in the mock are set to 'processing' for half a second.
 In the real Vuforia Web Services, this takes varying lengths of time.
 
 The database summary in the real Vuforia Web Services takes some time to account for images.
+Sometimes the real summary skips image states such as the processing state.
 The mock is accurate immediately.
 
 ### Image quality and ratings

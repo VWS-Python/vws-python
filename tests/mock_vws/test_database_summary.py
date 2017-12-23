@@ -263,6 +263,18 @@ class TestDatabaseSummary:
             processing_images=0,
         )
 
+
+class TestProcessingImages:
+    """
+    Tests for processing images.
+
+    This test is run only on the mock, and not the real implementation.
+
+    This is because the real implementation is not reliable.
+    This is a documented difference between the mock and the real
+    implementation.
+    """
+
     def test_processing_images(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
