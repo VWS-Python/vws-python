@@ -3,8 +3,7 @@ Tests for when endpoints are called with unexpected header data.
 """
 
 from datetime import datetime, timedelta
-# This is used in a type hint which linters not pick up on.
-from typing import Dict, Union  # noqa: F401 pylint: disable=unused-import
+from typing import Dict, Union
 
 import pytest
 import requests
@@ -127,9 +126,9 @@ class TestDateHeader:
             request_path=endpoint.example_path
         )
 
-        headers = {
+        headers: Dict[str, Union[bytes, str]] = {
             'Authorization': signature_string,
-        }  # type: Dict[str, Union[bytes, str]]
+        }
         if endpoint.content_type is not None:
             headers['Content-Type'] = endpoint.content_type
 

@@ -5,7 +5,7 @@ Constants used to make the VWS mock and wrapper.
 from constantly import ValueConstant, Values
 
 
-class ResultCodes(Values):
+class ResultCodes(Values):  # type: ignore
     """
     Constants representing various VWS result codes.
 
@@ -32,7 +32,7 @@ class ResultCodes(Values):
     PROJECT_INACTIVE = ValueConstant('ProjectInactive')
 
 
-class TargetStatuses(Values):
+class TargetStatuses(Values):  # type: ignore
     """
     Constants representing VWS target statuses.
 
@@ -40,6 +40,6 @@ class TargetStatuses(Values):
     https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
     """
 
-    PROCESSING = ValueConstant('processing')
-    SUCCESS = ValueConstant('success')
-    FAILED = ValueConstant('failed')
+    PROCESSING = ValueConstant('processing')  # type: TargetStatuses
+    SUCCESS = ValueConstant('success')  # type: TargetStatuses
+    FAILED = ValueConstant('failed')  # type: TargetStatuses
