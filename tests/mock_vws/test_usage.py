@@ -332,7 +332,9 @@ class TestCredentials:
         secret_key=text(alphabet=string.ascii_letters)
     )
     def test_custom_credentials(
-        self, access_key: str, secret_key: str
+        self,
+        access_key: str,
+        secret_key: str,
     ) -> None:
         """
         It is possible to set custom credentials.
