@@ -59,10 +59,10 @@ def validate_active_flag(
         return wrapped(*args, **kwargs)
 
     context.status_code = codes.BAD_REQUEST  # pylint: disable=no-member
-    body = {
+    body: Dict[str, str] = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
-    }  # type: Dict[str, str]
+    }
     return json.dumps(body)
 
 
@@ -672,7 +672,8 @@ def validate_keys(
         }
         return json.dumps(body)
 
-    return wrapper
+    wrapper_func: Callable[..., Any] = wrapper
+    return wrapper_func
 
 
 @wrapt.decorator
