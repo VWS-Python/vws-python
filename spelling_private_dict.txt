@@ -3,6 +3,7 @@ args
 ascii
 bool
 boolean
+bytesio
 cmyk
 connectionerror
 datetime
