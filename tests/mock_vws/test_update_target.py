@@ -128,7 +128,7 @@ class TestUpdate:
             content_type=content_type
         )
 
-        # Code is FORBIDDEN because the target is processing
+        # Code is FORBIDDEN because the target is processing.
         assert_vws_failure(
             response=response,
             status_code=codes.FORBIDDEN,
@@ -872,7 +872,7 @@ class TestImage:
 
     def test_rating_can_change(
         self,
-        png_rgb: io.BytesIO,
+        png_rgb_success: io.BytesIO,
         high_quality_image: io.BytesIO,
         vuforia_server_credentials: VuforiaServerCredentials,
     ):
@@ -884,7 +884,7 @@ class TestImage:
         The mock randomly assigns a quality and makes sure that the new quality
         is different to the old quality.
         """
-        poor_image = png_rgb.read()
+        poor_image = png_rgb_success.read()
         poor_image_data_encoded = base64.b64encode(poor_image).decode('ascii')
 
         good_image = high_quality_image.read()
@@ -925,12 +925,12 @@ class TestImage:
             target_id=target_id,
         )
 
-        get_response = get_vws_target(
+        wait_for_target_processed(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
         )
 
-        wait_for_target_processed(
+        get_response = get_vws_target(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
         )
