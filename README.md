@@ -1,13 +1,10 @@
 [![Build Status](https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master)](https://travis-ci.org/adamtheturtle/vws-python)
 [![codecov](https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg)](https://codecov.io/gh/adamtheturtle/vws-python)
 [![Requirements Status](https://requires.io/github/adamtheturtle/vws-python/requirements.svg?branch=master)](https://requires.io/github/adamtheturtle/vws-python/requirements/?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/vws-python/badge/?version=latest)](http://vws-python.readthedocs.io/en/latest/?badge=latest)
 
 # vws-python
 
 Python wrapper for Vuforia Web Services (VWS) API.
-
-See the full documentation at <http://vws-python.readthedocs.io/>.
 
 # Installation
 
@@ -102,22 +99,6 @@ These include the variables from `vuforia_secrets.env` prefixed with `MASTER_`.
 All targets are deleted from the database beween each test.
 Therefore there may be conflicts if the test suite is run concurrently as Travis CI is configured to connect to one Vuforia database.
 As such, Travis CI is configured not to run multiple instances of the test suite concurrently.
-
-# Documentation
-
-To build the documentation, first install the dependencies:
-
-    pip install --upgrade --editable .[dev]
-
-Then use `make`:
-
-    make -C docs clean html
-
-To open the built documentation:
-
-    open docs/build/html/index.html
-
-The documentation is hosted by ReadTheDocs on <http://vws-python.readthedocs.io/>.
 
 # Mocking Vuforia
 
