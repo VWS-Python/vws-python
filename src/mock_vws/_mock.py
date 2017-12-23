@@ -514,7 +514,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             ]
         )
 
-        processing_images = 0
+        processing_images = len(
+            [
+                target for target in self.targets
+                if target.status == TargetStatuses.PROCESSING.value
+            ]
+        )
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
