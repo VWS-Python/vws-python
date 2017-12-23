@@ -91,7 +91,7 @@ def parse_target_id(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
         }
-        context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
+        context.status_code = codes.NOT_FOUND
         return json.dumps(body)
 
     new_args = args + (matching_target, )
@@ -413,7 +413,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         name = request.json()['name']
 
         if any(target.name == name for target in self.targets):
-            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+            context.status_code = codes.FORBIDDEN
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_NAME_EXIST.value,
@@ -436,7 +436,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         )
         self.targets.append(new_target)
 
-        context.status_code = codes.CREATED  # pylint: disable=no-member
+        context.status_code = codes.CREATED
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.TARGET_CREATED.value,
@@ -460,7 +460,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         body: Dict[str, str] = {}
 
         if target.status == TargetStatuses.PROCESSING.value:
-            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+            context.status_code = codes.FORBIDDEN
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
@@ -639,7 +639,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         body: Dict[str, str] = {}
 
         if target.status != TargetStatuses.SUCCESS.value:
-            context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
+            context.status_code = codes.FORBIDDEN
             body = {
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_STATUS_NOT_SUCCESS.value,
@@ -656,7 +656,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                     'transaction_id': uuid.uuid4().hex,
                     'result_code': ResultCodes.FAIL.value,
                 }
-                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+                context.status_code = codes.BAD_REQUEST
+                import requests
+                print(requests.codes.BAD_REQUEST)
                 return json.dumps(body)
             target.active_flag = active_flag
 
@@ -666,14 +668,14 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
                     'transaction_id': uuid.uuid4().hex,
                     'result_code': ResultCodes.FAIL.value,
                 }
-                context.status_code = codes.BAD_REQUEST  # noqa: E501 pylint: disable=no-member
+                context.status_code = codes.BAD_REQUEST
                 return json.dumps(body)
 
         if 'name' in request.json():
             name = request.json()['name']
             other_targets = set(self.targets) - set([target])
             if any(other.name == name for other in other_targets):
-                context.status_code = codes.FORBIDDEN  # noqa: E501 pylint: disable=no-member
+                context.status_code = codes.FORBIDDEN
                 body = {
                     'transaction_id': uuid.uuid4().hex,
                     'result_code': ResultCodes.TARGET_NAME_EXIST.value,
