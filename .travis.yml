@@ -42,7 +42,7 @@ before_script:
        fi"
 
 script:
-    - "pytest --exitfirst -vvv --cov=src --cov=tests"
+    - "pytest --exitfirst -vvv --cov=src --cov=tests -k test_processing_images"
 
 after_success:
     - "codecov"
