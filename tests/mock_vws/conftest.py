@@ -167,7 +167,7 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
 
 @pytest.fixture()
 def high_quality_image(request: SubRequest) -> io.BytesIO:
-    with open('data/high_quality_image.jpg', 'rb') as f:
+    with open('tests/mock_vws/data/high_quality_image.jpg', 'rb') as f:
         return io.BytesIO(f.read())
 
 

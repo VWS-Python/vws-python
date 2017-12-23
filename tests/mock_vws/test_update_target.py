@@ -903,6 +903,11 @@ class TestImage:
 
         target_id = add_response.json()['target_id']
 
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
         get_response = get_vws_target(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
@@ -921,6 +926,11 @@ class TestImage:
         )
 
         get_response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        wait_for_target_processed(
             target_id=target_id,
             vuforia_server_credentials=vuforia_server_credentials
         )
