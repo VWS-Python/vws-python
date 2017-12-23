@@ -87,10 +87,10 @@ def parse_target_id(
             if target.target_id == target_id
         ]
     except ValueError:
-        body = {
+        body: Dict[str, str] = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
-        }  # type: Dict[str, str]
+        }
         context.status_code = codes.NOT_FOUND  # pylint: disable=no-member
         return json.dumps(body)
 
@@ -280,7 +280,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.upload_date = datetime.datetime.now()  # type: datetime.datetime
+        self.upload_date: datetime.datetime = datetime.datetime.now()
         self.last_modified_date = self.upload_date
         self._tracking_rating = random.randint(0, 5)
         self._image = image
@@ -324,9 +324,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
         time_since_change = datetime.datetime.now() - self.last_modified_date
 
         if time_since_change <= processing_time:
-            return TargetStatuses.PROCESSING.value
+            return str(TargetStatuses.PROCESSING.value)
 
-        return self._post_processing_status.value
+        return str(self._post_processing_status.value)
 
     @property
     def tracking_rating(self) -> int:
@@ -388,11 +388,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         self.database_name = database_name
 
-        self.access_key = access_key  # type: str
-        self.secret_key = secret_key  # type: str
+        self.access_key: str = access_key
+        self.secret_key: str = secret_key
 
-        self.targets = []  # type: List[Target]
-        self.routes = ROUTES  # type: Set[Route]
+        self.targets: List[Target] = []
+        self.routes: Set[Route] = ROUTES
         self.state = state
 
     @route(
@@ -457,7 +457,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, str]
+        body: Dict[str, str] = {}
 
         if target.status == TargetStatuses.PROCESSING.value:
             context.status_code = codes.FORBIDDEN  # pylint: disable=no-member
@@ -489,7 +489,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, Union[str, int]]
+        body: Dict[str, Union[str, int]] = {}
 
         active_images = len(
             [
@@ -548,11 +548,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         results = [target.target_id for target in self.targets]
 
-        body = {
+        body: Dict[str, Union[str, List[str]]] = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
             'results': results,
-        }  # type: Dict[str, Union[str, List[str]]]
+        }
         return json.dumps(body)
 
     @route(path_pattern='/targets/.+', http_methods=[GET])
@@ -598,7 +598,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
         """
-        similar_targets = []  # type: List[str]
+        similar_targets: List[str] = []
 
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -631,7 +631,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
         """
-        body = {}  # type: Dict[str, str]
+        body: Dict[str, str] = {}
 
         if target.status != TargetStatuses.SUCCESS.value:
             context.status_code = codes.FORBIDDEN  # pylint: disable=no-member

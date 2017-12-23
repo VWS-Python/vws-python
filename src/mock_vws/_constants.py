@@ -5,7 +5,7 @@ Constants used to make the VWS mock.
 from constantly import NamedConstant, Names
 
 
-class States(Names):
+class States(Names):  # type: ignore
     """
     Constants representing various web service states.
     """
