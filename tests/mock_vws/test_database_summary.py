@@ -263,6 +263,23 @@ class TestDatabaseSummary:
             processing_images=0,
         )
 
+    def test_processing_images(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        # We use `target_id` to create a target in the processing state.
+        target_id: str,  # pylint: disable=unused-argument
+    ) -> None:
+        """
+        The number of images in the processing state is returned.
+        """
+        wait_for_image_numbers(
+            vuforia_server_credentials=vuforia_server_credentials,
+            active_images=0,
+            inactive_images=0,
+            failed_images=0,
+            processing_images=1,
+        )
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
 class TestInactiveProject:
