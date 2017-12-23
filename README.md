@@ -107,10 +107,18 @@ The mock attempts to be realistic, but it was built without access to the source
 Please report any issues [here](https://github.com/adamtheturtle/vws-python/issues).
 There is no attempt to make the image matching realistic.
 
+### Speed and summary accuracy
+
 The mock responds much more quickly than the real Vuforia Web Services.
 
 Targets in the mock are set to 'processing' for half a second.
 In the real Vuforia Web Services, this takes varying lengths of time.
+
+The database summary in the real Vuforia Web Services takes some time to account for images.
+Sometimes the real summary skips image states such as the processing state.
+The mock is accurate immediately.
+
+### Image quality and ratings
 
 Targets are assigned a rating between 0 and 5 of how good they are for tracking purposes.
 In the mock this is a random number between 0 and 5.
@@ -120,8 +128,10 @@ The criteria for these images is not defined by the Vuforia documentation.
 The mock is more forgiving than the real Vuforia Web Services.
 Therefore, an image given a 'success' status by the mock may not be given a 'success' status by the real Vuforia Web Services.
 
+When updating an image for a target on the real Vuforia Web Services, the rating may stay the same.
+The mock changes the rating for a target to a different random number when the image is changed.
+
+### Authentication
+
 The mock does not check whether the server access and secret keys are valid.
 It only checks whether the keys used to set up the mock instance match those used to create requests.
-
-The database summary in the real Vuforia Web Services takes some time to account for images.
-The mock is accurate immediately.
