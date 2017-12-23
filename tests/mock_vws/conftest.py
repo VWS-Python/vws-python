@@ -292,6 +292,9 @@ def verify_mock_vuforia(
         pytest.skip()
 
     if use_real_vuforia:
+        _delete_all_targets(
+            vuforia_server_credentials=vuforia_server_credentials,
+        )
         yield
     else:
         with MockVWS(
