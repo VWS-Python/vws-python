@@ -910,15 +910,14 @@ class TestImage:
 
         assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
         # Tracking rating is between 0 and 5 when status is 'success'
-        original_target_record = response.json()['target_record']
+        original_target_record = get_response.json()['target_record']
         original_tracking_rating = original_target_record['tracking_rating']
         assert original_tracking_rating in range(6)
 
-        response = update_target(
+        update_target(
             vuforia_server_credentials=vuforia_server_credentials,
             data={'image': good_image_data_encoded},
             target_id=target_id,
-            content_type=content_type
         )
 
         get_response = get_vws_target(
@@ -928,7 +927,7 @@ class TestImage:
 
         assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
         # Tracking rating is between 0 and 5 when status is 'success'
-        new_target_record = response.json()['target_record']
+        new_target_record = get_response.json()['target_record']
         new_tracking_rating = new_target_record['tracking_rating']
         assert new_tracking_rating in range(6)
 

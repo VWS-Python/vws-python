@@ -165,6 +165,12 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     return file_bytes_io
 
 
+@pytest.fixture()
+def high_quality_image(request: SubRequest) -> io.BytesIO:
+    with open('data/high_quality_image.jpg', 'rb') as f:
+        return io.BytesIO(f.read())
+
+
 @retry(
     stop_max_delay=2 * 60 * 1000,
     wait_fixed=3 * 1000,
