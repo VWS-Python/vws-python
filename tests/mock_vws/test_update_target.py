@@ -870,9 +870,20 @@ class TestImage:
             result_code=ResultCodes.FAIL,
         )
 
-    def test_rating(self, ):
+    def test_rating(
+        self,
+        png_rgb: io.BytesIO,
+        high_quality_image: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ):
         """
         Update can == rating change.
+        If the target is updated with an image of different quality
+
+        "quality" refers to Vuforia's
+
+        The mock randomly assigns a quality and makes sure that the new quality
+        is different to the old quality.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
