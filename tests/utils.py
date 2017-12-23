@@ -9,7 +9,10 @@ class VuforiaServerCredentials:
     """
 
     def __init__(
-        self, access_key: str, secret_key: str, database_name: str
+        self,
+        access_key: str,
+        secret_key: str,
+        database_name: str,
     ) -> None:
         """
         Args:
@@ -23,6 +26,6 @@ class VuforiaServerCredentials:
             access_key (bytes): A VWS access key.
             secret_key (bytes): A VWS secret key.
         """
-        self.access_key = bytes(access_key, encoding='utf-8')  # type: bytes
-        self.secret_key = bytes(secret_key, encoding='utf-8')  # type: bytes
+        self.access_key: bytes = bytes(access_key, encoding='utf-8')
+        self.secret_key: bytes = bytes(secret_key, encoding='utf-8')
         self.database_name = database_name

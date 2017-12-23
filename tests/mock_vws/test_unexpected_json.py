@@ -44,9 +44,9 @@ class TestUnexpectedJSON:
         )
 
         headers = {
-            "Authorization": authorization_string,
-            "Date": date,
-            "Content-Type": 'application/json',
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': 'application/json',
         }
 
         response = requests.request(

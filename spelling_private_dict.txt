@@ -3,10 +3,12 @@ args
 ascii
 bool
 boolean
+bytesio
 cmyk
 connectionerror
 datetime
 decodable
+dev
 dict
 foo
 github
@@ -34,10 +36,12 @@ readme
 readthedocs
 refactoring
 regex
+reimplementation
 rfc
 rgb
 str
 todo
+txt
 unmocked
 url
 usefixtures

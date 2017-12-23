@@ -154,7 +154,7 @@ def assert_vws_response(
 def add_target_to_vws(
     vuforia_server_credentials: VuforiaServerCredentials,
     data: Dict[str, Any],
-    content_type: str='application/json',
+    content_type: str = 'application/json',
 ) -> Response:
     """
     Return a response from a request to the endpoint to add a target.
@@ -184,8 +184,8 @@ def add_target_to_vws(
     )
 
     headers = {
-        "Authorization": authorization_string,
-        "Date": date,
+        'Authorization': authorization_string,
+        'Date': date,
         'Content-Type': content_type,
     }
 
@@ -213,13 +213,14 @@ def get_vws_target(
     Returns:
         The response returned by the API.
     """
-    return target_api_request(
+    response = target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=GET,
         content=b'',
         request_path='/targets/' + target_id,
-    )
+    )  # type: Response
+    return response
 
 
 def database_summary(
@@ -232,22 +233,23 @@ def database_summary(
         vuforia_server_credentials: The credentials to use to connect to
             Vuforia.
     """
-    return target_api_request(
+    response = target_api_request(
         access_key=vuforia_server_credentials.access_key,
         secret_key=vuforia_server_credentials.secret_key,
         method=GET,
         content=b'',
         request_path='/summary',
-    )
+    )  # type: Response
+    return response
 
 
-@timeout_decorator.timeout(seconds=60)
+@timeout_decorator.timeout(seconds=120)
 def wait_for_target_processed(
     vuforia_server_credentials: VuforiaServerCredentials,
     target_id: str,
 ) -> None:
     """
-    Wait up to one minute (arbitrary) for a target to get past the processing
+    Wait up to two minutes (arbitrary) for a target to get past the processing
     stage.
 
     Args:
@@ -257,7 +259,7 @@ def wait_for_target_processed(
 
     Raises:
         TimeoutError: The target remained in the processing stage for more
-            than 15 seconds.
+            than two minutes.
     """
     while True:
         response = get_vws_target(

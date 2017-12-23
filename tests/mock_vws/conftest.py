@@ -7,9 +7,7 @@ import io
 import os
 import random
 import uuid
-# This is used in a type hint which linters not pick up on.
-from typing import Any  # noqa: F401 pylint: disable=unused-import
-from typing import Generator
+from typing import Any, Dict, Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -108,7 +106,10 @@ def jpeg_cmyk() -> io.BytesIO:
     Return a 1x1 JPEG file in the CMYK color space.
     """
     return _image_file(
-        file_format='JPEG', color_space='CMYK', width=1, height=1
+        file_format='JPEG',
+        color_space='CMYK',
+        width=1,
+        height=1,
     )
 
 
@@ -118,7 +119,10 @@ def jpeg_rgb() -> io.BytesIO:
     Return a 1x1 JPEG file in the RGB color space.
     """
     return _image_file(
-        file_format='JPEG', color_space='RGB', width=1, height=1
+        file_format='JPEG',
+        color_space='RGB',
+        width=1,
+        height=1,
     )
 
 
@@ -131,7 +135,10 @@ def tiff_rgb() -> io.BytesIO:
     supports only JPEG and PNG files.
     """
     return _image_file(
-        file_format='TIFF', color_space='RGB', width=1, height=1
+        file_format='TIFF',
+        color_space='RGB',
+        width=1,
+        height=1,
     )
 
 
@@ -143,7 +150,8 @@ def image_file(request: SubRequest) -> io.BytesIO:
     "work" means that this will be added as a target. However, this may or may
     not result in target with a 'success' status.
     """
-    return request.getfixturevalue(request.param)
+    file_bytes_io: io.BytesIO = request.getfixturevalue(request.param)
+    return file_bytes_io
 
 
 @pytest.fixture(params=['tiff_rgb', 'jpeg_cmyk'])
@@ -153,7 +161,8 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     expected to cause a `BadImage` result when an attempt is made to add it to
     the target database.
     """
-    return request.getfixturevalue(request.param)
+    file_bytes_io: io.BytesIO = request.getfixturevalue(request.param)
+    return file_bytes_io
 
 
 @retry(
@@ -161,7 +170,8 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     wait_fixed=3 * 1000,
 )
 def _delete_target(
-    vuforia_server_credentials: VuforiaServerCredentials, target: str
+    vuforia_server_credentials: VuforiaServerCredentials,
+    target: str,
 ) -> None:
     """
     Delete a given target.
@@ -193,7 +203,8 @@ def _delete_target(
     ).format(result_code=result_code)
 
     acceptable_results = (
-        ResultCodes.SUCCESS.value, ResultCodes.UNKNOWN_TARGET.value,
+        ResultCodes.SUCCESS.value,
+        ResultCodes.UNKNOWN_TARGET.value,
     )
     assert result_code in acceptable_results, error_message
 
@@ -255,7 +266,7 @@ def target_id(
         content_type='application/json',
     )
 
-    return response.json()['target_id']
+    return str(response.json()['target_id'])
 
 
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
@@ -333,7 +344,7 @@ def add_target() -> Endpoint:
     """
     Return details of the endpoint for adding a target.
     """
-    data = {}  # type: Dict[str, Any]
+    data: Dict[str, Any] = {}
     return Endpoint(
         example_path='/targets',
         method=POST,
@@ -446,7 +457,7 @@ def update_target() -> Endpoint:
     """
     Return details of the endpoint for updating a target.
     """
-    data = {}  # type: Dict[str, Any]
+    data: Dict[str, Any] = {}
     example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
     return Endpoint(
         example_path=example_path,
@@ -471,7 +482,8 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
     """
-    return request.getfixturevalue(request.param)
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    return endpoint_fixture
 
 
 @pytest.fixture(
@@ -488,7 +500,8 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which does not take any JSON data.
     """
-    return request.getfixturevalue(request.param)
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    return endpoint_fixture
 
 
 @pytest.fixture(params=[
@@ -499,7 +512,8 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint which takes JSON data.
     """
-    return request.getfixturevalue(request.param)
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    return endpoint_fixture
 
 
 @pytest.fixture(
@@ -518,4 +532,5 @@ def endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint.
     """
-    return request.getfixturevalue(request.param)
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    return endpoint_fixture

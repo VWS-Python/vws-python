@@ -7,8 +7,7 @@ import uuid
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
-from typing import Optional  # noqa: F401 This is used in a type hint.
-from typing import Any, Callable, Tuple, TypeVar, Pattern
+from typing import Any, Callable, Optional, Pattern, Tuple, TypeVar
 
 from requests_mock.mocker import Mocker
 
@@ -91,7 +90,7 @@ class MockVWS(ContextDecorator):
             secret_key = uuid.uuid4().hex
 
         self._real_http = real_http
-        self._mock = None  # type: Optional[Mocker]
+        self._mock = Mocker()
         self._state = state
 
         self._database_name = database_name
@@ -150,5 +149,10 @@ class MockVWS(ContextDecorator):
         Returns:
             False
         """
+        # __exit__ needs this to be passed in but vulture thinks that it is
+        # unused, so we "use" it here.
+        for _ in (exc, ):
+            pass
+
         self._mock.stop()
         return False
