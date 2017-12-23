@@ -4,9 +4,13 @@ Contributions to this repository must pass tests and linting.
 
 Travis CI is the canonical source truth.
 
-## Running tests
+## Install Contribution Dependencies
 
-To run the tests locally, first install the dependencies.
+Install dependencies in a virtual environment.
+
+```sh
+pip install --editable .[dev]
+```
 
 Spell checking requires `enchant`.
 This can be installed on macOS, for example, with [Homebrew](http://brew.sh):
@@ -21,11 +25,21 @@ and on Ubuntu with `apt`:
 apt-get install -y enchant
 ```
 
-Then install the Python dependencies:
+## Linting
+
+Run lint tools:
 
 ```sh
-pip install -e .[dev]
+make lint
 ```
+
+To fix some lint errors, run the following:
+
+```sh
+make fix-lint
+```
+
+## Running tests
 
 Create an environment variable file for secrets:
 
