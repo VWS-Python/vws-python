@@ -172,12 +172,6 @@ class TestDuplicates:
             request_path='/duplicates/' + original_target_id,
         )
 
-        assert_vws_response(
-            response=response,
-            status_code=codes.OK,
-            result_code=ResultCodes.SUCCESS,
-        )
-
         assert response.json()['similar_targets'] == []
 
     def test_active_flag(
@@ -222,12 +216,6 @@ class TestDuplicates:
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,
-        )
-
-        assert_vws_response(
-            response=response,
-            status_code=codes.OK,
-            result_code=ResultCodes.SUCCESS,
         )
 
         assert response.json()['similar_targets'] == []
