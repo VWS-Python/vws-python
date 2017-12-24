@@ -26,9 +26,6 @@ class TestDuplicates:
     Tests for the mock of the target duplicates endpoint.
     """
 
-    # TODO test while processing / not success status
-    # TODO test after updating one
-
     def test_duplicates(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
