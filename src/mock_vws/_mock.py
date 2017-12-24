@@ -259,7 +259,11 @@ class Target:  # pylint: disable=too-many-instance-attributes
     _processing_time_seconds = 0.5
 
     def __init__(
-        self, name: str, active_flag: bool, width: float, image: io.BytesIO
+        self,
+        name: str,
+        active_flag: bool,
+        width: float,
+        image: io.BytesIO,
     ) -> None:
         """
         Args:
