@@ -179,3 +179,55 @@ class TestDuplicates:
         )
 
         assert response.json()['similar_targets'] == []
+
+    def test_active_flag(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        Targets are not duplicates if the status is not 'success'.
+        """
+        image_data = high_quality_image.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        original_data = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+
+        similar_data = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        original_add_resp = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=original_data,
+        )
+
+        add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=similar_data,
+        )
+
+        original_target_id = original_add_resp.json()['target_id']
+
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/duplicates/' + original_target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        assert response.json()['similar_targets'] == []
