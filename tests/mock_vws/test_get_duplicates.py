@@ -11,7 +11,11 @@ from requests import codes
 from requests_mock import GET
 
 from common.constants import ResultCodes
-from tests.mock_vws.utils import add_target_to_vws, assert_vws_response
+from tests.mock_vws.utils import (
+    add_target_to_vws,
+    assert_vws_response,
+    wait_for_target_processed,
+)
 from tests.utils import VuforiaServerCredentials
 from vws._request_utils import target_api_request
 
@@ -67,13 +71,24 @@ class TestDuplicates:
             data=similar_data,
         )
 
-        add_target_to_vws(
+        different_add_resp = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=different_data,
         )
 
         original_target_id = original_add_resp.json()['target_id']
         similar_target_id = similar_add_resp.json()['target_id']
+        different_target_id = different_add_resp.json()['target_id']
+
+        for target_id in {
+            original_target_id,
+            similar_target_id,
+            different_target_id,
+        }:
+            wait_for_target_processed(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
 
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
