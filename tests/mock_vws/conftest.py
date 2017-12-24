@@ -165,6 +165,19 @@ def bad_image_file(request: SubRequest) -> io.BytesIO:
     return file_bytes_io
 
 
+@pytest.fixture()
+def high_quality_image() -> io.BytesIO:
+    """
+    Return an image file which is expected to have a 'success' status when
+    added to a target and a high tracking rating.
+
+    At the time of writing, this image gains a tracking rating of 5.
+    """
+    path = 'tests/mock_vws/data/high_quality_image.jpg'
+    with open(path, 'rb') as high_quality_image_file:
+        return io.BytesIO(high_quality_image_file.read())
+
+
 @retry(
     stop_max_delay=2 * 60 * 1000,
     wait_fixed=3 * 1000,

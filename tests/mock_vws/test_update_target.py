@@ -869,3 +869,76 @@ class TestImage:
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
         )
+
+    def test_rating_can_change(
+        self,
+        png_rgb_success: io.BytesIO,
+        high_quality_image: io.BytesIO,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        If the target is updated with an image of different quality, the
+        tracking rating can change.
+
+        "quality" refers to Vuforia's internal rating system.
+        The mock randomly assigns a quality and makes sure that the new quality
+        is different to the old quality.
+        """
+        poor_image = png_rgb_success.read()
+        poor_image_data_encoded = base64.b64encode(poor_image).decode('ascii')
+
+        good_image = high_quality_image.read()
+        good_image_data_encoded = base64.b64encode(good_image).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': poor_image_data_encoded,
+        }
+
+        add_response = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=data,
+        )
+
+        target_id = add_response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        get_response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
+        # Tracking rating is between 0 and 5 when status is 'success'
+        original_target_record = get_response.json()['target_record']
+        original_tracking_rating = original_target_record['tracking_rating']
+        assert original_tracking_rating in range(6)
+
+        update_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data={'image': good_image_data_encoded},
+            target_id=target_id,
+        )
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        get_response = get_vws_target(
+            target_id=target_id,
+            vuforia_server_credentials=vuforia_server_credentials
+        )
+
+        assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
+        # Tracking rating is between 0 and 5 when status is 'success'
+        new_target_record = get_response.json()['target_record']
+        new_tracking_rating = new_target_record['tracking_rating']
+        assert new_tracking_rating in range(6)
+
+        assert original_tracking_rating != new_tracking_rating
