@@ -614,11 +614,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Check-for-Duplicate-Targets
         """
-        other_targets = list(set(self.targets) - set([target]))
+        other_targets = set(self.targets) - set([target])
 
         similar_targets: List[str] = [
             other.target_id for other in other_targets
-            if Image.open(other.image) == Image.open(target.image)
+            if Image.open(other.image) == Image.open(target.image) and
+            TargetStatuses.FAILED.value not in (target.status, other.status)
         ]
 
         body = {

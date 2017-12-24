@@ -14,6 +14,7 @@ from common.constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_response,
+    get_vws_target,
     wait_for_target_processed,
 )
 from tests.utils import VuforiaServerCredentials
@@ -30,7 +31,7 @@ class TestDuplicates:
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         high_quality_image: io.BytesIO,
-        png_greyscale: io.BytesIO,
+        png_rgb_success: io.BytesIO,
     ) -> None:
         """
         Target IDs of similar targets are returned.
@@ -40,7 +41,7 @@ class TestDuplicates:
         image_data = high_quality_image.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        different = png_greyscale.read()
+        different = png_rgb_success.read()
         different_data_encoded = base64.b64encode(different).decode('ascii')
 
         original_data = {
@@ -113,3 +114,68 @@ class TestDuplicates:
         assert response.json().keys() == expected_keys
 
         assert response.json()['similar_targets'] == [similar_target_id]
+
+    def test_status(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+        png_greyscale: io.BytesIO,
+    ) -> None:
+        """
+        Targets are not duplicates if the status is not 'success'.
+        """
+        image_data = png_greyscale.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        original_data = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        similar_data = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        original_add_resp = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=original_data,
+        )
+
+        similar_add_resp = add_target_to_vws(
+            vuforia_server_credentials=vuforia_server_credentials,
+            data=similar_data,
+        )
+
+        original_target_id = original_add_resp.json()['target_id']
+        similar_target_id = similar_add_resp.json()['target_id']
+
+        for target_id in {original_target_id, similar_target_id}:
+            wait_for_target_processed(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
+
+        response = get_vws_target(
+            vuforia_server_credentials=vuforia_server_credentials,
+            target_id=original_target_id,
+        )
+
+        assert response.json()['status'] == 'failed'
+
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/duplicates/' + original_target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        assert response.json()['similar_targets'] == []
