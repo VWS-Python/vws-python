@@ -553,7 +553,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Get a list of all targets.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Get-a-Target-List-for-a-Cloud-Database
         """
         results = [target.target_id for target in self.targets]
 

@@ -10,7 +10,7 @@ class ResultCodes(Values):  # type: ignore
     Constants representing various VWS result codes.
 
     See
-    https://library.vuforia.com/articles/Solution/How-To-Interperete-VWS-API-Result-Codes
+    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
 
     Some codes here are not documented in the above link.
     """
@@ -37,7 +37,7 @@ class TargetStatuses(Values):  # type: ignore
     Constants representing VWS target statuses.
 
     See the 'status' field in
-    https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
+    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Retrieve-a-Target-Record
     """
 
     PROCESSING = ValueConstant('processing')  # type: TargetStatuses
