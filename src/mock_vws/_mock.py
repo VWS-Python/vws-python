@@ -617,7 +617,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
         similar_targets: List[str] = [
             other.target_id for other in other_targets
-            if other._image == target._image
+            if Image.open(other._image) == Image.open(target._image)
         ]
 
         body = {
