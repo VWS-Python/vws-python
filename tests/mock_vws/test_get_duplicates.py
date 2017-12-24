@@ -50,3 +50,41 @@ class TestDuplicates:
         assert response.json().keys() == expected_keys
 
         assert response.json()['similar_targets'] == []
+
+    def test_duplicates(
+        self,
+        vuforia_server_credentials: VuforiaServerCredentials,
+    ) -> None:
+        """
+        If there are similar images to the given target, an empty list is
+        returned.
+        """
+        first_target = 'X'
+
+        similar_target = 'X'
+
+        different_target = 'X'
+
+        response = target_api_request(
+            access_key=vuforia_server_credentials.access_key,
+            secret_key=vuforia_server_credentials.secret_key,
+            method=GET,
+            content=b'',
+            request_path='/duplicates/' + target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        expected_keys = {
+            'result_code',
+            'transaction_id',
+            'similar_targets',
+        }
+
+        assert response.json().keys() == expected_keys
+
+        assert response.json()['similar_targets'] == [similar_target_id]
