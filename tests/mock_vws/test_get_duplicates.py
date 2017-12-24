@@ -183,11 +183,11 @@ class TestDuplicates:
         Targets with `active_flag` set to `False` are not found as duplicates.
 
         https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Check-for-Duplicate-Targets
-	says:
+    says:
 
-	> If a target is explicitly inactivated through the VWS API (or through
-	> the Target Manager), then this target is no longer taken into account
-	> for the duplicate target check.
+        > If a target is explicitly inactivated through the VWS API (or through
+        > the Target Manager), then this target is no longer taken into account
+        > for the duplicate target check.
         """
         image_data = high_quality_image.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')

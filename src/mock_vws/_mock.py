@@ -620,7 +620,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             other.target_id for other in other_targets
             if Image.open(other.image) == Image.open(target.image) and
             TargetStatuses.FAILED.value not in (target.status, other.status)
-            and other.active_flag
+            and TargetStatuses.PROCESSING.value not in
+            (target.status, other.status) and other.active_flag
         ]
 
         body = {
