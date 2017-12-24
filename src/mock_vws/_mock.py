@@ -410,7 +410,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         optional_keys={'active_flag', 'application_metadata'},
     )
     def add_target(
-        self, request: _RequestObjectProxy, context: _Context
+        self,
+        request: _RequestObjectProxy,
+        context: _Context,
     ) -> str:
         """
         Add a target.
