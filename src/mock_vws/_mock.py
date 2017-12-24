@@ -412,7 +412,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Add a target.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-to-Add-a-Target-Using-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Add-a-Target
         """
         name = request.json()['name']
 
@@ -459,7 +459,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Delete a target.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Delete-a-Target-Using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Delete-a-Target
         """
         body: Dict[str, str] = {}
 
@@ -491,7 +491,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Get a database summary report.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Get-a-Database-Summary-Report-Using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Get-a-Database-Summary-Report
         """
         body: Dict[str, Union[str, int]] = {}
 
@@ -553,7 +553,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Get a list of all targets.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Get-a-Target-List-for-a-Cloud-Database-Using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Get-a-Target-List-for-a-Cloud-Database
         """
         results = [target.target_id for target in self.targets]
 
@@ -575,7 +575,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Get details of a target.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Record-Using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Retrieve-a-Target-Record
         """
         target_record = {
             'target_id': target.target_id,
@@ -605,7 +605,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Get targets which may be considered duplicates of a given target.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Check-for-Duplicate-Targets-using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Check-for-Duplicate-Targets
         """
         similar_targets: List[str] = []
 
@@ -638,7 +638,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Update a target.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Update-a-Target-Using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Update-a-Target
         """
         body: Dict[str, str] = {}
 
@@ -710,7 +710,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Get a summary report for a target.
 
         Fake implementation of
-        https://library.vuforia.com/articles/Solution/How-To-Retrieve-a-Target-Summary-Report-using-the-VWS-API
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Retrieve-a-Target-Summary-Report
         """
         body = {
             'status': target.status,

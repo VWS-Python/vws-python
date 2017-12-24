@@ -100,7 +100,7 @@ def assert_vws_response(
     """
     Assert that a VWS response is as expected, at least in part.
 
-    https://library.vuforia.com/articles/Solution/How-To-Interperete-VWS-API-Result-Codes
+    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
     implies that the expected status code can be worked out from the result
     code. However, this is not the case as the real results differ from the
     documentation.
