@@ -174,13 +174,19 @@ class TestDuplicates:
 
         assert response.json()['similar_targets'] == []
 
+    @pytest.mark.parametrize(['original_active', 'similar_active'], [
+        (False, True),
+        (False, False),
+    ])
     def test_active_flag(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
         high_quality_image: io.BytesIO,
+        original_active: bool,
+        similar_active: bool,
     ) -> None:
         """
-        Targets are not duplicates if the status is not 'success'.
+        Targets with `active_flag` set to `False` do not have duplicates.
         """
         image_data = high_quality_image.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -189,13 +195,13 @@ class TestDuplicates:
             'name': str(uuid.uuid4()),
             'width': 1,
             'image': image_data_encoded,
-            'active_flag': False,
+            'active_flag': original_active,
         }
 
         similar_data = {
             'name': str(uuid.uuid4()),
             'width': 1,
-            'image': image_data_encoded,
+            'image': similar_active,
         }
 
         original_add_resp = add_target_to_vws(
