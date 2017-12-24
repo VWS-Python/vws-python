@@ -26,10 +26,12 @@ class TestDuplicates:
     Tests for the mock of the target duplicates endpoint.
     """
 
+    # TODO test while processing / not success status
+
     def test_duplicates(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        png_rgb: io.BytesIO,
+        high_quality_image: io.BytesIO,
         png_greyscale: io.BytesIO,
     ) -> None:
         """
@@ -37,7 +39,7 @@ class TestDuplicates:
 
         In the mock, "similar" means that the images are exactly the same.
         """
-        image_data = png_rgb.read()
+        image_data = high_quality_image.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         different = png_greyscale.read()
