@@ -259,7 +259,11 @@ class Target:  # pylint: disable=too-many-instance-attributes
     _processing_time_seconds = 0.5
 
     def __init__(
-        self, name: str, active_flag: bool, width: float, image: io.BytesIO
+        self,
+        name: str,
+        active_flag: bool,
+        width: float,
+        image: io.BytesIO,
     ) -> None:
         """
         Args:
@@ -279,6 +283,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
                 was last modified.
             processed_tracking_rating (int): The tracking rating of the target
                 once it has been processed.
+            image (io.BytesIO): The image data associated with the target.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
@@ -287,7 +292,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.upload_date: datetime.datetime = datetime.datetime.now()
         self.last_modified_date = self.upload_date
         self.processed_tracking_rating = random.randint(0, 5)
-        self._image = image
+        self.image = image
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
@@ -299,7 +304,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         How VWS determines this is unknown, but it relates to how suitable the
         target is for detection.
         """
-        image = Image.open(self._image)
+        image = Image.open(self.image)
         image_stat = ImageStat.Stat(image)
 
         average_std_dev = statistics.mean(image_stat.stddev)
@@ -406,7 +411,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         optional_keys={'active_flag', 'application_metadata'},
     )
     def add_target(
-        self, request: _RequestObjectProxy, context: _Context
+        self,
+        request: _RequestObjectProxy,
+        context: _Context,
     ) -> str:
         """
         Add a target.
@@ -607,7 +614,12 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Check-for-Duplicate-Targets
         """
-        similar_targets: List[str] = []
+        other_targets = list(set(self.targets) - set([target]))
+
+        similar_targets: List[str] = [
+            other.target_id for other in other_targets
+            if Image.open(other.image) == Image.open(target.image)
+        ]
 
         body = {
             'transaction_id': uuid.uuid4().hex,
