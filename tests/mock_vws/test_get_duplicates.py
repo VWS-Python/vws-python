@@ -209,12 +209,19 @@ class TestDuplicates:
             data=original_data,
         )
 
-        add_target_to_vws(
+        similar_add_resp = add_target_to_vws(
             vuforia_server_credentials=vuforia_server_credentials,
             data=similar_data,
         )
 
         original_target_id = original_add_resp.json()['target_id']
+        similar_target_id = similar_add_resp.json()['target_id']
+
+        for target_id in {original_target_id, similar_target_id}:
+            wait_for_target_processed(
+                vuforia_server_credentials=vuforia_server_credentials,
+                target_id=target_id,
+            )
 
         response = target_api_request(
             access_key=vuforia_server_credentials.access_key,
