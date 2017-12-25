@@ -370,6 +370,7 @@ def add_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.FAIL,
         content_type='application/json',
         content=bytes(str(data), encoding='utf-8'),
+        host='vws.vuforia.com',
     )
 
 
@@ -386,6 +387,7 @@ def delete_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -401,6 +403,7 @@ def database_summary() -> Endpoint:
         successful_headers_result_code=ResultCodes.SUCCESS,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -418,6 +421,7 @@ def get_duplicates() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -434,6 +438,7 @@ def get_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -449,6 +454,7 @@ def target_list() -> Endpoint:
         successful_headers_result_code=ResultCodes.SUCCESS,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -465,6 +471,7 @@ def target_summary() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -482,6 +489,7 @@ def update_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type='application/json',
         content=bytes(str(data), encoding='utf-8'),
+        host='vws.vuforia.com',
     )
 
 
