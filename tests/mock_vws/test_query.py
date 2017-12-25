@@ -48,3 +48,6 @@ class TestQuery:
             target_id=target_id,
         )
 
+        response = query()
+
+        assert 'results' not in response.json()
