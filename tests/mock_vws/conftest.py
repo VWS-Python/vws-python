@@ -499,15 +499,15 @@ def query() -> Endpoint:
     Return details of the endpoint for performing an image recognition query.
     """
     data: Dict[str, Any] = {}
-    example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    example_path = '/v1/query'
     return Endpoint(
         example_path=example_path,
-        method=PUT,
+        method=POST,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.SUCCESS,
         content_type='multipart/form-data',
         content=bytes(str(data), encoding='utf-8'),
-        host='vws.vuforia.com',
+        host='cloudreco.vuforia.com',
     )
 
 
@@ -549,6 +549,7 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
 @pytest.fixture(params=[
     'add_target',
     'update_target',
+    'query',
 ])
 def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     """
@@ -568,6 +569,7 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
         'target_list',
         'target_summary',
         'update_target',
+        'query',
     ]
 )
 def endpoint(request: SubRequest) -> Endpoint:

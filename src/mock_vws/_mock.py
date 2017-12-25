@@ -778,7 +778,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     @route(
         host='cloudreco.vuforia.com',
         path_pattern='/v1/query',
-        http_methods=[GET],
+        http_methods=[POST],
     )
     def query(
         self,
@@ -788,4 +788,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         """
         XXX
         """
-        pass
+        body = {
+            'result_code': ResultCodes.SUCCESS.value,
+            'query_id': uuid.uuid4().hex,
+        }
+        return json.dumps(body)

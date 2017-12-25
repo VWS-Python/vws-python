@@ -137,7 +137,7 @@ class MockVWS(ContextDecorator):
                         path_pattern=route.path_pattern,
                     )
 
-                    text = getattr(fake_target_api, name=route.route_name)
+                    text = getattr(fake_target_api, route.route_name)
 
                     mock.register_uri(
                         method=http_method,
