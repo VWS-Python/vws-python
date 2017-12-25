@@ -493,6 +493,24 @@ def update_target() -> Endpoint:
     )
 
 
+@pytest.fixture()
+def query() -> Endpoint:
+    """
+    Return details of the endpoint for performing an image recognition query.
+    """
+    data: Dict[str, Any] = {}
+    example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    return Endpoint(
+        example_path=example_path,
+        method=PUT,
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.SUCCESS,
+        content_type='multipart/form-data',
+        content=bytes(str(data), encoding='utf-8'),
+        host='vws.vuforia.com',
+    )
+
+
 @pytest.fixture(
     params=[
         'delete_target',
