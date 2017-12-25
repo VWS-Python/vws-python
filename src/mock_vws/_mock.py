@@ -774,3 +774,18 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'previous_month_recos': '',
         }
         return json.dumps(body)
+
+    @route(
+        host='cloudreco.vuforia.com',
+        path_pattern='/v1/query',
+        http_methods=[GET],
+    )
+    def query(
+        self,
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
+        context: _Context,  # pylint: disable=unused-argument
+    ) -> str:
+        """
+        XXX
+        """
+        pass
