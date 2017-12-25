@@ -4,6 +4,7 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
+import base64
 import io
 from typing import Any, Dict
 from urllib.parse import urljoin
@@ -37,16 +38,23 @@ class TestQuery:
     def test_no_results(
         self,
         vuforia_server_credentials: VuforiaServerCredentials,
-        png_rgb_success: io.BytesIO,
+        high_quality_image: io.BytesIO,
     ):
         """
         XXX
         """
+        image_data = high_quality_image.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
         date = rfc_1123_date()
         request_path = '/v1/query'
         content_type = 'multipart/form-data'
 
-        data = {}
+        data = {
+            # 'image': image_data_encoded,
+        }
+
+        files={'image': ('image.jpeg', image_data, 'image/jpeg')}
 
         content = bytes(json.dumps(data), encoding='utf-8')
 
@@ -70,8 +78,9 @@ class TestQuery:
             method=POST,
             url=urljoin('https://cloudreco.vuforia.com', request_path),
             headers=headers,
-            data=content,
+            data=data,
+            files=files,
         )
 
         assert 'results' not in response.json()
-        import pdb; pdb.set_trace()
+        assert response.status_code == 200
