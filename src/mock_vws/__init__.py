@@ -17,19 +17,20 @@ from ._mock import MockVuforiaTargetAPI
 _MOCK_VWS_TYPE = TypeVar('_MOCK_VWS_TYPE', bound='MockVWS')
 
 
-def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
+def _target_endpoint_pattern(host: str, path_pattern: str) -> Pattern[str]:
     """
-    Given a path pattern, return a regex which will match URLs to
-    patch for the Target API.
+    Given a path pattern, return a regex which will match URLs to patch for the
+    Target API.
 
     Args:
+        host: The host that the target endpoint is available on.
         path_pattern: A part of the url which can be matched for endpoints.
             For example `https://vws.vuforia.com/<this-part>`. This is
             compiled to be a regular expression, so it may be `/foo` or
             `/foo/.+` for example.
     """
-    base = 'https://vws.vuforia.com/'  # type: str
-    joined = urljoin(base=base, url=path_pattern + '$')
+    scheme = 'https://'
+    joined = urljoin(base=scheme + host, url=path_pattern + '$')
     return re.compile(joined)
 
 
@@ -131,10 +132,17 @@ class MockVWS(ContextDecorator):
         with Mocker(real_http=self._real_http) as mock:
             for route in fake_target_api.routes:
                 for http_method in route.http_methods:
+                    url = _target_endpoint_pattern(
+                        host=route.host,
+                        path_pattern=route.path_pattern,
+                    )
+
+                    text = getattr(fake_target_api, name=route.route_name)
+
                     mock.register_uri(
                         method=http_method,
-                        url=_target_endpoint_pattern(route.path_pattern),
-                        text=getattr(fake_target_api, route.route_name),
+                        url=url,
+                        text=text,
                         headers=headers,
                     )
 
