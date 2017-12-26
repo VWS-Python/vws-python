@@ -173,8 +173,8 @@ def add_target_to_vws(
     content = bytes(json.dumps(data), encoding='utf-8')
 
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.access_key,
-        secret_key=vuforia_database_keys.secret_key,
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
         method=POST,
         content=content,
         content_type=content_type,
@@ -212,8 +212,8 @@ def get_vws_target(
         The response returned by the API.
     """
     response = target_api_request(
-        access_key=vuforia_database_keys.access_key,
-        secret_key=vuforia_database_keys.secret_key,
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
         method=GET,
         content=b'',
         request_path='/targets/' + target_id,
@@ -229,8 +229,8 @@ def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
         vuforia_database_keys: The credentials to use to connect to Vuforia.
     """
     response = target_api_request(
-        access_key=vuforia_database_keys.access_key,
-        secret_key=vuforia_database_keys.secret_key,
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
         method=GET,
         content=b'',
         request_path='/summary',

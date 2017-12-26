@@ -36,8 +36,8 @@ class TestInvalidJSON:
         assert not endpoint.content_type
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            access_key=vuforia_database_keys.server_access_key,
+            secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=content,
             content_type='',
@@ -90,8 +90,8 @@ class TestInvalidJSON:
             date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            access_key=vuforia_database_keys.server_access_key,
+            secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=content,
             content_type='',
@@ -138,8 +138,8 @@ class TestInvalidJSON:
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            access_key=vuforia_database_keys.server_access_key,
+            secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=content,
             content_type=endpoint.content_type or '',

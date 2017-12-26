@@ -26,8 +26,8 @@ class TestTargetList:
         It is possible to get a success response.
         """
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            access_key=vuforia_database_keys.server_access_key,
+            secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/targets',
@@ -50,8 +50,8 @@ class TestTargetList:
         Targets in the database are returned in the list.
         """
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            access_key=vuforia_database_keys.server_access_key,
+            secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/targets',
@@ -73,8 +73,8 @@ class TestInactiveProject:
         The project's active state does not affect the target list.
         """
         response = target_api_request(
-            access_key=inactive_database_keys.access_key,
-            secret_key=inactive_database_keys.secret_key,
+            access_key=inactive_database_keys.server_access_key,
+            secret_key=inactive_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/targets',
