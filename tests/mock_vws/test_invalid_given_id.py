@@ -8,7 +8,7 @@ from requests import codes
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import Endpoint, assert_vws_failure
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -21,7 +21,7 @@ class TestInvalidGivenID:
 
     def test_not_real_id(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint_which_takes_target_id: Endpoint,  # noqa: E501 pylint: disable=redefined-outer-name
     ) -> None:
         """
@@ -33,8 +33,8 @@ class TestInvalidGivenID:
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',

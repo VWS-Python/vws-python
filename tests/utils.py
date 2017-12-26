@@ -3,7 +3,7 @@ Utilities for tests.
 """
 
 
-class VuforiaServerCredentials:
+class VuforiaDatabaseKeys:
     """
     Credentials for VWS APIs.
     """

@@ -16,7 +16,7 @@ from tests.mock_vws.utils import (
     assert_vws_failure,
     assert_vws_response,
 )
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -110,15 +110,15 @@ class TestDateHeader:
 
     def test_no_date_header(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: Endpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
         signature_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',
@@ -147,7 +147,7 @@ class TestDateHeader:
 
     def test_incorrect_date_format(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: Endpoint,
     ) -> None:
         """
@@ -159,8 +159,8 @@ class TestDateHeader:
             ).strftime('%a %b %d %H:%M:%S %Y')
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',
@@ -192,7 +192,7 @@ class TestDateHeader:
     )
     def test_date_out_of_range(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         time_multiplier: int,
         endpoint: Endpoint,
     ) -> None:
@@ -209,8 +209,8 @@ class TestDateHeader:
             date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',
@@ -243,7 +243,7 @@ class TestDateHeader:
     )
     def test_date_in_range(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         time_multiplier: int,
         endpoint: Endpoint,
     ) -> None:
@@ -263,8 +263,8 @@ class TestDateHeader:
             date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',

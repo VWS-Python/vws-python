@@ -18,12 +18,12 @@ from tests.mock_vws.utils import (
     database_summary,
     wait_for_target_processed,
 )
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 
 
 @timeout_decorator.timeout(seconds=300)
 def wait_for_image_numbers(
-    vuforia_server_credentials: VuforiaServerCredentials,
+    vuforia_database_keys: VuforiaDatabaseKeys,
     active_images: int,
     inactive_images: int,
     failed_images: int,
@@ -40,7 +40,7 @@ def wait_for_image_numbers(
     no images, and the endpoint adds images with a delay, we will not know.
 
     Args:
-        vuforia_server_credentials: The credentials to use to connect to
+        vuforia_database_keys: The credentials to use to connect to
             Vuforia.
         active_images: The expected number of active images.
         inactive_images: The expected number of inactive images.
@@ -60,7 +60,7 @@ def wait_for_image_numbers(
 
     while True:
         response = database_summary(
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
 
         requirements = {
@@ -86,13 +86,13 @@ class TestDatabaseSummary:
 
     def test_success(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         It is possible to get a success response.
         """
         response = database_summary(
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
 
         assert_vws_response(
@@ -119,10 +119,10 @@ class TestDatabaseSummary:
         }
 
         response_name = response.json()['name']
-        assert response_name == vuforia_server_credentials.database_name
+        assert response_name == vuforia_database_keys.database_name
 
         wait_for_image_numbers(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             active_images=0,
             inactive_images=0,
             failed_images=0,
@@ -131,7 +131,7 @@ class TestDatabaseSummary:
 
     def test_active_images(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
@@ -139,11 +139,11 @@ class TestDatabaseSummary:
         """
         wait_for_target_processed(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         wait_for_image_numbers(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             active_images=1,
             inactive_images=0,
             failed_images=0,
@@ -152,7 +152,7 @@ class TestDatabaseSummary:
 
     def test_failed_images(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -168,7 +168,7 @@ class TestDatabaseSummary:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
@@ -176,11 +176,11 @@ class TestDatabaseSummary:
 
         wait_for_target_processed(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         wait_for_image_numbers(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             active_images=0,
             inactive_images=0,
             failed_images=1,
@@ -189,7 +189,7 @@ class TestDatabaseSummary:
 
     def test_inactive_images(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb_success: io.BytesIO,
     ) -> None:
         """
@@ -207,7 +207,7 @@ class TestDatabaseSummary:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
@@ -215,11 +215,11 @@ class TestDatabaseSummary:
 
         wait_for_target_processed(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         wait_for_image_numbers(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             active_images=0,
             inactive_images=1,
             failed_images=0,
@@ -228,7 +228,7 @@ class TestDatabaseSummary:
 
     def test_inactive_failed(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -245,7 +245,7 @@ class TestDatabaseSummary:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
@@ -253,11 +253,11 @@ class TestDatabaseSummary:
 
         wait_for_target_processed(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         wait_for_image_numbers(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             active_images=0,
             inactive_images=0,
             failed_images=1,
@@ -293,19 +293,19 @@ class TestProcessingImages:
         }
 
         with MockVWS() as mock:
-            vuforia_server_credentials = VuforiaServerCredentials(
+            vuforia_database_keys = VuforiaDatabaseKeys(
                 access_key=mock.access_key,
                 secret_key=mock.secret_key,
                 database_name=mock.database_name,
             )
 
             add_target_to_vws(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 data=data,
             )
 
             wait_for_image_numbers(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 active_images=0,
                 inactive_images=0,
                 failed_images=0,
@@ -321,13 +321,13 @@ class TestInactiveProject:
 
     def test_inactive_project(
         self,
-        inactive_server_credentials: VuforiaServerCredentials,
+        inactive_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         The project's active state does not affect the database summary.
         """
         response = database_summary(
-            vuforia_server_credentials=inactive_server_credentials,
+            vuforia_database_keys=inactive_database_keys,
         )
 
         assert_vws_response(
