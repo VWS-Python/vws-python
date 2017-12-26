@@ -222,15 +222,13 @@ def _delete_target(
     assert result_code in acceptable_results, error_message
 
 
-def _delete_all_targets(
-    vuforia_database_keys: VuforiaDatabaseKeys,
-) -> None:
+def _delete_all_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> None:
     """
     Delete all targets.
 
     Args:
-        vuforia_database_keys: The credentials to the Vuforia target
-            database to delete all targets in.
+        vuforia_database_keys: The credentials to the Vuforia target database
+            to delete all targets in.
     """
     response = target_api_request(
         access_key=vuforia_database_keys.access_key,
@@ -305,9 +303,7 @@ def verify_mock_vuforia(
         pytest.skip()
 
     if use_real_vuforia:
-        _delete_all_targets(
-            vuforia_database_keys=vuforia_database_keys,
-        )
+        _delete_all_targets(vuforia_database_keys=vuforia_database_keys)
         yield
     else:
         with MockVWS(

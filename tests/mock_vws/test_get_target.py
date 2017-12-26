@@ -56,7 +56,7 @@ class TestGetRecord:
         target_id = response.json()['target_id']
         response = get_vws_target(
             target_id=target_id,
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         assert_vws_response(
@@ -120,7 +120,7 @@ class TestGetRecord:
         target_id = response.json()['target_id']
         response = get_vws_target(
             target_id=target_id,
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         target_record = response.json()['target_record']
@@ -152,7 +152,7 @@ class TestGetRecord:
         target_id = response.json()['target_id']
         response = get_vws_target(
             target_id=target_id,
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         target_record = response.json()['target_record']
@@ -190,7 +190,7 @@ class TestGetRecord:
 
         response = get_vws_target(
             target_id=target_id,
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         assert response.json()['status'] == TargetStatuses.FAILED.value
@@ -233,7 +233,7 @@ class TestGetRecord:
 
         response = get_vws_target(
             target_id=target_id,
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         assert response.json()['status'] == TargetStatuses.SUCCESS.value
@@ -244,7 +244,7 @@ class TestGetRecord:
         # The tracking rating stays stable across requests
         response = get_vws_target(
             target_id=target_id,
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
         new_target_record = response.json()['target_record']
         new_tracking_rating = new_target_record['tracking_rating']
