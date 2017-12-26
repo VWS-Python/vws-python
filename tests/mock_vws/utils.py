@@ -257,7 +257,8 @@ def wait_for_target_processed(
     """
     while True:
         response = get_vws_target(
-            target_id=target_id, vuforia_database_keys=vuforia_database_keys
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         if response.json()['status'] != TargetStatuses.PROCESSING.value:
