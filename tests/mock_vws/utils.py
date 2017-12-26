@@ -160,8 +160,7 @@ def add_target_to_vws(
     Return a response from a request to the endpoint to add a target.
 
     Args:
-        vuforia_database_keys: The credentials to use to connect to
-            Vuforia.
+        vuforia_database_keys: The credentials to use to connect to Vuforia.
         data: The data to send, in JSON format, to the endpoint.
         content_type: The `Content-Type` header to use.
 
@@ -206,8 +205,7 @@ def get_vws_target(
     Return a response from a request to the endpoint to get a target record.
 
     Args:
-        vuforia_database_keys: The credentials to use to connect to
-            Vuforia.
+        vuforia_database_keys: The credentials to use to connect to Vuforia.
         target_id: The ID of the target to return a record for.
 
     Returns:
@@ -223,13 +221,12 @@ def get_vws_target(
     return response
 
 
-def database_summary(vuforia_database_keys: VuforiaDatabaseKeys, ) -> Response:
+def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
     """
     Return the response of a request to the database summary endpoint.
 
     Args:
-        vuforia_database_keys: The credentials to use to connect to
-            Vuforia.
+        vuforia_database_keys: The credentials to use to connect to Vuforia.
     """
     response = target_api_request(
         access_key=vuforia_database_keys.access_key,
@@ -251,8 +248,7 @@ def wait_for_target_processed(
     stage.
 
     Args:
-        vuforia_database_keys: The credentials to use to connect to
-            Vuforia.
+        vuforia_database_keys: The credentials to use to connect to Vuforia.
         target_id: The ID of the target to wait for.
 
     Raises:
@@ -261,7 +257,8 @@ def wait_for_target_processed(
     """
     while True:
         response = get_vws_target(
-            target_id=target_id, vuforia_database_keys=vuforia_database_keys
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         if response.json()['status'] != TargetStatuses.PROCESSING.value:

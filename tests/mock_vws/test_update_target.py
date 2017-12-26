@@ -904,11 +904,13 @@ class TestImage:
         target_id = add_response.json()['target_id']
 
         wait_for_target_processed(
-            target_id=target_id, vuforia_database_keys=vuforia_database_keys
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         get_response = get_vws_target(
-            target_id=target_id, vuforia_database_keys=vuforia_database_keys
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
@@ -924,11 +926,13 @@ class TestImage:
         )
 
         wait_for_target_processed(
-            target_id=target_id, vuforia_database_keys=vuforia_database_keys
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         get_response = get_vws_target(
-            target_id=target_id, vuforia_database_keys=vuforia_database_keys
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
