@@ -12,7 +12,7 @@ from requests import codes
 
 from common.constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
-    VuforiaServerCredentials,
+    VuforiaDatabaseKeys,
     add_target_to_vws,
     assert_vws_response,
     get_vws_target,
@@ -28,7 +28,7 @@ class TestGetRecord:
 
     def test_get_vws_target(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -48,7 +48,7 @@ class TestGetRecord:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
             content_type='application/json',
         )
@@ -56,7 +56,7 @@ class TestGetRecord:
         target_id = response.json()['target_id']
         response = get_vws_target(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
 
         assert_vws_response(
@@ -97,7 +97,7 @@ class TestGetRecord:
 
     def test_active_flag_not_set(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -113,14 +113,14 @@ class TestGetRecord:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = response.json()['target_id']
         response = get_vws_target(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
 
         target_record = response.json()['target_record']
@@ -128,7 +128,7 @@ class TestGetRecord:
 
     def test_active_flag_set_to_none(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -145,14 +145,14 @@ class TestGetRecord:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = response.json()['target_id']
         response = get_vws_target(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
 
         target_record = response.json()['target_record']
@@ -160,7 +160,7 @@ class TestGetRecord:
 
     def test_fail_status(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -177,20 +177,20 @@ class TestGetRecord:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = response.json()['target_id']
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = get_vws_target(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
 
         assert response.json()['status'] == TargetStatuses.FAILED.value
@@ -199,7 +199,7 @@ class TestGetRecord:
 
     def test_success_status(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb_success: io.BytesIO,
     ) -> None:
         """
@@ -220,20 +220,20 @@ class TestGetRecord:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = response.json()['target_id']
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = get_vws_target(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
 
         assert response.json()['status'] == TargetStatuses.SUCCESS.value
@@ -244,7 +244,7 @@ class TestGetRecord:
         # The tracking rating stays stable across requests
         response = get_vws_target(
             target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            vuforia_database_keys=vuforia_database_keys
         )
         new_target_record = response.json()['target_record']
         new_tracking_rating = new_target_record['tracking_rating']

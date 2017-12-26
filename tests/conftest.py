@@ -6,15 +6,15 @@ import os
 
 import pytest
 
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 
 
 @pytest.fixture()
-def vuforia_server_credentials() -> VuforiaServerCredentials:
+def vuforia_database_keys() -> VuforiaDatabaseKeys:
     """
     Return VWS credentials from environment variables.
     """
-    credentials: VuforiaServerCredentials = VuforiaServerCredentials(
+    credentials: VuforiaDatabaseKeys = VuforiaDatabaseKeys(
         database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
         access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
@@ -23,11 +23,11 @@ def vuforia_server_credentials() -> VuforiaServerCredentials:
 
 
 @pytest.fixture()
-def inactive_server_credentials() -> VuforiaServerCredentials:
+def inactive_database_keys() -> VuforiaDatabaseKeys:
     """
     Return VWS credentials for an inactive project from environment variables.
     """
-    credentials: VuforiaServerCredentials = VuforiaServerCredentials(
+    credentials: VuforiaDatabaseKeys = VuforiaDatabaseKeys(
         database_name=os.
         environ['INACTIVE_VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
         access_key=os.environ['INACTIVE_VUFORIA_SERVER_ACCESS_KEY'],

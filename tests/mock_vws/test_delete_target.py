@@ -12,7 +12,7 @@ from tests.mock_vws.utils import (
     get_vws_target,
     wait_for_target_processed,
 )
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import target_api_request
 
 
@@ -25,7 +25,7 @@ class TestDelete:
     def test_no_wait(
         self,
         target_id: str,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         When attempting to delete a target immediately after creating it, a
@@ -39,8 +39,8 @@ class TestDelete:
         request_path = '/targets/' + target_id
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=DELETE,
             content=b'',
             request_path=request_path,
@@ -55,21 +55,21 @@ class TestDelete:
     def test_processed(
         self,
         target_id: str,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         When a target has finished processing, it can be deleted.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         request_path = '/targets/' + target_id
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=DELETE,
             content=b'',
             request_path=request_path,
@@ -82,7 +82,7 @@ class TestDelete:
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 

@@ -21,7 +21,7 @@ from tests.mock_vws.utils import (
     database_summary,
     get_vws_target,
 )
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import rfc_1123_date
 
 
@@ -67,14 +67,14 @@ def assert_valid_credentials(access_key: str, secret_key: str) -> None:
         AssertionError: The given credentials fail to authenticate with a
             Vuforia database.
     """
-    credentials = VuforiaServerCredentials(
+    credentials = VuforiaDatabaseKeys(
         database_name=uuid.uuid4().hex,
         access_key=access_key,
         secret_key=secret_key,
     )
 
     response = get_vws_target(
-        vuforia_server_credentials=credentials,
+        vuforia_database_keys=credentials,
         target_id=uuid.uuid4().hex,
     )
 
@@ -126,25 +126,25 @@ class TestDatabaseName:
         By default, the database has a random name.
         """
         with MockVWS() as mock:
-            vuforia_server_credentials = VuforiaServerCredentials(
+            vuforia_database_keys = VuforiaDatabaseKeys(
                 database_name=uuid.uuid4().hex,
                 access_key=mock.access_key,
                 secret_key=mock.secret_key,
             )
 
             response = database_summary(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
             )
             first_database_name = response.json()['name']
 
         with MockVWS() as mock:
-            vuforia_server_credentials = VuforiaServerCredentials(
+            vuforia_database_keys = VuforiaDatabaseKeys(
                 database_name=uuid.uuid4().hex,
                 access_key=mock.access_key,
                 secret_key=mock.secret_key,
             )
             response = database_summary(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
             )
             second_database_name = response.json()['name']
 
@@ -159,13 +159,13 @@ class TestDatabaseName:
         It is possible to set a custom database name.
         """
         with MockVWS(database_name=database_name) as mock:
-            vuforia_server_credentials = VuforiaServerCredentials(
+            vuforia_database_keys = VuforiaDatabaseKeys(
                 database_name=database_name,
                 access_key=mock.access_key,
                 secret_key=mock.secret_key,
             )
             response = database_summary(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
             )
             assert response.json()['name'] == database_name
 
@@ -193,35 +193,35 @@ class TestPersistence:
         }
 
         with MockVWS() as mock:
-            vuforia_server_credentials = VuforiaServerCredentials(
+            vuforia_database_keys = VuforiaDatabaseKeys(
                 database_name=uuid.uuid4().hex,
                 access_key=mock.access_key,
                 secret_key=mock.secret_key,
             )
 
             response = add_target_to_vws(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 data=data,
             )
 
             target_id = response.json()['target_id']
 
             response = get_vws_target(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 target_id=target_id,
             )
 
             assert response.status_code == codes.OK
 
         with MockVWS() as mock:
-            vuforia_server_credentials = VuforiaServerCredentials(
+            vuforia_database_keys = VuforiaDatabaseKeys(
                 database_name=uuid.uuid4().hex,
                 access_key=mock.access_key,
                 secret_key=mock.secret_key,
             )
 
             response = get_vws_target(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 target_id=target_id,
             )
 

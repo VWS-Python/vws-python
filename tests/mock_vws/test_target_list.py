@@ -8,7 +8,7 @@ from requests_mock import GET
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import assert_vws_response
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import target_api_request
 
 
@@ -20,14 +20,14 @@ class TestTargetList:
 
     def test_success(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         It is possible to get a success response.
         """
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/targets',
@@ -43,15 +43,15 @@ class TestTargetList:
 
     def test_includes_targets(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
         Targets in the database are returned in the list.
         """
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/targets',
@@ -67,14 +67,14 @@ class TestInactiveProject:
 
     def test_inactive_project(
         self,
-        inactive_server_credentials: VuforiaServerCredentials,
+        inactive_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         The project's active state does not affect the target list.
         """
         response = target_api_request(
-            access_key=inactive_server_credentials.access_key,
-            secret_key=inactive_server_credentials.secret_key,
+            access_key=inactive_database_keys.access_key,
+            secret_key=inactive_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/targets',

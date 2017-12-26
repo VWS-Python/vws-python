@@ -11,7 +11,7 @@ from requests import codes
 
 from common.constants import ResultCodes
 from tests.mock_vws.utils import Endpoint, assert_vws_failure
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
@@ -23,7 +23,7 @@ class TestInvalidJSON:
 
     def test_does_not_take_data(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint_no_data: Endpoint,
     ) -> None:
         """
@@ -36,8 +36,8 @@ class TestInvalidJSON:
         assert not endpoint.content_type
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=content,
             content_type='',
@@ -73,8 +73,8 @@ class TestInvalidJSON:
 
     def test_does_not_take_data_skewed_time(  # pylint: disable=invalid-name
         self,
-        vuforia_server_credentials:
-        VuforiaServerCredentials,
+        vuforia_database_keys:
+        VuforiaDatabaseKeys,
         endpoint_no_data: Endpoint,
     ) -> None:
         """
@@ -90,8 +90,8 @@ class TestInvalidJSON:
             date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=content,
             content_type='',
@@ -126,7 +126,7 @@ class TestInvalidJSON:
 
     def test_takes_data(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint_which_takes_data: Endpoint,
     ) -> None:
         """
@@ -138,8 +138,8 @@ class TestInvalidJSON:
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=endpoint.method,
             content=content,
             content_type=endpoint.content_type or '',
