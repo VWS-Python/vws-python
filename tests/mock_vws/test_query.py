@@ -6,17 +6,17 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 
 import base64
 import io
+import json
 from typing import Any, Dict
 from urllib.parse import urljoin
 
 import pytest
 import requests
-from requests import Response, codes
 from requests_mock import POST
 
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import authorization_header, rfc_1123_date
-import json
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestQuery:
@@ -24,43 +24,30 @@ class TestQuery:
     XXX
     """
 
-    """
-    * Normal query
-    * Maximum size PNG
-    * Bad content type
-    * Maximum size JPG
-    * max_num_results
-    * include_target_data
-    * Active flag
-    * Success: False
-    """
-
     def test_no_results(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
-    ):
+    ) -> None:
         """
         XXX
         """
         image_data = high_quality_image.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        base64.b64encode(image_data).decode('ascii')
 
         date = rfc_1123_date()
         request_path = '/v1/query'
         content_type = 'multipart/form-data'
 
-        data = {
-            # 'image': image_data_encoded,
-        }
+        data: Dict[str, Any] = {}
 
-        files={'image': ('image.jpeg', image_data, 'image/jpeg')}
+        files = {'image': ('image.jpeg', image_data, 'image/jpeg')}
 
         content = bytes(json.dumps(data), encoding='utf-8')
 
         authorization_string = authorization_header(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=POST,
             content=content,
             content_type=content_type,

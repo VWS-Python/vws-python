@@ -16,7 +16,7 @@ from requests import Response
 from requests_mock import GET, POST
 
 from common.constants import ResultCodes, TargetStatuses
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import (
     authorization_header,
     rfc_1123_date,
@@ -152,7 +152,7 @@ def assert_vws_response(
 
 
 def add_target_to_vws(
-    vuforia_server_credentials: VuforiaServerCredentials,
+    vuforia_database_keys: VuforiaDatabaseKeys,
     data: Dict[str, Any],
     content_type: str = 'application/json',
 ) -> Response:
@@ -160,7 +160,7 @@ def add_target_to_vws(
     Return a response from a request to the endpoint to add a target.
 
     Args:
-        vuforia_server_credentials: The credentials to use to connect to
+        vuforia_database_keys: The credentials to use to connect to
             Vuforia.
         data: The data to send, in JSON format, to the endpoint.
         content_type: The `Content-Type` header to use.
@@ -174,8 +174,8 @@ def add_target_to_vws(
     content = bytes(json.dumps(data), encoding='utf-8')
 
     authorization_string = authorization_header(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
+        access_key=vuforia_database_keys.access_key,
+        secret_key=vuforia_database_keys.secret_key,
         method=POST,
         content=content,
         content_type=content_type,
@@ -200,13 +200,13 @@ def add_target_to_vws(
 
 
 def get_vws_target(
-    target_id: str, vuforia_server_credentials: VuforiaServerCredentials
+    target_id: str, vuforia_database_keys: VuforiaDatabaseKeys
 ) -> Response:
     """
     Return a response from a request to the endpoint to get a target record.
 
     Args:
-        vuforia_server_credentials: The credentials to use to connect to
+        vuforia_database_keys: The credentials to use to connect to
             Vuforia.
         target_id: The ID of the target to return a record for.
 
@@ -214,8 +214,8 @@ def get_vws_target(
         The response returned by the API.
     """
     response = target_api_request(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
+        access_key=vuforia_database_keys.access_key,
+        secret_key=vuforia_database_keys.secret_key,
         method=GET,
         content=b'',
         request_path='/targets/' + target_id,
@@ -223,19 +223,17 @@ def get_vws_target(
     return response
 
 
-def database_summary(
-    vuforia_server_credentials: VuforiaServerCredentials,
-) -> Response:
+def database_summary(vuforia_database_keys: VuforiaDatabaseKeys, ) -> Response:
     """
     Return the response of a request to the database summary endpoint.
 
     Args:
-        vuforia_server_credentials: The credentials to use to connect to
+        vuforia_database_keys: The credentials to use to connect to
             Vuforia.
     """
     response = target_api_request(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
+        access_key=vuforia_database_keys.access_key,
+        secret_key=vuforia_database_keys.secret_key,
         method=GET,
         content=b'',
         request_path='/summary',
@@ -245,7 +243,7 @@ def database_summary(
 
 @timeout_decorator.timeout(seconds=120)
 def wait_for_target_processed(
-    vuforia_server_credentials: VuforiaServerCredentials,
+    vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
 ) -> None:
     """
@@ -253,7 +251,7 @@ def wait_for_target_processed(
     stage.
 
     Args:
-        vuforia_server_credentials: The credentials to use to connect to
+        vuforia_database_keys: The credentials to use to connect to
             Vuforia.
         target_id: The ID of the target to wait for.
 
@@ -263,8 +261,7 @@ def wait_for_target_processed(
     """
     while True:
         response = get_vws_target(
-            target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            target_id=target_id, vuforia_database_keys=vuforia_database_keys
         )
 
         if response.json()['status'] != TargetStatuses.PROCESSING.value:

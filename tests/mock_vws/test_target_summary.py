@@ -16,7 +16,7 @@ from tests.mock_vws.utils import (
     assert_vws_response,
     wait_for_target_processed,
 )
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import target_api_request
 
 
@@ -28,7 +28,7 @@ class TestTargetSummary:
 
     def test_target_summary(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -42,7 +42,7 @@ class TestTargetSummary:
         date_before_add_target = datetime.datetime.now().date()
 
         target_response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={
                 'name': name,
                 'width': 1,
@@ -55,8 +55,8 @@ class TestTargetSummary:
         date_after_add_target = datetime.datetime.now().date()
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/summary/' + target_id,
@@ -85,9 +85,7 @@ class TestTargetSummary:
         assert response.json().keys() == expected_keys
         assert response.json()['status'] == TargetStatuses.PROCESSING.value
         response_database_name = response.json()['database_name']
-        assert response_database_name == (
-            vuforia_server_credentials.database_name
-        )
+        assert response_database_name == (vuforia_database_keys.database_name)
         assert response.json()['target_name'] == name
 
         # In case the date changes while adding a target
@@ -102,7 +100,7 @@ class TestTargetSummary:
 
     def test_after_processing(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
@@ -113,7 +111,7 @@ class TestTargetSummary:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         target_response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={
                 'name': 'example',
                 'width': 1,
@@ -126,21 +124,21 @@ class TestTargetSummary:
         # The tracking rating may change during processing.
         # Therefore we wait until processing ends.
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/summary/' + target_id,
         )
 
         get_target_response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/targets/' + target_id,
@@ -155,7 +153,7 @@ class TestTargetSummary:
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
         active_flag: bool,
     ) -> None:
@@ -166,7 +164,7 @@ class TestTargetSummary:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         target_response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={
                 'name': 'example',
                 'width': 1,
@@ -176,8 +174,8 @@ class TestTargetSummary:
         )
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/summary/' + target_response.json()['target_id'],

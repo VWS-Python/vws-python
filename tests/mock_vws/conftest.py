@@ -19,7 +19,7 @@ from retrying import retry
 from common.constants import ResultCodes
 from mock_vws import MockVWS, States
 from tests.mock_vws.utils import Endpoint, add_target_to_vws
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import target_api_request
 
 
@@ -183,14 +183,14 @@ def high_quality_image() -> io.BytesIO:
     wait_fixed=3 * 1000,
 )
 def _delete_target(
-    vuforia_server_credentials: VuforiaServerCredentials,
+    vuforia_database_keys: VuforiaDatabaseKeys,
     target: str,
 ) -> None:
     """
     Delete a given target.
 
     Args:
-        vuforia_server_credentials: The credentials to the Vuforia target
+        vuforia_database_keys: The credentials to the Vuforia target
             database to delete the target in.
         target: The ID of the target to delete.
 
@@ -198,8 +198,8 @@ def _delete_target(
         AssertionError: The deletion was not a success.
     """
     response = target_api_request(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
+        access_key=vuforia_database_keys.access_key,
+        secret_key=vuforia_database_keys.secret_key,
         method=DELETE,
         content=b'',
         request_path='/targets/{target}'.format(target=target),
@@ -222,19 +222,17 @@ def _delete_target(
     assert result_code in acceptable_results, error_message
 
 
-def _delete_all_targets(
-    vuforia_server_credentials: VuforiaServerCredentials,
-) -> None:
+def _delete_all_targets(vuforia_database_keys: VuforiaDatabaseKeys, ) -> None:
     """
     Delete all targets.
 
     Args:
-        vuforia_server_credentials: The credentials to the Vuforia target
+        vuforia_database_keys: The credentials to the Vuforia target
             database to delete all targets in.
     """
     response = target_api_request(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
+        access_key=vuforia_database_keys.access_key,
+        secret_key=vuforia_database_keys.secret_key,
         method=GET,
         content=b'',
         request_path='/targets',
@@ -249,7 +247,7 @@ def _delete_all_targets(
 
     for target in targets:
         _delete_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target=target,
         )
 
@@ -257,7 +255,7 @@ def _delete_all_targets(
 @pytest.fixture()
 def target_id(
     png_rgb_success: io.BytesIO,  # pylint: disable=redefined-outer-name
-    vuforia_server_credentials: VuforiaServerCredentials,
+    vuforia_database_keys: VuforiaDatabaseKeys,
 ) -> str:
     """
     Return the target ID of a target in the database.
@@ -274,7 +272,7 @@ def target_id(
     }
 
     response = add_target_to_vws(
-        vuforia_server_credentials=vuforia_server_credentials,
+        vuforia_database_keys=vuforia_database_keys,
         data=data,
         content_type='application/json',
     )
@@ -285,7 +283,7 @@ def target_id(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(
     request: SubRequest,
-    vuforia_server_credentials: VuforiaServerCredentials,
+    vuforia_database_keys: VuforiaDatabaseKeys,
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
@@ -305,15 +303,13 @@ def verify_mock_vuforia(
         pytest.skip()
 
     if use_real_vuforia:
-        _delete_all_targets(
-            vuforia_server_credentials=vuforia_server_credentials,
-        )
+        _delete_all_targets(vuforia_database_keys=vuforia_database_keys, )
         yield
     else:
         with MockVWS(
-            database_name=vuforia_server_credentials.database_name,
-            access_key=vuforia_server_credentials.access_key.decode('ascii'),
-            secret_key=vuforia_server_credentials.secret_key.decode('ascii'),
+            database_name=vuforia_database_keys.database_name,
+            access_key=vuforia_database_keys.access_key.decode('ascii'),
+            secret_key=vuforia_database_keys.secret_key.decode('ascii'),
         ):
             yield
 
@@ -321,7 +317,7 @@ def verify_mock_vuforia(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia_inactive(
     request: SubRequest,
-    inactive_server_credentials: VuforiaServerCredentials,
+    inactive_database_keys: VuforiaDatabaseKeys,
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
@@ -348,9 +344,9 @@ def verify_mock_vuforia_inactive(
     else:
         with MockVWS(
             state=States.PROJECT_INACTIVE,
-            database_name=inactive_server_credentials.database_name,
-            access_key=inactive_server_credentials.access_key.decode('ascii'),
-            secret_key=inactive_server_credentials.secret_key.decode('ascii'),
+            database_name=inactive_database_keys.database_name,
+            access_key=inactive_database_keys.access_key.decode('ascii'),
+            secret_key=inactive_database_keys.secret_key.decode('ascii'),
         ):
             yield
 

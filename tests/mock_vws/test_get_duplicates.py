@@ -17,7 +17,7 @@ from tests.mock_vws.utils import (
     get_vws_target,
     wait_for_target_processed,
 )
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import target_api_request
 
 
@@ -29,7 +29,7 @@ class TestDuplicates:
 
     def test_duplicates(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
         png_rgb_success: io.BytesIO,
     ) -> None:
@@ -63,17 +63,17 @@ class TestDuplicates:
         }
 
         original_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=original_data,
         )
 
         similar_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=similar_data,
         )
 
         different_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=different_data,
         )
 
@@ -87,13 +87,13 @@ class TestDuplicates:
             different_target_id,
         }:
             wait_for_target_processed(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 target_id=target_id,
             )
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,
@@ -117,7 +117,7 @@ class TestDuplicates:
 
     def test_status(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_greyscale: io.BytesIO,
     ) -> None:
         """
@@ -139,12 +139,12 @@ class TestDuplicates:
         }
 
         original_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=original_data,
         )
 
         similar_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=similar_data,
         )
 
@@ -153,20 +153,20 @@ class TestDuplicates:
 
         for target_id in {original_target_id, similar_target_id}:
             wait_for_target_processed(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 target_id=target_id,
             )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=original_target_id,
         )
 
         assert response.json()['status'] == 'failed'
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,
@@ -176,7 +176,7 @@ class TestDuplicates:
 
     def test_active_flag_duplicate(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
@@ -207,12 +207,12 @@ class TestDuplicates:
         }
 
         original_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=original_data,
         )
 
         similar_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=similar_data,
         )
 
@@ -221,13 +221,13 @@ class TestDuplicates:
 
         for target_id in {original_target_id, similar_target_id}:
             wait_for_target_processed(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 target_id=target_id,
             )
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,
@@ -237,7 +237,7 @@ class TestDuplicates:
 
     def test_active_flag_original(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
@@ -261,12 +261,12 @@ class TestDuplicates:
         }
 
         original_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=original_data,
         )
 
         similar_add_resp = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=similar_data,
         )
 
@@ -275,13 +275,13 @@ class TestDuplicates:
 
         for target_id in {original_target_id, similar_target_id}:
             wait_for_target_processed(
-                vuforia_server_credentials=vuforia_server_credentials,
+                vuforia_database_keys=vuforia_database_keys,
                 target_id=target_id,
             )
 
         response = target_api_request(
-            access_key=vuforia_server_credentials.access_key,
-            secret_key=vuforia_server_credentials.secret_key,
+            access_key=vuforia_database_keys.access_key,
+            secret_key=vuforia_database_keys.secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,

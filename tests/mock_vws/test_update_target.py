@@ -22,12 +22,12 @@ from tests.mock_vws.utils import (
     get_vws_target,
     wait_for_target_processed,
 )
-from tests.utils import VuforiaServerCredentials
+from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import authorization_header, rfc_1123_date
 
 
 def update_target(
-    vuforia_server_credentials: VuforiaServerCredentials,
+    vuforia_database_keys: VuforiaDatabaseKeys,
     data: Dict[str, Any],
     target_id: str,
     content_type: str = 'application/json',
@@ -36,7 +36,7 @@ def update_target(
     Helper to make a request to the endpoint to update a target.
 
     Args:
-        vuforia_server_credentials: The credentials to use to connect to
+        vuforia_database_keys: The credentials to use to connect to
             Vuforia.
         data: The data to send, in JSON format, to the endpoint.
         content_type: The `Content-Type` header to use.
@@ -50,8 +50,8 @@ def update_target(
     content = bytes(json.dumps(data), encoding='utf-8')
 
     authorization_string = authorization_header(
-        access_key=vuforia_server_credentials.access_key,
-        secret_key=vuforia_server_credentials.secret_key,
+        access_key=vuforia_database_keys.access_key,
+        secret_key=vuforia_database_keys.secret_key,
         method=PUT,
         content=content,
         content_type=content_type,
@@ -98,7 +98,7 @@ class TestUpdate:
     )
     def test_content_types(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
         content_type: str,
     ) -> None:
@@ -115,14 +115,14 @@ class TestUpdate:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = response.json()['target_id']
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'name': 'Adam'},
             target_id=target_id,
             content_type=content_type
@@ -137,19 +137,19 @@ class TestUpdate:
 
     def test_no_fields_given(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
         No data fields are required.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={},
             target_id=target_id,
         )
@@ -163,7 +163,7 @@ class TestUpdate:
         assert response.json().keys() == {'result_code', 'transaction_id'}
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
@@ -171,12 +171,12 @@ class TestUpdate:
         assert response.json()['status'] == TargetStatuses.PROCESSING.value
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
@@ -191,19 +191,19 @@ class TestUnexpectedData:
 
     def test_invalid_extra_data(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'extra_thing': 1},
             target_id=target_id,
         )
@@ -228,7 +228,7 @@ class TestWidth:
     )
     def test_width_invalid(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         width: Any,
         target_id: str,
     ) -> None:
@@ -236,19 +236,19 @@ class TestWidth:
         The width must be a number greater than zero.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         original_width = response.json()['target_record']['width']
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'width': width},
             target_id=target_id,
         )
@@ -260,7 +260,7 @@ class TestWidth:
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
@@ -270,21 +270,21 @@ class TestWidth:
 
     def test_width_valid(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
         Positive numbers are valid widths.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         width = 0.01
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'width': width},
             target_id=target_id,
         )
@@ -296,7 +296,7 @@ class TestWidth:
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
@@ -314,7 +314,7 @@ class TestActiveFlag:
     @pytest.mark.parametrize('desired_active_flag', [True, False])
     def test_active_flag(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb_success: io.BytesIO,
         initial_active_flag: bool,
         desired_active_flag: bool,
@@ -333,19 +333,19 @@ class TestActiveFlag:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = response.json()['target_id']
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'active_flag': desired_active_flag},
             target_id=target_id,
         )
@@ -357,7 +357,7 @@ class TestActiveFlag:
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
@@ -367,7 +367,7 @@ class TestActiveFlag:
     @pytest.mark.parametrize('desired_active_flag', ['string', None])
     def test_invalid(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
         desired_active_flag: Union[str, None],
     ) -> None:
@@ -375,12 +375,12 @@ class TestActiveFlag:
         Values which are not Boolean values are not valid active flags.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'active_flag': desired_active_flag},
             target_id=target_id,
         )
@@ -400,7 +400,7 @@ class TestApplicationMetadata:
 
     def test_base64_encoded(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
@@ -410,12 +410,12 @@ class TestApplicationMetadata:
         metadata_encoded = base64.b64encode(metadata).decode('ascii')
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'application_metadata': metadata_encoded},
             target_id=target_id,
         )
@@ -429,7 +429,7 @@ class TestApplicationMetadata:
     @pytest.mark.parametrize('invalid_metadata', [1, None])
     def test_invalid_type(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
         invalid_metadata: Union[int, None],
     ) -> None:
@@ -437,12 +437,12 @@ class TestApplicationMetadata:
         Non-string values cannot be given as valid application metadata.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'application_metadata': invalid_metadata},
             target_id=target_id,
         )
@@ -455,7 +455,7 @@ class TestApplicationMetadata:
 
     def test_not_base64_encoded(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
@@ -467,12 +467,12 @@ class TestApplicationMetadata:
             base64.b64decode(not_base64_encoded)
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'application_metadata': str(not_base64_encoded)},
             target_id=target_id,
         )
@@ -499,19 +499,19 @@ class TestTargetName:
     def test_name_valid(
         self,
         name: str,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
         Names between 1 and 64 characters in length are valid.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'name': name},
             target_id=target_id,
         )
@@ -523,7 +523,7 @@ class TestTargetName:
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
@@ -538,18 +538,18 @@ class TestTargetName:
         self,
         name: str,
         target_id: str,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'name': name},
             target_id=target_id,
         )
@@ -563,7 +563,7 @@ class TestTargetName:
     def test_existing_target_name(
         self,
         png_rgb_success: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Only one target can have a given name.
@@ -581,14 +581,14 @@ class TestTargetName:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         first_target_id = response.json()['target_id']
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=first_target_id,
         )
 
@@ -599,19 +599,19 @@ class TestTargetName:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=other_data,
         )
 
         second_target_id = response.json()['target_id']
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=second_target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'name': first_target_name},
             target_id=second_target_id,
         )
@@ -625,7 +625,7 @@ class TestTargetName:
     def test_same_name_given(
         self,
         png_rgb_success: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Updating a target with its own name does not give an error.
@@ -642,19 +642,19 @@ class TestTargetName:
         }
 
         response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = response.json()['target_id']
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'name': name},
             target_id=target_id,
         )
@@ -666,7 +666,7 @@ class TestTargetName:
         )
 
         response = get_vws_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
@@ -684,7 +684,7 @@ class TestImage:
 
     def test_image_valid(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         image_file: io.BytesIO,
         target_id: str,
     ) -> None:
@@ -699,12 +699,12 @@ class TestImage:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'image': image_data_encoded},
             target_id=target_id,
         )
@@ -718,7 +718,7 @@ class TestImage:
     def test_bad_image(
         self,
         bad_image_file: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
@@ -730,12 +730,12 @@ class TestImage:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'image': image_data_encoded},
             target_id=target_id,
         )
@@ -748,7 +748,7 @@ class TestImage:
 
     def test_too_large(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         png_large: io.BytesIO,
         target_id: str,
     ) -> None:
@@ -767,12 +767,12 @@ class TestImage:
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'image': image_data_encoded},
             target_id=target_id,
         )
@@ -785,7 +785,7 @@ class TestImage:
 
     def test_not_base64_encoded(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
@@ -798,12 +798,12 @@ class TestImage:
             base64.b64decode(not_base64_encoded)
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'image': str(not_base64_encoded)},
             target_id=target_id,
         )
@@ -816,7 +816,7 @@ class TestImage:
 
     def test_not_image(
         self,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
     ) -> None:
         """
@@ -827,12 +827,12 @@ class TestImage:
         image_data_encoded = base64.b64encode(not_image_data).decode('ascii')
 
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'image': image_data_encoded},
             target_id=target_id,
         )
@@ -848,18 +848,18 @@ class TestImage:
         self,
         invalid_type_image: Union[int, None],
         target_id: str,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         If the given image is not a string, a `Fail` result is returned.
         """
         wait_for_target_processed(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
         response = update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'image': invalid_type_image},
             target_id=target_id,
         )
@@ -874,7 +874,7 @@ class TestImage:
         self,
         png_rgb_success: io.BytesIO,
         high_quality_image: io.BytesIO,
-        vuforia_server_credentials: VuforiaServerCredentials,
+        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         If the target is updated with an image of different quality, the
@@ -897,20 +897,18 @@ class TestImage:
         }
 
         add_response = add_target_to_vws(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data=data,
         )
 
         target_id = add_response.json()['target_id']
 
         wait_for_target_processed(
-            target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            target_id=target_id, vuforia_database_keys=vuforia_database_keys
         )
 
         get_response = get_vws_target(
-            target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            target_id=target_id, vuforia_database_keys=vuforia_database_keys
         )
 
         assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
@@ -920,19 +918,17 @@ class TestImage:
         assert original_tracking_rating in range(6)
 
         update_target(
-            vuforia_server_credentials=vuforia_server_credentials,
+            vuforia_database_keys=vuforia_database_keys,
             data={'image': good_image_data_encoded},
             target_id=target_id,
         )
 
         wait_for_target_processed(
-            target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            target_id=target_id, vuforia_database_keys=vuforia_database_keys
         )
 
         get_response = get_vws_target(
-            target_id=target_id,
-            vuforia_server_credentials=vuforia_server_credentials
+            target_id=target_id, vuforia_database_keys=vuforia_database_keys
         )
 
         assert get_response.json()['status'] == TargetStatuses.SUCCESS.value
