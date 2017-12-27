@@ -249,10 +249,6 @@ class Target:  # pylint: disable=too-many-instance-attributes
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
-
-    Attributes:
-        reco_rating (str): An empty string (for now according to the
-            documentation).
     """
 
     def __init__(
@@ -281,6 +277,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
             processed_tracking_rating (int): The tracking rating of the target
                 once it has been processed.
             image (io.BytesIO): The image data associated with the target.
+            reco_rating (str): An empty string ("for now" according to
+                Vuforia's documentation).
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
