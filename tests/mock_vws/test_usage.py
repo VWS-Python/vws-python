@@ -200,7 +200,7 @@ class TestDatabaseName:
 
 class TestPersistence:
     """
-    Tests for usage patterns of the mock.
+    Tests for isolation between instances of the mock.
     """
 
     def test_context_manager(
