@@ -249,21 +249,15 @@ class Target:  # pylint: disable=too-many-instance-attributes
     """
     A Vuforia Target as managed in
     https://developer.vuforia.com/target-manager.
-
-    Attributes:
-        reco_rating (str): An empty string (for now according to the
-            documentation).
     """
 
-    reco_rating = ''
-    _processing_time_seconds = 0.5
-
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         name: str,
         active_flag: bool,
         width: float,
         image: io.BytesIO,
+        processing_time_seconds: Union[int, float],
     ) -> None:
         """
         Args:
@@ -271,6 +265,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
             active_flag: Whether or not the target is active for query.
             width: The width of the image in scene unit.
             image: The image associated with the target.
+            processing_time_seconds: The number of seconds to process each
+                image for. In the real Vuforia Web Services, this is not
+                deterministic.
 
         Attributes:
             name (str): The name of the target.
@@ -284,6 +281,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
             processed_tracking_rating (int): The tracking rating of the target
                 once it has been processed.
             image (io.BytesIO): The image data associated with the target.
+            reco_rating (str): An empty string ("for now" according to
+                Vuforia's documentation).
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
@@ -293,6 +292,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.last_modified_date = self.upload_date
         self.processed_tracking_rating = random.randint(0, 5)
         self.image = image
+        self.reco_rating = ''
+        self._processing_time_seconds = processing_time_seconds
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
@@ -373,12 +374,13 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         server_access_key: str,
         server_secret_key: str,
         database_name: str,
         state: States,
+        processing_time_seconds: Union[int, float],
     ) -> None:
         """
         Args:
@@ -386,6 +388,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
             state: The state of the services being mocked.
+            processing_time_seconds: The number of seconds to process each
+                image for. In the real Vuforia Web Services, this is not
+                deterministic.
 
         Attributes:
             database_name: The name of a VWS target manager database name.
@@ -403,6 +408,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.targets: List[Target] = []
         self.routes: Set[Route] = ROUTES
         self.state = state
+
+        self._processing_time_seconds = processing_time_seconds
 
     @route(
         path_pattern='/targets',
@@ -444,6 +451,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             width=request.json()['width'],
             image=image_file,
             active_flag=active_flag,
+            processing_time_seconds=self._processing_time_seconds,
         )
         self.targets.append(new_target)
 

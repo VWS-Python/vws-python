@@ -7,7 +7,7 @@ import uuid
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
-from typing import Any, Callable, Optional, Pattern, Tuple
+from typing import Any, Callable, Optional, Pattern, Tuple, Union
 
 from requests_mock.mocker import Mocker
 
@@ -46,6 +46,7 @@ class MockVWS(ContextDecorator):
         server_access_key: Optional[str]=None,
         server_secret_key: Optional[str]=None,
         database_name: Optional[str]=None,
+        processing_time_seconds: Union[int, float]=0.5,
     ) -> None:
         """
         Args:
@@ -58,6 +59,9 @@ class MockVWS(ContextDecorator):
                 By default this is a random string.
             server_access_key: A VWS server access key for the mock.
             server_secret_key: A VWS server secret key for the mock.
+            processing_time_seconds: The number of seconds to process each
+                image for. In the real Vuforia Web Services, this is not
+                deterministic.
 
         Attributes:
             server_access_key (str): A VWS server access key for the mock.
@@ -79,6 +83,7 @@ class MockVWS(ContextDecorator):
         self._real_http = real_http
         self._mock = Mocker()
         self._state = state
+        self._processing_time_seconds = processing_time_seconds
 
         self.server_access_key = server_access_key
         self.server_secret_key = server_secret_key
@@ -106,6 +111,7 @@ class MockVWS(ContextDecorator):
             server_access_key=self.server_access_key,
             server_secret_key=self.server_secret_key,
             state=self._state,
+            processing_time_seconds=self._processing_time_seconds,
         )
 
         headers = {
