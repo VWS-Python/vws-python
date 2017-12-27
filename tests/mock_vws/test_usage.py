@@ -128,13 +128,15 @@ class TestProcessingTime:
         """
         XXX
         """
-        pass
+        with MockVWS():
+            pass
 
     def test_custom(self) -> None:
         """
         XXX
         """
-        pass
+        with MockVWS(processing_time_seconds=0.1):
+            pass
 
 class TestDatabaseName:
     """
