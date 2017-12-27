@@ -12,6 +12,8 @@ class VuforiaDatabaseKeys:
         self,
         server_access_key: str,
         server_secret_key: str,
+        client_access_key: str,
+        client_secret_key: str,
         database_name: str,
     ) -> None:
         """
@@ -19,12 +21,16 @@ class VuforiaDatabaseKeys:
             database_name: The name of a VWS target manager database name.
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
+            client_access_key: A VWS client access key.
+            client_secret_key: A VWS client secret key.
 
         Attributes:
             database_name (str): The name of a VWS target manager database
                 name.
             server_access_key (bytes): A VWS server access key.
             server_secret_key (bytes): A VWS server secret key.
+            client_access_key (bytes): A VWS client access key.
+            client_secret_key (bytes): A VWS client secret key.
         """
         self.server_access_key: bytes = bytes(
             server_access_key,
