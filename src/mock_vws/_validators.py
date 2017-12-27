@@ -183,8 +183,8 @@ def validate_authorization(
         content = bytes(request.text, encoding='utf-8')
 
     expected_authorization_header = authorization_header(
-        access_key=bytes(instance.access_key, encoding='utf-8'),
-        secret_key=bytes(instance.secret_key, encoding='utf-8'),
+        server_access_key=bytes(instance.server_access_key, encoding='utf-8'),
+        server_secret_key=bytes(instance.server_secret_key, encoding='utf-8'),
         method=request.method,
         content=content,
         content_type=request.headers.get('Content-Type', ''),

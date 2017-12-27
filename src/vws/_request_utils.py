@@ -33,9 +33,8 @@ def rfc_1123_date() -> str:
 
 
 def authorization_header(  # pylint: disable=too-many-arguments
-
-        access_key: bytes,
-        secret_key: bytes,
+        server_access_key: bytes,
+        server_secret_key: bytes,
         method: str,
         content: bytes,
         content_type: str,
@@ -47,8 +46,8 @@ def authorization_header(  # pylint: disable=too-many-arguments
     the VWS API with the given attributes.
 
     Args:
-        access_key: A VWS access key.
-        secret_key: A VWS secret key.
+        server_access_key: A VWS server access key.
+        server_secret_key: A VWS server secret key.
         method: The HTTP method which will be used in the request.
         content: The request body which will be used in the request.
         content_type: The `Content-Type` header which will be used in the
@@ -71,19 +70,19 @@ def authorization_header(  # pylint: disable=too-many-arguments
     ]
     string_to_sign = '\n'.join(components_to_sign)
     signature = compute_hmac_base64(
-        key=secret_key,
+        key=server_secret_key,
         data=bytes(
             string_to_sign,
             encoding='utf-8',
         ),
     )
-    auth_header = b'VWS %s:%s' % (access_key, signature)
+    auth_header = b'VWS %s:%s' % (server_access_key, signature)
     return auth_header
 
 
 def target_api_request(
-    access_key: bytes,
-    secret_key: bytes,
+    server_access_key: bytes,
+    server_secret_key: bytes,
     method: str,
     content: bytes,
     request_path: str,
@@ -92,11 +91,11 @@ def target_api_request(
     Make a request to the Vuforia Target API.
 
     This uses `requests` to make a request against https://vws.vuforia.com.
-    The content type of the request will be `application/json`
+    The content type of the request will be `application/json`.
 
     Args:
-        access_key: A VWS access key.
-        secret_key: A VWS secret key.
+        server_access_key: A VWS server access key.
+        server_secret_key: A VWS server secret key.
         method: The HTTP method which will be used in the request.
         content: The request body which will be used in the request.
         request_path: The path to the endpoint which will be used in the
@@ -109,8 +108,8 @@ def target_api_request(
     content_type = 'application/json'
 
     signature_string = authorization_header(
-        access_key=access_key,
-        secret_key=secret_key,
+        server_access_key=server_access_key,
+        server_secret_key=server_secret_key,
         method=method,
         content=content,
         content_type=content_type,
