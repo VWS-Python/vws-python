@@ -405,6 +405,8 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.routes: Set[Route] = ROUTES
         self.state = state
 
+        self._processing_time_seconds = 0.5
+
     @route(
         path_pattern='/targets',
         http_methods=[POST],
@@ -445,7 +447,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             width=request.json()['width'],
             image=image_file,
             active_flag=active_flag,
-            processing_time_seconds=0.5,
+            processing_time_seconds=self._processing_time_seconds,
         )
         self.targets.append(new_target)
 
