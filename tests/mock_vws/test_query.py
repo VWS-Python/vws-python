@@ -46,8 +46,8 @@ class TestQuery:
         content = bytes(json.dumps(data), encoding='utf-8')
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            access_key=vuforia_database_keys.client_access_key,
+            secret_key=vuforia_database_keys.client_secret_key,
             method=POST,
             content=content,
             content_type=content_type,

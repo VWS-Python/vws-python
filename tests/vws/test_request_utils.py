@@ -119,8 +119,8 @@ class TestAuthorizationHeader:
         expected = (b'VWS ' + server_access_key + b':' + signature)
 
         result = authorization_header(
-            server_access_key=server_access_key,
-            server_secret_key=server_secret_key,
+            access_key=server_access_key,
+            secret_key=server_secret_key,
             method=method,
             content=content,
             content_type=content_type,
@@ -135,8 +135,8 @@ class TestAuthorizationHeader:
         Test a successful example of creating an Authorization header.
         """
         result = authorization_header(
-            server_access_key=b'my_access_key',
-            server_secret_key=b'my_secret_key',
+            access_key=b'my_access_key',
+            secret_key=b'my_secret_key',
             method=GET,
             content=b'{"something": "other"}',
             content_type='text/example',
