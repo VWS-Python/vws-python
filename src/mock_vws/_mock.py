@@ -380,6 +380,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         server_secret_key: str,
         database_name: str,
         state: States,
+        processing_time_seconds: Union[int, float],
     ) -> None:
         """
         Args:
@@ -387,6 +388,9 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
             state: The state of the services being mocked.
+            processing_time_seconds: The number of seconds to process each
+                image for. In the real Vuforia Web Services, this is not
+                deterministic.
 
         Attributes:
             database_name: The name of a VWS target manager database name.

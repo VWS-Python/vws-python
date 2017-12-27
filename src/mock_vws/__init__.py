@@ -108,6 +108,7 @@ class MockVWS(ContextDecorator):
             server_access_key=self.server_access_key,
             server_secret_key=self.server_secret_key,
             state=self._state,
+            processing_time_seconds=0.5,
         )
 
         headers = {
