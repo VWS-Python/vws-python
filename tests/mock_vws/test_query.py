@@ -31,7 +31,7 @@ class TestQuery:
         """
         With no results
         """
-        content = high_quality_image.read()
+        image_content = high_quality_image.read()
         content_type = 'multipart/form-data'
         query: Dict[str, Any] = {}
         date = rfc_1123_date()
@@ -44,7 +44,7 @@ class TestQuery:
             headers={},
             data=query,
             files={
-                'image': ('image.jpeg', content, 'image/jpeg'),
+                'image': ('image.jpeg', image_content, 'image/jpeg'),
             }
         )
 
