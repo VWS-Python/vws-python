@@ -74,6 +74,8 @@ def assert_valid_server_credentials(
         database_name=uuid.uuid4().hex,
         server_access_key=server_access_key,
         server_secret_key=server_secret_key,
+        client_access_key=uuid.uuid4().hex,
+        client_secret_key=uuid.uuid4().hex,
     )
 
     response = get_vws_target(
@@ -133,6 +135,8 @@ class TestDatabaseName:
                 database_name=uuid.uuid4().hex,
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
+                client_access_key=uuid.uuid4().hex,
+                client_secret_key=uuid.uuid4().hex,
             )
 
             response = database_summary(
@@ -145,6 +149,8 @@ class TestDatabaseName:
                 database_name=uuid.uuid4().hex,
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
+                client_access_key=uuid.uuid4().hex,
+                client_secret_key=uuid.uuid4().hex,
             )
             response = database_summary(
                 vuforia_database_keys=vuforia_database_keys,
@@ -166,6 +172,8 @@ class TestDatabaseName:
                 database_name=database_name,
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
+                client_access_key=uuid.uuid4().hex,
+                client_secret_key=uuid.uuid4().hex,
             )
             response = database_summary(
                 vuforia_database_keys=vuforia_database_keys,
@@ -200,6 +208,8 @@ class TestPersistence:
                 database_name=uuid.uuid4().hex,
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
+                client_access_key=uuid.uuid4().hex,
+                client_secret_key=uuid.uuid4().hex,
             )
 
             response = add_target_to_vws(
@@ -221,6 +231,8 @@ class TestPersistence:
                 database_name=uuid.uuid4().hex,
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
+                client_access_key=uuid.uuid4().hex,
+                client_secret_key=uuid.uuid4().hex,
             )
 
             response = get_vws_target(

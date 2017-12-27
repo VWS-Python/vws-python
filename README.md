@@ -67,9 +67,14 @@ with MockVWS() as mock:
     secret_key = mock.server_secret_key
 ```
 
-To set custom keys, set the `access_key` and `secret_key` parameters in either the context manager's instantiation.
+To set custom keys, set any of the following parameters in the context manager's instantiation:
 
-The mock does not check whether the server access and secret keys are valid.
+* `server_access_key`
+* `server_secret_key`
+* `client_access_key`
+* `client_secret_key`
+
+The mock does not check whether the access and secret keys are valid.
 It only checks whether the keys used to set up the mock instance match those used to create requests.
 
 ### Setting the database name

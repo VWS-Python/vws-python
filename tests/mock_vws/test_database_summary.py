@@ -4,6 +4,7 @@ Tests for the mock of the database summary endpoint.
 
 import base64
 import io
+import uuid
 from time import sleep
 
 import pytest
@@ -297,6 +298,8 @@ class TestProcessingImages:
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
                 database_name=mock.database_name,
+                client_access_key=uuid.uuid4().hex,
+                client_secret_key=uuid.uuid4().hex,
             )
 
             add_target_to_vws(
