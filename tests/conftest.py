@@ -18,8 +18,6 @@ def vuforia_database_keys() -> VuforiaDatabaseKeys:
         database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
         server_access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
         server_secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
-        client_access_key=os.environ['VUFORIA_CLIENT_ACCESS_KEY'],
-        client_secret_key=os.environ['VUFORIA_CLIENT_SECRET_KEY'],
     )
     return credentials
 
@@ -32,7 +30,7 @@ def inactive_database_keys() -> VuforiaDatabaseKeys:
     credentials: VuforiaDatabaseKeys = VuforiaDatabaseKeys(
         database_name=os.
         environ['INACTIVE_VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
-        client_access_key=os.environ['INACTIVE_VUFORIA_CLIENT_ACCESS_KEY'],
-        client_secret_key=os.environ['INACTIVE_VUFORIA_CLIENT_SECRET_KEY'],
+        server_access_key=os.environ['INACTIVE_VUFORIA_SERVER_ACCESS_KEY'],
+        server_secret_key=os.environ['INACTIVE_VUFORIA_SERVER_SECRET_KEY'],
     )
     return credentials

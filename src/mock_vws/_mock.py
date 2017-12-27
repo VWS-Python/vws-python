@@ -375,30 +375,30 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
 
     def __init__(
         self,
-        access_key: str,
-        secret_key: str,
+        server_access_key: str,
+        server_secret_key: str,
         database_name: str,
         state: States,
     ) -> None:
         """
         Args:
             database_name: The name of a VWS target manager database.
-            access_key: A VWS access key.
-            secret_key: A VWS secret key.
+            server_access_key: A VWS server access key.
+            server_secret_key: A VWS server secret key.
             state: The state of the services being mocked.
 
         Attributes:
             database_name: The name of a VWS target manager database name.
-            access_key: A VWS access key.
-            secret_key: A VWS secret key.
+            server_access_key (str): A VWS server access key.
+            server_secret_key (str): A VWS server secret key.
             targets: The ``Target``s in the database.
             routes: The `Route`s to be used in the mock.
             state: The state of the services being mocked.
         """
         self.database_name = database_name
 
-        self.access_key: str = access_key
-        self.secret_key: str = secret_key
+        self.server_access_key: str = server_access_key
+        self.server_secret_key: str = server_secret_key
 
         self.targets: List[Target] = []
         self.routes: Set[Route] = ROUTES

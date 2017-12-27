@@ -117,8 +117,8 @@ class TestDateHeader:
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
         signature_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',
@@ -159,8 +159,8 @@ class TestDateHeader:
             ).strftime('%a %b %d %H:%M:%S %Y')
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',
@@ -209,8 +209,8 @@ class TestDateHeader:
             date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',
@@ -263,8 +263,8 @@ class TestDateHeader:
             date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',

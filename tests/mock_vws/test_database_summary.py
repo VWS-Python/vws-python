@@ -60,7 +60,7 @@ def wait_for_image_numbers(
 
     while True:
         response = database_summary(
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         requirements = {
@@ -294,8 +294,8 @@ class TestProcessingImages:
 
         with MockVWS() as mock:
             vuforia_database_keys = VuforiaDatabaseKeys(
-                access_key=mock.access_key,
-                secret_key=mock.secret_key,
+                server_access_key=mock.server_access_key,
+                server_secret_key=mock.server_secret_key,
                 database_name=mock.database_name,
             )
 

@@ -50,8 +50,8 @@ def update_target(
     content = bytes(json.dumps(data), encoding='utf-8')
 
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
         method=PUT,
         content=content,
         content_type=content_type,

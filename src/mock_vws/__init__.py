@@ -39,27 +39,14 @@ class MockVWS(ContextDecorator):
 
     This creates a mock which uses access keys from the environment.
     See the README to find which secrets to set.
-
-    This can be used as a context manager or as a decorator.
-
-    Examples:
-        >>> @MockVWS()
-        ... def test_vuforia_example():
-        ...     pass
-
-        or
-
-        >>> def test_vuforia_example():
-        ...     with MockVWS():
-        ...         pass
     """
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
         real_http: bool=False,
         state: States=States.WORKING,
-        access_key: Optional[str]=None,
-        secret_key: Optional[str]=None,
+        server_access_key: Optional[str]=None,
+        server_secret_key: Optional[str]=None,
         database_name: Optional[str]=None,
     ) -> None:
         """
@@ -71,31 +58,32 @@ class MockVWS(ContextDecorator):
             state: The state of the services being mocked.
             database_name: The name of the mock VWS target manager database.
                 By default this is a random string.
-            access_key: A VWS access key for the mock.
-            secret_key: A VWS secret key for the mock.
+            server_access_key: A VWS server access key for the mock.
+            server_secret_key: A VWS server secret key for the mock.
 
         Attributes:
-            access_key: A VWS access key for the mock.
-            secret_key: A VWS secret key for the mock.
-            database_name: The name of the mock VWS target manager database.
+            server_access_key (str): A VWS server access key for the mock.
+            server_secret_key (str): A VWS server secret key for the mock.
+            database_name (str): The name of the mock VWS target manager
+                database.
         """
         super().__init__()
 
         if database_name is None:
             database_name = uuid.uuid4().hex
 
-        if access_key is None:
-            access_key = uuid.uuid4().hex
+        if server_access_key is None:
+            server_access_key = uuid.uuid4().hex
 
-        if secret_key is None:
-            secret_key = uuid.uuid4().hex
+        if server_secret_key is None:
+            server_secret_key = uuid.uuid4().hex
 
         self._real_http = real_http
         self._mock = Mocker()
         self._state = state
 
-        self.access_key = access_key
-        self.secret_key = secret_key
+        self.server_access_key = server_access_key
+        self.server_secret_key = server_secret_key
         self.database_name = database_name
 
     def __call__(  # pylint: disable=useless-super-delegation
@@ -117,8 +105,8 @@ class MockVWS(ContextDecorator):
         """
         fake_target_api = MockVuforiaTargetAPI(
             database_name=self.database_name,
-            access_key=self.access_key,
-            secret_key=self.secret_key,
+            server_access_key=self.server_access_key,
+            server_secret_key=self.server_secret_key,
             state=self._state,
         )
 

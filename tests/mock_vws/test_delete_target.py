@@ -39,8 +39,8 @@ class TestDelete:
         request_path = '/targets/' + target_id
 
         response = target_api_request(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=DELETE,
             content=b'',
             request_path=request_path,
@@ -68,8 +68,8 @@ class TestDelete:
         request_path = '/targets/' + target_id
 
         response = target_api_request(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=DELETE,
             content=b'',
             request_path=request_path,
