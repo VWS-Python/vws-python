@@ -255,9 +255,6 @@ class Target:  # pylint: disable=too-many-instance-attributes
             documentation).
     """
 
-    reco_rating = ''
-    _processing_time_seconds = 0.5
-
     def __init__(
         self,
         name: str,
@@ -293,6 +290,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.last_modified_date = self.upload_date
         self.processed_tracking_rating = random.randint(0, 5)
         self.image = image
+        self.reco_rating = ''
+        self._processing_time_seconds = 0.5
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
