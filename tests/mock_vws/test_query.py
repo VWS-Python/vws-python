@@ -48,7 +48,7 @@ class TestQuery:
             }
         )
 
-        prepared_request = request.prepare()
+        prepared_request = request.prepare()  # type: ignore
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.client_access_key,
@@ -69,5 +69,5 @@ class TestQuery:
         prepared_request.prepare_headers(headers=headers)
 
         session = requests.Session()
-        response = session.send(request=prepared_request)
+        response = session.send(request=prepared_request)  # type: ignore
         assert response.status_code == codes.OK
