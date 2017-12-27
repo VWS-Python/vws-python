@@ -88,9 +88,9 @@ def assert_valid_server_credentials(
     assert response.status_code == codes.NOT_FOUND
 
 
-class TestUsage:
+class TestRealHTTP:
     """
-    Tests for usage patterns of the mock.
+    Tests for making requestsd to mocked and unmocked addresses.
     """
 
     def test_context_manager(self) -> None:
