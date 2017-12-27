@@ -119,10 +119,11 @@ class TestInvalidJSON:
                 status_code=codes.FORBIDDEN,
                 result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
             )
-        else:
-            assert response.status_code == codes.BAD_REQUEST
-            assert response.text == ''
-            assert 'Content-Type' not in response.headers
+            return
+
+        assert response.status_code == codes.BAD_REQUEST
+        assert response.text == ''
+        assert 'Content-Type' not in response.headers
 
     def test_takes_data(
         self,
