@@ -93,11 +93,10 @@ class TestRealHTTP:
     Tests for making requestsd to mocked and unmocked addresses.
     """
 
-    def test_context_manager(self) -> None:
+    def test_default(self) -> None:
         """
-        Using the mock as a context manager stops any requests made with
-        `requests` to non-Vuforia addresses, but not to mocked Vuforia
-        endpoints.
+        By default, the mock stops any requests made with `requests` to
+        non-Vuforia addresses, but not to mocked Vuforia endpoints.
         """
         with MockVWS():
             with pytest.raises(NoMockAddress):
@@ -120,6 +119,22 @@ class TestRealHTTP:
             with pytest.raises(requests.exceptions.ConnectionError):
                 request_unmocked_address()
 
+class TestProcessingTime:
+    """
+    XXX
+    """
+
+    def test_default(self) -> None:
+        """
+        XXX
+        """
+        pass
+
+    def test_default(self) -> None:
+        """
+        XXX
+        """
+        pass
 
 class TestDatabaseName:
     """
