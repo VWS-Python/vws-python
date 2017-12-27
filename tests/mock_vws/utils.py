@@ -173,8 +173,8 @@ def add_target_to_vws(
     content = bytes(json.dumps(data), encoding='utf-8')
 
     authorization_string = authorization_header(
-        server_access_key=vuforia_database_keys.server_access_key,
-        server_secret_key=vuforia_database_keys.server_secret_key,
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
         method=POST,
         content=content,
         content_type=content_type,

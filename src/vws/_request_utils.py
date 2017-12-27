@@ -33,21 +33,21 @@ def rfc_1123_date() -> str:
 
 
 def authorization_header(  # pylint: disable=too-many-arguments
-        server_access_key: bytes,
-        server_secret_key: bytes,
-        method: str,
-        content: bytes,
-        content_type: str,
-        date: str,
-        request_path: str
+    access_key: bytes,
+    secret_key: bytes,
+    method: str,
+    content: bytes,
+    content_type: str,
+    date: str,
+    request_path: str
 ) -> bytes:
     """
     Return an `Authorization` header which can be used for a request made to
     the VWS API with the given attributes.
 
     Args:
-        server_access_key: A VWS server access key.
-        server_secret_key: A VWS server secret key.
+        access_key: A VWS server or client access key.
+        secret_key: A VWS server or client secret key.
         method: The HTTP method which will be used in the request.
         content: The request body which will be used in the request.
         content_type: The `Content-Type` header which will be used in the
@@ -70,13 +70,13 @@ def authorization_header(  # pylint: disable=too-many-arguments
     ]
     string_to_sign = '\n'.join(components_to_sign)
     signature = compute_hmac_base64(
-        key=server_secret_key,
+        key=secret_key,
         data=bytes(
             string_to_sign,
             encoding='utf-8',
         ),
     )
-    auth_header = b'VWS %s:%s' % (server_access_key, signature)
+    auth_header = b'VWS %s:%s' % (access_key, signature)
     return auth_header
 
 
@@ -108,8 +108,8 @@ def target_api_request(
     content_type = 'application/json'
 
     signature_string = authorization_header(
-        server_access_key=server_access_key,
-        server_secret_key=server_secret_key,
+        access_key=server_access_key,
+        secret_key=server_secret_key,
         method=method,
         content=content,
         content_type=content_type,
