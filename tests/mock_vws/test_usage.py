@@ -211,8 +211,8 @@ class TestProcessingTime:
                 status = response.json()['status']
                 if status != TargetStatuses.PROCESSING.value:
                     elapsed_time = datetime.datetime.now() - start_time
-                    assert elapsed_time < datetime.timedelta(seconds=0.09)
-                    assert elapsed_time > datetime.timedelta(seconds=0.11)
+                    assert elapsed_time < datetime.timedelta(seconds=0.11)
+                    assert elapsed_time > datetime.timedelta(seconds=0.09)
                     return
 
 
