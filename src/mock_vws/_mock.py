@@ -409,7 +409,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self.routes: Set[Route] = ROUTES
         self.state = state
 
-        self._processing_time_seconds = 0.5
+        self._processing_time_seconds = processing_time_seconds
 
     @route(
         path_pattern='/targets',
