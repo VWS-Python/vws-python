@@ -37,15 +37,14 @@ class TestQuery:
         date = rfc_1123_date()
         request_path = '/v1/query'
         url = urljoin('https://cloudreco.vuforia.com', request_path)
+        files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
         request = requests.Request(
             method=POST,
             url=url,
             headers={},
             data=query,
-            files={
-                'image': ('image.jpeg', image_content, 'image/jpeg'),
-            }
+            files=files,
         )
 
         prepared_request = request.prepare()  # type: ignore
