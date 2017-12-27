@@ -40,4 +40,12 @@ class VuforiaDatabaseKeys:
             server_secret_key,
             encoding='utf-8',
         )
+        self.client_access_key: bytes = bytes(
+            client_access_key,
+            encoding='utf-8',
+        )
+        self.client_secret_key: bytes = bytes(
+            client_secret_key,
+            encoding='utf-8',
+        )
         self.database_name = database_name
