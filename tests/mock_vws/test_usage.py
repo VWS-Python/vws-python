@@ -179,7 +179,45 @@ class TestProcessingTime:
         XXX
         """
         with MockVWS(processing_time_seconds=0.1):
-            pass
+            image_data = png_rgb.read()
+            image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+            data = {
+                'name': 'example',
+                'width': 1,
+                'image': image_data_encoded,
+            }
+
+            with MockVWS() as mock:
+                vuforia_database_keys = VuforiaDatabaseKeys(
+                    database_name=uuid.uuid4().hex,
+                    server_access_key=mock.server_access_key,
+                    server_secret_key=mock.server_secret_key,
+                    client_access_key=uuid.uuid4().hex,
+                    client_secret_key=uuid.uuid4().hex,
+                )
+
+                response = add_target_to_vws(
+                    vuforia_database_keys=vuforia_database_keys,
+                    data=data,
+                )
+
+                target_id = response.json()['target_id']
+
+                start_time = datetime.datetime.now()
+
+                while True:
+                    response = get_vws_target(
+                        vuforia_database_keys=vuforia_database_keys,
+                        target_id=target_id,
+                    )
+
+                    status = response.json()['status']
+                    if status != TargetStatuses.PROCESSING.value:
+                        elapsed_time = datetime.datetime.now() - start_time
+                        assert elapsed_time < datetime.timedelta(seconds=0.09)
+                        assert elapsed_time > datetime.timedelta(seconds=0.11)
+                        return
 
 class TestDatabaseName:
     """
