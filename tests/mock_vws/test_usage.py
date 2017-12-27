@@ -3,6 +3,7 @@ Tests for the usage of the mock.
 """
 
 import base64
+import datetime
 import io
 import socket
 import string
@@ -15,6 +16,7 @@ from hypothesis.strategies import text
 from requests import codes
 from requests_mock.exceptions import NoMockAddress
 
+from common.constants import TargetStatuses
 from mock_vws import MockVWS
 from tests.mock_vws.utils import (
     add_target_to_vws,
@@ -124,12 +126,53 @@ class TestProcessingTime:
     XXX
     """
 
-    def test_default(self) -> None:
+    def test_default(
+        self,
+        png_rgb: io.BytesIO,
+    ) -> None:
         """
         XXX
         """
-        with MockVWS():
-            pass
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        with MockVWS() as mock:
+            vuforia_database_keys = VuforiaDatabaseKeys(
+                database_name=uuid.uuid4().hex,
+                server_access_key=mock.server_access_key,
+                server_secret_key=mock.server_secret_key,
+                client_access_key=uuid.uuid4().hex,
+                client_secret_key=uuid.uuid4().hex,
+            )
+
+            response = add_target_to_vws(
+                vuforia_database_keys=vuforia_database_keys,
+                data=data,
+            )
+
+            target_id = response.json()['target_id']
+
+            start_time = datetime.datetime.now()
+
+            while True:
+                response = get_vws_target(
+                    vuforia_database_keys=vuforia_database_keys,
+                    target_id=target_id,
+                )
+
+                status = response.json()['status']
+                if status != TargetStatuses.PROCESSING.value:
+                    elapsed_time = datetime.datetime.now() - start_time
+                    assert elapsed_time < datetime.timedelta(seconds=0.51)
+                    assert elapsed_time > datetime.timedelta(seconds=0.49)
+                    return
+
 
     def test_custom(self) -> None:
         """
