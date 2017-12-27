@@ -7,14 +7,12 @@ import uuid
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
-from typing import Any, Callable, Optional, Pattern, Tuple, TypeVar
+from typing import Any, Callable, Optional, Pattern, Tuple
 
 from requests_mock.mocker import Mocker
 
 from ._constants import States
 from ._mock import MockVuforiaTargetAPI
-
-_MOCK_VWS_TYPE = TypeVar('_MOCK_VWS_TYPE', bound='MockVWS')
 
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
@@ -95,7 +93,7 @@ class MockVWS(ContextDecorator):
         """
         return super(MockVWS, self).__call__(func)
 
-    def __enter__(self: _MOCK_VWS_TYPE) -> _MOCK_VWS_TYPE:
+    def __enter__(self) -> 'MockVWS':
         """
         Start an instance of a Vuforia mock with access keys set from
         environment variables.
