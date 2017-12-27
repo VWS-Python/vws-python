@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from requests import codes
 from requests_mock import POST
 
 from tests.utils import VuforiaDatabaseKeys
@@ -31,13 +32,9 @@ class TestQuery:
         """
         content = high_quality_image.read()
         content_type = 'multipart/form-data'
-
         query = {}
-
         date = rfc_1123_date()
-
         request_path = '/v1/query'
-
         url = urljoin('https://cloudreco.vuforia.com', request_path)
 
         request = requests.Request(
@@ -69,4 +66,4 @@ class TestQuery:
 
         session = requests.Session()
         resp = session.send(prepared_request)
-        assert resp.status_code == 200
+        assert resp.status_code == codes.OK
