@@ -20,7 +20,7 @@ from vws._request_utils import authorization_header, rfc_1123_date
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestQuery:
     """
-    XXX
+    Tests for the query endpoint.
     """
 
     def test_no_results(
@@ -29,7 +29,7 @@ class TestQuery:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        XXX
+        With no results
         """
         content = high_quality_image.read()
         content_type = 'multipart/form-data'
@@ -71,3 +71,6 @@ class TestQuery:
         session = requests.Session()
         response = session.send(request=prepared_request)  # type: ignore
         assert response.status_code == codes.OK
+        assert response.json()['result_code'] == 'Success'
+        assert response.json()['results'] == []
+        assert 'query_id' in response.json()
