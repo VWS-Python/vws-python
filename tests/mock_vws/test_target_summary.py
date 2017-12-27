@@ -55,8 +55,8 @@ class TestTargetSummary:
         date_after_add_target = datetime.datetime.now().date()
 
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/summary/' + target_id,
@@ -129,16 +129,16 @@ class TestTargetSummary:
         )
 
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/summary/' + target_id,
         )
 
         get_target_response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/targets/' + target_id,
@@ -174,8 +174,8 @@ class TestTargetSummary:
         )
 
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/summary/' + target_response.json()['target_id'],

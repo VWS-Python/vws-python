@@ -33,8 +33,8 @@ class TestInvalidGivenID:
         date = rfc_1123_date()
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.method,
             content=endpoint.content,
             content_type=endpoint.content_type or '',

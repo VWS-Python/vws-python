@@ -92,8 +92,8 @@ class TestDuplicates:
             )
 
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,
@@ -165,8 +165,8 @@ class TestDuplicates:
         assert response.json()['status'] == 'failed'
 
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,
@@ -226,8 +226,8 @@ class TestDuplicates:
             )
 
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,
@@ -280,8 +280,8 @@ class TestDuplicates:
             )
 
         response = target_api_request(
-            access_key=vuforia_database_keys.access_key,
-            secret_key=vuforia_database_keys.secret_key,
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
             method=GET,
             content=b'',
             request_path='/duplicates/' + original_target_id,

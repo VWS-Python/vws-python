@@ -198,8 +198,8 @@ def _delete_target(
         AssertionError: The deletion was not a success.
     """
     response = target_api_request(
-        access_key=vuforia_database_keys.access_key,
-        secret_key=vuforia_database_keys.secret_key,
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
         method=DELETE,
         content=b'',
         request_path='/targets/{target}'.format(target=target),
@@ -231,8 +231,8 @@ def _delete_all_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> None:
             to delete all targets in.
     """
     response = target_api_request(
-        access_key=vuforia_database_keys.access_key,
-        secret_key=vuforia_database_keys.secret_key,
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
         method=GET,
         content=b'',
         request_path='/targets',
@@ -308,8 +308,10 @@ def verify_mock_vuforia(
     else:
         with MockVWS(
             database_name=vuforia_database_keys.database_name,
-            access_key=vuforia_database_keys.access_key.decode('ascii'),
-            secret_key=vuforia_database_keys.secret_key.decode('ascii'),
+            server_access_key=vuforia_database_keys.server_access_key.
+            decode('ascii'),
+            server_secret_key=vuforia_database_keys.server_secret_key.
+            decode('ascii'),
         ):
             yield
 
@@ -345,8 +347,10 @@ def verify_mock_vuforia_inactive(
         with MockVWS(
             state=States.PROJECT_INACTIVE,
             database_name=inactive_database_keys.database_name,
-            access_key=inactive_database_keys.access_key.decode('ascii'),
-            secret_key=inactive_database_keys.secret_key.decode('ascii'),
+            server_access_key=inactive_database_keys.server_access_key.
+            decode('ascii'),
+            server_secret_key=inactive_database_keys.server_secret_key.
+            decode('ascii'),
         ):
             yield
 

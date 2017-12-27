@@ -77,8 +77,8 @@ class TestAuthorizationHeader:
     """
 
     @given(
-        access_key=binary(),
-        secret_key=binary(),
+        server_access_key=binary(),
+        server_secret_key=binary(),
         method=text(),
         content=binary(),
         content_type=text(),
@@ -87,8 +87,8 @@ class TestAuthorizationHeader:
     )
     def test_authorization_header(
         self,
-        access_key: bytes,
-        secret_key: bytes,
+        server_access_key: bytes,
+        server_secret_key: bytes,
         method: str,
         content: bytes,
         content_type: str,
@@ -114,13 +114,13 @@ class TestAuthorizationHeader:
         string += b'\n'
         string += bytes(request_path, encoding='utf-8')
 
-        signature = compute_hmac_base64(key=secret_key, data=string)
+        signature = compute_hmac_base64(key=server_secret_key, data=string)
 
-        expected = (b'VWS ' + access_key + b':' + signature)
+        expected = (b'VWS ' + server_access_key + b':' + signature)
 
         result = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
+            server_access_key=server_access_key,
+            server_secret_key=server_secret_key,
             method=method,
             content=content,
             content_type=content_type,
@@ -135,8 +135,8 @@ class TestAuthorizationHeader:
         Test a successful example of creating an Authorization header.
         """
         result = authorization_header(
-            access_key=b'my_access_key',
-            secret_key=b'my_secret_key',
+            server_access_key=b'my_access_key',
+            server_secret_key=b'my_secret_key',
             method=GET,
             content=b'{"something": "other"}',
             content_type='text/example',
@@ -150,13 +150,15 @@ class TestAuthorizationHeader:
 class TestTargetAPIRequest:
     """Tests for `target_api_request`."""
 
-    @MockVWS(access_key='access_key', secret_key='secret_key')
+    @MockVWS(server_access_key='access_key', server_secret_key='secret_key')
     def test_success(self) -> None:
-        """It is possible to get a success response from a VWS endpoint which
-        requires authorization."""
+        """
+        It is possible to get a success response from a VWS endpoint which
+        requires authorization.
+        """
         response = target_api_request(
-            access_key=b'access_key',
-            secret_key=b'secret_key',
+            server_access_key=b'access_key',
+            server_secret_key=b'secret_key',
             method=GET,
             content=b'',
             request_path='/summary',

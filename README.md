@@ -63,8 +63,8 @@ It is possible to access these keys when using the context manager as follows:
 from mock_vws import MockVWS
 
 with MockVWS() as mock:
-    access_key = mock.access_key
-    secret_key = mock.secret_key
+    access_key = mock.server_access_key
+    secret_key = mock.server_secret_key
 ```
 
 To set custom keys, set the `access_key` and `secret_key` parameters in either the context manager's instantiation.
