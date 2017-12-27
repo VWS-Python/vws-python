@@ -92,7 +92,7 @@ def assert_valid_server_credentials(
 
 class TestRealHTTP:
     """
-    Tests for making requestsd to mocked and unmocked addresses.
+    Tests for making requests to mocked and unmocked addresses.
     """
 
     def test_default(self) -> None:
