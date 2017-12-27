@@ -5,6 +5,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import io
+from typing import Any, Dict
 from urllib.parse import urljoin
 
 import pytest
@@ -32,7 +33,7 @@ class TestQuery:
         """
         content = high_quality_image.read()
         content_type = 'multipart/form-data'
-        query = {}
+        query: Dict[str, Any] = {}
         date = rfc_1123_date()
         request_path = '/v1/query'
         url = urljoin('https://cloudreco.vuforia.com', request_path)
@@ -59,11 +60,14 @@ class TestQuery:
             request_path=request_path,
         )
 
-        headers = prepared_request.headers
-        headers['Authorization'] = authorization_string
-        headers['Date'] = date
-        prepared_request.prepare_headers(headers)
+        headers = {
+            **prepared_request.headers,
+            'Authorization': authorization_string,
+            'Date': date,
+        }
+
+        prepared_request.prepare_headers(headers=headers)
 
         session = requests.Session()
-        resp = session.send(prepared_request)
-        assert resp.status_code == codes.OK
+        response = session.send(request=prepared_request)
+        assert response.status_code == codes.OK
