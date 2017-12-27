@@ -4,10 +4,7 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
-import base64
 import io
-import json
-from typing import Any, Dict
 from urllib.parse import urljoin
 
 import pytest
@@ -32,63 +29,44 @@ class TestQuery:
         """
         XXX
         """
-        image_data = high_quality_image.read()
-        base64.b64encode(image_data).decode('ascii')
-
-        date = rfc_1123_date()
-        request_path = '/v1/query'
+        content = high_quality_image.read()
         content_type = 'multipart/form-data'
 
-        data: Dict[str, Any] = {}
+        query = {}
 
-        files = {'image': ('image.jpeg', image_data, 'image/jpeg')}
+        date = rfc_1123_date()
 
-        content = bytes(json.dumps(data), encoding='utf-8')
+        request_path = '/v1/query'
+
+        url = urljoin('https://cloudreco.vuforia.com', request_path)
+
+        request = requests.Request(
+            method=POST,
+            url=url,
+            headers={},
+            data=query,
+            files={
+                'image': ('image.jpeg', content, 'image/jpeg'),
+            }
+        )
+
+        prepared_request = request.prepare()
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.client_access_key,
             secret_key=vuforia_database_keys.client_secret_key,
             method=POST,
-            content=content,
+            content=prepared_request.body,
             content_type=content_type,
             date=date,
             request_path=request_path,
         )
 
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type,
-        }
-
-        response = requests.request(
-            method=POST,
-            url=urljoin('https://cloudreco.vuforia.com', request_path),
-            headers=headers,
-            data=data,
-            files=files,
-        )
-
-        # assert 'results' not in response.json()
-        # assert response.status_code == 200
-
-        req = requests.Request(
-            method=POST,
-            url=urljoin('https://cloudreco.vuforia.com', request_path),
-            headers={},
-            data=data,
-            files={'image': ('image.jpeg', image_data, 'image/jpeg')},
-        )
-        prepped = req.prepare()
-
-        headers = prepped.headers
+        headers = prepared_request.headers
         headers['Authorization'] = authorization_string
         headers['Date'] = date
-        # We'll add the headers at this point because we have now figured out
-        # the size as outlined above.
-        prepped.prepare_headers(headers)
+        prepared_request.prepare_headers(headers)
 
         session = requests.Session()
-        resp = session.send(prepped)
-        import pdb; pdb.set_trace()
-        pass
+        resp = session.send(prepared_request)
+        assert resp.status_code == 200
