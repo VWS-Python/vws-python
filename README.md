@@ -109,6 +109,12 @@ The mock is tested against the real Vuforia Web Services.
 This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.
 However, the mocks of these error states are based on observations as they cannot be reliably reproduced.
 
+### Processing time
+
+Vuforia Web Services processes targets for varying lengths of time.
+The mock, by default, processes targets for half a second.
+To change the processing time, use the `processing_time_seconds` parameter.
+
 ## Differences between the mock and the real Vuforia Web Services
 
 The mock attempts to be realistic, but it was built without access to the source code of the original API.
@@ -119,8 +125,9 @@ There is no attempt to make the image matching realistic.
 
 The mock responds much more quickly than the real Vuforia Web Services.
 
-Targets in the mock are set to 'processing' for half a second.
-In the real Vuforia Web Services, this takes varying lengths of time.
+Targets in the mock are set to 'processing' for half a second by default.
+This is customisable, with the `processing_time_seconds` parameter.
+In the real Vuforia Web Services, the processing stage takes varying lengths of time.
 
 The database summary in the real Vuforia Web Services takes some time to account for images.
 Sometimes the real summary skips image states such as the processing state.
