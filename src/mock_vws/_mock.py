@@ -251,7 +251,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
     https://developer.vuforia.com/target-manager.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         name: str,
         active_flag: bool,
@@ -374,7 +374,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         server_access_key: str,
         server_secret_key: str,
