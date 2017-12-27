@@ -69,5 +69,26 @@ class TestQuery:
             files=files,
         )
 
-        assert 'results' not in response.json()
-        assert response.status_code == 200
+        # assert 'results' not in response.json()
+        # assert response.status_code == 200
+
+        req = requests.Request(
+            method=POST,
+            url=urljoin('https://cloudreco.vuforia.com', request_path),
+            headers={},
+            data=data,
+            files={'image': ('image.jpeg', image_data, 'image/jpeg')},
+        )
+        prepped = req.prepare()
+
+        headers = prepped.headers
+        headers['Authorization'] = authorization_string
+        headers['Date'] = date
+        # We'll add the headers at this point because we have now figured out
+        # the size as outlined above.
+        prepped.prepare_headers(headers)
+
+        session = requests.Session()
+        resp = session.send(prepped)
+        import pdb; pdb.set_trace()
+        pass
