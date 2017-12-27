@@ -130,7 +130,7 @@ class TestProcessingTime:
         """
         pass
 
-    def test_default(self) -> None:
+    def test_custom(self) -> None:
         """
         XXX
         """
