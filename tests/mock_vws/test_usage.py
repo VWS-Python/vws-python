@@ -124,12 +124,12 @@ class TestRealHTTP:
 
 class TestProcessingTime:
     """
-    XXX
+    Tests for the time taken to process targets in the mock.
     """
 
     def test_default(self, png_rgb: io.BytesIO) -> None:
         """
-        XXX
+        By default, targets in the mock take 0.5 seconds to be processed.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -173,7 +173,7 @@ class TestProcessingTime:
 
     def test_custom(self, png_rgb: io.BytesIO) -> None:
         """
-        XXX
+        It is possible to set a custom processing time.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
