@@ -12,8 +12,7 @@ lint:
 	pip-missing-reqs src/
 	pydocstyle
 	pylint *.py
-	pylint src/vws
-	pylint src/mock_vws
+	pylint src
 	pylint --rcfile=tests-pylintrc tests
 	pyroma .
 	vulture . --min-confidence 100

@@ -27,7 +27,10 @@ from tests.mock_vws.utils import (
 
 
 def _image_file(
-    file_format: str, color_space: str, width: int, height: int
+    file_format: str,
+    color_space: str,
+    width: int,
+    height: int,
 ) -> io.BytesIO:
     """
     Return an image file in the given format and color space.
