@@ -79,6 +79,6 @@ class TestQuery:
         response = session.send(request=prepared_request)  # type: ignore
 
         assert response.status_code == codes.OK
+        assert response.json().keys() == {'result_code', 'results', 'query_id'}
         assert response.json()['result_code'] == 'Success'
         assert response.json()['results'] == []
-        assert 'query_id' in response.json()
