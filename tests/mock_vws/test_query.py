@@ -42,13 +42,8 @@ class TestQuery:
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        session = requests.Session()
-        # response = session.send(request=prepared_request)  # type: ignore
-        # assert response.status_code == codes.OK
-        # assert response.json()['result_code'] == 'Success'
-        # assert response.json()['results'] == []
-        # assert 'query_id' in response.json()
 
+        # See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
         p1_boundary = uuid.uuid4().hex
 
         encoded_formdata = encode_multipart_formdata(
@@ -88,6 +83,10 @@ class TestQuery:
         )
 
         p3 = request_3.prepare()
-        resp3 = session.send(request=p3)  # type: ignore
+        session = requests.Session()
+        response = session.send(request=p3)  # type: ignore
 
-        assert resp3.status_code == codes.OK
+        assert response.status_code == codes.OK
+        assert response.json()['result_code'] == 'Success'
+        assert response.json()['results'] == []
+        assert 'query_id' in response.json()
