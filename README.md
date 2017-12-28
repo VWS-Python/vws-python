@@ -14,7 +14,7 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for details on how to contribute to t
 
 This package has not yet been uploaded to PyPI.
 
-For now:
+For now it is possible to install the work in progress:
 
 ```sh
 pip install git+https://github.com/adamtheturtle/vws-python@master
