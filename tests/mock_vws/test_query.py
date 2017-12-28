@@ -125,7 +125,6 @@ class TestQuery:
             fields=files,
             boundary=p1_boundary,
         )
-        import pdb; pdb.set_trace()
 
         request_3 = requests.Request(
             method=POST,
@@ -136,6 +135,5 @@ class TestQuery:
 
         p3 = request_3.prepare()
         resp3 = session.send(request=p3)  # type: ignore
-        import pdb; pdb.set_trace()
 
         assert resp3.status_code == codes.OK
