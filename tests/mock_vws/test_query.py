@@ -42,7 +42,6 @@ class TestQuery:
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-
         # See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
         p1_boundary = uuid.uuid4().hex
 
@@ -70,7 +69,7 @@ class TestQuery:
             'Content-Type': content_type_2,
         }
 
-        m = MultipartEncoder(
+        multipart_encoded_data = MultipartEncoder(
             fields=files,
             boundary=p1_boundary,
         )
@@ -79,7 +78,7 @@ class TestQuery:
             method=POST,
             url=url,
             headers=headers,
-            data=m,
+            data=multipart_encoded_data,
         )
 
         p3 = request_3.prepare()
