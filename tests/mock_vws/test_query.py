@@ -14,7 +14,6 @@ import requests
 from requests import codes
 from requests_mock import POST
 from requests_toolbelt import MultipartEncoder
-from urllib3.filepost import encode_multipart_formdata
 
 from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import authorization_header, rfc_1123_date
@@ -35,9 +34,9 @@ class TestQuery:
         With no results
         """
         image_content = high_quality_image.read()
-        content_type = 'multipart/form-data'
         query: Dict[str, Any] = {}
         date = rfc_1123_date()
+        content_type = 'multipart/form-data'
         request_path = '/v1/query'
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
@@ -45,13 +44,12 @@ class TestQuery:
         # See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
         boundary = uuid.uuid4().hex
 
-        encoded_formdata = encode_multipart_formdata(
-            files,
+        multipart_encoded_data = MultipartEncoder(
+            fields=files,
             boundary=boundary,
         )
 
-        content = encoded_formdata[0]
-        content_type_2 = encoded_formdata[1]
+        content = multipart_encoded_data.to_string()
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.client_access_key,
@@ -66,13 +64,8 @@ class TestQuery:
         headers = {
             'Authorization': authorization_string,
             'Date': date,
-            'Content-Type': content_type_2,
+            'Content-Type': f'multipart/form-data; boundary={boundary}',
         }
-
-        multipart_encoded_data = MultipartEncoder(
-            fields=files,
-            boundary=boundary,
-        )
 
         request = requests.Request(
             method=POST,
