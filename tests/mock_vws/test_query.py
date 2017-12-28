@@ -13,6 +13,7 @@ import pytest
 import requests
 from requests import codes
 from requests_mock import POST
+from requests_toolbelt import MultipartEncoder
 from urllib3.filepost import encode_multipart_formdata
 
 from tests.utils import VuforiaDatabaseKeys
@@ -68,7 +69,6 @@ class TestQuery:
         }
 
         prepared_request.prepare_headers(headers=headers)
-        p1 = prepared_request
 
         session = requests.Session()
         # response = session.send(request=prepared_request)  # type: ignore
@@ -102,8 +102,6 @@ class TestQuery:
             'Date': date,
             'Content-Type': content_type_2,
         }
-
-        from requests_toolbelt import MultipartEncoder
 
         m = MultipartEncoder(
             fields=files,
