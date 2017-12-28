@@ -12,6 +12,7 @@ import pytest
 import requests
 from requests import codes
 from requests_mock import POST
+from urllib3.filepost import encode_multipart_formdata
 
 from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import authorization_header, rfc_1123_date
@@ -38,6 +39,7 @@ class TestQuery:
         request_path = '/v1/query'
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        files_2 = {'image': ('image.jpeg', image_content)}
 
         request = requests.Request(
             method=POST,
@@ -66,10 +68,74 @@ class TestQuery:
         }
 
         prepared_request.prepare_headers(headers=headers)
+        p1 = prepared_request
 
+        # session = requests.Session()
+        # response = session.send(request=prepared_request)  # type: ignore
+        # assert response.status_code == codes.OK
+        # assert response.json()['result_code'] == 'Success'
+        # assert response.json()['results'] == []
+        # assert 'query_id' in response.json()
+
+        p1_boundary = p1.headers['Content-Type'].split('boundary=')[1]
+
+        encoded_formdata = encode_multipart_formdata(
+            files,
+            boundary=p1_boundary,
+        )
+
+        content_2 = encoded_formdata[0]
+        assert prepared_request.body == content_2
+        content_type_2 = encoded_formdata[1]
+
+        authorization_string_2 = authorization_header(
+            access_key=vuforia_database_keys.client_access_key,
+            secret_key=vuforia_database_keys.client_secret_key,
+            method=POST,
+            content=content_2,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string_2,
+            'Date': date,
+            'Content-Type': content_type_2,
+        }
+
+        request_2 = requests.Request(
+            method=POST,
+            url=url,
+            headers=headers,
+            data=query,
+            files=files,
+        )
+
+        p2 = request_2.prepare()
         session = requests.Session()
-        response = session.send(request=prepared_request)  # type: ignore
-        assert response.status_code == codes.OK
-        assert response.json()['result_code'] == 'Success'
-        assert response.json()['results'] == []
-        assert 'query_id' in response.json()
+        assert p1.headers == p2.headers
+        resp2 = session.send(request=p2)  # type: ignore
+
+        assert resp2.status_code == codes.UNAUTHORIZED
+
+        from requests_toolbelt import MultipartEncoder
+
+        m = MultipartEncoder(
+            fields=files,
+            boundary=p1_boundary,
+        )
+        import pdb; pdb.set_trace()
+
+        request_3 = requests.Request(
+            method=POST,
+            url=url,
+            headers=headers,
+            data=m,
+        )
+
+        p3 = request_3.prepare()
+        resp3 = session.send(request=p3)  # type: ignore
+        import pdb; pdb.set_trace()
+
+        assert resp3.status_code == codes.OK
