@@ -35,7 +35,6 @@ class TestQuery:
         """
         image_content = high_quality_image.read()
         date = rfc_1123_date()
-        content_type = 'multipart/form-data'
         request_path = '/v1/query'
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
@@ -56,7 +55,8 @@ class TestQuery:
             secret_key=vuforia_database_keys.client_secret_key,
             method=POST,
             content=content,
-            content_type=content_type,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
             date=date,
             request_path=request_path,
         )
