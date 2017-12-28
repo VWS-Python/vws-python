@@ -42,34 +42,6 @@ class TestQuery:
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        request = requests.Request(
-            method=POST,
-            url=url,
-            headers={},
-            data=query,
-            files=files,
-        )
-
-        prepared_request = request.prepare()  # type: ignore
-
-        authorization_string = authorization_header(
-            access_key=vuforia_database_keys.client_access_key,
-            secret_key=vuforia_database_keys.client_secret_key,
-            method=POST,
-            content=prepared_request.body,
-            content_type=content_type,
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            **prepared_request.headers,
-            'Authorization': authorization_string,
-            'Date': date,
-        }
-
-        prepared_request.prepare_headers(headers=headers)
-
         session = requests.Session()
         # response = session.send(request=prepared_request)  # type: ignore
         # assert response.status_code == codes.OK
