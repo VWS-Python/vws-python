@@ -6,7 +6,7 @@ import pytest
 from requests import codes
 from requests_mock import DELETE
 
-from common.constants import ResultCodes
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     assert_vws_failure,
     get_vws_target,

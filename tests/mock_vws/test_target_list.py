@@ -6,7 +6,7 @@ import pytest
 from requests import codes
 from requests_mock import GET
 
-from common.constants import ResultCodes
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import assert_vws_response
 from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import target_api_request

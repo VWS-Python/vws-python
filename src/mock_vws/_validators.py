@@ -19,7 +19,7 @@ from requests_mock import POST, PUT
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from common.constants import ResultCodes
+from mock_vws._constants import ResultCodes
 from vws._request_utils import authorization_header
 
 

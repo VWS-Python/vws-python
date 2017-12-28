@@ -10,7 +10,7 @@ import pytest
 from requests import codes
 from requests_mock import GET
 
-from common.constants import ResultCodes
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_response,

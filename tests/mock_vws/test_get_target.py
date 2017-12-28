@@ -10,7 +10,7 @@ import io
 import pytest
 from requests import codes
 
-from common.constants import ResultCodes, TargetStatuses
+from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,

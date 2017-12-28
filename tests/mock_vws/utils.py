@@ -15,7 +15,7 @@ import timeout_decorator
 from requests import Response
 from requests_mock import GET, POST
 
-from common.constants import ResultCodes, TargetStatuses
+from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import (
     authorization_header,

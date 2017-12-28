@@ -11,7 +11,7 @@ from typing import Any, Union
 import pytest
 from requests import Response, codes
 
-from common.constants import ResultCodes
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,

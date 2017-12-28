@@ -16,8 +16,8 @@ from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
 
-from common.constants import ResultCodes
 from mock_vws import MockVWS, States
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import Endpoint, add_target_to_vws
 from tests.utils import VuforiaDatabaseKeys
 from vws._request_utils import target_api_request

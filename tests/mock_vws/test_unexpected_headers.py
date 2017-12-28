@@ -10,7 +10,7 @@ import requests
 from freezegun import freeze_time
 from requests import codes
 
-from common.constants import ResultCodes
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     Endpoint,
     assert_vws_failure,

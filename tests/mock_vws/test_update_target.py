@@ -14,7 +14,7 @@ import requests
 from requests import Response, codes
 from requests_mock import PUT
 
-from common.constants import ResultCodes, TargetStatuses
+from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
