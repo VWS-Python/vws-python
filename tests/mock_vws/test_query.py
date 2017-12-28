@@ -43,11 +43,11 @@ class TestQuery:
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
         # See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
-        p1_boundary = uuid.uuid4().hex
+        boundary = uuid.uuid4().hex
 
         encoded_formdata = encode_multipart_formdata(
             files,
-            boundary=p1_boundary,
+            boundary=boundary,
         )
 
         content = encoded_formdata[0]
@@ -71,7 +71,7 @@ class TestQuery:
 
         multipart_encoded_data = MultipartEncoder(
             fields=files,
-            boundary=p1_boundary,
+            boundary=boundary,
         )
 
         request = requests.Request(
