@@ -189,23 +189,23 @@ def high_quality_image() -> io.BytesIO:
     wait_fixed=3 * 1000,
 )
 def _delete_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
+    database_keys: VuforiaDatabaseKeys,
     target: str,
 ) -> None:
     """
     Delete a given target.
 
     Args:
-        vuforia_database_keys: The credentials to the Vuforia target
-            database to delete the target in.
+        database_keys: The credentials to the Vuforia target database to delete
+            the target in.
         target: The ID of the target to delete.
 
     Raises:
         AssertionError: The deletion was not a success.
     """
     response = target_api_request(
-        server_access_key=vuforia_database_keys.server_access_key,
-        server_secret_key=vuforia_database_keys.server_secret_key,
+        server_access_key=database_keys.server_access_key,
+        server_secret_key=database_keys.server_secret_key,
         method=DELETE,
         content=b'',
         request_path='/targets/{target}'.format(target=target),
@@ -252,10 +252,7 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     targets = response.json()['results']
 
     for target in targets:
-        _delete_target(
-            vuforia_database_keys=vuforia_database_keys,
-            target=target,
-        )
+        _delete_target(database_keys=vuforia_database_keys, target=target)
 
 
 @pytest.fixture()
