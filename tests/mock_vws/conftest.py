@@ -189,7 +189,7 @@ def high_quality_image() -> io.BytesIO:
     wait_fixed=3 * 1000,
 )
 def _delete_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
     target: str,
 ) -> None:
     """
@@ -228,17 +228,17 @@ def _delete_target(
     assert result_code in acceptable_results, error_message
 
 
-def _delete_all_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> None:
+def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     """
     Delete all targets.
 
     Args:
-        vuforia_database_keys: The credentials to the Vuforia target database
-            to delete all targets in.
+        database_keys: The credentials to the Vuforia target database to delete
+            all targets in.
     """
     response = target_api_request(
-        server_access_key=vuforia_database_keys.server_access_key,
-        server_secret_key=vuforia_database_keys.server_secret_key,
+        server_access_key=database_keys.server_access_key,
+        server_secret_key=database_keys.server_secret_key,
         method=GET,
         content=b'',
         request_path='/targets',
@@ -261,7 +261,7 @@ def _delete_all_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> None:
 @pytest.fixture()
 def target_id(
     png_rgb_success: io.BytesIO,  # pylint: disable=redefined-outer-name
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> str:
     """
     Return the target ID of a target in the database.
@@ -289,7 +289,7 @@ def target_id(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(
     request: SubRequest,
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
@@ -309,7 +309,7 @@ def verify_mock_vuforia(
         pytest.skip()
 
     if use_real_vuforia:
-        _delete_all_targets(vuforia_database_keys=vuforia_database_keys)
+        _delete_all_targets(database_keys=vuforia_database_keys)
         yield
     else:
         with MockVWS(
@@ -325,7 +325,7 @@ def verify_mock_vuforia(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia_inactive(
     request: SubRequest,
-    inactive_database_keys: VuforiaDatabaseKeys,
+    inactive_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
