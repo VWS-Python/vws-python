@@ -3,7 +3,6 @@ SHELL := /bin/bash -euxo pipefail
 .PHONY: lint
 lint:
 	check-manifest .
-	doc8 --config doc8.ini
 	dodgy
 	flake8 .
 	isort --recursive --check-only
@@ -12,8 +11,7 @@ lint:
 	pip-missing-reqs src/
 	pydocstyle
 	pylint *.py
-	pylint src/vws
-	pylint src/mock_vws
+	pylint src
 	pylint --rcfile=tests-pylintrc tests
 	pyroma .
 	vulture . --min-confidence 100

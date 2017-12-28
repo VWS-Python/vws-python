@@ -9,10 +9,14 @@ import requests
 from freezegun import freeze_time
 from requests import codes
 
-from common.constants import ResultCodes
-from tests.mock_vws.utils import Endpoint, assert_vws_failure
-from tests.utils import VuforiaDatabaseKeys
-from vws._request_utils import authorization_header, rfc_1123_date
+from mock_vws._constants import ResultCodes
+from tests.mock_vws.utils import (
+    Endpoint,
+    VuforiaDatabaseKeys,
+    assert_vws_failure,
+    authorization_header,
+    rfc_1123_date,
+)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
