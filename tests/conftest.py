@@ -6,7 +6,7 @@ import os
 
 import pytest
 
-from tests.utils import VuforiaDatabaseKeys
+from tests.mock_vws.utils import VuforiaDatabaseKeys
 
 
 @pytest.fixture()

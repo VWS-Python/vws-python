@@ -18,9 +18,12 @@ from retrying import retry
 
 from mock_vws import MockVWS, States
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import Endpoint, add_target_to_vws
-from tests.utils import VuforiaDatabaseKeys
-from vws._request_utils import target_api_request
+from tests.mock_vws.utils import (
+    Endpoint,
+    VuforiaDatabaseKeys,
+    add_target_to_vws,
+    target_api_request,
+)
 
 
 def _image_file(

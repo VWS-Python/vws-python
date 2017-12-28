@@ -19,12 +19,12 @@ from requests_mock.exceptions import NoMockAddress
 from mock_vws import MockVWS
 from mock_vws._constants import TargetStatuses
 from tests.mock_vws.utils import (
+    VuforiaDatabaseKeys,
     add_target_to_vws,
     database_summary,
     get_vws_target,
+    rfc_1123_date,
 )
-from tests.utils import VuforiaDatabaseKeys
-from vws._request_utils import rfc_1123_date
 
 
 def request_unmocked_address() -> None:

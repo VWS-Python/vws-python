@@ -14,12 +14,12 @@ from requests import codes
 from mock_vws import MockVWS
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
+    VuforiaDatabaseKeys,
     add_target_to_vws,
     assert_vws_response,
     database_summary,
     wait_for_target_processed,
 )
-from tests.utils import VuforiaDatabaseKeys
 
 
 @timeout_decorator.timeout(seconds=300)

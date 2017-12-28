@@ -16,14 +16,15 @@ from requests_mock import PUT
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
+    VuforiaDatabaseKeys,
     add_target_to_vws,
     assert_vws_failure,
     assert_vws_response,
+    authorization_header,
     get_vws_target,
+    rfc_1123_date,
     wait_for_target_processed,
 )
-from tests.utils import VuforiaDatabaseKeys
-from vws._request_utils import authorization_header, rfc_1123_date
 
 
 def update_target(
