@@ -4,6 +4,7 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
+import copy
 import io
 import uuid
 from typing import Any, Dict
@@ -49,7 +50,8 @@ class TestQuery:
             boundary=boundary,
         )
 
-        content = multipart_encoded_data.to_string()
+        # We copy the encoded data because `to_string` mutates the object.
+        content = copy.deepcopy(multipart_encoded_data).to_string()
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.client_access_key,
