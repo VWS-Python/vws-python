@@ -50,14 +50,14 @@ class TestQuery:
             boundary=p1_boundary,
         )
 
-        content_2 = encoded_formdata[0]
+        content = encoded_formdata[0]
         content_type_2 = encoded_formdata[1]
 
         authorization_string_2 = authorization_header(
             access_key=vuforia_database_keys.client_access_key,
             secret_key=vuforia_database_keys.client_secret_key,
             method=POST,
-            content=content_2,
+            content=content,
             content_type=content_type,
             date=date,
             request_path=request_path,
