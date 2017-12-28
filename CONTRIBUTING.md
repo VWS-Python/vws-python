@@ -126,6 +126,9 @@ Some of the [Vuforia Web Services documentation](https://library.vuforia.com/art
 However, other [Vuforia Web Services documentation](https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query) is more accurate:
 "Maximum image size: 2.1 MPixel. 512 KiB for JPEG, 2MiB for PNG".
 
+The documentation page [How To Perform an Image Recognition Query](https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query) states that the `Content-Type` header must be set to `multipart/form-data`.
+However, it must be set to `multipart/form-data; boundary=<BOUNDARY>` where `<BOUNDARY>` is the boundary used when encoding the form data.
+
 ## Performing a release
 
 There is currently no release process.
