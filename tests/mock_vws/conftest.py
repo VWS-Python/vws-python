@@ -16,15 +16,21 @@ from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
 
-from common.constants import ResultCodes
 from mock_vws import MockVWS, States
-from tests.mock_vws.utils import Endpoint, add_target_to_vws
-from tests.utils import VuforiaDatabaseKeys
-from vws._request_utils import target_api_request
+from mock_vws._constants import ResultCodes
+from tests.mock_vws.utils import (
+    Endpoint,
+    VuforiaDatabaseKeys,
+    add_target_to_vws,
+    target_api_request,
+)
 
 
 def _image_file(
-    file_format: str, color_space: str, width: int, height: int
+    file_format: str,
+    color_space: str,
+    width: int,
+    height: int,
 ) -> io.BytesIO:
     """
     Return an image file in the given format and color space.
@@ -183,23 +189,23 @@ def high_quality_image() -> io.BytesIO:
     wait_fixed=3 * 1000,
 )
 def _delete_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    database_keys: VuforiaDatabaseKeys,
     target: str,
 ) -> None:
     """
     Delete a given target.
 
     Args:
-        vuforia_database_keys: The credentials to the Vuforia target
-            database to delete the target in.
+        database_keys: The credentials to the Vuforia target database to delete
+            the target in.
         target: The ID of the target to delete.
 
     Raises:
         AssertionError: The deletion was not a success.
     """
     response = target_api_request(
-        server_access_key=vuforia_database_keys.server_access_key,
-        server_secret_key=vuforia_database_keys.server_secret_key,
+        server_access_key=database_keys.server_access_key,
+        server_secret_key=database_keys.server_secret_key,
         method=DELETE,
         content=b'',
         request_path='/targets/{target}'.format(target=target),
@@ -222,17 +228,17 @@ def _delete_target(
     assert result_code in acceptable_results, error_message
 
 
-def _delete_all_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> None:
+def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     """
     Delete all targets.
 
     Args:
-        vuforia_database_keys: The credentials to the Vuforia target database
-            to delete all targets in.
+        database_keys: The credentials to the Vuforia target database to delete
+            all targets in.
     """
     response = target_api_request(
-        server_access_key=vuforia_database_keys.server_access_key,
-        server_secret_key=vuforia_database_keys.server_secret_key,
+        server_access_key=database_keys.server_access_key,
+        server_secret_key=database_keys.server_secret_key,
         method=GET,
         content=b'',
         request_path='/targets',
@@ -246,16 +252,13 @@ def _delete_all_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> None:
     targets = response.json()['results']
 
     for target in targets:
-        _delete_target(
-            vuforia_database_keys=vuforia_database_keys,
-            target=target,
-        )
+        _delete_target(database_keys=database_keys, target=target)
 
 
 @pytest.fixture()
 def target_id(
     png_rgb_success: io.BytesIO,  # pylint: disable=redefined-outer-name
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> str:
     """
     Return the target ID of a target in the database.
@@ -283,7 +286,7 @@ def target_id(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(
     request: SubRequest,
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
@@ -303,7 +306,7 @@ def verify_mock_vuforia(
         pytest.skip()
 
     if use_real_vuforia:
-        _delete_all_targets(vuforia_database_keys=vuforia_database_keys)
+        _delete_all_targets(database_keys=vuforia_database_keys)
         yield
     else:
         with MockVWS(
@@ -319,7 +322,7 @@ def verify_mock_vuforia(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia_inactive(
     request: SubRequest,
-    inactive_database_keys: VuforiaDatabaseKeys,
+    inactive_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
@@ -550,3 +553,34 @@ def endpoint(request: SubRequest) -> Endpoint:
     """
     endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
+
+
+@pytest.fixture()
+def vuforia_database_keys() -> VuforiaDatabaseKeys:
+    """
+    Return VWS credentials from environment variables.
+    """
+    credentials: VuforiaDatabaseKeys = VuforiaDatabaseKeys(
+        database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
+        server_access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
+        server_secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
+        client_access_key=os.environ['VUFORIA_CLIENT_ACCESS_KEY'],
+        client_secret_key=os.environ['VUFORIA_CLIENT_SECRET_KEY'],
+    )
+    return credentials
+
+
+@pytest.fixture()
+def inactive_database_keys() -> VuforiaDatabaseKeys:
+    """
+    Return VWS credentials for an inactive project from environment variables.
+    """
+    credentials: VuforiaDatabaseKeys = VuforiaDatabaseKeys(
+        database_name=os.
+        environ['INACTIVE_VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
+        server_access_key=os.environ['INACTIVE_VUFORIA_SERVER_ACCESS_KEY'],
+        server_secret_key=os.environ['INACTIVE_VUFORIA_SERVER_SECRET_KEY'],
+        client_access_key=os.environ['INACTIVE_VUFORIA_SERVER_ACCESS_KEY'],
+        client_secret_key=os.environ['INACTIVE_VUFORIA_SERVER_SECRET_KEY'],
+    )
+    return credentials

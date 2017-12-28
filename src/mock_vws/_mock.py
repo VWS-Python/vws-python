@@ -27,7 +27,7 @@ from requests_mock import DELETE, GET, POST, PUT
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from common.constants import ResultCodes, TargetStatuses
+from mock_vws._constants import ResultCodes, TargetStatuses
 
 from ._constants import States
 from ._validators import (

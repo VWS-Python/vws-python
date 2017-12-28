@@ -23,7 +23,7 @@ setup(
     description='Interact with the Vuforia Web Services (VWS) API.',
     long_description=LONG_DESCRIPTION,
     license='MIT',
-    packages=find_packages(where='src', exclude='common'),
+    packages=find_packages(where='src'),
     zip_safe=False,
     url='http://vws-python.readthedocs.io',
     keywords='vuforia mock fake client',
