@@ -69,7 +69,7 @@ class TestQuery:
         prepared_request.prepare_headers(headers=headers)
         p1 = prepared_request
 
-        # session = requests.Session()
+        session = requests.Session()
         # response = session.send(request=prepared_request)  # type: ignore
         # assert response.status_code == codes.OK
         # assert response.json()['result_code'] == 'Success'
@@ -102,21 +102,6 @@ class TestQuery:
             'Date': date,
             'Content-Type': content_type_2,
         }
-
-        request_2 = requests.Request(
-            method=POST,
-            url=url,
-            headers=headers,
-            data=query,
-            files=files,
-        )
-
-        p2 = request_2.prepare()
-        session = requests.Session()
-        assert p1.headers == p2.headers
-        resp2 = session.send(request=p2)  # type: ignore
-
-        assert resp2.status_code == codes.UNAUTHORIZED
 
         from requests_toolbelt import MultipartEncoder
 
