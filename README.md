@@ -4,15 +4,21 @@
 
 # vws-python
 
-Python wrapper for Vuforia Web Services (VWS) API.
+Python mock for Vuforia Web Services (VWS) API.
 
 ## Contributing
 
-See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for details on how to contribute to this repository.
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for details on how to contribute to this project.
 
 ## Installation
 
 This package has not yet been uploaded to PyPI.
+
+For now:
+
+```
+pip install git+https://github.com/adamtheturtle/vws-python@master
+```
 
 This requires Python 3.6+.
 Get in touch with `adamdangoor@gmail.com` if you would like to see this with another language.
