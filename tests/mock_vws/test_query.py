@@ -7,7 +7,6 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import copy
 import io
 import uuid
-from typing import Any, Dict
 from urllib.parse import urljoin
 
 import pytest
@@ -35,7 +34,6 @@ class TestQuery:
         With no results
         """
         image_content = high_quality_image.read()
-        query: Dict[str, Any] = {}
         date = rfc_1123_date()
         content_type = 'multipart/form-data'
         request_path = '/v1/query'
