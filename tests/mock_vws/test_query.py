@@ -53,7 +53,7 @@ class TestQuery:
         content = encoded_formdata[0]
         content_type_2 = encoded_formdata[1]
 
-        authorization_string_2 = authorization_header(
+        authorization_string = authorization_header(
             access_key=vuforia_database_keys.client_access_key,
             secret_key=vuforia_database_keys.client_secret_key,
             method=POST,
@@ -64,7 +64,7 @@ class TestQuery:
         )
 
         headers = {
-            'Authorization': authorization_string_2,
+            'Authorization': authorization_string,
             'Date': date,
             'Content-Type': content_type_2,
         }
@@ -74,16 +74,16 @@ class TestQuery:
             boundary=p1_boundary,
         )
 
-        request_3 = requests.Request(
+        request = requests.Request(
             method=POST,
             url=url,
             headers=headers,
             data=multipart_encoded_data,
         )
 
-        p3 = request_3.prepare()
+        prepared_request = request.prepare()
         session = requests.Session()
-        response = session.send(request=p3)  # type: ignore
+        response = session.send(request=prepared_request)  # type: ignore
 
         assert response.status_code == codes.OK
         assert response.json()['result_code'] == 'Success'
