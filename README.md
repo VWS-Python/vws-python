@@ -16,7 +16,7 @@ This package has not yet been uploaded to PyPI.
 
 For now:
 
-```
+```sh
 pip install git+https://github.com/adamtheturtle/vws-python@master
 ```
 
