@@ -5,6 +5,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import io
+import uuid
 from typing import Any, Dict
 from urllib.parse import urljoin
 
@@ -76,7 +77,7 @@ class TestQuery:
         # assert response.json()['results'] == []
         # assert 'query_id' in response.json()
 
-        p1_boundary = p1.headers['Content-Type'].split('boundary=')[1]
+        p1_boundary = uuid.uuid4().hex
 
         encoded_formdata = encode_multipart_formdata(
             files,
@@ -84,7 +85,6 @@ class TestQuery:
         )
 
         content_2 = encoded_formdata[0]
-        assert prepared_request.body == content_2
         content_type_2 = encoded_formdata[1]
 
         authorization_string_2 = authorization_header(
