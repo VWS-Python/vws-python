@@ -66,16 +66,12 @@ class TestQuery:
             'Content-Type': multipart_encoded_data.content_type,
         }
 
-        request = requests.Request(
+        response = requests.request(
             method=POST,
             url=url,
             headers=headers,
             data=multipart_encoded_data,
         )
-
-        prepared_request = request.prepare()
-        session = requests.Session()
-        response = session.send(request=prepared_request)  # type: ignore
 
         assert response.status_code == codes.OK
         assert response.json().keys() == {'result_code', 'results', 'query_id'}
