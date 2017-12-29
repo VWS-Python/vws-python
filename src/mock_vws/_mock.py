@@ -131,6 +131,7 @@ class Route:
         route_name: str,
         path_pattern: str,
         http_methods: List[str],
+        host: str,
     ) -> None:
         """
         Args:
@@ -138,6 +139,7 @@ class Route:
             path_pattern: The end part of a URL pattern. E.g. `/targets` or
                 `/targets/.+`.
             http_methods: HTTP methods that map to the route function.
+            host: The host in the endpoint URL.
 
         Attributes:
             route_name: The name of the method.
@@ -146,10 +148,12 @@ class Route:
             http_methods: HTTP methods that map to the route function.
             endpoint: The method `requests_mock` should call when the endpoint
                 is requested.
+            host: The host in the endpoint URL.
         """
         self.route_name = route_name
         self.path_pattern = path_pattern
         self.http_methods = http_methods
+        self.host = host
 
 
 ROUTES = set([])
@@ -158,6 +162,7 @@ ROUTES = set([])
 def route(
     path_pattern: str,
     http_methods: List[str],
+    host: str,
     mandatory_keys: Optional[Set[str]] = None,
     optional_keys: Optional[Set[str]] = None,
 ) -> Callable[..., Callable]:
@@ -171,6 +176,7 @@ def route(
         mandatory_keys: Keys required by the endpoint.
         optional_keys: Keys which are not required by the endpoint but which
             are allowed.
+        host: The host in the endpoint URL.
     """
 
     def decorator(method: Callable[..., str]) -> Callable[..., str]:
@@ -188,6 +194,7 @@ def route(
                 route_name=method.__name__,
                 path_pattern=path_pattern,
                 http_methods=http_methods,
+                host=host,
             )
         )
 
@@ -404,6 +411,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         self._processing_time_seconds = processing_time_seconds
 
     @route(
+        host='vws.vuforia.com',
         path_pattern='/targets',
         http_methods=[POST],
         mandatory_keys={'image', 'width', 'name'},
@@ -455,7 +463,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/targets/.+', http_methods=[DELETE])
+    @route(
+        path_pattern='/targets/.+',
+        http_methods=[DELETE],
+        host='vws.vuforia.com',
+    )
     def delete_target(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -488,7 +500,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/summary', http_methods=[GET])
+    @route(
+        host='vws.vuforia.com',
+        path_pattern='/summary',
+        http_methods=[GET],
+    )
     def database_summary(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -550,7 +566,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/targets', http_methods=[GET])
+    @route(
+        host='vws.vuforia.com',
+        path_pattern='/targets',
+        http_methods=[GET],
+    )
     def target_list(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -571,7 +591,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/targets/.+', http_methods=[GET])
+    @route(
+        host='vws.vuforia.com',
+        path_pattern='/targets/.+',
+        http_methods=[GET],
+    )
     def get_target(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -601,7 +625,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/duplicates/.+', http_methods=[GET])
+    @route(
+        host='vws.vuforia.com',
+        path_pattern='/duplicates/.+',
+        http_methods=[GET],
+    )
     def get_duplicates(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -633,6 +661,7 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         return json.dumps(body)
 
     @route(
+        host='vws.vuforia.com',
         path_pattern='/targets/.+',
         http_methods=[PUT],
         optional_keys={
@@ -714,7 +743,11 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
         }
         return json.dumps(body)
 
-    @route(path_pattern='/summary/.+', http_methods=[GET])
+    @route(
+        host='vws.vuforia.com',
+        path_pattern='/summary/.+',
+        http_methods=[GET],
+    )
     def target_summary(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
@@ -739,5 +772,24 @@ class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
             'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',
+        }
+        return json.dumps(body)
+
+    @route(
+        host='cloudreco.vuforia.com',
+        path_pattern='/v1/query',
+        http_methods=[POST],
+    )
+    def query(
+        self,
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
+        context: _Context,  # pylint: disable=unused-argument
+    ) -> str:
+        """
+        XXX
+        """
+        body = {
+            'result_code': ResultCodes.SUCCESS.value,
+            'query_id': uuid.uuid4().hex,
         }
         return json.dumps(body)

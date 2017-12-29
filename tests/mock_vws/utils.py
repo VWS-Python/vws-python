@@ -82,6 +82,7 @@ class Endpoint:
         successful_headers_status_code: int,
         content_type: Optional[str],
         content: bytes,
+        host: str,
     ) -> None:
         """
         Args:
@@ -91,7 +92,10 @@ class Endpoint:
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
+            content_type: The `Content-Type` header to send, or `None` if one
+                should not be sent.
             content: The data to send with the request.
+            host: The host to make the request to.
 
         Attributes:
             example_path: An example path for calling the endpoint.
@@ -105,11 +109,12 @@ class Endpoint:
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
         """
+        scheme = 'https://'
         self.example_path = example_path
         self.method = method
         self.content_type = content_type
         self.content = content
-        self.url = urljoin('https://vws.vuforia.com/', example_path)
+        self.url = urljoin(scheme + host, example_path)
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
 

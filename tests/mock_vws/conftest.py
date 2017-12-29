@@ -373,6 +373,7 @@ def add_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.FAIL,
         content_type='application/json',
         content=bytes(str(data), encoding='utf-8'),
+        host='vws.vuforia.com',
     )
 
 
@@ -389,6 +390,7 @@ def delete_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -404,6 +406,7 @@ def database_summary() -> Endpoint:
         successful_headers_result_code=ResultCodes.SUCCESS,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -421,6 +424,7 @@ def get_duplicates() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -437,6 +441,7 @@ def get_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -452,6 +457,7 @@ def target_list() -> Endpoint:
         successful_headers_result_code=ResultCodes.SUCCESS,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -468,6 +474,7 @@ def target_summary() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type=None,
         content=b'',
+        host='vws.vuforia.com',
     )
 
 
@@ -485,6 +492,25 @@ def update_target() -> Endpoint:
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
         content_type='application/json',
         content=bytes(str(data), encoding='utf-8'),
+        host='vws.vuforia.com',
+    )
+
+
+@pytest.fixture()
+def query() -> Endpoint:
+    """
+    Return details of the endpoint for performing an image recognition query.
+    """
+    data: Dict[str, Any] = {}
+    example_path = '/v1/query'
+    return Endpoint(
+        example_path=example_path,
+        method=POST,
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.SUCCESS,
+        content_type='multipart/form-data',
+        content=bytes(str(data), encoding='utf-8'),
+        host='cloudreco.vuforia.com',
     )
 
 
@@ -526,6 +552,7 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
 @pytest.fixture(params=[
     'add_target',
     'update_target',
+    'query',
 ])
 def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
     """
@@ -545,6 +572,7 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
         'target_list',
         'target_summary',
         'update_target',
+        'query',
     ]
 )
 def endpoint(request: SubRequest) -> Endpoint:
