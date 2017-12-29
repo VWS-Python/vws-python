@@ -40,11 +40,7 @@ class TestQuery:
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        multipart_encoded_data = MultipartEncoder(
-            fields=files,
-            # See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
-            boundary=uuid.uuid4().hex,
-        )
+        multipart_encoded_data = MultipartEncoder(fields=files)
 
         # We copy the encoded data because `to_string` mutates the object.
         content = copy.deepcopy(multipart_encoded_data).to_string()
