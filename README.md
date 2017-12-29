@@ -4,7 +4,7 @@
 
 # vws-python
 
-Python mock for Vuforia Web Services (VWS) API.
+Python mock for the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
 
 ## Contributing
 
