@@ -40,12 +40,10 @@ class TestQuery:
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        # See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
-        boundary = uuid.uuid4().hex
-
         multipart_encoded_data = MultipartEncoder(
             fields=files,
-            boundary=boundary,
+            # See https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+            boundary=uuid.uuid4().hex,
         )
 
         # We copy the encoded data because `to_string` mutates the object.
@@ -65,7 +63,7 @@ class TestQuery:
         headers = {
             'Authorization': authorization_string,
             'Date': date,
-            'Content-Type': f'multipart/form-data; boundary={boundary}',
+            'Content-Type': multipart_encoded_data.content_type,
         }
 
         request = requests.Request(

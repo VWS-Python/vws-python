@@ -347,13 +347,18 @@ def authorization_header(  # pylint: disable=too-many-arguments
     Return an `Authorization` header which can be used for a request made to
     the VWS API with the given attributes.
 
+    See https://library.vuforia.com/articles/Training/Using-the-VWS-API.
+
     Args:
         access_key: A VWS server or client access key.
         secret_key: A VWS server or client secret key.
         method: The HTTP method which will be used in the request.
         content: The request body which will be used in the request.
-        content_type: The `Content-Type` header which will be used in the
-            request.
+        content_type: The `Content-Type` header which is expected by
+            endpoint. This does not necessarily have to match the
+            `Content-Type` sent in the headers. In particular, for the query
+            API, this must be set to `multipart/form-data` but the header must
+            include the boundary.
         date: The current date which must exactly match the date sent in the
             `Date` header.
         request_path: The path to the endpoint which will be used in the
