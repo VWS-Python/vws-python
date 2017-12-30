@@ -12,7 +12,7 @@ from typing import Any, Callable, Optional, Pattern, Tuple, Union
 from requests_mock.mocker import Mocker
 
 from ._constants import States
-from ._mock_target_api import MockVuforiaTargetAPI
+from ._mock_web_services_ap import MockVuforiaWebServicesAPI
 
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
@@ -106,7 +106,7 @@ class MockVWS(ContextDecorator):
         Returns:
             ``self``.
         """
-        fake_target_api = MockVuforiaTargetAPI(
+        fake_target_api = MockVuforiaWebServicesAPI(
             database_name=self.database_name,
             server_access_key=self.server_access_key,
             server_secret_key=self.server_secret_key,
