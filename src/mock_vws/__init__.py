@@ -12,7 +12,7 @@ from typing import Any, Callable, Optional, Pattern, Tuple, Union
 from requests_mock.mocker import Mocker
 
 from ._constants import States
-from ._mock import MockVuforiaTargetAPI
+from ._mock_target_api import MockVuforiaTargetAPI
 
 
 def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
