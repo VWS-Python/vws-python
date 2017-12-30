@@ -54,13 +54,6 @@ def route(
             )
         )
 
-        decorators = []
-
-        for decorator in decorators:
-            method = decorator(method)
-
-        return method
-
     return decorator
 
 
