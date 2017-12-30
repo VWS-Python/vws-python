@@ -7,7 +7,7 @@ import uuid
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
 
-from typing import Any, Callable, Optional, Pattern, Tuple, Union
+from typing import Any, Callable, Optional, Tuple, Union
 
 from requests_mock.mocker import Mocker
 
@@ -112,7 +112,7 @@ class MockVWS(ContextDecorator):
         vwq_api_host = 'cloudreco.vuforia.com'
 
         vws_api_base = url_scheme + vws_api_host
-        vws_api_base = url_scheme + vwq_api_host
+        vwq_api_base = url_scheme + vwq_api_host
 
         with Mocker(real_http=self._real_http) as mock:
             for route in mock_vws_api.routes:
