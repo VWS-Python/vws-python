@@ -8,6 +8,7 @@ import io
 from typing import Any, Dict
 from urllib.parse import urljoin
 
+import pytest
 import requests
 from requests import codes
 from requests_mock import POST
@@ -19,12 +20,13 @@ from tests.mock_vws.utils import (
 )
 
 
+@pytest.mark.skip(reason='This is not yet supported by the mock.')
 class TestQuery:
     """
     Tests for the query endpoint.
     """
 
-    def test_no_results(
+    def test_no_results(  # pragma: no cover
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,

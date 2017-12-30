@@ -375,9 +375,9 @@ def authorization_header(  # pylint: disable=too-many-arguments
         request_path: The path to the endpoint which will be used in the
             request.
 
-	Returns:
-		Return an `Authorization` header which can be used for a request made
-		to the VWS API with the given attributes.
+    Returns:
+        Return an `Authorization` header which can be used for a request made
+        to the VWS API with the given attributes.
     """
     hashed = hashlib.md5()
     hashed.update(content)
