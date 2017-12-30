@@ -5,7 +5,6 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import io
-from typing import Any, Dict
 from urllib.parse import urljoin
 
 import pytest
@@ -13,6 +12,7 @@ import requests
 from requests import codes
 from requests_mock import POST
 from requests_mock.exceptions import NoMockAddress
+from urllib3.filepost import encode_multipart_formdata
 
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
@@ -37,44 +37,38 @@ class TestQuery:
         With no results
         """
         image_content = high_quality_image.read()
-        content_type = 'multipart/form-data'
-        query: Dict[str, Any] = {}
         date = rfc_1123_date()
         request_path = '/v1/query'
         url = urljoin('https://cloudreco.vuforia.com', request_path)
         files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        request = requests.Request(
-            method=POST,
-            url=url,
-            headers={},
-            data=query,
-            files=files,
-        )
-
-        prepared_request = request.prepare()  # type: ignore
+        encoded_data, content_type_header = encode_multipart_formdata(files)
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.client_access_key,
             secret_key=vuforia_database_keys.client_secret_key,
             method=POST,
-            content=prepared_request.body,
-            content_type=content_type,
+            content=encoded_data,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
             date=date,
             request_path=request_path,
         )
 
         headers = {
-            **prepared_request.headers,
             'Authorization': authorization_string,
             'Date': date,
+            'Content-Type': content_type_header,
         }
 
-        prepared_request.prepare_headers(headers=headers)
+        response = requests.request(
+            method=POST,
+            url=url,
+            headers=headers,
+            data=encoded_data,
+        )
 
-        session = requests.Session()
-        response = session.send(request=prepared_request)  # type: ignore
         assert response.status_code == codes.OK
+        assert response.json().keys() == {'result_code', 'results', 'query_id'}
         assert response.json()['result_code'] == 'Success'
         assert response.json()['results'] == []
-        assert 'query_id' in response.json()
