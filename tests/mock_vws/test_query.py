@@ -12,6 +12,7 @@ import pytest
 import requests
 from requests import codes
 from requests_mock import POST
+from requests_mock.exceptions import NoMockAddress
 
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
@@ -20,13 +21,14 @@ from tests.mock_vws.utils import (
 )
 
 
-@pytest.mark.skip(reason='This is not yet supported by the mock.')
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestQuery:
     """
     Tests for the query endpoint.
     """
 
-    def test_no_results(  # pragma: no cover
+    @pytest.mark.xfail(raises=NoMockAddress, strict=False)
+    def test_no_results(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
