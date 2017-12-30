@@ -51,6 +51,8 @@ def route(
             )
         )
 
+        return method
+
     return decorator
 
 
@@ -69,7 +71,7 @@ class MockVuforiaWebQueryAPI:
         self.routes: Set[Route] = ROUTES
 
     @route(path_pattern='/v1/query', http_methods=[POST])
-    def query(
+    def query(  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
@@ -77,7 +79,7 @@ class MockVuforiaWebQueryAPI:
         """
         Perform an image recognition query.
         """
-        results = []
+        results: List[str] = []
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'results': results,

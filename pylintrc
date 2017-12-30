@@ -20,7 +20,8 @@ persistent=yes
 
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
-load-plugins=pylint.extensions.docparams
+load-plugins=
+    pylint.extensions.docparams,
 
 # Use multiple processes to speed up Pylint.
 jobs=1
@@ -66,24 +67,27 @@ enable=spelling
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 
-disable=line-too-long,
-        too-few-public-methods,
-        locally-disabled,
-        # Let flake8 handle unused imports
-        unused-import,
-        # This creates errors with typing.py
-        # see https://github.com/PyCQA/pylint/issues/1212
-        invalid-sequence-index,
-        # Let isort deal with sorting
-        ungrouped-imports,
-        # We don't need everything to be documented because of mypy
-        missing-type-doc,
-        missing-returns-doc,
-        missing-return-type-doc,
-        # Let YAPF deal with this
-        bad-continuation,
-        # Let YAPF deal with this
-        bad-whitespace,
+disable=
+    line-too-long,
+    too-few-public-methods,
+    locally-disabled,
+    # Let flake8 handle unused imports
+    unused-import,
+    # This creates errors with typing.py
+    # see https://github.com/PyCQA/pylint/issues/1212
+    invalid-sequence-index,
+    # Let isort deal with sorting
+    ungrouped-imports,
+    # We don't need everything to be documented because of mypy
+    missing-type-doc,
+    missing-returns-doc,
+    missing-return-type-doc,
+    # Let YAPF deal with this
+    bad-continuation,
+    # Let YAPF deal with this
+    bad-whitespace,
+    # Too difficult to please
+    duplicate-code,
 
 [REPORTS]
 
