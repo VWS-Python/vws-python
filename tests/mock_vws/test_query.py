@@ -11,7 +11,6 @@ import pytest
 import requests
 from requests import codes
 from requests_mock import POST
-from requests_mock.exceptions import NoMockAddress
 from urllib3.filepost import encode_multipart_formdata
 
 from tests.mock_vws.utils import (
@@ -27,7 +26,6 @@ class TestQuery:
     Tests for the query endpoint.
     """
 
-    @pytest.mark.xfail(raises=NoMockAddress, strict=False)
     def test_no_results(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
