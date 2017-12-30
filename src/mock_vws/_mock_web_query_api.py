@@ -56,20 +56,23 @@ def route(
 
 class MockVuforiaWebQueryAPI:
     """
-    XXX
+    A fake implementation of the Vuforia Web Query API.
+
+    This implementation is tied to the implementation of `requests_mock`.
     """
 
     def __init__(self, ) -> None:
         """
-        XXX
+        Attributes:
+            routes: The `Route`s to be used in the mock.
         """
         self.routes: Set[Route] = ROUTES
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
         self,
-        request: _RequestObjectProxy,
-        context: _Context,
+        request: _RequestObjectProxy,  # pylint: disable=unused-argument
+        context: _Context,  # pylint: disable=unused-argument
     ) -> str:
         """
         XXX
