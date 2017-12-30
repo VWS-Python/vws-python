@@ -92,6 +92,8 @@ class Endpoint:
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
             content: The data to send with the request.
+            content_type: The `Content-Type` header to send, and the content
+                type to use to create the `Authorization` header.
 
         Attributes:
             example_path: An example path for calling the endpoint.
@@ -109,13 +111,19 @@ class Endpoint:
         self.method = method
         self.content_type = content_type
         self.content = content
-        self.url = urljoin('https://vws.vuforia.com/', example_path)
+        scheme = 'https://'
+        host = 'vws.vuforia.com'
+        base = scheme + host
+        self.url = urljoin(base, example_path)
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
+        self.host = host
 
 
 def assert_vws_failure(
-    response: Response, status_code: int, result_code: ResultCodes
+    response: Response,
+    status_code: int,
+    result_code: ResultCodes,
 ) -> None:
     """
     Assert that a VWS failure response is as expected.
@@ -272,6 +280,9 @@ def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
 
     Args:
         vuforia_database_keys: The credentials to use to connect to Vuforia.
+
+    Returns:
+        The response of a request to the database summary endpoint.
     """
     response = target_api_request(
         server_access_key=vuforia_database_keys.server_access_key,
@@ -347,17 +358,26 @@ def authorization_header(  # pylint: disable=too-many-arguments
     Return an `Authorization` header which can be used for a request made to
     the VWS API with the given attributes.
 
+    See https://library.vuforia.com/articles/Training/Using-the-VWS-API.
+
     Args:
         access_key: A VWS server or client access key.
         secret_key: A VWS server or client secret key.
         method: The HTTP method which will be used in the request.
         content: The request body which will be used in the request.
-        content_type: The `Content-Type` header which will be used in the
-            request.
+        content_type: The `Content-Type` header which is expected by
+            endpoint. This does not necessarily have to match the
+            `Content-Type` sent in the headers. In particular, for the query
+            API, this must be set to `multipart/form-data` but the header must
+            include the boundary.
         date: The current date which must exactly match the date sent in the
             `Date` header.
         request_path: The path to the endpoint which will be used in the
             request.
+
+    Returns:
+        Return an `Authorization` header which can be used for a request made
+        to the VWS API with the given attributes.
     """
     hashed = hashlib.md5()
     hashed.update(content)

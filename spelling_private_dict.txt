@@ -27,6 +27,7 @@ linters
 mb
 metadata
 mockvws
+multipart
 noqa
 plugins
 png

@@ -12,6 +12,7 @@ lint:
 	pydocstyle
 	pylint *.py
 	pylint src
+	pylint --rcfile=tests-pylintrc --load-plugins=pylint.extensions.docparams tests/mock_vws/utils.py
 	pylint --rcfile=tests-pylintrc tests
 	pyroma .
 	vulture . --min-confidence 100

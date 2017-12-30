@@ -10,7 +10,15 @@ import json
 import random
 import statistics
 import uuid
-from typing import Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import (  # noqa: F401
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Union,
+)
 
 import wrapt
 from PIL import Image, ImageStat
