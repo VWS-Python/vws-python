@@ -8,7 +8,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    Endpoint,
+    TargetAPIEndpoint,
     VuforiaDatabaseKeys,
     assert_vws_failure,
     authorization_header,
@@ -26,7 +26,7 @@ class TestInvalidGivenID:
     def test_not_real_id(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint_which_takes_target_id: Endpoint,  # noqa: E501 pylint: disable=redefined-outer-name
+        endpoint_which_takes_target_id: TargetAPIEndpoint,  # noqa: E501 pylint: disable=redefined-outer-name
     ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID

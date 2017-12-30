@@ -69,7 +69,7 @@ class VuforiaDatabaseKeys:
         self.database_name = database_name
 
 
-class Endpoint:
+class TargetAPIEndpoint:
     """
     Details of endpoints to be called in tests.
     """
