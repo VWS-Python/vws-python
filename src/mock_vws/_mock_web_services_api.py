@@ -1,5 +1,8 @@
 """
 A fake implementation of the Vuforia Web Services API.
+
+See
+https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API
 """
 
 import base64
