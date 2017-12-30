@@ -1,5 +1,5 @@
 """
-XXX
+Common utilities for creating mock routes.
 """
 
 from typing import List
