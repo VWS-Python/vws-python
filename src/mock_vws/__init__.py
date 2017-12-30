@@ -15,22 +15,6 @@ from ._constants import States
 from ._mock_web_services_api import MockVuforiaWebServicesAPI
 
 
-def _target_endpoint_pattern(path_pattern: str) -> Pattern[str]:
-    """
-    Given a path pattern, return a regex which will match URLs to
-    patch for the Target API.
-
-    Args:
-        path_pattern: A part of the url which can be matched for endpoints.
-            For example `https://vws.vuforia.com/<this-part>`. This is
-            compiled to be a regular expression, so it may be `/foo` or
-            `/foo/.+` for example.
-    """
-    base = 'https://vws.vuforia.com/'  # type: str
-    joined = urljoin(base=base, url=path_pattern + '$')
-    return re.compile(joined)
-
-
 class MockVWS(ContextDecorator):
     """
     Route requests to Vuforia's Web Service APIs to fakes of those APIs.
@@ -120,14 +104,35 @@ class MockVWS(ContextDecorator):
             'Server': 'nginx',
         }
 
+        url_scheme = 'https://'
+        vws_api_host = 'vws.vuforia.com'
+        vwq_api_host = 'cloudreco.vuforia.com'
+
+        vws_api_base = url_scheme + vws_api_host
+        vws_api_base = url_scheme + vwq_api_host
+
         with Mocker(real_http=self._real_http) as mock:
             for route in mock_vws_api.routes:
+                base = vws_api_base
+                url_pattern = urljoin(base=base, url=route.path_pattern + '$')
+
                 for http_method in route.http_methods:
                     mock.register_uri(
                         method=http_method,
-                        url=_target_endpoint_pattern(route.path_pattern),
+                        url=re.compile(url_pattern),
                         text=getattr(mock_vws_api, route.route_name),
                         headers=headers,
+                    )
+
+            for route in mock_vwq_api.routes:
+                base = vwq_api_base
+                url_pattern = urljoin(base=base, url=route.path_pattern + '$')
+
+                for http_method in route.http_methods:
+                    mock.register_uri(
+                        method=http_method,
+                        url=re.compile(url_pattern),
+                        text=getattr(mock_vwq_api, route.route_name),
                     )
 
         self._mock = mock
