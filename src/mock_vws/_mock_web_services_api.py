@@ -1,5 +1,5 @@
 """
-A fake implementation of VWS.
+A fake implementation of the Vuforia Web Services API.
 """
 
 import base64
@@ -45,7 +45,7 @@ from ._validators import (
 @wrapt.decorator
 def parse_target_id(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',
+    instance: 'MockVuforiaWebServicesAPI',
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
@@ -93,7 +93,7 @@ def parse_target_id(
 @wrapt.decorator
 def headers(
     wrapped: Callable[..., str],
-    instance: 'MockVuforiaTargetAPI',  # pylint: disable=unused-argument
+    instance: 'MockVuforiaWebServicesAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
@@ -359,7 +359,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         return 0
 
 
-class MockVuforiaTargetAPI:  # pylint: disable=no-self-use
+class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
     """
     A fake implementation of the Vuforia Target API.
 
