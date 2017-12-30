@@ -5,6 +5,9 @@ See
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 """
 
+from requests_mock.request import _RequestObjectProxy
+from requests_mock.response import _Context
+
 
 class MockVuforiaWebQueryAPI:
     """
