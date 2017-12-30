@@ -70,6 +70,7 @@ disable=
     no-self-use,
     too-few-public-methods,
     too-many-arguments,
+    too-many-instance-attributes,
     no-member,
     # Let isort handle imports
     ungrouped-imports,
@@ -84,6 +85,10 @@ disable=
     locally-disabled,
     # Let YAPF deal with this
     bad-whitespace,
+    # Let mypy handle this
+    missing-type-doc,
+    missing-return-type-doc,
+    differing-param-doc,
 
 [REPORTS]
 

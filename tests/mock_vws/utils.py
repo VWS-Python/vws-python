@@ -109,13 +109,18 @@ class Endpoint:
         self.method = method
         self.content_type = content_type
         self.content = content
-        self.url = urljoin('https://vws.vuforia.com/', example_path)
+        scheme = 'https://'
+        base = scheme + host
+        self.url = urljoin(base, example_path)
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
+        self.host = host
 
 
 def assert_vws_failure(
-    response: Response, status_code: int, result_code: ResultCodes
+    response: Response,
+    status_code: int,
+    result_code: ResultCodes,
 ) -> None:
     """
     Assert that a VWS failure response is as expected.
@@ -272,6 +277,9 @@ def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
 
     Args:
         vuforia_database_keys: The credentials to use to connect to Vuforia.
+
+	Returns:
+		The response of a request to the database summary endpoint.
     """
     response = target_api_request(
         server_access_key=vuforia_database_keys.server_access_key,
