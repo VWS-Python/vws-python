@@ -106,7 +106,7 @@ class MockVWS(ContextDecorator):
         Returns:
             ``self``.
         """
-        fake_target_api = MockVuforiaWebServicesAPI(
+        mock_vws_api = MockVuforiaWebServicesAPI(
             database_name=self.database_name,
             server_access_key=self.server_access_key,
             server_secret_key=self.server_secret_key,
@@ -121,12 +121,12 @@ class MockVWS(ContextDecorator):
         }
 
         with Mocker(real_http=self._real_http) as mock:
-            for route in fake_target_api.routes:
+            for route in mock_vws_api.routes:
                 for http_method in route.http_methods:
                     mock.register_uri(
                         method=http_method,
                         url=_target_endpoint_pattern(route.path_pattern),
-                        text=getattr(fake_target_api, route.route_name),
+                        text=getattr(mock_vws_api, route.route_name),
                         headers=headers,
                     )
 
