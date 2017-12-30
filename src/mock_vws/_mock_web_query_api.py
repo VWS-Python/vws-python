@@ -75,7 +75,7 @@ class MockVuforiaWebQueryAPI:
         context: _Context,  # pylint: disable=unused-argument
     ) -> str:
         """
-        XXX
+        Perform an image recognition query.
         """
         results = []
         body = {
