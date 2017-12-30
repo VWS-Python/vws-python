@@ -10,7 +10,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    Endpoint,
+    TargetAPIEndpoint,
     VuforiaDatabaseKeys,
     assert_vws_failure,
     authorization_header,
@@ -27,7 +27,7 @@ class TestUnexpectedJSON:
     def test_does_not_take_data(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint_no_data: Endpoint,
+        endpoint_no_data: TargetAPIEndpoint,
     ) -> None:
         """
         Giving JSON to endpoints which do not take any JSON data returns

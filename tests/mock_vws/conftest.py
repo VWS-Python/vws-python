@@ -19,7 +19,7 @@ from retrying import retry
 from mock_vws import MockVWS, States
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    Endpoint,
+    TargetAPIEndpoint,
     VuforiaDatabaseKeys,
     add_target_to_vws,
     target_api_request,
@@ -359,12 +359,12 @@ def verify_mock_vuforia_inactive(
 
 
 @pytest.fixture()
-def add_target() -> Endpoint:
+def add_target() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for adding a target.
     """
     data: Dict[str, Any] = {}
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path='/targets',
         method=POST,
         # We expect a bad request error because we have not given the required
@@ -377,12 +377,12 @@ def add_target() -> Endpoint:
 
 
 @pytest.fixture()
-def delete_target() -> Endpoint:
+def delete_target() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for deleting a target.
     """
     example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path=example_path,
         method=DELETE,
         successful_headers_status_code=codes.NOT_FOUND,
@@ -393,11 +393,11 @@ def delete_target() -> Endpoint:
 
 
 @pytest.fixture()
-def database_summary() -> Endpoint:
+def database_summary() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting details about the database.
     """
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path='/summary',
         method=GET,
         successful_headers_status_code=codes.OK,
@@ -408,13 +408,13 @@ def database_summary() -> Endpoint:
 
 
 @pytest.fixture()
-def get_duplicates() -> Endpoint:
+def get_duplicates() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting potential duplicates of a
     target.
     """
     example_path = '/duplicates/{target_id}'.format(target_id=uuid.uuid4().hex)
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path=example_path,
         method=GET,
         successful_headers_status_code=codes.NOT_FOUND,
@@ -425,12 +425,12 @@ def get_duplicates() -> Endpoint:
 
 
 @pytest.fixture()
-def get_target() -> Endpoint:
+def get_target() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting details of a target.
     """
     example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path=example_path,
         method=GET,
         successful_headers_status_code=codes.NOT_FOUND,
@@ -441,11 +441,11 @@ def get_target() -> Endpoint:
 
 
 @pytest.fixture()
-def target_list() -> Endpoint:
+def target_list() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting a list of targets.
     """
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path='/targets',
         method=GET,
         successful_headers_status_code=codes.OK,
@@ -456,12 +456,12 @@ def target_list() -> Endpoint:
 
 
 @pytest.fixture()
-def target_summary() -> Endpoint:
+def target_summary() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting a summary report of a target.
     """
     example_path = '/summary/{target_id}'.format(target_id=uuid.uuid4().hex)
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path=example_path,
         method=GET,
         successful_headers_status_code=codes.NOT_FOUND,
@@ -472,13 +472,13 @@ def target_summary() -> Endpoint:
 
 
 @pytest.fixture()
-def update_target() -> Endpoint:
+def update_target() -> TargetAPIEndpoint:
     """
     Return details of the endpoint for updating a target.
     """
     data: Dict[str, Any] = {}
     example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
-    return Endpoint(
+    return TargetAPIEndpoint(
         example_path=example_path,
         method=PUT,
         successful_headers_status_code=codes.NOT_FOUND,
@@ -497,11 +497,13 @@ def update_target() -> Endpoint:
         'update_target',
     ]
 )
-def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
+def endpoint_which_takes_target_id(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint which takes a target ID in the path.
     """
-    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
+        request.param
+    )
     return endpoint_fixture
 
 
@@ -515,11 +517,13 @@ def endpoint_which_takes_target_id(request: SubRequest) -> Endpoint:
         'target_summary',
     ]
 )
-def endpoint_no_data(request: SubRequest) -> Endpoint:
+def endpoint_no_data(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint which does not take any JSON data.
     """
-    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
+        request.param
+    )
     return endpoint_fixture
 
 
@@ -527,11 +531,13 @@ def endpoint_no_data(request: SubRequest) -> Endpoint:
     'add_target',
     'update_target',
 ])
-def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
+def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint which takes JSON data.
     """
-    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
+        request.param
+    )
     return endpoint_fixture
 
 
@@ -547,11 +553,13 @@ def endpoint_which_takes_data(request: SubRequest) -> Endpoint:
         'update_target',
     ]
 )
-def endpoint(request: SubRequest) -> Endpoint:
+def endpoint(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint.
     """
-    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
+    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
+        request.param
+    )
     return endpoint_fixture
 
 

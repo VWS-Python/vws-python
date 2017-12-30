@@ -11,7 +11,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    Endpoint,
+    TargetAPIEndpoint,
     VuforiaDatabaseKeys,
     assert_vws_failure,
     authorization_header,
@@ -28,7 +28,7 @@ class TestInvalidJSON:
     def test_does_not_take_data(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint_no_data: Endpoint,
+        endpoint_no_data: TargetAPIEndpoint,
     ) -> None:
         """
         Giving invalid JSON to endpoints which do not take any JSON data
@@ -79,7 +79,7 @@ class TestInvalidJSON:
         self,
         vuforia_database_keys:
         VuforiaDatabaseKeys,
-        endpoint_no_data: Endpoint,
+        endpoint_no_data: TargetAPIEndpoint,
     ) -> None:
         """
         Of the endpoints which do not take data, only `/summary` gives a
@@ -132,7 +132,7 @@ class TestInvalidJSON:
     def test_takes_data(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint_which_takes_data: Endpoint,
+        endpoint_which_takes_data: TargetAPIEndpoint,
     ) -> None:
         """
         Giving invalid JSON to endpoints which do take JSON data returns error

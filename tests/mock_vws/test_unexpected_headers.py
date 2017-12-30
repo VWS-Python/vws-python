@@ -12,7 +12,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    Endpoint,
+    TargetAPIEndpoint,
     VuforiaDatabaseKeys,
     assert_vws_failure,
     assert_vws_response,
@@ -27,7 +27,7 @@ class TestHeaders:
     Tests for what happens when the headers are not as expected.
     """
 
-    def test_empty(self, endpoint: Endpoint) -> None:
+    def test_empty(self, endpoint: TargetAPIEndpoint) -> None:
         """
         When no headers are given, an `UNAUTHORIZED` response is returned.
         """
@@ -50,7 +50,7 @@ class TestAuthorizationHeader:
     Tests for what happens when the `Authorization` header isn't as expected.
     """
 
-    def test_missing(self, endpoint: Endpoint) -> None:
+    def test_missing(self, endpoint: TargetAPIEndpoint) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
@@ -75,7 +75,7 @@ class TestAuthorizationHeader:
             result_code=ResultCodes.AUTHENTICATION_FAILURE,
         )
 
-    def test_incorrect(self, endpoint: Endpoint) -> None:
+    def test_incorrect(self, endpoint: TargetAPIEndpoint) -> None:
         """
         If an incorrect `Authorization` header is given, a `BAD_REQUEST`
         response is given.
@@ -113,7 +113,7 @@ class TestDateHeader:
     def test_no_date_header(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint: Endpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
@@ -150,7 +150,7 @@ class TestDateHeader:
     def test_incorrect_date_format(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint: Endpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
@@ -196,7 +196,7 @@ class TestDateHeader:
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         time_multiplier: int,
-        endpoint: Endpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         If the date header is more than five minutes before or after the
@@ -247,7 +247,7 @@ class TestDateHeader:
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         time_multiplier: int,
-        endpoint: Endpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         If a date header is within five minutes before or after the request
