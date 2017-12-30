@@ -13,6 +13,7 @@ from requests_mock.mocker import Mocker
 
 from ._constants import States
 from ._mock_web_services_api import MockVuforiaWebServicesAPI
+from ._mock_web_query_api import MockVuforiaWebQueryAPI
 
 
 class MockVWS(ContextDecorator):
@@ -97,6 +98,8 @@ class MockVWS(ContextDecorator):
             state=self._state,
             processing_time_seconds=self._processing_time_seconds,
         )
+
+        mock_vwq_api = MockVuforiaWebQueryAPI()
 
         headers = {
             'Connection': 'keep-alive',

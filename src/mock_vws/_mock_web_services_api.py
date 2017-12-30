@@ -151,7 +151,8 @@ def route(
             method: Method to register.
 
         Returns:
-            The given `method` with no changes.
+            The given `method` with multiple changes, including added
+            validators.
         """
         ROUTES.add(
             Route(

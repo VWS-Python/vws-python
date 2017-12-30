@@ -8,6 +8,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
+ROUTES = set([])
 
 class MockVuforiaWebQueryAPI:
     """
@@ -16,9 +17,6 @@ class MockVuforiaWebQueryAPI:
 
     def __init__(
         self,
-        client_access_key: str,
-        server_secret_key: str,
-        mock_target_api: MockVuforiaWebServicesAPI,
     ) -> None:
         """
         XXX
@@ -32,3 +30,10 @@ class MockVuforiaWebQueryAPI:
         """
         XXX
         """
+        results = []
+        body = {
+            'result_code': ResultCodes.SUCCESS.value,
+            'results': results,
+            'query_id': uuid.uuid4().hex,
+        }
+        return json.dumps(body)
