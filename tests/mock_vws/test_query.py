@@ -52,6 +52,10 @@ def assert_success(response: Response) -> None:
     # This is not deterministic.
     # We therefore accept responses with and without the `transfer-encoding`
     # header.
+    # An arbitrary decision has been made to not support this non-determinism
+    # in the mock.
+    # We therefore run `test_no_results` multiple times to ensure that this
+    # code path is hit.
     if response.raw.chunked:
         response_header_keys.add('transfer-encoding')
         assert response.headers['transfer-encoding'] == 'chunked'
@@ -93,7 +97,8 @@ class TestQuery:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        With no results
+        When there are no matching images in the database, an empty list of
+        results is returned.
         """
         image_content = high_quality_image.read()
         date = rfc_1123_date()
@@ -120,12 +125,14 @@ class TestQuery:
             'Content-Type': content_type_header,
         }
 
-        response = requests.request(
-            method=POST,
-            url=url,
-            headers=headers,
-            data=encoded_data,
-        )
-
-        assert_success(response=response)
-        assert response.json()['results'] == []
+        # The headers returned are non-deterministic. We therefore run this
+        # test multiple times in order to exercise multiple code paths.
+        for i in range(10):
+            response = requests.request(
+                method=POST,
+                url=url,
+                headers=headers,
+                data=encoded_data,
+            )
+            assert_success(response=response)
+            assert response.json()['results'] == []
