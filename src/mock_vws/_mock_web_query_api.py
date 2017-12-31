@@ -5,7 +5,9 @@ See
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 """
 
+import email.utils
 import json
+import re
 import uuid
 from typing import Callable, List, Set
 
@@ -14,7 +16,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes
-from mock_vws._mock_common import Route
+from mock_vws._mock_common import Route, json_dump
 
 ROUTES = set([])
 
@@ -85,4 +87,9 @@ class MockVuforiaWebQueryAPI:
             'results': results,
             'query_id': uuid.uuid4().hex,
         }
-        return json.dumps(body)
+
+        text = json_dump(body)
+        context.headers['Content-Length'] = str(len(re.escape(text)))
+        date = email.utils.formatdate(None, localtime=False, usegmt=True)
+        context.headers['Date'] = date
+        return text

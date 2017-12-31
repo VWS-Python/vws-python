@@ -101,7 +101,13 @@ class MockVWS(ContextDecorator):
 
         mock_vwq_api = MockVuforiaWebQueryAPI()
 
-        headers = {
+        vws_headers = {
+            'Connection': 'keep-alive',
+            'Content-Type': 'application/json',
+            'Server': 'nginx',
+        }
+
+        vwq_headers = {
             'Connection': 'keep-alive',
             'Content-Type': 'application/json',
             'Server': 'nginx',
@@ -124,7 +130,7 @@ class MockVWS(ContextDecorator):
                         method=http_method,
                         url=re.compile(url_pattern),
                         text=getattr(mock_vws_api, route.route_name),
-                        headers=headers,
+                        headers=vws_headers,
                     )
 
             for route in mock_vwq_api.routes:
@@ -136,6 +142,7 @@ class MockVWS(ContextDecorator):
                         method=http_method,
                         url=re.compile(url_pattern),
                         text=getattr(mock_vwq_api, route.route_name),
+                        headers=vwq_headers,
                     )
 
         self._mock = mock
