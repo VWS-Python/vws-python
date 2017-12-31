@@ -4,6 +4,7 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
+import copy
 import io
 import re
 from string import hexdigits
@@ -32,6 +33,8 @@ def assert_success(response: Response) -> None:
         AssertionError: The given response is not a valid success response
             for performing an image recognition query.
     """
+    # rseponse_raw = copy.deepcopy(response.raw).read()
+    # import pdb; pdb.set_trace()
     assert response.status_code == codes.OK
     assert response.json().keys() == {'result_code', 'results', 'query_id'}
 
@@ -61,20 +64,7 @@ def assert_success(response: Response) -> None:
         assert response.headers['transfer-encoding'] == 'chunked'
     else:
         response_header_keys.add('Content-Length')
-        # The expected content lengths have been determined by experimentaiton.
-        # It is recommended that when changing this assertion, you run:
-        #
-        # ```
-        # pip install pytest-repeat
-        # PYTEST_CMD -x --count=100
-        # ```
-        escaped_content_length = len(re.escape(response.text))
-        expected_content_lengths = (
-            str(escaped_content_length),
-            str(escaped_content_length - 1),
-            str(escaped_content_length - 2),
-        )
-        assert response.headers['Content-Length'] in expected_content_lengths
+        assert response.headers['Content-Length'] == str(response.raw.tell())
 
     assert response.headers.keys() == response_header_keys
 
@@ -128,11 +118,12 @@ class TestQuery:
         # The headers returned are non-deterministic. We therefore run this
         # test multiple times in order to exercise multiple code paths.
         for i in range(10):
-            response = requests.request(
+            with requests.request(
                 method=POST,
                 url=url,
                 headers=headers,
                 data=encoded_data,
-            )
-            assert_success(response=response)
-            assert response.json()['results'] == []
+                stream=True,
+            ) as response:
+                assert_success(response=response)
+                assert response.json()['results'] == []
