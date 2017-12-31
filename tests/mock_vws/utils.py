@@ -185,7 +185,7 @@ def assert_vws_response(
     # This confirms that the formatting style used matches what is expected.
     # There are no spaces in the separators.
     assert response.text == json.dumps(
-        obj=json.loads(response.text),
+        obj=response.json(),
         separators=(',', ':'),
     )
     assert response.headers['Content-Type'] == 'application/json'

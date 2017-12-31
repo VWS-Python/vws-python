@@ -2,7 +2,8 @@
 Common utilities for creating mock routes.
 """
 
-from typing import List
+import json
+from typing import Any, Dict, List
 
 
 class Route:
@@ -37,3 +38,11 @@ class Route:
         self.route_name = route_name
         self.path_pattern = path_pattern
         self.http_methods = http_methods
+
+
+def json_dump(body: Dict[str, Any]) -> str:
+    """
+    Returns:
+        JSON dump of data in the same way that Vuforia dumps data.
+    """
+    return json.dumps(obj=body, separators=(',', ':'))
