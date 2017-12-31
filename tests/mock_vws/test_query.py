@@ -5,19 +5,22 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import io
+from string import hexdigits
 from urllib.parse import urljoin
 
 import pytest
 import requests
-from requests import codes
+from requests import Response, codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
+    assert_valid_date_header,
     authorization_header,
     rfc_1123_date,
 )
+
 
 def assert_success(response: Response) -> None:
     """
@@ -36,6 +39,30 @@ def assert_success(response: Response) -> None:
     assert all(char in hexdigits for char in query_id)
 
     assert response.json()['result_code'] == 'Success'
+    response_header_keys = {
+        'Connection',
+        'Content-Encoding',
+        'Content-Length',
+        'Content-Type',
+        'Date',
+        'Server',
+    }
+
+    # Sometimes `transfer-encoding: chunked` is in the response headers.
+    # This is not deterministic.
+    # We therefore accept responses with and without the `transfer-encoding`
+    # header.
+    if 'transfer-encoding' in response.headers.keys():
+        response_header_keys.add('transfer-encoding')
+        assert response.headers['transfer-encoding'] == 'chunked'
+
+    assert response.headers.keys() == response_header_keys
+
+    assert response.headers['Connection'] == 'keep-alive'
+    # TODO assert content length
+    assert_valid_date_header(response=response)
+    assert response.headers['Server'] == 'nginx'
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestQuery:

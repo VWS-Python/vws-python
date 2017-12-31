@@ -145,6 +145,35 @@ def assert_vws_failure(
     )
 
 
+def assert_valid_date_header(response: Response) -> None:
+    """
+    Assert that a response includes a `Date` header which is within one minute
+    of "now".
+
+    Args:
+        response: The response returned by a request to a Vuforia service.
+
+    Raises:
+        AssertionError: The response does not include a `Date` header which is
+            within one minute of "now".
+    """
+    date_response = response.headers['Date']
+    date_from_response = email.utils.parsedate(date_response)
+    assert date_from_response is not None
+    year, month, day, hour, minute, second, _, _, _ = date_from_response
+    datetime_from_response = datetime.datetime(
+        year=year,
+        month=month,
+        day=day,
+        hour=hour,
+        minute=minute,
+        second=second,
+    )
+    current_date = datetime.datetime.now()
+    time_difference = abs(current_date - datetime_from_response)
+    assert time_difference < datetime.timedelta(minutes=1)
+
+
 def assert_vws_response(
     response: Response,
     status_code: int,
@@ -193,21 +222,7 @@ def assert_vws_response(
     transaction_id = response.json()['transaction_id']
     assert len(transaction_id) == 32
     assert all(char in hexdigits for char in transaction_id)
-    date_response = response.headers['Date']
-    date_from_response = email.utils.parsedate(date_response)
-    assert date_from_response is not None
-    year, month, day, hour, minute, second, _, _, _ = date_from_response
-    datetime_from_response = datetime.datetime(
-        year=year,
-        month=month,
-        day=day,
-        hour=hour,
-        minute=minute,
-        second=second,
-    )
-    current_date = datetime.datetime.now()
-    time_difference = abs(current_date - datetime_from_response)
-    assert time_difference < datetime.timedelta(minutes=1)
+    assert_valid_date_header(response=response)
 
 
 def add_target_to_vws(
