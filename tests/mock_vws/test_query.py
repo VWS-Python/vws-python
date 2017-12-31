@@ -33,8 +33,6 @@ def assert_success(response: Response) -> None:
         AssertionError: The given response is not a valid success response
             for performing an image recognition query.
     """
-    # rseponse_raw = copy.deepcopy(response.raw).read()
-    # import pdb; pdb.set_trace()
     assert response.status_code == codes.OK
     assert response.json().keys() == {'result_code', 'results', 'query_id'}
 
@@ -52,11 +50,11 @@ def assert_success(response: Response) -> None:
     }
 
     # Sometimes `transfer-encoding: chunked` is in the response headers.
-    # This is not deterministic.
+    # The reason for this is not known.
     # We therefore accept responses with and without the `transfer-encoding`
     # header.
-    # An arbitrary decision has been made to not support this non-determinism
-    # in the mock.
+    # As we do not know what determines whether `transfer-encoding` is chunked,
+    # the mock does not chunk responses.
     # We therefore run `test_no_results` multiple times to ensure that this
     # code path is hit.
     if response.raw.chunked:
