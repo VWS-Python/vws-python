@@ -5,6 +5,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import io
+import re
 from string import hexdigits
 from urllib.parse import urljoin
 
@@ -42,7 +43,6 @@ def assert_success(response: Response) -> None:
     response_header_keys = {
         'Connection',
         'Content-Encoding',
-        'Content-Length',
         'Content-Type',
         'Date',
         'Server',
@@ -52,14 +52,31 @@ def assert_success(response: Response) -> None:
     # This is not deterministic.
     # We therefore accept responses with and without the `transfer-encoding`
     # header.
-    if 'transfer-encoding' in response.headers.keys():
+    if response.raw.chunked:
         response_header_keys.add('transfer-encoding')
         assert response.headers['transfer-encoding'] == 'chunked'
+    else:
+        response_header_keys.add('Content-Length')
+        # The expected content lengths have been determined by experimentaiton.
+        # It is recommended that when changing this assertion, you run:
+        #
+        # ```
+        # pip install pytest-repeat
+        # PYTEST_CMD -x --count=100
+        # ```
+        escaped_content_length = len(re.escape(response.text))
+        expected_content_lengths = (
+            str(escaped_content_length),
+            str(escaped_content_length - 1),
+            str(escaped_content_length - 2),
+        )
+        assert response.headers['Content-Length'] in expected_content_lengths
 
     assert response.headers.keys() == response_header_keys
 
     assert response.headers['Connection'] == 'keep-alive'
-    # TODO assert content length
+    assert response.headers['Content-Encoding'] == 'gzip'
+    assert response.headers['Content-Type'] == 'application/json'
     assert_valid_date_header(response=response)
     assert response.headers['Server'] == 'nginx'
 

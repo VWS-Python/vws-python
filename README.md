@@ -151,3 +151,10 @@ Therefore, an image given a 'success' status by the mock may not be given a 'suc
 
 When updating an image for a target on the real Vuforia Web Services, the rating may stay the same.
 The mock changes the rating for a target to a different random number when the image is changed.
+
+### Headers
+
+Response headers provided by the mock are deterministic.
+The real Vuforia gives non-deterministic headers.
+For example, when performing an image recognition query, some responses are chunked and include `transfer-encoding: chunked`.
+Other responses include a `Content-Length` and no `transfer-encoding` header.
