@@ -19,6 +19,23 @@ from tests.mock_vws.utils import (
     rfc_1123_date,
 )
 
+def assert_success(response: Response) -> None:
+    """
+    Assert that the given response is a success response for performing an
+    image recognition query.
+
+    Raises:
+        AssertionError: The given response is not a valid success response
+            for performing an image recognition query.
+    """
+    assert response.status_code == codes.OK
+    assert response.json().keys() == {'result_code', 'results', 'query_id'}
+
+    query_id = response.json()['query_id']
+    assert len(query_id) == 32
+    assert all(char in hexdigits for char in query_id)
+
+    assert response.json()['result_code'] == 'Success'
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestQuery:
@@ -66,7 +83,5 @@ class TestQuery:
             data=encoded_data,
         )
 
-        assert response.status_code == codes.OK
-        assert response.json().keys() == {'result_code', 'results', 'query_id'}
-        assert response.json()['result_code'] == 'Success'
+        assert_success(response=response)
         assert response.json()['results'] == []
