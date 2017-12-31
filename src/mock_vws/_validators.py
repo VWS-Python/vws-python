@@ -8,7 +8,6 @@ import datetime
 import hashlib
 import hmac
 import io
-import json
 import numbers
 import uuid
 from json.decoder import JSONDecodeError
@@ -22,6 +21,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes
+from mock_vws._mock_common import json_dump
 
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
@@ -122,7 +122,7 @@ def validate_active_flag(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
     }
-    return json.dumps(body)
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -161,7 +161,7 @@ def validate_not_invalid_json(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     if request.method not in (POST, PUT):
         context.status_code = codes.BAD_REQUEST
@@ -176,7 +176,7 @@ def validate_not_invalid_json(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -208,7 +208,7 @@ def validate_auth_header_exists(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -257,7 +257,7 @@ def validate_authorization(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -297,7 +297,7 @@ def validate_date(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     time_difference = datetime.datetime.now() - date_from_header
     maximum_time_difference = datetime.timedelta(minutes=5)
@@ -309,7 +309,7 @@ def validate_date(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -354,7 +354,7 @@ def validate_width(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -399,7 +399,7 @@ def validate_name(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -447,7 +447,7 @@ def validate_image_format(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.BAD_IMAGE.value,
     }
-    return json.dumps(body)
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -493,7 +493,7 @@ def validate_image_color_space(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.BAD_IMAGE.value,
     }
-    return json.dumps(body)
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -539,7 +539,7 @@ def validate_image_size(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.IMAGE_TOO_LARGE.value,
     }
-    return json.dumps(body)
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -584,7 +584,7 @@ def validate_image_is_image(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.BAD_IMAGE.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -628,7 +628,7 @@ def validate_image_encoding(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -672,7 +672,7 @@ def validate_image_data_type(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
     }
-    return json.dumps(body)
+    return json_dump(body)
 
 
 def validate_keys(
@@ -729,7 +729,7 @@ def validate_keys(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     wrapper_func: Callable[..., Any] = wrapper
     return wrapper_func
@@ -777,7 +777,7 @@ def validate_metadata_encoding(
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     return wrapped(*args, **kwargs)
 
@@ -821,4 +821,4 @@ def validate_metadata_type(
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
     }
-    return json.dumps(body)
+    return json_dump(body)

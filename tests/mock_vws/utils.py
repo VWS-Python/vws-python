@@ -182,6 +182,12 @@ def assert_vws_response(
     assert response.headers.keys() == response_header_keys
     assert response.headers['Connection'] == 'keep-alive'
     assert response.headers['Content-Length'] == str(len(response.text))
+    # This confirms that the formatting style used matches what is expected.
+    # There are no spaces in the separators.
+    assert response.text == json.dumps(
+        obj=response.json(),
+        separators=(',', ':'),
+    )
     assert response.headers['Content-Type'] == 'application/json'
     assert response.headers['Server'] == 'nginx'
     transaction_id = response.json()['transaction_id']

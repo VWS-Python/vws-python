@@ -9,7 +9,6 @@ import base64
 import datetime
 import email.utils
 import io
-import json
 import random
 import statistics
 import uuid
@@ -23,7 +22,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes, TargetStatuses
-from mock_vws._mock_common import Route
+from mock_vws._mock_common import Route, json_dump
 
 from ._constants import States
 from ._validators import (
@@ -88,7 +87,7 @@ def parse_target_id(
             'result_code': ResultCodes.UNKNOWN_TARGET.value,
         }
         context.status_code = codes.NOT_FOUND
-        return json.dumps(body)
+        return json_dump(body)
 
     new_args = args + (matching_target, )
     return wrapped(*new_args, **kwargs)
@@ -399,7 +398,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_NAME_EXIST.value,
             }
-            return json.dumps(body)
+            return json_dump(body)
 
         active_flag = request.json().get('active_flag')
         if active_flag is None:
@@ -424,7 +423,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'result_code': ResultCodes.TARGET_CREATED.value,
             'target_id': new_target.target_id,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     @route(path_pattern='/targets/.+', http_methods=[DELETE])
     def delete_target(
@@ -447,7 +446,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_STATUS_PROCESSING.value,
             }
-            return json.dumps(body)
+            return json_dump(body)
 
         self.targets = [
             item for item in self.targets if item.target_id != target.target_id
@@ -457,7 +456,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.SUCCESS.value,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     @route(path_pattern='/summary', http_methods=[GET])
     def database_summary(
@@ -519,7 +518,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'request_quota': '',
             'request_usage': '',
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     @route(path_pattern='/targets', http_methods=[GET])
     def target_list(
@@ -540,7 +539,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'result_code': ResultCodes.SUCCESS.value,
             'results': results,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     @route(path_pattern='/targets/.+', http_methods=[GET])
     def get_target(
@@ -570,7 +569,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'target_record': target_record,
             'status': target.status,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     @route(path_pattern='/duplicates/.+', http_methods=[GET])
     def get_duplicates(
@@ -601,7 +600,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'similar_targets': similar_targets,
         }
 
-        return json.dumps(body)
+        return json_dump(body)
 
     @route(
         path_pattern='/targets/.+',
@@ -634,7 +633,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
                 'transaction_id': uuid.uuid4().hex,
                 'result_code': ResultCodes.TARGET_STATUS_NOT_SUCCESS.value,
             }
-            return json.dumps(body)
+            return json_dump(body)
 
         if 'width' in request.json():
             target.width = request.json()['width']
@@ -647,7 +646,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
                     'result_code': ResultCodes.FAIL.value,
                 }
                 context.status_code = codes.BAD_REQUEST
-                return json.dumps(body)
+                return json_dump(body)
             target.active_flag = active_flag
 
         if 'application_metadata' in request.json():
@@ -657,7 +656,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
                     'result_code': ResultCodes.FAIL.value,
                 }
                 context.status_code = codes.BAD_REQUEST
-                return json.dumps(body)
+                return json_dump(body)
 
         if 'name' in request.json():
             name = request.json()['name']
@@ -668,7 +667,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
                     'transaction_id': uuid.uuid4().hex,
                     'result_code': ResultCodes.TARGET_NAME_EXIST.value,
                 }
-                return json.dumps(body)
+                return json_dump(body)
             target.name = name
 
         # In the real implementation, the tracking rating can stay the same.
@@ -683,7 +682,7 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'result_code': ResultCodes.SUCCESS.value,
             'transaction_id': uuid.uuid4().hex,
         }
-        return json.dumps(body)
+        return json_dump(body)
 
     @route(path_pattern='/summary/.+', http_methods=[GET])
     def target_summary(
@@ -711,4 +710,4 @@ class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
             'current_month_recos': '',
             'previous_month_recos': '',
         }
-        return json.dumps(body)
+        return json_dump(body)
