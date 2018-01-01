@@ -74,7 +74,7 @@ class MockVuforiaWebQueryAPI:
     def query(  # pylint: disable=no-self-use
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
-        context: _Context,  # pylint: disable=unused-argument
+        context: _Context,
     ) -> bytes:
         """
         Perform an image recognition query.
