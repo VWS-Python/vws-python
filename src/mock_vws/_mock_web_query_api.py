@@ -5,7 +5,8 @@ See
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 """
 
-import json
+import email.utils
+import gzip
 import uuid
 from typing import Callable, List, Set
 
@@ -14,7 +15,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes
-from mock_vws._mock_common import Route
+from mock_vws._mock_common import Route, json_dump
 
 ROUTES = set([])
 
@@ -75,7 +76,7 @@ class MockVuforiaWebQueryAPI:
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
-    ) -> str:
+    ) -> bytes:
         """
         Perform an image recognition query.
         """
@@ -85,4 +86,11 @@ class MockVuforiaWebQueryAPI:
             'results': results,
             'query_id': uuid.uuid4().hex,
         }
-        return json.dumps(body)
+
+        text = json_dump(body)
+        context.headers['Content-Encoding'] = 'gzip'
+        date = email.utils.formatdate(None, localtime=False, usegmt=True)
+        context.headers['Date'] = date
+        value = gzip.compress(text.encode())
+        context.headers['Content-Length'] = str(len(value))
+        return value

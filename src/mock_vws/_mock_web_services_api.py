@@ -7,7 +7,6 @@ https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Service
 
 import base64
 import datetime
-import email.utils
 import io
 import random
 import statistics
@@ -94,14 +93,14 @@ def parse_target_id(
 
 
 @wrapt.decorator
-def headers(
+def set_content_length_header(
     wrapped: Callable[..., str],
     instance: 'MockVuforiaWebServicesAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict
 ) -> str:
     """
-    Set the `Content-Length` and `Date` headers.
+    Set the `Content-Length` header.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -116,8 +115,6 @@ def headers(
 
     result = wrapped(*args, **kwargs)
     context.headers['Content-Length'] = str(len(result))
-    date = email.utils.formatdate(None, localtime=False, usegmt=True)
-    context.headers['Date'] = date
     return result
 
 
@@ -175,7 +172,7 @@ def route(
                 validate_not_invalid_json,
                 validate_date,
                 validate_auth_header_exists,
-                headers,
+                set_content_length_header,
             ]
         else:
             decorators = [
@@ -196,7 +193,7 @@ def route(
                 validate_date,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
-                headers,
+                set_content_length_header,
             ]
 
         for decorator in decorators:
