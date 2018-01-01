@@ -63,7 +63,7 @@ class MockVuforiaWebQueryAPI:
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    def __init__(self, ) -> None:
+    def __init__(self) -> None:
         """
         Attributes:
             routes: The `Route`s to be used in the mock.
