@@ -4,9 +4,7 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
-import copy
 import io
-import re
 from string import hexdigits
 from urllib.parse import urljoin
 

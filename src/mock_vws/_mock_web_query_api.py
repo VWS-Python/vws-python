@@ -6,9 +6,10 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import email.utils
-import json
+import gzip
 import re
 import uuid
+from io import BytesIO
 from typing import Callable, List, Set
 
 from requests_mock import POST
@@ -90,6 +91,11 @@ class MockVuforiaWebQueryAPI:
 
         text = json_dump(body)
         context.headers['Content-Length'] = str(len(re.escape(text)))
+        context.headers['Content-Encoding'] = 'gzip'
         date = email.utils.formatdate(None, localtime=False, usegmt=True)
         context.headers['Date'] = date
-        return text
+        out = BytesIO()
+        with gzip.GzipFile(fileobj=out, mode='w') as f:
+            f.write(text.encode())
+
+        return out.getvalue()

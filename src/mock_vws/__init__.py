@@ -141,7 +141,7 @@ class MockVWS(ContextDecorator):
                     mock.register_uri(
                         method=http_method,
                         url=re.compile(url_pattern),
-                        text=getattr(mock_vwq_api, route.route_name),
+                        content=getattr(mock_vwq_api, route.route_name),
                         headers=vwq_headers,
                     )
 
