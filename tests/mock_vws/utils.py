@@ -76,48 +76,26 @@ class TargetAPIEndpoint:
 
     def __init__(
         self,
-        example_path: str,
-        method: str,
+        prepared_request: requests.Request,
         successful_headers_result_code: ResultCodes,
         successful_headers_status_code: int,
-        content_type: Optional[str],
-        content: bytes,
     ) -> None:
         """
         Args:
-            example_path: An example path for calling the endpoint.
-            method: The HTTP method for the endpoint.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
-            content: The data to send with the request.
-            content_type: The `Content-Type` header to send, and the content
-                type to use to create the `Authorization` header.
 
         Attributes:
-            example_path: An example path for calling the endpoint.
-            method: The HTTP method for the endpoint.
-            content_type: The `Content-Type` header to send, or `None` if one
-                should not be sent.
-            content: The data to send with the request.
-            url: The URL to call the path with.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
         """
-        self.example_path = example_path
-        self.method = method
-        self.content_type = content_type
-        self.content = content
-        scheme = 'https://'
-        host = 'vws.vuforia.com'
-        base = scheme + host
-        self.url = urljoin(base, example_path)
+        self.prepared_request = prepared_request
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
-        self.host = host
 
 
 def assert_vws_failure(
@@ -264,7 +242,7 @@ def add_target_to_vws(
 
     response = requests.request(
         method=POST,
-        url=urljoin('https://vws.vuforia.com/', request_path),
+        url=urljoin(base='https://vws.vuforia.com/', path=request_path),
         headers=headers,
         data=content,
     )

@@ -4,12 +4,15 @@ Configuration, plugins and fixtures for `pytest`.
 
 import base64
 import io
+import json
 import os
 import random
 import uuid
 from typing import Any, Dict, Generator
+from urllib.parse import urljoin
 
 import pytest
+import requests
 from _pytest.fixtures import SubRequest
 from PIL import Image
 from requests import codes
@@ -22,9 +25,13 @@ from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
     add_target_to_vws,
+    authorization_header,
+    rfc_1123_date,
     target_api_request,
 )
 
+
+VWS_HOST = 'https://vws.vuforia.com'
 
 def _image_file(
     file_format: str,
@@ -359,20 +366,50 @@ def verify_mock_vuforia_inactive(
 
 
 @pytest.fixture()
-def add_target() -> TargetAPIEndpoint:
+def add_target(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for adding a target.
     """
+    date = rfc_1123_date()
     data: Dict[str, Any] = {}
-    return TargetAPIEndpoint(
-        example_path='/targets',
+    request_path = '/targets'
+    content_type = 'application/json'
+
+    content = bytes(json.dumps(data), encoding='utf-8')
+
+    authorization_string = authorization_header(
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
         method=POST,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type,
+    }
+
+    request = requests.Request(
+        method=POST,
+        url=urljoin(base=VWS_HOST, url=request_path),
+        headers=headers,
+        data=content,
+    )
+
+    prepared_request = request.prepare()
+
+    return TargetAPIEndpoint(
         # We expect a bad request error because we have not given the required
         # JSON body elements.
         successful_headers_status_code=codes.BAD_REQUEST,
         successful_headers_result_code=ResultCodes.FAIL,
-        content_type='application/json',
-        content=bytes(str(data), encoding='utf-8'),
+        prepared_request=prepared_request,
     )
 
 
@@ -490,11 +527,11 @@ def update_target() -> TargetAPIEndpoint:
 
 @pytest.fixture(
     params=[
-        'delete_target',
-        'get_target',
-        'get_duplicates',
-        'target_summary',
-        'update_target',
+        # 'delete_target',
+        # 'get_target',
+        # 'get_duplicates',
+        # 'target_summary',
+        # 'update_target',
     ]
 )
 def endpoint_which_takes_target_id(request: SubRequest) -> TargetAPIEndpoint:
@@ -529,7 +566,7 @@ def endpoint_no_data(request: SubRequest) -> TargetAPIEndpoint:
 
 @pytest.fixture(params=[
     'add_target',
-    'update_target',
+    # 'update_target',
 ])
 def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
     """
@@ -544,13 +581,13 @@ def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
 @pytest.fixture(
     params=[
         'add_target',
-        'database_summary',
-        'delete_target',
-        'get_duplicates',
-        'get_target',
-        'target_list',
-        'target_summary',
-        'update_target',
+        # 'database_summary',
+        # 'delete_target',
+        # 'get_duplicates',
+        # 'get_target',
+        # 'target_list',
+        # 'target_summary',
+        # 'update_target',
     ]
 )
 def endpoint(request: SubRequest) -> TargetAPIEndpoint:
