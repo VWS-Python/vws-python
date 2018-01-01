@@ -113,7 +113,7 @@ class TestQuery:
 
         # The headers returned are non-deterministic. We therefore run this
         # test multiple times in order to exercise multiple code paths.
-        for i in range(10):
+        for _ in range(10):
             with requests.request(
                 method=POST,
                 url=url,

@@ -111,17 +111,12 @@ class MockVWS(ContextDecorator):
             'Date': date,
         }
 
-        url_scheme = 'https://'
-        vws_api_host = 'vws.vuforia.com'
-        vwq_api_host = 'cloudreco.vuforia.com'
-
-        vws_api_base = url_scheme + vws_api_host
-        vwq_api_base = url_scheme + vwq_api_host
-
         with Mocker(real_http=self._real_http) as mock:
             for route in mock_vws_api.routes:
-                base = vws_api_base
-                url_pattern = urljoin(base=base, url=route.path_pattern + '$')
+                url_pattern = urljoin(
+                    base='https://vws.vuforia.com',
+                    url=route.path_pattern + '$',
+                )
 
                 for http_method in route.http_methods:
                     mock.register_uri(
@@ -132,8 +127,10 @@ class MockVWS(ContextDecorator):
                     )
 
             for route in mock_vwq_api.routes:
-                base = vwq_api_base
-                url_pattern = urljoin(base=base, url=route.path_pattern + '$')
+                url_pattern = urljoin(
+                    base='https://cloudreco.vuforia.com',
+                    url=route.path_pattern + '$',
+                )
 
                 for http_method in route.http_methods:
                     mock.register_uri(
