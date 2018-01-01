@@ -7,7 +7,6 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 
 import email.utils
 import gzip
-import re
 import uuid
 from io import BytesIO
 from typing import Callable, List, Set
