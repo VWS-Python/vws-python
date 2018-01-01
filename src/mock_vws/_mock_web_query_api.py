@@ -90,7 +90,6 @@ class MockVuforiaWebQueryAPI:
         }
 
         text = json_dump(body)
-        context.headers['Content-Length'] = str(len(re.escape(text)))
         context.headers['Content-Encoding'] = 'gzip'
         date = email.utils.formatdate(None, localtime=False, usegmt=True)
         context.headers['Date'] = date
@@ -98,4 +97,6 @@ class MockVuforiaWebQueryAPI:
         with gzip.GzipFile(fileobj=out, mode='w') as f:
             f.write(text.encode())
 
+        value = out.getvalue()
+        context.headers['Content-Length'] = str(len(value))
         return out.getvalue()
