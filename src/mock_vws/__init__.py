@@ -6,6 +6,7 @@ import re
 import uuid
 from contextlib import ContextDecorator
 from urllib.parse import urljoin
+import email.utils
 
 from typing import Any, Callable, Optional, Tuple, Union
 
@@ -101,16 +102,13 @@ class MockVWS(ContextDecorator):
 
         mock_vwq_api = MockVuforiaWebQueryAPI()
 
-        vws_headers = {
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/json',
-            'Server': 'nginx',
-        }
+        date = email.utils.formatdate(None, localtime=False, usegmt=True)
 
-        vwq_headers = {
+        headers = {
             'Connection': 'keep-alive',
             'Content-Type': 'application/json',
             'Server': 'nginx',
+            'Date': date,
         }
 
         url_scheme = 'https://'
@@ -130,7 +128,7 @@ class MockVWS(ContextDecorator):
                         method=http_method,
                         url=re.compile(url_pattern),
                         text=getattr(mock_vws_api, route.route_name),
-                        headers=vws_headers,
+                        headers=headers,
                     )
 
             for route in mock_vwq_api.routes:
@@ -142,7 +140,7 @@ class MockVWS(ContextDecorator):
                         method=http_method,
                         url=re.compile(url_pattern),
                         content=getattr(mock_vwq_api, route.route_name),
-                        headers=vwq_headers,
+                        headers=headers,
                     )
 
         self._mock = mock
