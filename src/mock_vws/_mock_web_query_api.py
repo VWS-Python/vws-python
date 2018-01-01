@@ -5,7 +5,6 @@ See
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 """
 
-import email.utils
 import gzip
 import uuid
 from typing import Callable, List, Set
@@ -89,8 +88,6 @@ class MockVuforiaWebQueryAPI:
 
         text = json_dump(body)
         context.headers['Content-Encoding'] = 'gzip'
-        date = email.utils.formatdate(None, localtime=False, usegmt=True)
-        context.headers['Date'] = date
         value = gzip.compress(text.encode())
         context.headers['Content-Length'] = str(len(value))
         return value
