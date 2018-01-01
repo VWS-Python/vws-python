@@ -8,7 +8,6 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import email.utils
 import gzip
 import uuid
-from io import BytesIO
 from typing import Callable, List, Set
 
 from requests_mock import POST
@@ -77,7 +76,7 @@ class MockVuforiaWebQueryAPI:
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
-    ) -> str:
+    ) -> bytes:
         """
         Perform an image recognition query.
         """
@@ -92,10 +91,6 @@ class MockVuforiaWebQueryAPI:
         context.headers['Content-Encoding'] = 'gzip'
         date = email.utils.formatdate(None, localtime=False, usegmt=True)
         context.headers['Date'] = date
-        out = BytesIO()
-        with gzip.GzipFile(fileobj=out, mode='w') as f:
-            f.write(text.encode())
-
-        value = out.getvalue()
+        value = gzip.compress(text.encode())
         context.headers['Content-Length'] = str(len(value))
-        return out.getvalue()
+        return value
