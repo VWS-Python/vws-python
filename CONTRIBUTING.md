@@ -129,6 +129,9 @@ However, other [Vuforia Web Services documentation](https://library.vuforia.com/
 The documentation page [How To Perform an Image Recognition Query](https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query) states that the `Content-Type` header must be set to `multipart/form-data`.
 However, it must be set to `multipart/form-data; boundary=<BOUNDARY>` where `<BOUNDARY>` is the boundary used when encoding the form data.
 
+The documentation page [How To Perform an Image Recognition Query](https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query) states that `Content-Type` with be the only response header.
+This is not the case.
+
 ## Performing a release
 
 There is currently no release process.
