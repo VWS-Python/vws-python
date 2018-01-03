@@ -13,8 +13,6 @@ import pytest
 import requests
 from requests import Response, codes
 from requests_mock import PUT
-
-from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
@@ -25,6 +23,8 @@ from tests.mock_vws.utils import (
     rfc_1123_date,
     wait_for_target_processed,
 )
+
+from mock_vws._constants import ResultCodes, TargetStatuses
 
 
 def update_target(

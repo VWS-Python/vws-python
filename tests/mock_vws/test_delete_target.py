@@ -5,8 +5,6 @@ Tests for deleting targets.
 import pytest
 from requests import codes
 from requests_mock import DELETE
-
-from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     assert_vws_failure,
@@ -14,6 +12,8 @@ from tests.mock_vws.utils import (
     target_api_request,
     wait_for_target_processed,
 )
+
+from mock_vws._constants import ResultCodes
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

@@ -9,8 +9,6 @@ import pytest
 import requests
 from freezegun import freeze_time
 from requests import codes
-
-from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
@@ -19,6 +17,8 @@ from tests.mock_vws.utils import (
     authorization_header,
     rfc_1123_date,
 )
+
+from mock_vws._constants import ResultCodes
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -118,27 +118,24 @@ class TestDateHeader:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
-        signature_string = authorization_header(
+        authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
+            method=endpoint.prepared_request.method,
+            content=endpoint.prepared_request.body,
+            content_type=endpoint.prepared_request.headers['Content-Type'],
             date='',
-            request_path=endpoint.example_path
+            request_path=endpoint.prepared_request.path_url,
         )
 
-        headers: Dict[str, Union[bytes, str]] = {
-            'Authorization': signature_string,
+        headers = {
+            'Authorization': authorization_string,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=endpoint.content,
+        endpoint.prepared_request.prepare_headers(headers=headers)
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
@@ -163,26 +160,24 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
+            method=endpoint.prepared_request.method,
+            content=endpoint.prepared_request.body,
+            content_type=endpoint.prepared_request.headers['Content-Type'],
             date=date_incorrect_format,
-            request_path=endpoint.example_path
+            request_path=endpoint.prepared_request.path_url,
         )
 
         headers = {
             'Authorization': authorization_string,
             'Date': date_incorrect_format,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=endpoint.content,
+        endpoint.prepared_request.prepare_headers(headers=headers)
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
+
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
@@ -190,7 +185,9 @@ class TestDateHeader:
         )
 
     @pytest.mark.parametrize(
-        'time_multiplier', [1, -1], ids=(['After', 'Before'])
+        'time_multiplier',
+        [1, -1],
+        ids=(['After', 'Before']),
     )
     def test_date_out_of_range(
         self,
@@ -229,7 +226,7 @@ class TestDateHeader:
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
-        )  # type: ignore
+        )
 
         assert_vws_failure(
             response=response,

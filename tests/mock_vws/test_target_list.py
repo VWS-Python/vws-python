@@ -5,13 +5,13 @@ Tests for the mock of the target list endpoint.
 import pytest
 from requests import codes
 from requests_mock import GET
-
-from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     assert_vws_response,
     target_api_request,
 )
+
+from mock_vws._constants import ResultCodes
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

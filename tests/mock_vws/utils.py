@@ -10,7 +10,7 @@ import hmac
 import json
 from string import hexdigits
 from time import sleep
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from urllib.parse import urljoin
 
 import requests
@@ -242,7 +242,7 @@ def add_target_to_vws(
 
     response = requests.request(
         method=POST,
-        url=urljoin(base='https://vws.vuforia.com/', path=request_path),
+        url=urljoin(base='https://vws.vuforia.com/', url=request_path),
         headers=headers,
         data=content,
     )

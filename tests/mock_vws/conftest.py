@@ -18,9 +18,6 @@ from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
-
-from mock_vws import MockVWS, States
-from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
@@ -30,8 +27,11 @@ from tests.mock_vws.utils import (
     target_api_request,
 )
 
+from mock_vws import MockVWS, States
+from mock_vws._constants import ResultCodes
 
 VWS_HOST = 'https://vws.vuforia.com'
+
 
 def _image_file(
     file_format: str,

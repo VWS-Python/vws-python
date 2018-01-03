@@ -9,8 +9,6 @@ import io
 
 import pytest
 from requests import codes
-
-from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
@@ -18,6 +16,8 @@ from tests.mock_vws.utils import (
     get_vws_target,
     wait_for_target_processed,
 )
+
+from mock_vws._constants import ResultCodes, TargetStatuses
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

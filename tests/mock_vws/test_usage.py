@@ -15,9 +15,6 @@ from hypothesis import given
 from hypothesis.strategies import text
 from requests import codes
 from requests_mock.exceptions import NoMockAddress
-
-from mock_vws import MockVWS
-from mock_vws._constants import TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
@@ -25,6 +22,9 @@ from tests.mock_vws.utils import (
     get_vws_target,
     rfc_1123_date,
 )
+
+from mock_vws import MockVWS
+from mock_vws._constants import TargetStatuses
 
 
 def request_unmocked_address() -> None:
