@@ -3,7 +3,6 @@ Tests for when endpoints are called with unexpected header data.
 """
 
 from datetime import datetime, timedelta
-from typing import Dict, Union
 
 import pytest
 import requests
@@ -275,7 +274,9 @@ class TestDateHeader:
 
         endpoint.prepared_request.prepare_headers(headers=headers)
         session = requests.Session()
-        response = session.send(request=endpoint.prepared_request)
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
+        )
 
         assert_vws_response(
             response=response,
