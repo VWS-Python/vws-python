@@ -110,12 +110,14 @@ class TestDateHeader:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
+        content_type = endpoint.prepared_request.headers.get('Content-Type', '')
+
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.prepared_request.method,
             content=endpoint.prepared_request.body,
-            content_type=endpoint.prepared_request.headers['Content-Type'],
+            content_type=content_type,
             date='',
             request_path=endpoint.prepared_request.path_url,
         )

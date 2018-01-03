@@ -376,13 +376,14 @@ def add_target(
     data: Dict[str, Any] = {}
     request_path = '/targets'
     content_type = 'application/json'
+    method = POST
 
     content = bytes(json.dumps(data), encoding='utf-8')
 
     authorization_string = authorization_header(
         access_key=vuforia_database_keys.server_access_key,
         secret_key=vuforia_database_keys.server_secret_key,
-        method=POST,
+        method=method,
         content=content,
         content_type=content_type,
         date=date,
@@ -396,13 +397,13 @@ def add_target(
     }
 
     request = requests.Request(
-        method=POST,
+        method=method,
         url=urljoin(base=VWS_HOST, url=request_path),
         headers=headers,
         data=content,
     )
 
-    prepared_request = request.prepare()
+    prepared_request = request.prepare()  # type: ignore
 
     return TargetAPIEndpoint(
         # We expect a bad request error because we have not given the required
@@ -430,17 +431,44 @@ def delete_target() -> TargetAPIEndpoint:
 
 
 @pytest.fixture()
-def database_summary() -> TargetAPIEndpoint:
+def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting details about the database.
     """
+    date = rfc_1123_date()
+    request_path = '/summary'
+    method = GET
+
+    content = b''
+
+    authorization_string = authorization_header(
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
+        method=method,
+        content=content,
+        content_type='',
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+    }
+
+    request = requests.Request(
+        method=method,
+        url=urljoin(base=VWS_HOST, url=request_path),
+        headers=headers,
+        data=content,
+    )
+
+    prepared_request = request.prepare()  # type: ignore
+
     return TargetAPIEndpoint(
-        example_path='/summary',
-        method=GET,
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
-        content_type=None,
-        content=b'',
+        prepared_request=prepared_request,
     )
 
 
@@ -581,7 +609,7 @@ def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
 @pytest.fixture(
     params=[
         'add_target',
-        # 'database_summary',
+        'database_summary',
         # 'delete_target',
         # 'get_duplicates',
         # 'get_target',
