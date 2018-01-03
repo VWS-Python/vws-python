@@ -30,11 +30,10 @@ class TestHeaders:
         """
         When no headers are given, an `UNAUTHORIZED` response is returned.
         """
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers={},
-            data=endpoint.content,
+        endpoint.prepared_request.prepare_headers(headers={})
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
         assert_vws_failure(
             response=response,
@@ -54,18 +53,16 @@ class TestAuthorizationHeader:
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
         """
+        date = rfc_1123_date()
+
         headers = {
-            'Date': rfc_1123_date(),
+            'Date': date,
         }
 
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
-
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=endpoint.content,
+        endpoint.prepared_request.prepare_headers(headers=headers)
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
@@ -80,20 +77,16 @@ class TestAuthorizationHeader:
         response is given.
         """
         date = rfc_1123_date()
-        signature_string = 'gibberish'
 
         headers = {
-            'Authorization': signature_string,
+            'Authorization': 'gibberish',
             'Date': date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=endpoint.content,
+        endpoint.prepared_request.prepare_headers(headers=headers)
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
