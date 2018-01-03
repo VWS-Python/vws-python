@@ -213,26 +213,23 @@ class TestDateHeader:
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
+            method=endpoint.prepared_request.method,
+            content=endpoint.prepared_request.body,
+            content_type=endpoint.prepared_request.headers['Content-Type'],
             date=date,
-            request_path=endpoint.example_path,
+            request_path=endpoint.prepared_request.path_url,
         )
 
         headers = {
             'Authorization': authorization_string,
             'Date': date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=endpoint.content,
-        )
+        endpoint.prepared_request.prepare_headers(headers=headers)
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
+        )  # type: ignore
 
         assert_vws_failure(
             response=response,
