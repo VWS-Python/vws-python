@@ -259,7 +259,9 @@ class TestDateHeader:
         )
 
     @pytest.mark.parametrize(
-        'time_multiplier', [1, -1], ids=(['After', 'Before'])
+        'time_multiplier',
+        [1, -1],
+        ids=(['After', 'Before']),
     )
     def test_date_in_range(
         self,

@@ -726,6 +726,7 @@ def update_target(
         prepared_request=prepared_request,
     )
 
+
 @pytest.fixture(
     params=[
         # 'delete_target',
