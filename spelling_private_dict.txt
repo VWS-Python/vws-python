@@ -4,6 +4,7 @@ ascii
 bool
 boolean
 bytesio
+chunked
 cmyk
 connectionerror
 datetime
