@@ -635,6 +635,7 @@ def target_list(
         prepared_request=prepared_request,
     )
 
+
 @pytest.fixture()
 def target_summary(
     vuforia_database_keys: VuforiaDatabaseKeys,
@@ -680,21 +681,50 @@ def target_summary(
 
 
 @pytest.fixture()
-def update_target() -> TargetAPIEndpoint:
+def update_target(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for updating a target.
     """
     data: Dict[str, Any] = {}
-    example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
-    return TargetAPIEndpoint(
-        example_path=example_path,
-        method=PUT,
-        successful_headers_status_code=codes.NOT_FOUND,
-        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
-        content_type='application/json',
-        content=bytes(str(data), encoding='utf-8'),
+    request_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    content = bytes(str(data), encoding='utf-8')
+    content_type = 'application/json'
+
+    date = rfc_1123_date()
+    method = PUT
+
+    authorization_string = authorization_header(
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
+        method=method,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
     )
 
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type,
+    }
+
+    request = requests.Request(
+        method=method,
+        url=urljoin(base=VWS_HOST, url=request_path),
+        headers=headers,
+        data=content,
+    )
+
+    prepared_request = request.prepare()  # type: ignore
+
+    return TargetAPIEndpoint(
+        successful_headers_status_code=codes.NOT_FOUND,
+        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        prepared_request=prepared_request,
+    )
 
 @pytest.fixture(
     params=[
@@ -751,14 +781,14 @@ def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
 
 @pytest.fixture(
     params=[
-        'add_target',
-        'database_summary',
-        'delete_target',
-        'get_duplicates',
-        'get_target',
-        'target_list',
-        'target_summary',
-        # 'update_target',
+        # 'add_target',
+        # 'database_summary',
+        # 'delete_target',
+        # 'get_duplicates',
+        # 'get_target',
+        # 'target_list',
+        # 'target_summary',
+        'update_target',
     ]
 )
 def endpoint(request: SubRequest) -> TargetAPIEndpoint:

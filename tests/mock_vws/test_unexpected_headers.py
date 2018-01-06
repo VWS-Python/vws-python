@@ -56,8 +56,11 @@ class TestAuthorizationHeader:
         date = rfc_1123_date()
 
         headers = {
+            **endpoint.prepared_request.headers,
             'Date': date,
         }
+
+        headers.pop('Authorization', None)
 
         endpoint.prepared_request.prepare_headers(headers=headers)
         session = requests.Session()
@@ -79,6 +82,7 @@ class TestAuthorizationHeader:
         date = rfc_1123_date()
 
         headers = {
+            **endpoint.prepared_request.headers,
             'Authorization': 'gibberish',
             'Date': date,
         }
@@ -128,8 +132,11 @@ class TestDateHeader:
         )
 
         headers = {
+            **endpoint.prepared_request.headers,
             'Authorization': authorization_string,
         }
+
+        headers.pop('Date', None)
 
         endpoint.prepared_request.prepare_headers(headers=headers)
         session = requests.Session()
@@ -173,6 +180,7 @@ class TestDateHeader:
         )
 
         headers = {
+            **endpoint.prepared_request.headers,
             'Authorization': authorization_string,
             'Date': date_incorrect_format,
         }
@@ -229,6 +237,7 @@ class TestDateHeader:
         )
 
         headers = {
+            **endpoint.prepared_request.headers,
             'Authorization': authorization_string,
             'Date': date,
         }
@@ -286,6 +295,7 @@ class TestDateHeader:
         )
 
         headers = {
+            **endpoint.prepared_request.headers,
             'Authorization': authorization_string,
             'Date': date,
         }
