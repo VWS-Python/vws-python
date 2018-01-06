@@ -3,6 +3,7 @@ Tests for when endpoints are called with unexpected header data.
 """
 
 from datetime import datetime, timedelta
+from typing import Dict, Union
 
 import pytest
 import requests
@@ -20,26 +21,26 @@ from tests.mock_vws.utils import (
 )
 
 
-# @pytest.mark.usefixtures('verify_mock_vuforia')
-# class TestHeaders:
-#     """
-#     Tests for what happens when the headers are not as expected.
-#     """
-#
-#     def test_empty(self, endpoint: TargetAPIEndpoint) -> None:
-#         """
-#         When no headers are given, an `UNAUTHORIZED` response is returned.
-#         """
-#         endpoint.prepared_request.prepare_headers(headers={})
-#         session = requests.Session()
-#         response = session.send(  # type: ignore
-#             request=endpoint.prepared_request,
-#         )
-#         assert_vws_failure(
-#             response=response,
-#             status_code=codes.UNAUTHORIZED,
-#             result_code=ResultCodes.AUTHENTICATION_FAILURE,
-#         )
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestHeaders:
+    """
+    Tests for what happens when the headers are not as expected.
+    """
+
+    def test_empty(self, endpoint: TargetAPIEndpoint) -> None:
+        """
+        When no headers are given, an `UNAUTHORIZED` response is returned.
+        """
+        endpoint.prepared_request.prepare_headers(headers={})  # type: ignore
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
+        )
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNAUTHORIZED,
+            result_code=ResultCodes.AUTHENTICATION_FAILURE,
+        )
 #
 #
 # @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -106,50 +107,50 @@ class TestDateHeader:
     Tests for what happens when the `Date` header isn't as expected.
     """
 
-    # def test_no_date_header(
-    #     self,
-    #     vuforia_database_keys: VuforiaDatabaseKeys,
-    #     endpoint: TargetAPIEndpoint,
-    # ) -> None:
-    #     """
-    #     A `BAD_REQUEST` response is returned when no `Date` header is given.
-    #     """
-    #     content_type = str(endpoint.prepared_request.headers.get(
-    #         key='Content-Type',
-    #         default='',
-    #     ))
-    #
-    #     content = endpoint.prepared_request.body or b''
-    #
-    #     authorization_string = authorization_header(
-    #         access_key=vuforia_database_keys.server_access_key,
-    #         secret_key=vuforia_database_keys.server_secret_key,
-    #         method=endpoint.prepared_request.method,
-    #         content=content,
-    #         content_type=content_type,
-    #         date='',
-    #         request_path=endpoint.prepared_request.path_url,
-    #     )
-    #
-    #     headers = {
-    #         **endpoint.prepared_request.headers,
-    #         'Authorization': authorization_string,
-    #     }
-    #
-    #     headers.pop('Date', None)
-    #
-    #     endpoint.prepared_request.prepare_headers(headers=headers)
-    #     session = requests.Session()
-    #     response = session.send(  # type: ignore
-    #         request=endpoint.prepared_request,
-    #     )
-    #
-    #     assert_vws_failure(
-    #         response=response,
-    #         status_code=codes.BAD_REQUEST,
-    #         result_code=ResultCodes.FAIL,
-    #     )
-    #
+    def test_no_date_header(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        endpoint: TargetAPIEndpoint,
+    ) -> None:
+        """
+        A `BAD_REQUEST` response is returned when no `Date` header is given.
+        """
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
+        content = endpoint.prepared_request.body or b''
+        assert isinstance(content, bytes)
+
+        authorization_string = authorization_header(
+            access_key=vuforia_database_keys.server_access_key,
+            secret_key=vuforia_database_keys.server_secret_key,
+            method=str(endpoint.prepared_request.method),
+            content=content,
+            content_type=content_type,
+            date='',
+            request_path=endpoint.prepared_request.path_url,
+        )
+
+        headers: Dict[str, Union[str, bytes]] = {
+            **endpoint_headers,
+            'Authorization': authorization_string,
+        }
+        headers.pop('Date', None)
+
+        endpoint.prepared_request.prepare_headers(  # type: ignore
+            headers=headers,
+        )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
     def test_incorrect_date_format(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
