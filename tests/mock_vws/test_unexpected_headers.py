@@ -284,16 +284,16 @@ class TestDateHeader:
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
-        content_type = endpoint.prepared_request.headers.get(
-            key='Content-Type',
-            default='',
-        )
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
         content = endpoint.prepared_request.body or b''
+        assert isinstance(content, bytes)
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.prepared_request.method,
+            method=str(endpoint.prepared_request.method),
             content=content,
             content_type=content_type,
             date=date,
@@ -301,12 +301,14 @@ class TestDateHeader:
         )
 
         headers = {
-            **endpoint.prepared_request.headers,
+            **endpoint_headers,
             'Authorization': authorization_string,
             'Date': date,
         }
 
-        endpoint.prepared_request.prepare_headers(headers=headers)
+        endpoint.prepared_request.prepare_headers(  # type: ignore
+            headers=headers,
+        )
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
