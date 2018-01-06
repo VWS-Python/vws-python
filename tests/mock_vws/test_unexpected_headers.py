@@ -8,6 +8,8 @@ import pytest
 import requests
 from freezegun import freeze_time
 from requests import codes
+
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
@@ -16,8 +18,6 @@ from tests.mock_vws.utils import (
     authorization_header,
     rfc_1123_date,
 )
-
-from mock_vws._constants import ResultCodes
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -110,13 +110,18 @@ class TestDateHeader:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
-        content_type = endpoint.prepared_request.headers.get('Content-Type', '')
+        content_type = endpoint.prepared_request.headers.get(
+            key='Content-Type',
+            default='',
+        )
+
+        content = endpoint.prepared_request.body or b''
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.prepared_request.method,
-            content=endpoint.prepared_request.body,
+            content=content,
             content_type=content_type,
             date='',
             request_path=endpoint.prepared_request.path_url,
@@ -151,12 +156,18 @@ class TestDateHeader:
             date_incorrect_format = datetime.now(
             ).strftime('%a %b %d %H:%M:%S %Y')
 
+        content_type = endpoint.prepared_request.headers.get(
+            key='Content-Type',
+            default='',
+        )
+        content = endpoint.prepared_request.body or b''
+
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.prepared_request.method,
-            content=endpoint.prepared_request.body,
-            content_type=endpoint.prepared_request.headers['Content-Type'],
+            content=content,
+            content_type=content_type,
             date=date_incorrect_format,
             request_path=endpoint.prepared_request.path_url,
         )
@@ -201,12 +212,18 @@ class TestDateHeader:
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
+        content_type = endpoint.prepared_request.headers.get(
+            key='Content-Type',
+            default='',
+        )
+        content = endpoint.prepared_request.body or b''
+
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.prepared_request.method,
-            content=endpoint.prepared_request.body,
-            content_type=endpoint.prepared_request.headers['Content-Type'],
+            content=content,
+            content_type=content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )
@@ -252,12 +269,18 @@ class TestDateHeader:
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
+        content_type = endpoint.prepared_request.headers.get(
+            key='Content-Type',
+            default='',
+        )
+        content = endpoint.prepared_request.body or b''
+
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
             method=endpoint.prepared_request.method,
-            content=endpoint.prepared_request.body,
-            content_type=endpoint.prepared_request.headers['Content-Type'],
+            content=content,
+            content_type=content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )

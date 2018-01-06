@@ -18,6 +18,9 @@ from PIL import Image
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
 from retrying import retry
+
+from mock_vws import MockVWS, States
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
@@ -26,9 +29,6 @@ from tests.mock_vws.utils import (
     rfc_1123_date,
     target_api_request,
 )
-
-from mock_vws import MockVWS, States
-from mock_vws._constants import ResultCodes
 
 VWS_HOST = 'https://vws.vuforia.com'
 
@@ -431,7 +431,9 @@ def delete_target() -> TargetAPIEndpoint:
 
 
 @pytest.fixture()
-def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> TargetAPIEndpoint:
+def database_summary(
+    vuforia_database_keys: VuforiaDatabaseKeys
+) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting details about the database.
     """

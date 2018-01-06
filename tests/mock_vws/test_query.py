@@ -12,13 +12,14 @@ import pytest
 import requests
 from requests import Response, codes
 from requests_mock import POST
+from urllib3.filepost import encode_multipart_formdata
+
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     assert_valid_date_header,
     authorization_header,
     rfc_1123_date,
 )
-from urllib3.filepost import encode_multipart_formdata
 
 
 def assert_success(response: Response) -> None:

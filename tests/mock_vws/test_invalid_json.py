@@ -8,6 +8,8 @@ import pytest
 import requests
 from freezegun import freeze_time
 from requests import codes
+
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
@@ -15,8 +17,6 @@ from tests.mock_vws.utils import (
     authorization_header,
     rfc_1123_date,
 )
-
-from mock_vws._constants import ResultCodes
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
