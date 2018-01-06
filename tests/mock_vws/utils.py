@@ -76,7 +76,7 @@ class TargetAPIEndpoint:
 
     def __init__(
         self,
-        prepared_request: requests.Request,
+        prepared_request: requests.PreparedRequest,
         successful_headers_result_code: ResultCodes,
         successful_headers_status_code: int,
     ) -> None:
