@@ -415,18 +415,45 @@ def add_target(
 
 
 @pytest.fixture()
-def delete_target() -> TargetAPIEndpoint:
+def delete_target(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for deleting a target.
     """
-    example_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    date = rfc_1123_date()
+    target_id = uuid.uuid4().hex
+    request_path = f'/targets/{target_id}'
+    method = DELETE
+    content = b''
+
+    authorization_string = authorization_header(
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
+        method=method,
+        content=content,
+        content_type='',
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+    }
+
+    request = requests.Request(
+        method=method,
+        url=urljoin(base=VWS_HOST, url=request_path),
+        headers=headers,
+        data=content,
+    )
+
+    prepared_request = request.prepare()  # type: ignore
     return TargetAPIEndpoint(
-        example_path=example_path,
-        method=DELETE,
         successful_headers_status_code=codes.NOT_FOUND,
         successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
-        content_type=None,
-        content=b'',
+        prepared_request=prepared_request,
     )
 
 
@@ -612,7 +639,7 @@ def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
     params=[
         'add_target',
         'database_summary',
-        # 'delete_target',
+        'delete_target',
         # 'get_duplicates',
         # 'get_target',
         # 'target_list',
