@@ -752,39 +752,6 @@ def update_target(
 
 @pytest.fixture(
     params=[
-        'delete_target',
-        'get_target',
-        'get_duplicates',
-        'target_summary',
-        'update_target',
-    ]
-)
-def endpoint_which_takes_target_id(request: SubRequest) -> TargetAPIEndpoint:
-    """
-    Return details of an endpoint which takes a target ID in the path.
-    """
-    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param
-    )
-    return endpoint_fixture
-
-
-@pytest.fixture(params=[
-    'add_target',
-    'update_target',
-])
-def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
-    """
-    Return details of an endpoint which takes JSON data.
-    """
-    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param
-    )
-    return endpoint_fixture
-
-
-@pytest.fixture(
-    params=[
         'add_target',
         'database_summary',
         'delete_target',
