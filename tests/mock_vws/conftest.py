@@ -7,7 +7,6 @@ import io
 import json
 import os
 import random
-import uuid
 from typing import Any, Dict, Generator
 from urllib.parse import urljoin
 
@@ -510,13 +509,17 @@ def database_summary(
 @pytest.fixture()
 def get_duplicates(
     vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting potential duplicates of a
     target.
     """
+    wait_for_target_processed(
+        vuforia_database_keys=vuforia_database_keys,
+        target_id=target_id,
+    )
     date = rfc_1123_date()
-    target_id = uuid.uuid4().hex
     request_path = f'/duplicates/{target_id}'
     method = GET
 
@@ -547,8 +550,8 @@ def get_duplicates(
     prepared_request = request.prepare()  # type: ignore
 
     return TargetAPIEndpoint(
-        successful_headers_status_code=codes.NOT_FOUND,
-        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
     )
 
@@ -556,12 +559,16 @@ def get_duplicates(
 @pytest.fixture()
 def get_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting details of a target.
     """
+    wait_for_target_processed(
+        vuforia_database_keys=vuforia_database_keys,
+        target_id=target_id,
+    )
     date = rfc_1123_date()
-    target_id = uuid.uuid4().hex
     request_path = f'/targets/{target_id}'
     method = GET
 
@@ -592,8 +599,8 @@ def get_target(
     prepared_request = request.prepare()  # type: ignore
 
     return TargetAPIEndpoint(
-        successful_headers_status_code=codes.NOT_FOUND,
-        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
     )
 
@@ -645,12 +652,17 @@ def target_list(
 @pytest.fixture()
 def target_summary(
     vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting a summary report of a target.
     """
+    wait_for_target_processed(
+        vuforia_database_keys=vuforia_database_keys,
+        target_id=target_id,
+    )
     date = rfc_1123_date()
-    request_path = '/summary/{target_id}'.format(target_id=uuid.uuid4().hex)
+    request_path = f'/summary/{target_id}'
     method = GET
 
     content = b''
@@ -680,8 +692,8 @@ def target_summary(
     prepared_request = request.prepare()  # type: ignore
 
     return TargetAPIEndpoint(
-        successful_headers_status_code=codes.NOT_FOUND,
-        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
     )
 
@@ -689,12 +701,17 @@ def target_summary(
 @pytest.fixture()
 def update_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for updating a target.
     """
+    wait_for_target_processed(
+        vuforia_database_keys=vuforia_database_keys,
+        target_id=target_id,
+    )
     data: Dict[str, Any] = {}
-    request_path = '/targets/{target_id}'.format(target_id=uuid.uuid4().hex)
+    request_path = f'/targets/{target_id}'
     content = bytes(str(data), encoding='utf-8')
     content_type = 'application/json'
 
@@ -727,8 +744,8 @@ def update_target(
     prepared_request = request.prepare()  # type: ignore
 
     return TargetAPIEndpoint(
-        successful_headers_status_code=codes.NOT_FOUND,
-        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
     )
 
