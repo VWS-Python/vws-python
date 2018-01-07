@@ -22,29 +22,6 @@ from tests.mock_vws.utils import (
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestHeaders:
-    """
-    Tests for what happens when the headers are not as expected.
-    """
-
-    def test_empty(self, endpoint: TargetAPIEndpoint) -> None:
-        """
-        When no headers are given, an `UNAUTHORIZED` response is returned.
-        """
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers={},
-            data=endpoint.content,
-        )
-        assert_vws_failure(
-            response=response,
-            status_code=codes.UNAUTHORIZED,
-            result_code=ResultCodes.AUTHENTICATION_FAILURE,
-        )
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAuthorizationHeader:
     """
     Tests for what happens when the `Authorization` header isn't as expected.
@@ -55,18 +32,22 @@ class TestAuthorizationHeader:
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
         """
-        headers = {
-            'Date': rfc_1123_date(),
+        date = rfc_1123_date()
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+
+        headers: Dict[str, Union[str, bytes]] = {
+            **endpoint_headers,
+            'Date': date,
         }
 
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
+        headers.pop('Authorization', None)
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
+        endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
-            data=endpoint.content,
+        )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
@@ -81,20 +62,19 @@ class TestAuthorizationHeader:
         response is given.
         """
         date = rfc_1123_date()
-        signature_string = 'gibberish'
 
-        headers = {
-            'Authorization': signature_string,
+        headers: Dict[str, Union[str, bytes]] = {
+            **endpoint.prepared_request.headers,
+            'Authorization': 'gibberish',
             'Date': date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
+        endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
-            data=endpoint.content,
+        )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
@@ -118,27 +98,34 @@ class TestDateHeader:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
-        signature_string = authorization_header(
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
+        content = endpoint.prepared_request.body or b''
+        assert isinstance(content, bytes)
+
+        authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
+            method=str(endpoint.prepared_request.method),
+            content=content,
+            content_type=content_type,
             date='',
-            request_path=endpoint.example_path
+            request_path=endpoint.prepared_request.path_url,
         )
 
-        headers: Dict[str, Union[bytes, str]] = {
-            'Authorization': signature_string,
+        headers: Dict[str, Union[str, bytes]] = {
+            **endpoint_headers,
+            'Authorization': authorization_string,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
+        headers.pop('Date', None)
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
+        endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
-            data=endpoint.content,
+        )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
@@ -157,32 +144,39 @@ class TestDateHeader:
         header is not in the expected format (RFC 1123).
         """
         with freeze_time(datetime.now()):
-            date_incorrect_format = datetime.now(
-            ).strftime('%a %b %d %H:%M:%S %Y')
+            now = datetime.now()
+            date_incorrect_format = now.strftime('%a %b %d %H:%M:%S %Y')
+
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
+        content = endpoint.prepared_request.body or b''
+        assert isinstance(content, bytes)
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
+            method=str(endpoint.prepared_request.method),
+            content=content,
+            content_type=content_type,
             date=date_incorrect_format,
-            request_path=endpoint.example_path
+            request_path=endpoint.prepared_request.path_url,
         )
 
         headers = {
+            **endpoint_headers,
             'Authorization': authorization_string,
             'Date': date_incorrect_format,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
+        endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
-            data=endpoint.content,
         )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
+        )
+
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
@@ -190,7 +184,9 @@ class TestDateHeader:
         )
 
     @pytest.mark.parametrize(
-        'time_multiplier', [1, -1], ids=(['After', 'Before'])
+        'time_multiplier',
+        [1, -1],
+        ids=(['After', 'Before']),
     )
     def test_date_out_of_range(
         self,
@@ -210,28 +206,34 @@ class TestDateHeader:
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
+        content = endpoint.prepared_request.body or b''
+        assert isinstance(content, bytes)
+
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
+            method=str(endpoint.prepared_request.method),
+            content=content,
+            content_type=content_type,
             date=date,
-            request_path=endpoint.example_path,
+            request_path=endpoint.prepared_request.path_url,
         )
 
         headers = {
+            **endpoint_headers,
             'Authorization': authorization_string,
             'Date': date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
+        endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
-            data=endpoint.content,
+        )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
@@ -241,7 +243,9 @@ class TestDateHeader:
         )
 
     @pytest.mark.parametrize(
-        'time_multiplier', [1, -1], ids=(['After', 'Before'])
+        'time_multiplier',
+        [1, -1],
+        ids=(['After', 'Before']),
     )
     def test_date_in_range(
         self,
@@ -264,28 +268,34 @@ class TestDateHeader:
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
 
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
+        content = endpoint.prepared_request.body or b''
+        assert isinstance(content, bytes)
+
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
+            method=str(endpoint.prepared_request.method),
+            content=content,
+            content_type=content_type,
             date=date,
-            request_path=endpoint.example_path,
+            request_path=endpoint.prepared_request.path_url,
         )
 
         headers = {
+            **endpoint_headers,
             'Authorization': authorization_string,
             'Date': date,
         }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
+        endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
-            data=endpoint.content,
+        )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_response(

@@ -10,13 +10,13 @@ import hmac
 import json
 from string import hexdigits
 from time import sleep
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from urllib.parse import urljoin
 
 import requests
 import timeout_decorator
 from requests import Response
-from requests_mock import GET, POST
+from requests_mock import DELETE, GET, POST
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 
@@ -69,55 +69,35 @@ class VuforiaDatabaseKeys:
         self.database_name = database_name
 
 
-class TargetAPIEndpoint:  # pylint: disable=too-many-instance-attributes
+class TargetAPIEndpoint:
     """
     Details of endpoints to be called in tests.
     """
 
     def __init__(
         self,
-        example_path: str,
-        method: str,
+        prepared_request: requests.PreparedRequest,
         successful_headers_result_code: ResultCodes,
         successful_headers_status_code: int,
-        content_type: Optional[str],
-        content: bytes,
     ) -> None:
         """
         Args:
-            example_path: An example path for calling the endpoint.
-            method: The HTTP method for the endpoint.
+            prepared_request: A request to make which would be successful.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
-            content: The data to send with the request.
-            content_type: The `Content-Type` header to send, and the content
-                type to use to create the `Authorization` header.
 
         Attributes:
-            example_path: An example path for calling the endpoint.
-            method: The HTTP method for the endpoint.
-            content_type: The `Content-Type` header to send, or `None` if one
-                should not be sent.
-            content: The data to send with the request.
-            url: The URL to call the path with.
+            prepared_request: A request to make which would be successful.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
         """
-        self.example_path = example_path
-        self.method = method
-        self.content_type = content_type
-        self.content = content
-        scheme = 'https://'
-        host = 'vws.vuforia.com'
-        base = scheme + host
-        self.url = urljoin(base, example_path)
+        self.prepared_request = prepared_request
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
-        self.host = host
 
 
 def assert_vws_failure(
@@ -264,7 +244,7 @@ def add_target_to_vws(
 
     response = requests.request(
         method=POST,
-        url=urljoin('https://vws.vuforia.com/', request_path),
+        url=urljoin(base='https://vws.vuforia.com/', url=request_path),
         headers=headers,
         data=content,
     )
@@ -476,3 +456,35 @@ def target_api_request(
     )
 
     return response
+
+
+def delete_target(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
+) -> None:
+    """
+    Delete a given target.
+
+    Args:
+        vuforia_database_keys: The credentials to the Vuforia target database
+            to delete the target in.
+        target_id: The ID of the target to delete.
+
+    Raises:
+        AssertionError: The deletion was not a success.
+    """
+    wait_for_target_processed(
+        vuforia_database_keys=vuforia_database_keys,
+        target_id=target_id,
+    )
+
+    response = target_api_request(
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
+        method=DELETE,
+        content=b'',
+        request_path=f'/targets/{target_id}'
+    )
+
+    result_code = response.json()['result_code']
+    assert result_code == ResultCodes.SUCCESS.value

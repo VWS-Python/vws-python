@@ -25,99 +25,79 @@ class TestInvalidJSON:
     Tests for giving invalid JSON to endpoints.
     """
 
-    def test_does_not_take_data(
+    @pytest.mark.parametrize('date_skew_minutes', [0, 10])
+    def test_invalid_json(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint_no_data: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
+        date_skew_minutes: int,
     ) -> None:
         """
-        Giving invalid JSON to endpoints which do not take any JSON data
-        returns error responses.
+        Giving invalid JSON to endpoints returns error responses.
         """
-        endpoint = endpoint_no_data
-        content = b'a'
-        date = rfc_1123_date()
-        assert not endpoint.content_type
-
-        authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=content,
-            content_type='',
-            date=date,
-            request_path=endpoint.example_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-        }
-
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=content,
-        )
-
+        date_is_skewed = not date_skew_minutes == 0
         # This is an undocumented difference between `/summary` and other
         # endpoints.
-        if endpoint.example_path == '/summary':
-            assert_vws_failure(
-                response=response,
-                status_code=codes.UNAUTHORIZED,
-                result_code=ResultCodes.AUTHENTICATION_FAILURE,
-            )
-
-        else:
-            assert response.status_code == codes.BAD_REQUEST
-            assert response.text == ''
-            assert 'Content-Type' not in response.headers
-
-    def test_does_not_take_data_skewed_time(  # pylint: disable=invalid-name
-        self,
-        vuforia_database_keys:
-        VuforiaDatabaseKeys,
-        endpoint_no_data: TargetAPIEndpoint,
-    ) -> None:
-        """
-        Of the endpoints which do not take data, only `/summary` gives a
-        `REQUEST_TIME_TOO_SKEWED` error if invalid JSON is given at with a
-        skewed date.
-        """
-        endpoint = endpoint_no_data
+        is_summary_endpoint = endpoint.prepared_request.path_url == '/summary'
         content = b'a'
-        assert not endpoint.content_type
-
-        with freeze_time(datetime.now() + timedelta(minutes=10)):
+        time_to_freeze = datetime.now() + timedelta(minutes=date_skew_minutes)
+        with freeze_time(time_to_freeze):
             date = rfc_1123_date()
 
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
+        takes_data = bool(content_type)
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
             secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
+            method=str(endpoint.prepared_request.method),
             content=content,
-            content_type='',
+            content_type=content_type,
             date=date,
-            request_path=endpoint.example_path,
+            request_path=endpoint.prepared_request.path_url,
         )
 
         headers = {
+            **endpoint_headers,
             'Authorization': authorization_string,
             'Date': date,
         }
 
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
+        endpoint.prepared_request.prepare_body(  # type: ignore
             data=content,
+            files=None,
         )
 
-        # This is an undocumented difference between `/summary` and other
-        # endpoints.
-        if endpoint.example_path == '/summary':
+        endpoint.prepared_request.prepare_headers(  # type: ignore
+            headers=headers,
+        )
+        endpoint.prepared_request.prepare_content_length(  # type: ignore
+            body=content,
+        )
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
+        )
+
+        if date_is_skewed and takes_data:
+            # On the real implementation, we get `codes.FORBIDDEN` and
+            # `REQUEST_TIME_TOO_SKEWED`.
+            # See https://github.com/adamtheturtle/vws-python/issues/407 for
+            # implementing this on them mock.
+            return
+
+        if not date_is_skewed and takes_data:
+            assert_vws_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
+                result_code=ResultCodes.FAIL,
+            )
+            return
+
+        if date_is_skewed and is_summary_endpoint:
             assert_vws_failure(
                 response=response,
                 status_code=codes.FORBIDDEN,
@@ -125,48 +105,14 @@ class TestInvalidJSON:
             )
             return
 
+        if not date_is_skewed and is_summary_endpoint:
+            assert_vws_failure(
+                response=response,
+                status_code=codes.UNAUTHORIZED,
+                result_code=ResultCodes.AUTHENTICATION_FAILURE,
+            )
+            return
+
         assert response.status_code == codes.BAD_REQUEST
         assert response.text == ''
         assert 'Content-Type' not in response.headers
-
-    def test_takes_data(
-        self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint_which_takes_data: TargetAPIEndpoint,
-    ) -> None:
-        """
-        Giving invalid JSON to endpoints which do take JSON data returns error
-        responses.
-        """
-        endpoint = endpoint_which_takes_data
-        content = b'a'
-        date = rfc_1123_date()
-
-        authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=content,
-            content_type=endpoint.content_type or '',
-            date=date,
-            request_path=endpoint.example_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': endpoint.content_type,
-        }
-
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=content,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
-        )
