@@ -71,7 +71,7 @@ class MockVuforiaWebQueryAPI:
         self.routes: Set[Route] = ROUTES
 
     @route(path_pattern='/v1/query', http_methods=[POST])
-    def query(  # pylint: disable=no-self-use
+    def query(
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
