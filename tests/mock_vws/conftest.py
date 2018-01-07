@@ -377,7 +377,7 @@ def add_target(
 @pytest.fixture()
 def _delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
-    target_id: str,
+    target_id: str,  # pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for deleting a target.
@@ -468,7 +468,7 @@ def database_summary(
 @pytest.fixture()
 def get_duplicates(
     vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
-    target_id: str,
+    target_id: str,  # pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting potential duplicates of a
@@ -518,7 +518,7 @@ def get_duplicates(
 @pytest.fixture()
 def get_target(
     vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
-    target_id: str,
+    target_id: str,  # pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting details of a target.
@@ -611,7 +611,7 @@ def target_list(
 @pytest.fixture()
 def target_summary(
     vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
-    target_id: str,
+    target_id: str,  # pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting a summary report of a target.
@@ -660,7 +660,7 @@ def target_summary(
 @pytest.fixture()
 def update_target(
     vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
-    target_id: str,
+    target_id: str,  # pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for updating a target.
