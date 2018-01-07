@@ -8,7 +8,7 @@ from contextlib import ContextDecorator
 from urllib.parse import urljoin
 import email.utils
 
-from typing import Any, Callable, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 from requests_mock.mocker import Mocker
 
@@ -74,15 +74,6 @@ class MockVWS(ContextDecorator):
         self.server_access_key = server_access_key
         self.server_secret_key = server_secret_key
         self.database_name = database_name
-
-    def __call__(  # pylint: disable=useless-super-delegation
-        self,
-        func: Callable[..., Any],
-    ) -> Any:
-        """
-        Override call to allow a wrapped function to return any type.
-        """
-        return super(MockVWS, self).__call__(func)
 
     def __enter__(self) -> 'MockVWS':
         """
