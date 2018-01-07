@@ -1,5 +1,5 @@
 """
-XXX
+Fixtures for images.
 """
 
 import io
