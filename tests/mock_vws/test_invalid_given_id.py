@@ -11,9 +11,7 @@ from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
     assert_vws_failure,
-    authorization_header,
     delete_target,
-    rfc_1123_date,
 )
 
 
