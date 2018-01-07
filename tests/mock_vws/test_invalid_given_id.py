@@ -12,6 +12,7 @@ from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     assert_vws_failure,
     delete_target,
+    wait_for_target_processed,
 )
 
 
@@ -25,14 +26,19 @@ class TestInvalidGivenID:
     def test_not_real_id(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        target_summary: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
         target_id: str,
     ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
-        endpoint = target_summary
+        if not endpoint.prepared_request.path_url.endswith(target_id):
+            return
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
         delete_target(
             vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
