@@ -215,7 +215,7 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     targets = response.json()['results']
 
     for target in targets:
-        delete_target(database_keys=database_keys, target_id=target)
+        delete_target(vuforia_database_keys=database_keys, target_id=target)
 
 
 @pytest.fixture()
