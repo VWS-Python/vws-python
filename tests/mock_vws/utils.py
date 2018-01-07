@@ -482,9 +482,4 @@ def delete_target(
     )
 
     result_code = response.json()['result_code']
-
-    acceptable_results = (
-        ResultCodes.SUCCESS.value,
-        ResultCodes.UNKNOWN_TARGET.value,
-    )
-    assert result_code in acceptable_results
+    assert result_code == ResultCodes.SUCCESS.value
