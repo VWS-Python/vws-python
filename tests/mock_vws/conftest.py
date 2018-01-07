@@ -50,6 +50,9 @@ def _image_file(
         color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
         width: The width, in pixels of the image.
         height: The width, in pixels of the image.
+
+    Returns:
+        An image file in the given format and color space.
     """
     image_buffer = io.BytesIO()
     image = Image.new(color_space, (width, height))
@@ -324,7 +327,7 @@ def verify_mock_vuforia_inactive(
 
 @pytest.fixture()
 def add_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for adding a target.
@@ -373,7 +376,7 @@ def add_target(
 
 @pytest.fixture()
 def _delete_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
     target_id: str,
 ) -> TargetAPIEndpoint:
     """
@@ -420,7 +423,7 @@ def _delete_target(
 
 @pytest.fixture()
 def database_summary(
-    vuforia_database_keys: VuforiaDatabaseKeys
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting details about the database.
@@ -464,7 +467,7 @@ def database_summary(
 
 @pytest.fixture()
 def get_duplicates(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
     target_id: str,
 ) -> TargetAPIEndpoint:
     """
@@ -514,7 +517,7 @@ def get_duplicates(
 
 @pytest.fixture()
 def get_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
     target_id: str,
 ) -> TargetAPIEndpoint:
     """
@@ -563,7 +566,7 @@ def get_target(
 
 @pytest.fixture()
 def target_list(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for getting a list of targets.
@@ -607,7 +610,7 @@ def target_list(
 
 @pytest.fixture()
 def target_summary(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
     target_id: str,
 ) -> TargetAPIEndpoint:
     """
@@ -656,7 +659,7 @@ def target_summary(
 
 @pytest.fixture()
 def update_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,
+    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
     target_id: str,
 ) -> TargetAPIEndpoint:
     """
