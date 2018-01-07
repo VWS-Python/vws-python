@@ -8,14 +8,29 @@ python:
   - "3.6"
 
 env:
+  # Travis has a maximum test run time of 70 minutes.
+  # In order to avoid this and to see failures faster, we run multiple builds
+  # per commit.
   matrix:
-    - SKIP_REAL=1
-    - SKIP_MOCK=1
+      - "TEST_FILENAME=test_add_target.py"
+      - "TEST_FILENAME=test_database_summary.py"
+      - "TEST_FILENAME=test_delete_target.py"
+      - "TEST_FILENAME=test_get_duplicates.py"
+      - "TEST_FILENAME=test_get_target.py"
+      - "TEST_FILENAME=test_invalid_given_id.py"
+      - "TEST_FILENAME=test_invalid_json.py"
+      - "TEST_FILENAME=test_query.py"
+      - "TEST_FILENAME=test_target_list.py"
+      - "TEST_FILENAME=test_target_summary.py"
+      - "TEST_FILENAME=test_unexpected_headers.py"
+      - "TEST_FILENAME=test_unexpected_json.py"
+      - "TEST_FILENAME=test_update_target.py"
+      - "TEST_FILENAME=test_usage.py"
 
 addons:
   apt:
     packages:
-    - "enchant"
+        - "enchant"
 
 before_install:
     - "travis_retry pip install --upgrade pip setuptools"
@@ -44,7 +59,7 @@ before_script:
        fi"
 
 script:
-    - "pytest --exitfirst -vvv --cov=src --cov=tests"
+    - 'pytest --exitfirst -vvv tests/mock_vws/"$TEST_FILENAME" --cov=src --cov=tests'
 
 after_success:
     - "codecov"
