@@ -68,8 +68,11 @@ enable=spelling
 # --disable=W"
 
 disable=
+    no-self-use,
     line-too-long,
     too-few-public-methods,
+    too-many-locals,
+    too-many-arguments,
     locally-disabled,
     # Let flake8 handle unused imports
     unused-import,

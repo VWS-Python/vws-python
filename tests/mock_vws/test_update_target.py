@@ -40,6 +40,7 @@ def update_target(
         vuforia_database_keys: The credentials to use to connect to
             Vuforia.
         data: The data to send, in JSON format, to the endpoint.
+        target_id: The ID of the target to update.
         content_type: The `Content-Type` header to use.
 
     Returns:

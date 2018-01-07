@@ -326,7 +326,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         return 0
 
 
-class MockVuforiaWebServicesAPI:  # pylint: disable=no-self-use
+class MockVuforiaWebServicesAPI:
     """
     A fake implementation of the Vuforia Web Services API.
 
