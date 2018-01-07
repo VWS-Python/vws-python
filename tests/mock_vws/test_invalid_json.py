@@ -53,7 +53,13 @@ class TestInvalidJSON:
         headers = {
             **endpoint_headers,
             'Authorization': authorization_string,
+            'Date': date,
         }
+
+        endpoint.prepared_request.prepare_body(  # type: ignore
+            data=content,
+            files=None,
+        )
 
         endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
