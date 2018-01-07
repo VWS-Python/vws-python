@@ -25,16 +25,20 @@ class TestInvalidJSON:
     Tests for giving invalid JSON to endpoints.
     """
 
+    @pytest.mark.parametrize('date_skew_minutes', [0, 10])
     def test_does_not_take_data(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: TargetAPIEndpoint,
+        date_skew_minutes: int,
     ) -> None:
         """
         Giving invalid JSON to endpoints returns error responses.
         """
         content = b'a'
-        date = rfc_1123_date()
+        time_to_freeze = datetime.now() + timedelta(minutes=date_skew_minutes)
+        with freeze_time(time_to_freeze):
+            date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content_type = endpoint_headers.get('Content-Type', '')
@@ -81,68 +85,20 @@ class TestInvalidJSON:
         # This is an undocumented difference between `/summary` and other
         # endpoints.
         if endpoint.prepared_request.path_url == '/summary':
+            if date_skew_minutes == 0:
+                assert_vws_failure(
+                    response=response,
+                    status_code=codes.UNAUTHORIZED,
+                    result_code=ResultCodes.AUTHENTICATION_FAILURE,
+                )
+                return
             assert_vws_failure(
                 response=response,
-                status_code=codes.UNAUTHORIZED,
-                result_code=ResultCodes.AUTHENTICATION_FAILURE,
+                status_code=codes.FORBIDDEN,
+                result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
             )
             return
 
         assert response.status_code == codes.BAD_REQUEST
         assert response.text == ''
         assert 'Content-Type' not in response.headers
-
-    # def test_does_not_take_data_skewed_time(  # pylint: disable=invalid-name
-    #     self,
-    #     vuforia_database_keys:
-    #     VuforiaDatabaseKeys,
-    #     endpoint_no_data: TargetAPIEndpoint,
-    # ) -> None:
-    #     """
-    #     Of the endpoints which do not take data, only `/summary` gives a
-    #     `REQUEST_TIME_TOO_SKEWED` error if invalid JSON is given at with a
-    #     skewed date.
-    #     """
-    #     endpoint = endpoint_no_data
-    #     content = b'a'
-    #     assert not endpoint.content_type
-    #
-    #     with freeze_time(datetime.now() + timedelta(minutes=10)):
-    #         date = rfc_1123_date()
-    #
-    #     authorization_string = authorization_header(
-    #         access_key=vuforia_database_keys.server_access_key,
-    #         secret_key=vuforia_database_keys.server_secret_key,
-    #         method=endpoint.method,
-    #         content=content,
-    #         content_type='',
-    #         date=date,
-    #         request_path=endpoint.example_path,
-    #     )
-    #
-    #     headers = {
-    #         'Authorization': authorization_string,
-    #         'Date': date,
-    #     }
-    #
-    #     response = requests.request(
-    #         method=endpoint.method,
-    #         url=endpoint.url,
-    #         headers=headers,
-    #         data=content,
-    #     )
-    #
-    #     # This is an undocumented difference between `/summary` and other
-    #     # endpoints.
-    #     if endpoint.example_path == '/summary':
-    #         assert_vws_failure(
-    #             response=response,
-    #             status_code=codes.FORBIDDEN,
-    #             result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
-    #         )
-    #         return
-    #
-    #     assert response.status_code == codes.BAD_REQUEST
-    #     assert response.text == ''
-    #     assert 'Content-Type' not in response.headers
-    #
