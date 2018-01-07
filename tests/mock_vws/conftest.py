@@ -729,11 +729,11 @@ def update_target(
 
 @pytest.fixture(
     params=[
-        # 'delete_target',
-        # 'get_target',
-        # 'get_duplicates',
-        # 'target_summary',
-        # 'update_target',
+        'delete_target',
+        'get_target',
+        'get_duplicates',
+        'target_summary',
+        'update_target',
     ]
 )
 def endpoint_which_takes_target_id(request: SubRequest) -> TargetAPIEndpoint:
@@ -768,7 +768,7 @@ def endpoint_no_data(request: SubRequest) -> TargetAPIEndpoint:
 
 @pytest.fixture(params=[
     'add_target',
-    # 'update_target',
+    'update_target',
 ])
 def endpoint_which_takes_data(request: SubRequest) -> TargetAPIEndpoint:
     """
