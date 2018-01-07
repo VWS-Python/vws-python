@@ -12,7 +12,6 @@ from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     assert_vws_failure,
     delete_target,
-    wait_for_target_processed,
 )
 
 

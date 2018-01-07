@@ -22,8 +22,9 @@ from tests.mock_vws.utils import (
     target_api_request,
 )
 
-# from tests.mock_vws.prepared_request_fixtures import *
-pytest_plugins = ['tests.mock_vws.prepared_request_fixtures']
+pytest_plugins = [  # pylint: disable=invalid-name
+    'tests.mock_vws.prepared_request_fixtures',
+]
 
 
 def _image_file(
