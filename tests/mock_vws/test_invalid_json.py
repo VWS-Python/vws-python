@@ -35,6 +35,10 @@ class TestInvalidJSON:
         """
         Giving invalid JSON to endpoints returns error responses.
         """
+        date_is_skewed = not date_skew_minutes == 0
+        # This is an undocumented difference between `/summary` and other
+        # endpoints.
+        is_summary_endpoint = endpoint.prepared_request.path_url == '/summary'
         content = b'a'
         time_to_freeze = datetime.now() + timedelta(minutes=date_skew_minutes)
         with freeze_time(time_to_freeze):
@@ -43,6 +47,7 @@ class TestInvalidJSON:
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content_type = endpoint_headers.get('Content-Type', '')
         assert isinstance(content_type, str)
+        takes_data = bool(content_type)
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
         authorization_string = authorization_header(
@@ -59,6 +64,7 @@ class TestInvalidJSON:
             **endpoint_headers,
             'Authorization': authorization_string,
             'Date': date,
+            'Content-Length': str(len(content)),
         }
 
         endpoint.prepared_request.prepare_body(  # type: ignore
@@ -74,7 +80,15 @@ class TestInvalidJSON:
             request=endpoint.prepared_request,
         )
 
-        if content_type:
+        if date_is_skewed and takes_data:
+            assert_vws_failure(
+                response=response,
+                status_code=codes.FORBIDDEN,
+                result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
+            )
+            return
+
+        if not date_is_skewed and takes_data:
             assert_vws_failure(
                 response=response,
                 status_code=codes.BAD_REQUEST,
@@ -82,20 +96,19 @@ class TestInvalidJSON:
             )
             return
 
-        # This is an undocumented difference between `/summary` and other
-        # endpoints.
-        if endpoint.prepared_request.path_url == '/summary':
-            if date_skew_minutes == 0:
-                assert_vws_failure(
-                    response=response,
-                    status_code=codes.UNAUTHORIZED,
-                    result_code=ResultCodes.AUTHENTICATION_FAILURE,
-                )
-                return
+        if date_is_skewed and is_summary_endpoint:
             assert_vws_failure(
                 response=response,
                 status_code=codes.FORBIDDEN,
                 result_code=ResultCodes.REQUEST_TIME_TOO_SKEWED,
+            )
+            return
+
+        if not date_is_skewed and is_summary_endpoint:
+            assert_vws_failure(
+                response=response,
+                status_code=codes.UNAUTHORIZED,
+                result_code=ResultCodes.AUTHENTICATION_FAILURE,
             )
             return
 
