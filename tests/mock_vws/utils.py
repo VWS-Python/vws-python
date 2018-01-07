@@ -17,7 +17,6 @@ import requests
 import timeout_decorator
 from requests import Response
 from requests_mock import DELETE, GET, POST
-from retrying import retry
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 
@@ -459,10 +458,6 @@ def target_api_request(
     return response
 
 
-@retry(
-    stop_max_delay=2 * 60 * 1000,
-    wait_fixed=3 * 1000,
-)
 def delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
@@ -488,16 +483,8 @@ def delete_target(
 
     result_code = response.json()['result_code']
 
-    error_message = (
-        'Deleting a target failed. '
-        'The result code returned was: {result_code}. '
-        'Perhaps wait and try again. '
-        'However, sometimes targets get stuck on Vuforia, '
-        'and a new testing database is required.'
-    ).format(result_code=result_code)
-
     acceptable_results = (
         ResultCodes.SUCCESS.value,
         ResultCodes.UNKNOWN_TARGET.value,
     )
-    assert result_code in acceptable_results, error_message
+    assert result_code in acceptable_results
