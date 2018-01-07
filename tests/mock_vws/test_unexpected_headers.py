@@ -20,29 +20,6 @@ from tests.mock_vws.utils import (
     rfc_1123_date,
 )
 
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
-class TestHeaders:
-    """
-    Tests for what happens when the headers are not as expected.
-    """
-
-    def test_empty(self, endpoint: TargetAPIEndpoint) -> None:
-        """
-        When no headers are given, an `UNAUTHORIZED` response is returned.
-        """
-        endpoint.prepared_request.prepare_headers(headers={})  # type: ignore
-        session = requests.Session()
-        response = session.send(  # type: ignore
-            request=endpoint.prepared_request,
-        )
-        assert_vws_failure(
-            response=response,
-            status_code=codes.UNAUTHORIZED,
-            result_code=ResultCodes.AUTHENTICATION_FAILURE,
-        )
-
-
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAuthorizationHeader:
     """
