@@ -473,6 +473,11 @@ def delete_target(
     Raises:
         AssertionError: The deletion was not a success.
     """
+    wait_for_target_processed(
+        vuforia_database_keys=vuforia_database_keys,
+        target_id=target_id,
+    )
+
     response = target_api_request(
         server_access_key=vuforia_database_keys.server_access_key,
         server_secret_key=vuforia_database_keys.server_secret_key,

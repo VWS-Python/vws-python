@@ -20,7 +20,6 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     delete_target,
     target_api_request,
-    wait_for_target_processed,
 )
 
 # from tests.mock_vws.prepared_request_fixtures import *
@@ -212,10 +211,6 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     targets = response.json()['results']
 
     for target in targets:
-        wait_for_target_processed(
-            vuforia_database_keys=vuforia_database_keys,
-            target_id=target_id,
-        )
         delete_target(vuforia_database_keys=database_keys, target_id=target)
 
 
