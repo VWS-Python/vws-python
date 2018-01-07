@@ -70,7 +70,7 @@ class VuforiaDatabaseKeys:
         self.database_name = database_name
 
 
-class TargetAPIEndpoint:  # pylint: disable=too-many-instance-attributes
+class TargetAPIEndpoint:
     """
     Details of endpoints to be called in tests.
     """
