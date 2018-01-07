@@ -1,17 +1,13 @@
+"""
+XXX
+"""
+
 import io
 import random
 
 import pytest
 from _pytest.fixtures import SubRequest
 from PIL import Image
-
-from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
-    add_target_to_vws,
-    delete_target,
-    target_api_request,
-)
 
 
 def _image_file(
