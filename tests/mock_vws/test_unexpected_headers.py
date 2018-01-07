@@ -20,6 +20,7 @@ from tests.mock_vws.utils import (
     rfc_1123_date,
 )
 
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestAuthorizationHeader:
     """
