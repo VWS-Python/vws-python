@@ -26,7 +26,7 @@ class TestInvalidJSON:
     """
 
     @pytest.mark.parametrize('date_skew_minutes', [0, 10])
-    def test_does_not_take_data(
+    def test_invalid_json(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: TargetAPIEndpoint,
