@@ -28,6 +28,7 @@ from tests.mock_vws.utils import (
     authorization_header,
     rfc_1123_date,
     target_api_request,
+    wait_for_target_processed,
 )
 
 VWS_HOST = 'https://vws.vuforia.com'
@@ -322,6 +323,7 @@ def verify_mock_vuforia(
             decode('ascii'),
             server_secret_key=vuforia_database_keys.server_secret_key.
             decode('ascii'),
+            processing_time_seconds=0.1,
         ):
             yield
 
@@ -417,12 +419,16 @@ def add_target(
 @pytest.fixture()
 def delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for deleting a target.
     """
+    wait_for_target_processed(
+        vuforia_database_keys=vuforia_database_keys,
+        target_id=target_id,
+    )
     date = rfc_1123_date()
-    target_id = uuid.uuid4().hex
     request_path = f'/targets/{target_id}'
     method = DELETE
     content = b''
@@ -451,8 +457,8 @@ def delete_target(
 
     prepared_request = request.prepare()  # type: ignore
     return TargetAPIEndpoint(
-        successful_headers_status_code=codes.NOT_FOUND,
-        successful_headers_result_code=ResultCodes.UNKNOWN_TARGET,
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
     )
 
