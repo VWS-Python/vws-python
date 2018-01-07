@@ -37,7 +37,7 @@ class TestInvalidGivenID:
         endpoint = target_summary
         delete_target(
             vuforia_database_keys=vuforia_database_keys,
-            target=target_id,
+            target_id=target_id,
         )
         session = requests.Session()
         response = session.send(  # type: ignore
