@@ -83,12 +83,14 @@ class TargetAPIEndpoint:
     ) -> None:
         """
         Args:
+            prepared_request: A request to make which would be successful.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
 
         Attributes:
+            prepared_request: A request to make which would be successful.
             successful_headers_result_code: The expected result code if the
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the

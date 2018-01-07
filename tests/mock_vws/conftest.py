@@ -372,7 +372,7 @@ def add_target(
 
 
 @pytest.fixture()
-def delete_target(
+def _delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
 ) -> TargetAPIEndpoint:
@@ -710,7 +710,7 @@ def update_target(
     params=[
         'add_target',
         'database_summary',
-        'delete_target',
+        '_delete_target',
         'get_duplicates',
         'get_target',
         'target_list',
