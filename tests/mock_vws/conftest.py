@@ -746,26 +746,6 @@ def endpoint_which_takes_target_id(request: SubRequest) -> TargetAPIEndpoint:
     return endpoint_fixture
 
 
-@pytest.fixture(
-    params=[
-        'database_summary',
-        'delete_target',
-        'get_duplicates',
-        'get_target',
-        'target_list',
-        'target_summary',
-    ]
-)
-def endpoint_no_data(request: SubRequest) -> TargetAPIEndpoint:
-    """
-    Return details of an endpoint which does not take any JSON data.
-    """
-    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param
-    )
-    return endpoint_fixture
-
-
 @pytest.fixture(params=[
     'add_target',
     'update_target',
