@@ -2,8 +2,6 @@
 Tests for passing invalid endpoints which require a target ID to be given.
 """
 
-import uuid
-
 import pytest
 import requests
 from requests import codes
@@ -14,6 +12,7 @@ from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     assert_vws_failure,
     authorization_header,
+    delete_target,
     rfc_1123_date,
 )
 
@@ -29,44 +28,20 @@ class TestInvalidGivenID:
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         target_summary: TargetAPIEndpoint,
+        target_id: str,
     ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
         endpoint = target_summary
-        split_path = endpoint.prepared_request.path_url.split('/')
-        last_part = split_path[-1]
-        if len(last_part) != 32:
-            # We assume that only endpoints which take a target ID have a last
-            # part which is 32 characters long.
-            return
-
-        request_path = '/'.join(split_path[:-1] + [uuid.uuid4().hex])
-        date = rfc_1123_date()
-
-        authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
-            method=endpoint.method,
-            content=endpoint.content,
-            content_type=endpoint.content_type or '',
-            date=date,
-            request_path=request_path,
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target=target_id,
         )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-        }
-        if endpoint.content_type is not None:
-            headers['Content-Type'] = endpoint.content_type
-
-        response = requests.request(
-            method=endpoint.method,
-            url=endpoint.url,
-            headers=headers,
-            data=endpoint.content,
+        session = requests.Session()
+        response = session.send(  # type: ignore
+            request=endpoint.prepared_request,
         )
 
         assert_vws_failure(
