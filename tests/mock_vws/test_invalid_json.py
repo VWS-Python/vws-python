@@ -64,7 +64,6 @@ class TestInvalidJSON:
             **endpoint_headers,
             'Authorization': authorization_string,
             'Date': date,
-            'Content-Length': str(len(content)),
         }
 
         endpoint.prepared_request.prepare_body(  # type: ignore
@@ -74,6 +73,9 @@ class TestInvalidJSON:
 
         endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
+        )
+        endpoint.prepared_request.prepare_content_length(  # type: ignore
+            body=content,
         )
         session = requests.Session()
         response = session.send(  # type: ignore

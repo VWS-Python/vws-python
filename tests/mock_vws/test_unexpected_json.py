@@ -66,6 +66,9 @@ class TestUnexpectedJSON:
         endpoint.prepared_request.prepare_headers(  # type: ignore
             headers=headers,
         )
+        endpoint.prepared_request.prepare_content_length(  # type: ignore
+            body=content,
+        )
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
