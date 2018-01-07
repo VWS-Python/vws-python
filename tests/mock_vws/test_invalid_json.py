@@ -28,16 +28,17 @@ class TestInvalidJSON:
     def test_does_not_take_data(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint_no_data: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
-        Giving invalid JSON to endpoints which do not take any JSON data
-        returns error responses.
+        Giving invalid JSON to endpoints returns error responses.
         """
-        endpoint = endpoint_no_data
         content = b'a'
         date = rfc_1123_date()
 
+        endpoint_headers = dict(endpoint.prepared_request.headers)
+        content_type = endpoint_headers.get('Content-Type', '')
+        assert isinstance(content_type, str)
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
         authorization_string = authorization_header(
@@ -45,7 +46,7 @@ class TestInvalidJSON:
             secret_key=vuforia_database_keys.server_secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type='',
+            content_type=content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )
@@ -69,6 +70,14 @@ class TestInvalidJSON:
             request=endpoint.prepared_request,
         )
 
+        if content_type:
+            assert_vws_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
+                result_code=ResultCodes.FAIL,
+            )
+            return
+
         # This is an undocumented difference between `/summary` and other
         # endpoints.
         if endpoint.prepared_request.path_url == '/summary':
@@ -77,11 +86,11 @@ class TestInvalidJSON:
                 status_code=codes.UNAUTHORIZED,
                 result_code=ResultCodes.AUTHENTICATION_FAILURE,
             )
+            return
 
-        else:
-            assert response.status_code == codes.BAD_REQUEST
-            assert response.text == ''
-            assert 'Content-Type' not in response.headers
+        assert response.status_code == codes.BAD_REQUEST
+        assert response.text == ''
+        assert 'Content-Type' not in response.headers
 
     # def test_does_not_take_data_skewed_time(  # pylint: disable=invalid-name
     #     self,
@@ -137,44 +146,3 @@ class TestInvalidJSON:
     #     assert response.text == ''
     #     assert 'Content-Type' not in response.headers
     #
-    # def test_takes_data(
-    #     self,
-    #     vuforia_database_keys: VuforiaDatabaseKeys,
-    #     endpoint_which_takes_data: TargetAPIEndpoint,
-    # ) -> None:
-    #     """
-    #     Giving invalid JSON to endpoints which do take JSON data returns error
-    #     responses.
-    #     """
-    #     endpoint = endpoint_which_takes_data
-    #     content = b'a'
-    #     date = rfc_1123_date()
-    #
-    #     authorization_string = authorization_header(
-    #         access_key=vuforia_database_keys.server_access_key,
-    #         secret_key=vuforia_database_keys.server_secret_key,
-    #         method=endpoint.method,
-    #         content=content,
-    #         content_type=endpoint.content_type or '',
-    #         date=date,
-    #         request_path=endpoint.example_path,
-    #     )
-    #
-    #     headers = {
-    #         'Authorization': authorization_string,
-    #         'Date': date,
-    #         'Content-Type': endpoint.content_type,
-    #     }
-    #
-    #     response = requests.request(
-    #         method=endpoint.method,
-    #         url=endpoint.url,
-    #         headers=headers,
-    #         data=content,
-    #     )
-    #
-    #     assert_vws_failure(
-    #         response=response,
-    #         status_code=codes.BAD_REQUEST,
-    #         result_code=ResultCodes.FAIL,
-    #     )
