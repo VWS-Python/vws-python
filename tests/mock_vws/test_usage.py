@@ -168,7 +168,7 @@ class TestProcessingTime:
                 if status != TargetStatuses.PROCESSING.value:
                     elapsed_time = datetime.datetime.now() - start_time
                     assert elapsed_time < datetime.timedelta(seconds=0.55)
-                    assert elapsed_time > datetime.timedelta(seconds=0.45)
+                    assert elapsed_time > datetime.timedelta(seconds=0.49)
                     return
 
     def test_custom(self, png_rgb: io.BytesIO) -> None:
@@ -211,7 +211,7 @@ class TestProcessingTime:
                 status = response.json()['status']
                 if status != TargetStatuses.PROCESSING.value:
                     elapsed_time = datetime.datetime.now() - start_time
-                    assert elapsed_time < datetime.timedelta(seconds=0.11)
+                    assert elapsed_time < datetime.timedelta(seconds=0.15)
                     assert elapsed_time > datetime.timedelta(seconds=0.09)
                     return
 
