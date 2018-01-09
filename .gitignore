@@ -92,3 +92,9 @@ ENV/
 
 # Files containing secrets
 vuforia_secrets.env
+
+# mypy
+.mypy_cache/
+
+# macOS attributes
+*.DS_Store
