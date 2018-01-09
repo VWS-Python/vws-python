@@ -91,4 +91,4 @@ ENV/
 .ropeproject
 
 # Files containing secrets
-vuforia_secrets.env
+vuforia_secrets*
