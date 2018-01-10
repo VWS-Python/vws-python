@@ -11,6 +11,7 @@ def move_secrets_file() -> None:
     """
     Move the right secrets file to the current directory.
     """
+    print(os.environ)
     branch = os.environ['TRAVIS_BRANCH']
     is_pr = os.environ['TRAVIS_PULL_REQUEST'] != 'false'
     is_master = branch == 'master'
