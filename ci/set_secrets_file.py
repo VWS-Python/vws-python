@@ -2,6 +2,7 @@
 Move the right secrets file into place for Travis CI.
 """
 
+import math
 import os
 import shutil
 from pathlib import Path
@@ -25,7 +26,7 @@ def move_secrets_file() -> None:
 
     travis_build_number = float(os.environ['TRAVIS_BUILD_NUMBER'])
     travis_job_number = float(os.environ['TRAVIS_JOB_NUMBER'])
-    travis_builder_number = travis_job_number - travis_build_number
+    travis_builder_number = math.ceil(travis_job_number - travis_build_number)
     print('TRAVIS NUM')
     print(travis_builder_number)
 
