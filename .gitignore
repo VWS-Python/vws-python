@@ -92,6 +92,8 @@ ENV/
 
 # Files containing secrets
 vuforia_secrets.env
+vuforia_secrets_ci.env
+vuforia_secrets_ci_master.env
 
 # mypy
 .mypy_cache/
