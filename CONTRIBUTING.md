@@ -106,7 +106,6 @@ As such, Travis CI is configured not to run multiple instances of the test suite
 
 ### How to set Travis CI secrets
 
-
 Create environment variable files for secrets:
 
 ```sh
