@@ -20,18 +20,20 @@ def move_secrets_file() -> None:
 
     secrets_dir = Path('ci_secrets')
 
-    if is_master and not is_pr:
-        secrets_path = secrets_dir / 'vuforia_secrets_master.env'
-
     travis_build_number = float(os.environ['TRAVIS_BUILD_NUMBER'])
     travis_job_number = float(os.environ['TRAVIS_JOB_NUMBER'])
     travis_builder_number = math.ceil(
         (travis_job_number - travis_build_number) * 10
     )
 
-    file_number = travis_builder_number % CONCURRENT_BUILDS
-    secrets_path = secrets_dir / f'vuforia_secrets_{file_number}.env'
-    shutil.copy(secrets_path, '.')
+    if is_master and not is_pr:
+        suffix = 'master'
+    else:
+        suffix = str(travis_builder_number % CONCURRENT_BUILDS)
+
+    secrets_path = secrets_dir / f'vuforia_secrets_{suffix}.env'
+
+    shutil.copy(secrets_path, './vuforia_secrets.env')
 
 
 if __name__ == '__main__':

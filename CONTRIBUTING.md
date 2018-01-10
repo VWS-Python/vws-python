@@ -112,6 +112,12 @@ cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_master.env
 
 Add Vuforia credentials to the file `ci_secrets/vuforia_secrets.env` and `ci_secrets/vuforia_secrets_master.env`.
 
+Install the Travis CLI:
+
+```sh
+gem install travis --no-rdoc --no-ri
+```
+
 Add the encrypted secrets files to the repository and Travis CI:
 
 ```sh
