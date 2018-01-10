@@ -127,6 +127,8 @@ git commit -m 'Update secret archive'
 git push
 ```
 
+Note that the [Travis CI documentation](https://docs.travis-ci.com/user/encrypting-files/#Caveat) warns that this might not work on Windows.
+
 ## Learnings about VWS
 
 Vuforia Web Services, at the time of writing, does not behave exactly as documented.
