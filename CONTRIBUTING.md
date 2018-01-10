@@ -117,6 +117,16 @@ cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_master.env
 
 Add Vuforia credentials to the file `ci_secrets/vuforia_secrets.env` and `ci_secrets/vuforia_secrets_master.env`.
 
+Add the encrypted secrets files to the repository and Travis CI:
+
+```sh
+tar cvf secrets.tar ci_secrets/
+travis encrypt-file secrets.tar --add --force
+git add secrets.tar.enc .travis.yml
+git commit -m 'Update secret archive'
+git push
+```
+
 ## Learnings about VWS
 
 Vuforia Web Services, at the time of writing, does not behave exactly as documented.
