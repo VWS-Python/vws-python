@@ -11,7 +11,6 @@ def move_secrets_file() -> None:
     """
     Move the right secrets file to the current directory.
     """
-    print(os.environ)
     branch = os.environ['TRAVIS_BRANCH']
     is_pr = os.environ['TRAVIS_PULL_REQUEST'] != 'false'
     is_master = branch == 'master'
@@ -23,6 +22,10 @@ def move_secrets_file() -> None:
 
     secrets_path = secrets_dir / 'vuforia_secrets.env'
     shutil.copy(secrets_path, '.')
+
+    travis_build_number = int(os.environ['TRAVIS_BUILD_NUMBER'])
+    travis_job_number = int(os.environ['TRAVIS_JOB_NUMBER'])
+    travis_builder_number = travis_job_number - travis_build_number
 
 
 if __name__ == '__main__':
