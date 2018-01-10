@@ -23,9 +23,11 @@ def move_secrets_file() -> None:
     secrets_path = secrets_dir / 'vuforia_secrets.env'
     shutil.copy(secrets_path, '.')
 
-    travis_build_number = int(os.environ['TRAVIS_BUILD_NUMBER'])
-    travis_job_number = int(os.environ['TRAVIS_JOB_NUMBER'])
+    travis_build_number = float(os.environ['TRAVIS_BUILD_NUMBER'])
+    travis_job_number = float(os.environ['TRAVIS_JOB_NUMBER'])
     travis_builder_number = travis_job_number - travis_build_number
+    print('TRAVIS NUM')
+    print(travis_builder_number)
 
 
 if __name__ == '__main__':
