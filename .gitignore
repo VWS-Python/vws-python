@@ -93,6 +93,7 @@ ENV/
 # Files containing secrets
 vuforia_secrets.env
 ci_secrets/
+secrets.tar
 
 # mypy
 .mypy_cache/
