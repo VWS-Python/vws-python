@@ -110,11 +110,12 @@ As such, Travis CI is configured not to run multiple instances of the test suite
 Create environment variable files for secrets:
 
 ```sh
-cp vuforia_secrets.env.example vuforia_secrets_ci.env
-cp vuforia_secrets.env.example vuforia_secrets_ci_master.env
+mkdir -p ci_secrets
+cp vuforia_secrets.env.example ci_secrets/vuforia_secrets.env
+cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_master.env
 ```
 
-Add Vuforia credentials to the file `vuforia_secrets_ci.env` and `vuforia_secrets_ci_master.env`.
+Add Vuforia credentials to the file `ci_secrets/vuforia_secrets.env` and `ci_secrets/vuforia_secrets_master.env`.
 
 ## Learnings about VWS
 
