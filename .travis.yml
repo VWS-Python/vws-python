@@ -34,6 +34,7 @@ cache: pip
 before_script:
 - make lint
 - markdownlint --config .markdownlint.json README.md CONTRIBUTING.md
+- python ci/set_secrets_file.py
 - export SECRETS_FILENAME=vuforia_secrets.env
 - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then export
   SECRETS_FILENAME=vuforia_secrets_master.env; fi
