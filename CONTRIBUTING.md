@@ -100,10 +100,6 @@ This means that when the daily request quota is used, the `master` branch may sh
 Using the request quota on the `master` branch also leaves fewer requests for regular development.
 Therefore, `master` is given its own Vuforia database with separate limits.
 
-All targets are deleted from the database between each test.
-Therefore there may be conflicts if the test suite is run concurrently as Travis CI is configured to connect to one Vuforia database.
-As such, Travis CI is configured not to run multiple instances of the test suite concurrently.
-
 ### How to set Travis CI secrets
 
 Create environment variable files for secrets:
@@ -127,6 +123,12 @@ git push
 ```
 
 Note that the [Travis CI documentation](https://docs.travis-ci.com/user/encrypting-files/#Caveat) warns that this might not work on Windows.
+
+### Travis CI Settings
+
+All targets are deleted from the database between each test.
+Therefore there may be conflicts if the test suite is run concurrently as Travis CI is configured to connect to one Vuforia database.
+As such, Travis CI is configured not to run multiple instances of the test suite concurrently.
 
 ## Learnings about VWS
 
