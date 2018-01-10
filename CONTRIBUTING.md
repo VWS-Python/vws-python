@@ -104,6 +104,18 @@ All targets are deleted from the database between each test.
 Therefore there may be conflicts if the test suite is run concurrently as Travis CI is configured to connect to one Vuforia database.
 As such, Travis CI is configured not to run multiple instances of the test suite concurrently.
 
+### How to set Travis CI secrets
+
+
+Create environment variable files for secrets:
+
+```sh
+cp vuforia_secrets.env.example vuforia_secrets_ci.env
+cp vuforia_secrets.env.example vuforia_secrets_ci_master.env
+```
+
+Add Vuforia credentials to the file `vuforia_secrets_ci.env` and `vuforia_secrets_ci_master.env`.
+
 ## Learnings about VWS
 
 Vuforia Web Services, at the time of writing, does not behave exactly as documented.
