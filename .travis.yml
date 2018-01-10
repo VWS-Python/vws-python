@@ -18,14 +18,24 @@ env:
   - TEST_FILENAME=test_unexpected_json.py
   - TEST_FILENAME=test_update_target.py
   - TEST_FILENAME=test_usage.py
+addons:
+  apt:
+    packages:
+    - enchant
 before_install:
 - openssl aes-256-cbc -K $encrypted_5c29411ed445_key -iv $encrypted_5c29411ed445_iv
   -in secrets.tar.enc -out secrets.tar -d
 - tar xvf secrets.tar
+- travis_retry pip install --upgrade pip setuptools
+install:
+- travis_retry pip install --upgrade --editable .[dev]
+- travis_retry npm install -g markdownlint-cli
 cache: pip
 before_script:
+- make lint
+- markdownlint --config .markdownlint.json README.md CONTRIBUTING.md
 - python ci/set_secrets_file.py
 script:
-- echo 1
+- pytest --exitfirst -vvv tests/mock_vws/"$TEST_FILENAME" --cov=src --cov=tests
 after_success:
 - codecov
