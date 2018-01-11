@@ -24,8 +24,8 @@ def move_secrets_file() -> None:
         num_secrets_files,
         travis_max_concurrent_jobs,
     )
-    print("Possible concurrent builds: " + str(num_possible_concurrent_builds))
-    print("Travis builder number: " + str(travis_builder_number))
+    print('Possible concurrent builds: ' + str(num_possible_concurrent_builds))
+    print('Travis builder number: ' + str(travis_builder_number))
     suffix = str(travis_builder_number % num_possible_concurrent_builds)
     secrets_path = secrets_dir / f'vuforia_secrets_{suffix}.env'
     shutil.copy(secrets_path, './vuforia_secrets.env')
