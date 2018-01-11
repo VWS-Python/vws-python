@@ -94,11 +94,7 @@ The configuration for this is in `.travis.yml`.
 Travis CI is set up with secrets for connecting to Vuforia.
 These variables include those from `vuforia_secrets.env.example`.
 
-They also include another set of variables especially for running the tests on the `master` branch.
-The tests are run daily against the `master` branch.
-This means that when the daily request quota is used, the `master` branch may show as failing on the `README`.
-Using the request quota on the `master` branch also leaves fewer requests for regular development.
-Therefore, `master` is given its own Vuforia database with separate limits.
+To avoid hitting request quotas and to avoid conflicts when running multiple tests in prallel, we use multiple target databases.
 
 ### How to set Travis CI secrets
 
@@ -107,10 +103,14 @@ Create environment variable files for secrets:
 ```sh
 mkdir -p ci_secrets
 cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_0.env
-cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_master.env
+cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_1.env
+...
 ```
 
-Add Vuforia credentials to the file `ci_secrets/vuforia_secrets.env` and `ci_secrets/vuforia_secrets_master.env`.
+Add Vuforia credentials to the new files in the `ci_secrets/` directory.
+The more credentials files there are, the more tests can run in parallel on Travis CI.
+This is up to a maximum of five, as Travis CI allows five concurrent jobs for open source projects.
+
 
 Install the Travis CLI:
 
