@@ -18,7 +18,7 @@ def move_secrets_file() -> None:
         (travis_job_number - travis_build_number) * 10
     )
     secrets_dir = Path('ci_secrets')
-    num_secrets_files = len(list(secrets_dir.glob('*')))
+    num_secrets_files = len(list(secrets_dir.glob('vuforia_secrets_*.env')))
     travis_max_concurrent_jobs = 5
     num_possible_concurrent_builds = min(
         num_secrets_files,
