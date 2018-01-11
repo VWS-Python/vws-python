@@ -111,7 +111,6 @@ Add Vuforia credentials to the new files in the `ci_secrets/` directory.
 The more credentials files there are, the more tests can run in parallel on Travis CI.
 This is up to a maximum of five, as Travis CI allows five concurrent jobs for open source projects.
 
-
 Install the Travis CLI:
 
 ```sh
