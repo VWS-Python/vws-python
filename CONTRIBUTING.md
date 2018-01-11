@@ -107,7 +107,7 @@ cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_1.env
 ...
 ```
 
-Add Vuforia credentials to the new files in the `ci_secrets/` directory.
+Add Vuforia credentials for different target databases to the new files in the `ci_secrets/` directory.
 The more credentials files there are, the more tests can run in parallel on Travis CI.
 This is up to a maximum of five, as Travis CI allows five concurrent jobs for open source projects.
 
@@ -115,6 +115,12 @@ Install the Travis CLI:
 
 ```sh
 gem install travis --no-rdoc --no-ri
+```
+
+Limit the number of concurrent jobs to the number of credentials files, e.g.:
+
+```
+travis settings maximum_number_of_builds --set 5
 ```
 
 Add the encrypted secrets files to the repository and Travis CI:
