@@ -119,7 +119,7 @@ gem install travis --no-rdoc --no-ri
 
 Limit the number of concurrent jobs to the number of credentials files, e.g.:
 
-```
+```sh
 travis settings maximum_number_of_builds --set 5
 ```
 
