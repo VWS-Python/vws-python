@@ -4,6 +4,7 @@ python:
 - '3.6'
 env:
   matrix:
+  - TEST_FILENAME=test_update_target.py
   - TEST_FILENAME=test_add_target.py
   - TEST_FILENAME=test_database_summary.py
   - TEST_FILENAME=test_delete_target.py
@@ -13,7 +14,6 @@ env:
   - TEST_FILENAME=test_query.py
   - TEST_FILENAME=test_target_list.py
   - TEST_FILENAME=test_target_summary.py
-  - TEST_FILENAME=test_update_target.py
 addons:
   apt:
     packages:
