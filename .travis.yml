@@ -14,7 +14,6 @@ env:
   - TEST_FILENAME=test_target_list.py
   - TEST_FILENAME=test_target_summary.py
   - TEST_FILENAME=test_update_target.py
-  - TEST_FILENAME=test_usage.py
 addons:
   apt:
     packages:
