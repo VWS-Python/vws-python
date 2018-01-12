@@ -9,13 +9,10 @@ env:
   - TEST_FILENAME=test_delete_target.py
   - TEST_FILENAME=test_get_duplicates.py
   - TEST_FILENAME=test_get_target.py
-  - TEST_FILENAME=test_invalid_given_id.py
-  - TEST_FILENAME=test_invalid_json.py
+  - TEST_FILENAME=test_multiple_targets
   - TEST_FILENAME=test_query.py
   - TEST_FILENAME=test_target_list.py
   - TEST_FILENAME=test_target_summary.py
-  - TEST_FILENAME=test_unexpected_headers.py
-  - TEST_FILENAME=test_unexpected_json.py
   - TEST_FILENAME=test_update_target.py
   - TEST_FILENAME=test_usage.py
 addons:
