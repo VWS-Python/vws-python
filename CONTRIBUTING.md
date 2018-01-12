@@ -113,7 +113,8 @@ cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_1.env
 ```
 
 Add Vuforia credentials for different target databases to the new files in the `ci_secrets/` directory.
-Add as many credentials files as there are builds in the Travis matrix
+Add as many credentials files as there are builds in the Travis matrix.
+All credentials files can share the same credentials for an inactive database.
 
 Install the Travis CLI:
 
