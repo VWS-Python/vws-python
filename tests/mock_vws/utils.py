@@ -295,13 +295,13 @@ def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
     return response
 
 
-@timeout_decorator.timeout(seconds=240)
+@timeout_decorator.timeout(seconds=120)
 def wait_for_target_processed(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
 ) -> None:
     """
-    Wait up to four minutes (arbitrary) for a target to get past the processing
+    Wait up to two minutes (arbitrary) for a target to get past the processing
     stage.
 
     Args:
@@ -317,10 +317,6 @@ def wait_for_target_processed(
             target_id=target_id,
             vuforia_database_keys=vuforia_database_keys,
         )
-
-        if 'status' not in response.json():  # pragma: no cover
-            print('status unexpectedly not in response:')
-            print(response.json())
 
         if response.json()['status'] != TargetStatuses.PROCESSING.value:
             return
@@ -491,7 +487,7 @@ def delete_target(
     )
 
     result_code = response.json()['result_code']
-    assert result_code == result_code.SUCCESS.value
+    assert result_code == ResultCodes.SUCCESS.value
 
 
 def update_target(
