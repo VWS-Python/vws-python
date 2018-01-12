@@ -326,6 +326,7 @@ def wait_for_target_processed(
             # We wait 0.2 seconds because sometimes other endpoints have not
             # caught up.
             sleep(0.2)
+            print(f'Target {target_id} processed: response.json()["status"]')
             return
 
         # We wait 0.2 seconds rather than less than that to decrease the number
@@ -494,7 +495,10 @@ def delete_target(
     )
 
     result_code = response.json()['result_code']
-    assert result_code in (
+    expected_result_codes = (
         ResultCodes.SUCCESS.value,
         ResultCodes.UNKNOWN_TARGET.value,
     )
+    if result_code not in expected_result_codes:  # pragma: no cover
+        message = f'Cannot delete {target_id}, result code: {result_code}'
+        raise ValueError(message)
