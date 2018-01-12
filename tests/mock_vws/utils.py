@@ -16,7 +16,7 @@ from urllib.parse import urljoin
 import requests
 import timeout_decorator
 from requests import Response
-from requests_mock import DELETE, GET, POST
+from requests_mock import DELETE, GET, POST, PUT
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 
@@ -318,20 +318,11 @@ def wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
         )
 
-        result_code = response.json()['result_code']
-        if result_code == ResultCodes.UNKNOWN_TARGET.value:  # pragma: no cover
-            print(f'Unexpected unknown target: {target_id}')
-            raise ValueError()
-
         if 'status' not in response.json():  # pragma: no cover
             print('status unexpectedly not in response:')
             print(response.json())
 
         if response.json()['status'] != TargetStatuses.PROCESSING.value:
-            # We wait 0.2 seconds because sometimes other endpoints have not
-            # caught up.
-            sleep(0.2)
-            print(f'Target {target_id} processed: response.json()["status"]')
             return
 
         # We wait 0.2 seconds rather than less than that to decrease the number
@@ -500,10 +491,54 @@ def delete_target(
     )
 
     result_code = response.json()['result_code']
-    expected_result_codes = (
-        ResultCodes.SUCCESS.value,
-        ResultCodes.UNKNOWN_TARGET.value,
+    assert result_code == result_code.SUCCESS.value
+
+
+def update_target(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    data: Dict[str, Any],
+    target_id: str,
+    content_type: str = 'application/json',
+) -> Response:
+    """
+    Make a request to the endpoint to update a target.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        data: The data to send, in JSON format, to the endpoint.
+        target_id: The ID of the target to update.
+        content_type: The `Content-Type` header to use.
+
+    Returns:
+        The response returned by the API.
+    """
+    date = rfc_1123_date()
+    request_path = '/targets/' + target_id
+
+    content = bytes(json.dumps(data), encoding='utf-8')
+
+    authorization_string = authorization_header(
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
+        method=PUT,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
     )
-    if result_code not in expected_result_codes:  # pragma: no cover
-        message = f'Cannot delete {target_id}, result code: {result_code}'
-        raise ValueError(message)
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type,
+    }
+
+    response = requests.request(
+        method=PUT,
+        url=urljoin('https://vws.vuforia.com/', request_path),
+        headers=headers,
+        data=content,
+    )
+
+    return response
