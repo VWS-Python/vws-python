@@ -1,4 +1,4 @@
-autoflake==1.0
+autoflake==1.1
 check-manifest==0.36
 codecov==2.0.13 # Upload coverage data
 dodgy==0.1.9  # Look for uploaded secrets
