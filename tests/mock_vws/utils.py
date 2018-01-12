@@ -318,6 +318,11 @@ def wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
         )
 
+        result_code = response.json()['result_code']
+        if result_code == ResultCodes.UNKNOWN_TARGET.value:  # pragma: no cover
+            print(f'Unexpected unknown target: {target_id}')
+            continue
+
         if 'status' not in response.json():  # pragma: no cover
             print('status unexpectedly not in response:')
             print(response.json())
