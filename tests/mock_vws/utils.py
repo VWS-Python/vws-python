@@ -323,6 +323,9 @@ def wait_for_target_processed(
             print(response.json())
 
         if response.json()['status'] != TargetStatuses.PROCESSING.value:
+            # We wait 0.2 seconds because sometimes other endpoints have not
+            # caught up.
+            sleep(0.2)
             return
 
         # We wait 0.2 seconds rather than less than that to decrease the number
