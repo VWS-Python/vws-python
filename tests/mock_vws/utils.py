@@ -491,7 +491,7 @@ def delete_target(
     )
 
     result_code = response.json()['result_code']
-    assert result_code == (
+    assert result_code in (
         ResultCodes.SUCCESS.value,
         ResultCodes.UNKNOWN_TARGET.value,
     )
