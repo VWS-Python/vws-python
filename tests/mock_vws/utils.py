@@ -318,6 +318,10 @@ def wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
         )
 
+        if 'status' not in response.json():  # pragma: no cover
+            print('status unexpectedly not in response:')
+            print(response.json())
+
         if response.json()['status'] != TargetStatuses.PROCESSING.value:
             return
 
