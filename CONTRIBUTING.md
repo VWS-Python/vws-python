@@ -107,8 +107,8 @@ Create environment variable files for secrets:
 
 ```sh
 mkdir -p ci_secrets
-cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_0.env
 cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_1.env
+cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_2.env
 ...
 ```
 
