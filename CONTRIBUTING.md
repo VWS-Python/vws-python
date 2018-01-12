@@ -96,6 +96,11 @@ These variables include those from `vuforia_secrets.env.example`.
 
 To avoid hitting request quotas and to avoid conflicts when running multiple tests in prallel, we use multiple target databases.
 
+Travis builds use a different credentials file depending on the build number.
+For example, build 2045.1 will use a different credentials file to build 2045.2.
+This should avoid conflicts, but in theory the same credentials file may be run across two Pull Request builds.
+This may cause errors.
+
 ### How to set Travis CI secrets
 
 Create environment variable files for secrets:
@@ -108,19 +113,12 @@ cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_1.env
 ```
 
 Add Vuforia credentials for different target databases to the new files in the `ci_secrets/` directory.
-The more credentials files there are, the more tests can run in parallel on Travis CI.
-This is up to a maximum of five, as Travis CI allows five concurrent jobs for open source projects.
+Add as many credentials files as there are builds in the Travis matrix
 
 Install the Travis CLI:
 
 ```sh
 gem install travis --no-rdoc --no-ri
-```
-
-Limit the number of concurrent jobs to the number of credentials files, e.g.:
-
-```sh
-travis settings maximum_number_of_builds --set 5
 ```
 
 Add the encrypted secrets files to the repository and Travis CI:
