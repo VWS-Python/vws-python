@@ -5,14 +5,10 @@ Tests for the mock of the update target endpoint.
 import base64
 import binascii
 import io
-import json
-from typing import Any, Dict, Union
-from urllib.parse import urljoin
+from typing import Any, Union
 
 import pytest
-import requests
-from requests import Response, codes
-from requests_mock import PUT
+from requests import codes
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
@@ -20,61 +16,10 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     assert_vws_failure,
     assert_vws_response,
-    authorization_header,
     get_vws_target,
-    rfc_1123_date,
+    update_target,
     wait_for_target_processed,
 )
-
-
-def update_target(
-    vuforia_database_keys: VuforiaDatabaseKeys,
-    data: Dict[str, Any],
-    target_id: str,
-    content_type: str = 'application/json',
-) -> Response:
-    """
-    Helper to make a request to the endpoint to update a target.
-
-    Args:
-        vuforia_database_keys: The credentials to use to connect to
-            Vuforia.
-        data: The data to send, in JSON format, to the endpoint.
-        target_id: The ID of the target to update.
-        content_type: The `Content-Type` header to use.
-
-    Returns:
-        The response returned by the API.
-    """
-    date = rfc_1123_date()
-    request_path = '/targets/' + target_id
-
-    content = bytes(json.dumps(data), encoding='utf-8')
-
-    authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
-        method=PUT,
-        content=content,
-        content_type=content_type,
-        date=date,
-        request_path=request_path,
-    )
-
-    headers = {
-        'Authorization': authorization_string,
-        'Date': date,
-        'Content-Type': content_type,
-    }
-
-    response = requests.request(
-        method=PUT,
-        url=urljoin('https://vws.vuforia.com/', request_path),
-        headers=headers,
-        data=content,
-    )
-
-    return response
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

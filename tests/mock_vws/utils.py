@@ -16,7 +16,7 @@ from urllib.parse import urljoin
 import requests
 import timeout_decorator
 from requests import Response
-from requests_mock import DELETE, GET, POST
+from requests_mock import DELETE, GET, POST, PUT
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 
@@ -488,3 +488,53 @@ def delete_target(
 
     result_code = response.json()['result_code']
     assert result_code == ResultCodes.SUCCESS.value
+
+
+def update_target(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    data: Dict[str, Any],
+    target_id: str,
+    content_type: str = 'application/json',
+) -> Response:
+    """
+    Make a request to the endpoint to update a target.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        data: The data to send, in JSON format, to the endpoint.
+        target_id: The ID of the target to update.
+        content_type: The `Content-Type` header to use.
+
+    Returns:
+        The response returned by the API.
+    """
+    date = rfc_1123_date()
+    request_path = '/targets/' + target_id
+
+    content = bytes(json.dumps(data), encoding='utf-8')
+
+    authorization_string = authorization_header(
+        access_key=vuforia_database_keys.server_access_key,
+        secret_key=vuforia_database_keys.server_secret_key,
+        method=PUT,
+        content=content,
+        content_type=content_type,
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type,
+    }
+
+    response = requests.request(
+        method=PUT,
+        url=urljoin('https://vws.vuforia.com/', request_path),
+        headers=headers,
+        data=content,
+    )
+
+    return response
