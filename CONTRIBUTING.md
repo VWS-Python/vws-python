@@ -6,10 +6,16 @@ Travis CI is the canonical source truth.
 
 ## Install Contribution Dependencies
 
-Install dependencies in a virtual environment.
+Install Python dependencies in a virtual environment.
 
 ```sh
 pip install --editable .[dev]
+```
+
+Insall `npm` dependencies for linting Markdown files:
+
+```
+npm install -g markdownlint-cli
 ```
 
 Spell checking requires `enchant`.
@@ -24,6 +30,8 @@ and on Ubuntu with `apt`:
 ```sh
 apt-get install -y enchant
 ```
+
+and to lint
 
 ## Linting
 

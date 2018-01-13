@@ -14,6 +14,7 @@ lint:
 	pyroma .
 	vulture . --min-confidence 100
 	yapf --diff --recursive src/ tests/ ci/
+	markdownlint --config .markdownlint.json README.md CONTRIBUTING.md
 
 fix-lint:
 	autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables .
