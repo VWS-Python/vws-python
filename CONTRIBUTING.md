@@ -25,6 +25,8 @@ and on Ubuntu with `apt`:
 apt-get install -y enchant
 ```
 
+and to lint
+
 ## Linting
 
 Run lint tools:
