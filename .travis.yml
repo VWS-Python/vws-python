@@ -6,6 +6,7 @@ matrix:
   fast_finish: true
 env:
   matrix:
+  - TEST_FILENAME=''
   - TEST_FILENAME=test_add_target.py::TestActiveFlag
   - TEST_FILENAME=test_add_target.py::TestApplicationMetadata
   - TEST_FILENAME=test_add_target.py::TestContentTypes
