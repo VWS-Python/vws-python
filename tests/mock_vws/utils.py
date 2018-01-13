@@ -295,13 +295,13 @@ def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
     return response
 
 
-@timeout_decorator.timeout(seconds=120)
+@timeout_decorator.timeout(seconds=240)
 def wait_for_target_processed(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
 ) -> None:
     """
-    Wait up to two minutes (arbitrary) for a target to get past the processing
+    Wait up to four minutes (arbitrary) for a target to get past the processing
     stage.
 
     Args:

@@ -94,11 +94,12 @@ The configuration for this is in `.travis.yml`.
 Travis CI is set up with secrets for connecting to Vuforia.
 These variables include those from `vuforia_secrets.env.example`.
 
-They also include another set of variables especially for running the tests on the `master` branch.
-The tests are run daily against the `master` branch.
-This means that when the daily request quota is used, the `master` branch may show as failing on the `README`.
-Using the request quota on the `master` branch also leaves fewer requests for regular development.
-Therefore, `master` is given its own Vuforia database with separate limits.
+To avoid hitting request quotas and to avoid conflicts when running multiple tests in prallel, we use multiple target databases.
+
+Travis builds use a different credentials file depending on the build number.
+For example, build 2045.1 will use a different credentials file to build 2045.2.
+This should avoid conflicts, but in theory the same credentials file may be run across two Pull Request builds.
+This may cause errors.
 
 ### How to set Travis CI secrets
 
@@ -106,11 +107,14 @@ Create environment variable files for secrets:
 
 ```sh
 mkdir -p ci_secrets
-cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_0.env
-cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_master.env
+cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_1.env
+cp vuforia_secrets.env.example ci_secrets/vuforia_secrets_2.env
+...
 ```
 
-Add Vuforia credentials to the file `ci_secrets/vuforia_secrets.env` and `ci_secrets/vuforia_secrets_master.env`.
+Add Vuforia credentials for different target databases to the new files in the `ci_secrets/` directory.
+Add as many credentials files as there are builds in the Travis matrix.
+All credentials files can share the same credentials for an inactive database.
 
 Install the Travis CLI:
 
