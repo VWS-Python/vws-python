@@ -12,7 +12,13 @@ env:
   - TEST_FILENAME=test_query.py
   - TEST_FILENAME=test_target_list.py
   - TEST_FILENAME=test_target_summary.py
-  - TEST_FILENAME=test_update_target.py
+  - TEST_FILENAME=test_update_target.py::TestUpdate
+  - TEST_FILENAME=test_update_target.py::TestUnexpectedData
+  - TEST_FILENAME=test_update_target.py::TestWidth
+  - TEST_FILENAME=test_update_target.py::TestActiveFlag
+  - TEST_FILENAME=test_update_target.py::TestApplicationMetadata
+  - TEST_FILENAME=test_update_target.py::TestTargetName
+  - TEST_FILENAME=test_update_target.py::TestImage
   - TEST_FILENAME=test_usage.py
   - TEST_FILENAME=test_invalid_given_id.py
   - TEST_FILENAME=test_invalid_json.py
