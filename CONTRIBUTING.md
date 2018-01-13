@@ -133,11 +133,7 @@ gem install travis --no-rdoc --no-ri
 Add the encrypted secrets files to the repository and Travis CI:
 
 ```sh
-tar cvf secrets.tar ci_secrets/
-travis encrypt-file secrets.tar --add --force
-git add secrets.tar.enc .travis.yml
-git commit -m 'Update secret archive'
-git push
+make update-secrets
 ```
 
 Note that the [Travis CI documentation](https://docs.travis-ci.com/user/encrypting-files/#Caveat) warns that this might not work on Windows.
