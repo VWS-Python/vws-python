@@ -25,7 +25,6 @@ env:
   - TEST_FILENAME=test_query.py
   - TEST_FILENAME=test_target_list.py
   - TEST_FILENAME=test_target_summary.py
-  - TEST_FILENAME=test_unexpected_headers.py
   - TEST_FILENAME=test_unexpected_json.py
   - TEST_FILENAME=test_update_target.py::TestActiveFlag
   - TEST_FILENAME=test_update_target.py::TestApplicationMetadata
