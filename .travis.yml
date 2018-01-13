@@ -14,10 +14,10 @@ env:
   - TEST_FILENAME=test_target_summary.py
   - TEST_FILENAME=test_update_target.py
   - TEST_FILENAME=test_usage.py
-  - TEST_FILENAMEt=test_invalid_given_id.py
-  - TEST_FILENAMEt=test_invalid_json.py
-  - TEST_FILENAMEt=test_unexpected_headers.py
-  - TEST_FILENAMEt=test_unexpected_json.py
+  - TEST_FILENAME=test_invalid_given_id.py
+  - TEST_FILENAME=test_invalid_json.py
+  - TEST_FILENAME=test_unexpected_headers.py
+  - TEST_FILENAME=test_unexpected_json.py
 addons:
   apt:
     packages:
