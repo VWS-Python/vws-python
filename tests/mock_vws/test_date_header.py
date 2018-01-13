@@ -1,5 +1,5 @@
 """
-Tests for when endpoints are called with unexpected header data.
+Tests for the `Date` header.
 """
 
 from datetime import datetime, timedelta
@@ -22,72 +22,9 @@ from tests.mock_vws.utils import (
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestAuthorizationHeader:
-    """
-    Tests for what happens when the `Authorization` header isn't as expected.
-    """
-
-    def test_missing(self, endpoint: TargetAPIEndpoint) -> None:
-        """
-        An `UNAUTHORIZED` response is returned when no `Authorization` header
-        is given.
-        """
-        date = rfc_1123_date()
-        endpoint_headers = dict(endpoint.prepared_request.headers)
-
-        headers: Dict[str, Union[str, bytes]] = {
-            **endpoint_headers,
-            'Date': date,
-        }
-
-        headers.pop('Authorization', None)
-
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
-        session = requests.Session()
-        response = session.send(  # type: ignore
-            request=endpoint.prepared_request,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.UNAUTHORIZED,
-            result_code=ResultCodes.AUTHENTICATION_FAILURE,
-        )
-
-    def test_incorrect(self, endpoint: TargetAPIEndpoint) -> None:
-        """
-        If an incorrect `Authorization` header is given, a `BAD_REQUEST`
-        response is given.
-        """
-        date = rfc_1123_date()
-
-        headers: Dict[str, Union[str, bytes]] = {
-            **endpoint.prepared_request.headers,
-            'Authorization': 'gibberish',
-            'Date': date,
-        }
-
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
-        session = requests.Session()
-        response = session.send(  # type: ignore
-            request=endpoint.prepared_request,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
-        )
-
-
-@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestDateHeader:
     """
-    Tests for what happens when the `Date` header isn't as expected.
+    Tests for what happens when the `Date` header is not as expected.
     """
 
     def test_no_date_header(
