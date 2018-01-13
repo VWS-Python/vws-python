@@ -2,21 +2,16 @@
 Tests for the `Authorization` header.
 """
 
-from datetime import datetime, timedelta
 from typing import Dict, Union
 
 import pytest
 import requests
-from freezegun import freeze_time
 from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
     assert_vws_failure,
-    assert_vws_response,
-    authorization_header,
     rfc_1123_date,
 )
 

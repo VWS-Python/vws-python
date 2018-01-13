@@ -22,9 +22,9 @@ from tests.mock_vws.utils import (
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestDateHeader:
+class TestMissing:
     """
-    Tests for what happens when the `Date` header is not as expected.
+    Tests for what happens when the `Date` header is missing.
     """
 
     def test_no_date_header(
@@ -70,6 +70,14 @@ class TestDateHeader:
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestFormat:
+    """
+    Tests for what happens when the `Date` header is not in the
+    expected format.
+    """
 
     def test_incorrect_date_format(
         self,
@@ -119,6 +127,14 @@ class TestDateHeader:
             status_code=codes.BAD_REQUEST,
             result_code=ResultCodes.FAIL,
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestSkewedTime:
+    """
+    Tests for what happens when the `Date` header is given with an
+    unexpected time.
+    """
 
     @pytest.mark.parametrize(
         'time_multiplier',
