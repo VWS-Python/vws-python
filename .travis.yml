@@ -2,6 +2,8 @@ sudo: false
 language: python
 python:
 - '3.6'
+matrix:
+  fast_finish: true
 env:
   matrix:
   - TEST_FILENAME=test_add_target.py::TestActiveFlag
