@@ -2,8 +2,11 @@ sudo: false
 language: python
 python:
 - '3.6'
+matrix:
+  fast_finish: true
 env:
   matrix:
+  - TEST_FILENAME=''
   - TEST_FILENAME=test_add_target.py::TestActiveFlag
   - TEST_FILENAME=test_add_target.py::TestApplicationMetadata
   - TEST_FILENAME=test_add_target.py::TestContentTypes
@@ -48,10 +51,10 @@ install:
 - travis_retry npm install -g markdownlint-cli
 cache: pip
 before_script:
-- make lint
-- markdownlint --config .markdownlint.json README.md CONTRIBUTING.md
 - python ci/set_secrets_file.py
 script:
-- pytest --exitfirst -vvv tests/mock_vws/"$TEST_FILENAME" --cov=src --cov=tests
+- if [ -z \"$TEST_FILENAME\" ]; then make lint; markdownlint --config .markdownlint.json
+  README.md CONTRIBUTING.md; else pytest --exitfirst -vvv tests/mock_vws/"$TEST_FILENAME"
+  --cov=src --cov=tests; fi
 after_success:
 - codecov
