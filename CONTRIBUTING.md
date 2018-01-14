@@ -14,7 +14,7 @@ pip install --editable .[dev]
 
 Insall `npm` dependencies for linting Markdown files:
 
-```
+```sh
 npm install -g markdownlint-cli
 ```
 
