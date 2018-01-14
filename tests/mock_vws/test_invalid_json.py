@@ -3,6 +3,7 @@ Tests for giving invalid JSON to endpoints.
 """
 
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 
 import pytest
 import requests
@@ -47,12 +48,20 @@ class TestInvalidJSON:
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content_type = endpoint_headers.get('Content-Type', '')
         assert isinstance(content_type, str)
-        takes_data = bool(content_type)
+        takes_json_data = content_type == 'application/json'
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
+        netloc = urlparse(endpoint.prepared_request.url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            access_key = vuforia_database_keys.client_access_key
+            secret_key = vuforia_database_keys.client_secret_key
+        else:
+            access_key = vuforia_database_keys.server_access_key
+            secret_key = vuforia_database_keys.server_secret_key
+
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            access_key=access_key,
+            secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=content_type,
@@ -82,14 +91,14 @@ class TestInvalidJSON:
             request=endpoint.prepared_request,
         )
 
-        if date_is_skewed and takes_data:
+        if date_is_skewed and takes_json_data:
             # On the real implementation, we get `codes.FORBIDDEN` and
             # `REQUEST_TIME_TOO_SKEWED`.
             # See https://github.com/adamtheturtle/vws-python/issues/407 for
             # implementing this on them mock.
             return
 
-        if not date_is_skewed and takes_data:
+        if not date_is_skewed and takes_json_data:
             assert_vws_failure(
                 response=response,
                 status_code=codes.BAD_REQUEST,
