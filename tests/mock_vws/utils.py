@@ -15,7 +15,7 @@ from urllib.parse import urljoin
 
 import requests
 import timeout_decorator
-from requests import Response
+from requests import Response, codes
 from requests_mock import DELETE, GET, POST, PUT
 
 from mock_vws._constants import ResultCodes, TargetStatuses
