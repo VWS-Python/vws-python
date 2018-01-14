@@ -40,7 +40,6 @@ class TestUnexpectedJSON:
         date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        assert isinstance(content_type, str)
 
         authorization_string = authorization_header(
             access_key=vuforia_database_keys.server_access_key,
