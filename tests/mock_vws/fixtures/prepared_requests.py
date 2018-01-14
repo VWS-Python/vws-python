@@ -38,9 +38,11 @@ def _add_target(
 
     content = bytes(json.dumps(data), encoding='utf-8')
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type=content_type,
@@ -69,6 +71,8 @@ def _add_target(
         successful_headers_status_code=codes.BAD_REQUEST,
         successful_headers_result_code=ResultCodes.FAIL,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )
 
 
@@ -89,9 +93,11 @@ def _delete_target(
     method = DELETE
     content = b''
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type='',
@@ -116,6 +122,8 @@ def _delete_target(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )
 
 
@@ -132,9 +140,11 @@ def _database_summary(
 
     content = b''
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type='',
@@ -160,6 +170,8 @@ def _database_summary(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )
 
 
@@ -182,9 +194,11 @@ def _get_duplicates(
 
     content = b''
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type='',
@@ -210,6 +224,8 @@ def _get_duplicates(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )
 
 
@@ -231,9 +247,11 @@ def _get_target(
 
     content = b''
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type='',
@@ -259,6 +277,8 @@ def _get_target(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )
 
 
@@ -275,9 +295,11 @@ def _target_list(
 
     content = b''
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type='',
@@ -303,6 +325,8 @@ def _target_list(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )
 
 
@@ -324,9 +348,11 @@ def _target_summary(
 
     content = b''
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type='',
@@ -352,6 +378,8 @@ def _target_summary(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )
 
 
@@ -375,9 +403,11 @@ def _update_target(
     date = rfc_1123_date()
     method = PUT
 
+    access_key = vuforia_database_keys.server_access_key
+    secret_key = vuforia_database_keys.server_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         content_type=content_type,
@@ -404,4 +434,6 @@ def _update_target(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )

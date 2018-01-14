@@ -79,6 +79,8 @@ class TargetAPIEndpoint:
         prepared_request: requests.PreparedRequest,
         successful_headers_result_code: ResultCodes,
         successful_headers_status_code: int,
+        access_key: bytes,
+        secret_key: bytes,
     ) -> None:
         """
         Args:
@@ -87,6 +89,8 @@ class TargetAPIEndpoint:
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
+            access_key: The access key used in the prepared request.
+            secret_key: The secret key used in the prepared request.
 
         Attributes:
             prepared_request: A request to make which would be successful.
@@ -96,6 +100,8 @@ class TargetAPIEndpoint:
                 example path is requested with the method.
             auth_header_content_type: The content type to use for the
                 `Authorization` header.
+            access_key: The access key used in the prepared request.
+            secret_key: The secret key used in the prepared request.
         """
         self.prepared_request = prepared_request
         self.successful_headers_status_code = successful_headers_status_code
@@ -104,6 +110,8 @@ class TargetAPIEndpoint:
         content_type = headers.get('Content-Type', '')
         assert isinstance(content_type, str)
         self.auth_header_content_type: str = content_type
+        self.access_key = access_key
+        self.secret_key = secret_key
 
 
 def assert_vws_failure(
