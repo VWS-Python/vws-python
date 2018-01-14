@@ -77,7 +77,7 @@ class TestAuthorizationHeader:
                 result_code=ResultCodes.AUTHENTICATION_FAILURE,
             )
 
-    def test_incorrect_foo(self, endpoint: TargetAPIEndpoint) -> None:
+    def test_incorrect(self, endpoint: TargetAPIEndpoint) -> None:
         """
         If an incorrect `Authorization` header is given, a `BAD_REQUEST`
         response is given.

@@ -4,6 +4,7 @@ Tests for the `Date` header.
 
 from datetime import datetime, timedelta
 from typing import Dict, Union
+from urllib.parse import urlparse
 
 import pytest
 import requests
@@ -14,6 +15,7 @@ from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
+    assert_valid_date_header,
     assert_vws_failure,
     assert_vws_response,
     authorization_header,
@@ -27,7 +29,7 @@ class TestMissing:
     Tests for what happens when the `Date` header is missing.
     """
 
-    def test_no_date_header(
+    def test_no_date_header_foo(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: TargetAPIEndpoint,
@@ -41,9 +43,17 @@ class TestMissing:
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
+        netloc = urlparse(endpoint.prepared_request.url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            access_key = vuforia_database_keys.client_access_key
+            secret_key = vuforia_database_keys.client_secret_key
+        else:
+            access_key = vuforia_database_keys.server_access_key
+            secret_key = vuforia_database_keys.server_secret_key
+
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            access_key=access_key,
+            secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=content_type,
@@ -64,6 +74,28 @@ class TestMissing:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        if netloc == 'cloudreco.vuforia.com':
+            response_header_keys = {
+                'Connection',
+                'Content-Length',
+                'Content-Type',
+                'Date',
+                'Server',
+            }
+
+            assert response.headers.keys() == response_header_keys
+            assert response.headers['Connection'] == 'keep-alive'
+            expected_content_type = 'text/plain; charset=ISO-8859-1'
+            assert response.headers['Content-Length'] == str(
+                len(response.text)
+            )
+            assert response.headers['Content-Type'] == expected_content_type
+            assert_valid_date_header(response=response)
+            assert response.headers['Server'] == 'nginx'
+            assert response.text == 'Date header required.'
+            assert response.status_code == codes.BAD_REQUEST
+            return
 
         assert_vws_failure(
             response=response,

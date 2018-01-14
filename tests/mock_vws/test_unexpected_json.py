@@ -99,5 +99,6 @@ class TestUnexpectedJSON:
         assert 'Content-Type' not in response.headers
         if netloc == 'cloudreco.vuforia.com':
             assert response.status_code == codes.UNSUPPORTED_MEDIA_TYPE
+            # TODO response headers
         else:
             assert response.status_code == codes.BAD_REQUEST
