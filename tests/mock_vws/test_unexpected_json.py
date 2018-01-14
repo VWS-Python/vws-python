@@ -49,7 +49,6 @@ class TestUnexpectedJSON:
         if netloc == 'cloudreco.vuforia.com':
             access_key = vuforia_database_keys.client_access_key
             secret_key = vuforia_database_keys.client_secret_key
-            import pdb; pdb.set_trace()
         else:
             access_key = vuforia_database_keys.server_access_key
             secret_key = vuforia_database_keys.server_secret_key
@@ -96,6 +95,9 @@ class TestUnexpectedJSON:
             )
             return
 
-        assert response.status_code == codes.BAD_REQUEST
         assert response.text == ''
         assert 'Content-Type' not in response.headers
+        if netloc == 'cloudreco.vuforia.com':
+            assert response.status_code == codes.UNSUPPORTED_MEDIA_TYPE
+        else:
+            assert response.status_code == codes.BAD_REQUEST
