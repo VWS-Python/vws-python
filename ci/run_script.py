@@ -15,13 +15,15 @@ def run_test(test_filename: str) -> None:
     Run pytest with a given filename.
     """
     path = Path('tests') / 'mock_vws' / test_filename
-    result = pytest.main([
-        '-vvv',
-        '--exitfirst',
-        str(path),
-        '--cov=src',
-        '--cov=tests',
-    ])
+    result = pytest.main(
+        [
+            '-vvv',
+            '--exitfirst',
+            str(path),
+            '--cov=src',
+            '--cov=tests',
+        ]
+    )
     sys.exit(result)
 
 
