@@ -64,14 +64,8 @@ class TestInvalidJSON:
             'Date': date,
         }
 
-        endpoint.prepared_request.prepare_body(  # type: ignore
-            data=content,
-            files=None,
-        )
-
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.body = content
+        endpoint.prepared_request.headers = headers
         endpoint.prepared_request.prepare_content_length(  # type: ignore
             body=content,
         )

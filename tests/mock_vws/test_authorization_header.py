@@ -37,9 +37,7 @@ class TestAuthorizationHeader:
 
         headers.pop('Authorization', None)
 
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = headers
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -64,9 +62,7 @@ class TestAuthorizationHeader:
             'Date': date,
         }
 
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = headers
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,

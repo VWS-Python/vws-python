@@ -52,10 +52,7 @@ class TestMissing:
             'Authorization': authorization_string,
         }
         headers.pop('Date', None)
-
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = headers
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -107,9 +104,7 @@ class TestFormat:
             'Date': date_incorrect_format,
         }
 
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = headers
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -171,9 +166,7 @@ class TestSkewedTime:
             'Date': date,
         }
 
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = headers
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -227,9 +220,7 @@ class TestSkewedTime:
             'Date': date,
         }
 
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = headers
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
