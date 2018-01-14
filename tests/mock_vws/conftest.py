@@ -167,6 +167,7 @@ def verify_mock_vuforia_inactive(
         '_target_list',
         '_target_summary',
         '_update_target',
+        '_query',
     ]
 )
 def endpoint(request: SubRequest) -> TargetAPIEndpoint:
