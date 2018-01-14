@@ -217,9 +217,6 @@ class TestSkewedTime:
         time_difference_from_now *= time_multiplier
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
-        time_difference_from_now *= time_multiplier
-        with freeze_time(datetime.now() + time_difference_from_now):
-            date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content_type = endpoint_headers.get('Content-Type', '')
