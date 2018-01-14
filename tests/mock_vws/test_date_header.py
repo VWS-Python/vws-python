@@ -251,7 +251,6 @@ class TestSkewedTime:
             request_path=endpoint.prepared_request.path_url,
         )
 
-        # TODO assert_vwq_success
         headers = {
             **endpoint_headers,
             'Authorization': authorization_string,
@@ -265,6 +264,10 @@ class TestSkewedTime:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        netloc = urlparse(endpoint.prepared_request.url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            pass
 
         assert_vws_response(
             response=response,
