@@ -458,9 +458,11 @@ def _query(
 
     content, content_type_header = encode_multipart_formdata(files)
 
+    access_key = vuforia_database_keys.client_access_key
+    secret_key = vuforia_database_keys.client_secret_key
     authorization_string = authorization_header(
-        access_key=vuforia_database_keys.client_access_key,
-        secret_key=vuforia_database_keys.client_secret_key,
+        access_key=access_key,
+        secret_key=secret_key,
         method=method,
         content=content,
         # Note that this is not the actual Content-Type header value sent.
@@ -488,4 +490,6 @@ def _query(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
     )

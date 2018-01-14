@@ -14,6 +14,7 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
+    assert_query_success,
     assert_valid_date_header,
     assert_vws_failure,
     assert_vws_response,
@@ -263,11 +264,12 @@ class TestSkewedTime:
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
+            stream=True,
         )
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':
-            pass
+            assert_query_success(response=response)
 
         assert_vws_response(
             response=response,
