@@ -45,9 +45,7 @@ class TestInvalidJSON:
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        content_type = endpoint_headers.get('Content-Type', '')
-        assert isinstance(content_type, str)
-        takes_data = bool(content_type)
+        takes_data = bool(endpoint.auth_header_content_type)
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
         authorization_string = authorization_header(
@@ -55,7 +53,7 @@ class TestInvalidJSON:
             secret_key=vuforia_database_keys.server_secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type=content_type,
+            content_type=endpoint.auth_header_content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )
