@@ -410,6 +410,7 @@ def _update_target(
     )
 
 
+@pytest.fixture()
 def _query(
     vuforia_database_keys: VuforiaDatabaseKeys,
     high_quality_image: io.BytesIO,
