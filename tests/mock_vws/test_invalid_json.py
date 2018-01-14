@@ -52,7 +52,6 @@ class TestInvalidJSON:
         )
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
         authorization_string = authorization_header(
             access_key=endpoint.access_key,
             secret_key=endpoint.secret_key,
@@ -116,6 +115,7 @@ class TestInvalidJSON:
             )
             return
 
+        netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':
             assert response.status_code == codes.UNAUTHORIZED
             assert_valid_transaction_id(response=response)

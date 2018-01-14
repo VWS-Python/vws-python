@@ -28,7 +28,7 @@ class TestMissing:
     Tests for what happens when the `Date` header is missing.
     """
 
-    def test_no_date_header_foo(
+    def test_no_date_header(
         self,
         endpoint: TargetAPIEndpoint,
     ) -> None:
@@ -38,8 +38,6 @@ class TestMissing:
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
-
-        netloc = urlparse(endpoint.prepared_request.url).netloc
 
         authorization_string = authorization_header(
             access_key=endpoint.access_key,
@@ -65,6 +63,7 @@ class TestMissing:
             request=endpoint.prepared_request,
         )
 
+        netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':
             response_header_keys = {
                 'Connection',
@@ -117,8 +116,6 @@ class TestFormat:
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
-
         authorization_string = authorization_header(
             access_key=endpoint.access_key,
             secret_key=endpoint.secret_key,
@@ -143,6 +140,7 @@ class TestFormat:
             request=endpoint.prepared_request,
         )
 
+        netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':
             # TODO Auth failure
             return
