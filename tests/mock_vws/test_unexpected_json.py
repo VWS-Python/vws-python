@@ -43,7 +43,6 @@ class TestUnexpectedJSON:
         date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        assert isinstance(content_type, str)
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':

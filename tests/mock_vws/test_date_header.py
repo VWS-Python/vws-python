@@ -38,8 +38,6 @@ class TestMissing:
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        content_type = endpoint_headers.get('Content-Type', '')
-        assert isinstance(content_type, str)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
@@ -56,7 +54,7 @@ class TestMissing:
             secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type=content_type,
+            content_type=endpoint.auth_header_content_type,
             date='',
             request_path=endpoint.prepared_request.path_url,
         )
@@ -125,8 +123,6 @@ class TestFormat:
             date_incorrect_format = now.strftime('%a %b %d %H:%M:%S %Y')
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        content_type = endpoint_headers.get('Content-Type', '')
-        assert isinstance(content_type, str)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
@@ -143,7 +139,7 @@ class TestFormat:
             secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type=content_type,
+            content_type=endpoint.auth_header_content_type,
             date=date_incorrect_format,
             request_path=endpoint.prepared_request.path_url,
         )
@@ -204,8 +200,6 @@ class TestSkewedTime:
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        content_type = endpoint_headers.get('Content-Type', '')
-        assert isinstance(content_type, str)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
@@ -214,7 +208,7 @@ class TestSkewedTime:
             secret_key=vuforia_database_keys.server_secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type=content_type,
+            content_type=endpoint.auth_header_content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )
@@ -279,7 +273,7 @@ class TestSkewedTime:
             secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type=endpoint.content_type,
+            content_type=endpoint.auth_header_content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )

@@ -49,9 +49,7 @@ class TestInvalidJSON:
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        content_type = endpoint_headers.get('Content-Type', '')
-        assert isinstance(content_type, str)
-        takes_json_data = content_type == 'application/json'
+        takes_json_data = endpoint.auth_header_content_type == 'application/json'
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
@@ -67,7 +65,7 @@ class TestInvalidJSON:
             secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type=content_type,
+            content_type=endpoint.auth_header_content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )
