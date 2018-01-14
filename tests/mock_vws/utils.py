@@ -626,5 +626,3 @@ def assert_query_success(response: Response) -> None:
     assert response.headers['Content-Type'] == 'application/json'
     assert_valid_date_header(response=response)
     assert response.headers['Server'] == 'nginx'
-
-
