@@ -45,7 +45,9 @@ class TestInvalidJSON:
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        takes_data = bool(endpoint.auth_header_content_type)
+        takes_json_data = (
+            endpoint.auth_header_content_type == 'application/json'
+        )
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
         authorization_string = authorization_header(
@@ -80,14 +82,14 @@ class TestInvalidJSON:
             request=endpoint.prepared_request,
         )
 
-        if date_is_skewed and takes_data:
+        if date_is_skewed and takes_json_data:
             # On the real implementation, we get `codes.FORBIDDEN` and
             # `REQUEST_TIME_TOO_SKEWED`.
             # See https://github.com/adamtheturtle/vws-python/issues/407 for
             # implementing this on them mock.
             return
 
-        if not date_is_skewed and takes_data:
+        if not date_is_skewed and takes_json_data:
             assert_vws_failure(
                 response=response,
                 status_code=codes.BAD_REQUEST,
