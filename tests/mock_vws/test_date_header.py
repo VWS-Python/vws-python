@@ -14,7 +14,6 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
     assert_valid_date_header,
     assert_vws_failure,
     assert_vws_response,
@@ -31,7 +30,6 @@ class TestMissing:
 
     def test_no_date_header_foo(
         self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: TargetAPIEndpoint,
     ) -> None:
         """
@@ -42,16 +40,10 @@ class TestMissing:
         assert isinstance(content, bytes)
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
-        if netloc == 'cloudreco.vuforia.com':
-            access_key = vuforia_database_keys.client_access_key
-            secret_key = vuforia_database_keys.client_secret_key
-        else:
-            access_key = vuforia_database_keys.server_access_key
-            secret_key = vuforia_database_keys.server_secret_key
 
         authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
+            access_key=endpoint.access_key,
+            secret_key=endpoint.secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=endpoint.auth_header_content_type,
@@ -111,7 +103,6 @@ class TestFormat:
 
     def test_incorrect_date_format(
         self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: TargetAPIEndpoint,
     ) -> None:
         """
@@ -127,16 +118,10 @@ class TestFormat:
         assert isinstance(content, bytes)
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
-        if netloc == 'cloudreco.vuforia.com':
-            access_key = vuforia_database_keys.client_access_key
-            secret_key = vuforia_database_keys.client_secret_key
-        else:
-            access_key = vuforia_database_keys.server_access_key
-            secret_key = vuforia_database_keys.server_secret_key
 
         authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
+            access_key=endpoint.access_key,
+            secret_key=endpoint.secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=endpoint.auth_header_content_type,
@@ -183,7 +168,6 @@ class TestSkewedTime:
     )
     def test_date_out_of_range(
         self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
         time_multiplier: int,
         endpoint: TargetAPIEndpoint,
     ) -> None:
@@ -204,8 +188,8 @@ class TestSkewedTime:
         assert isinstance(content, bytes)
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            access_key=endpoint.access_key,
+            secret_key=endpoint.secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=endpoint.auth_header_content_type,
@@ -240,7 +224,6 @@ class TestSkewedTime:
     )
     def test_date_in_range(
         self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
         time_multiplier: int,
         endpoint: TargetAPIEndpoint,
     ) -> None:
@@ -260,17 +243,9 @@ class TestSkewedTime:
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
-        if netloc == 'cloudreco.vuforia.com':
-            access_key = vuforia_database_keys.client_access_key
-            secret_key = vuforia_database_keys.client_secret_key
-        else:
-            access_key = vuforia_database_keys.server_access_key
-            secret_key = vuforia_database_keys.server_secret_key
-
         authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
+            access_key=endpoint.access_key,
+            secret_key=endpoint.secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=endpoint.auth_header_content_type,

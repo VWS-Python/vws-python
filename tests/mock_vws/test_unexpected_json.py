@@ -12,7 +12,6 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
     assert_vws_failure,
     authorization_header,
     rfc_1123_date,
@@ -27,7 +26,6 @@ class TestUnexpectedJSON:
 
     def test_does_not_take_data(
         self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: TargetAPIEndpoint,
     ) -> None:
         """
@@ -45,16 +43,10 @@ class TestUnexpectedJSON:
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
-        if netloc == 'cloudreco.vuforia.com':
-            access_key = vuforia_database_keys.client_access_key
-            secret_key = vuforia_database_keys.client_secret_key
-        else:
-            access_key = vuforia_database_keys.server_access_key
-            secret_key = vuforia_database_keys.server_secret_key
 
         authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
+            access_key=endpoint.access_key,
+            secret_key=endpoint.secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=content_type,
