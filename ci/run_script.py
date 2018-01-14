@@ -6,30 +6,33 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+from typing import List
 
 import pytest
 
 
-def run_test(test_filename: str) -> None:
+def run_test(test_filenames: List[str]) -> None:
     """
     Run pytest with a given filename.
     """
-    path = Path('tests') / 'mock_vws' / test_filename
-    result = pytest.main(
-        [
-            '-vvv',
-            '--exitfirst',
-            str(path),
-            '--cov=src',
-            '--cov=tests',
-        ]
-    )
-    sys.exit(result)
+    for filename in test_filenames:
+        path = Path('tests') / 'mock_vws' / filename
+        result = pytest.main(
+            [
+                '-vvv',
+                '--exitfirst',
+                str(path),
+                '--cov=src',
+                '--cov=tests',
+            ]
+        )
+        if result:
+            sys.exit(result)
 
 
 if __name__ == '__main__':
-    TEST_FILENAME = os.environ.get('TEST_FILENAME')
-    if TEST_FILENAME:
-        run_test(test_filename=TEST_FILENAME)
+    TEST_FILENAMES = os.environ.get('TEST_FILENAMES')
+    if TEST_FILENAMES:
+        run_test(test_filenames=TEST_FILENAMES.split(','))
     else:
         subprocess.check_call(['make', 'lint'])
