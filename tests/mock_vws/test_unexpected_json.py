@@ -3,11 +3,11 @@ Tests for giving JSON data to endpoints which do not expect it.
 """
 
 import json
+from urllib.parse import urlparse
 
 import pytest
 import requests
 from requests import codes
-from urllib.parse import urlparse
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
