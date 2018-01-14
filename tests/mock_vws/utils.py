@@ -94,10 +94,18 @@ class TargetAPIEndpoint:
                 example path is requested with the method.
             successful_headers_status_code: The expected status code if the
                 example path is requested with the method.
+            content_type: The content type to use for the `Authorization`
+                header.
         """
         self.prepared_request = prepared_request
         self.successful_headers_status_code = successful_headers_status_code
         self.successful_headers_result_code = successful_headers_result_code
+        headers = prepared_request.headers
+        if 'Content-Type' in headers:
+            content_type = headers['Content-Type'].split(';')[0]
+        else:
+            content_type = ''
+        self.content_type: str = content_type
 
 
 def assert_vws_failure(

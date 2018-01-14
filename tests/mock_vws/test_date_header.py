@@ -130,9 +130,17 @@ class TestFormat:
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
+        netloc = urlparse(endpoint.prepared_request.url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            access_key = vuforia_database_keys.client_access_key
+            secret_key = vuforia_database_keys.client_secret_key
+        else:
+            access_key = vuforia_database_keys.server_access_key
+            secret_key = vuforia_database_keys.server_secret_key
+
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            access_key=access_key,
+            secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=content_type,
@@ -153,6 +161,10 @@ class TestFormat:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        if netloc == 'cloudreco.vuforia.com':
+            # TODO Auth failure
+            return
 
         assert_vws_failure(
             response=response,
@@ -249,26 +261,31 @@ class TestSkewedTime:
         time_difference_from_now *= time_multiplier
         with freeze_time(datetime.now() + time_difference_from_now):
             date = rfc_1123_date()
-        time_difference_from_now *= time_multiplier
-        with freeze_time(datetime.now() + time_difference_from_now):
-            date = rfc_1123_date()
+        # # TODO repeat date
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        content_type = endpoint_headers.get('Content-Type', '')
-        assert isinstance(content_type, str)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
 
+        netloc = urlparse(endpoint.prepared_request.url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            access_key = vuforia_database_keys.client_access_key
+            secret_key = vuforia_database_keys.client_secret_key
+        else:
+            access_key = vuforia_database_keys.server_access_key
+            secret_key = vuforia_database_keys.server_secret_key
+
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            access_key=access_key,
+            secret_key=secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
-            content_type=content_type,
+            content_type=endpoint.content_type,
             date=date,
             request_path=endpoint.prepared_request.path_url,
         )
 
+        # TODO assert_vwq_success
         headers = {
             **endpoint_headers,
             'Authorization': authorization_string,
