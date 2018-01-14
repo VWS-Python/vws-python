@@ -70,6 +70,7 @@ class TestAuthorizationHeader:
             assert_valid_date_header(response=response)
             assert response.headers['Server'] == 'nginx'
             assert response.headers['WWW-Authenticate'] == 'VWS'
+            # TODO assert date
         else:
             assert_vws_failure(
                 response=response,
@@ -77,7 +78,7 @@ class TestAuthorizationHeader:
                 result_code=ResultCodes.AUTHENTICATION_FAILURE,
             )
 
-    def test_incorrect(self, endpoint: TargetAPIEndpoint) -> None:
+    def test_incorrect_foo(self, endpoint: TargetAPIEndpoint) -> None:
         """
         If an incorrect `Authorization` header is given, a `BAD_REQUEST`
         response is given.
@@ -98,8 +99,33 @@ class TestAuthorizationHeader:
             request=endpoint.prepared_request,
         )
 
-        assert_vws_failure(
-            response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
-        )
+        netloc = urlparse(endpoint.prepared_request.url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            assert response.status_code == codes.UNAUTHORIZED
+            assert response.text == 'Malformed authorization header.'
+            response_header_keys = {
+                'Connection',
+                'Content-Length',
+                'Content-Type',
+                'Date',
+                'Server',
+                'WWW-Authenticate',
+            }
+
+            assert response.headers.keys() == response_header_keys
+            assert response.headers['Connection'] == 'keep-alive'
+            expected_content_type = 'text/plain; charset=ISO-8859-1'
+            assert response.headers['Content-Length'] == str(
+                len(response.text)
+            )
+            assert response.headers['Content-Type'] == expected_content_type
+            assert_valid_date_header(response=response)
+            assert response.headers['Server'] == 'nginx'
+            assert response.headers['WWW-Authenticate'] == 'VWS'
+            # TODO assert date
+        else:
+            assert_vws_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
+                result_code=ResultCodes.FAIL,
+            )
