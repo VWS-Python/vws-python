@@ -12,7 +12,6 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
     assert_vws_failure,
     authorization_header,
     rfc_1123_date,
@@ -28,7 +27,6 @@ class TestInvalidJSON:
     @pytest.mark.parametrize('date_skew_minutes', [0, 10])
     def test_invalid_json(
         self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
         endpoint: TargetAPIEndpoint,
         date_skew_minutes: int,
     ) -> None:
@@ -51,8 +49,8 @@ class TestInvalidJSON:
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
         authorization_string = authorization_header(
-            access_key=vuforia_database_keys.server_access_key,
-            secret_key=vuforia_database_keys.server_secret_key,
+            access_key=endpoint.access_key,
+            secret_key=endpoint.secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=endpoint.auth_header_content_type,
