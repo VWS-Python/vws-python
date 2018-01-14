@@ -15,19 +15,19 @@ def run_test(test_filenames: List[str]) -> None:
     """
     Run pytest with a given filename.
     """
-    for filename in test_filenames:
-        path = Path('tests') / 'mock_vws' / filename
-        result = pytest.main(
-            [
-                '-vvv',
-                '--exitfirst',
-                str(path),
-                '--cov=src',
-                '--cov=tests',
-            ]
-        )
-        if result:
-            sys.exit(result)
+    paths = [
+        Path('tests') / 'mock_vws' / filename for filename in test_filenames
+    ]
+    result = pytest.main(
+        [
+            '-vvv',
+            '--exitfirst',
+            ' '.join(str(path) for path in paths),
+            '--cov=src',
+            '--cov=tests',
+        ]
+    )
+    sys.exit(result)
 
 
 if __name__ == '__main__':
