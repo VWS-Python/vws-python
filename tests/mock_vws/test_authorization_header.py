@@ -70,7 +70,6 @@ class TestAuthorizationHeader:
             assert_valid_date_header(response=response)
             assert response.headers['Server'] == 'nginx'
             assert response.headers['WWW-Authenticate'] == 'VWS'
-            # TODO assert date
         else:
             assert_vws_failure(
                 response=response,
@@ -122,7 +121,6 @@ class TestAuthorizationHeader:
             assert_valid_date_header(response=response)
             assert response.headers['Server'] == 'nginx'
             assert response.headers['WWW-Authenticate'] == 'VWS'
-            # TODO assert date
         else:
             assert_vws_failure(
                 response=response,
