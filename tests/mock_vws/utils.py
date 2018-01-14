@@ -154,6 +154,37 @@ def assert_valid_date_header(response: Response) -> None:
     assert time_difference < datetime.timedelta(minutes=1)
 
 
+def assert_valid_transaction_id(response: Response) -> None:
+    """
+    Assert that a response includes a valid transaction ID.
+
+    Args:
+        response: The response returned by a request to a Vuforia service.
+
+    Raises:
+        AssertionError: The response does not include a valid transaction ID.
+    """
+    transaction_id = response.json()['transaction_id']
+    assert len(transaction_id) == 32
+    assert all(char in hexdigits for char in transaction_id)
+
+
+def assert_json_separators(response: Response) -> None:
+    """
+    Assert that a JSON response is formatted correctly.
+
+    Args:
+        response: The response returned by a request to a Vuforia service.
+
+    Raises:
+        AssertionError: The response JSON is not formatted correctly.
+    """
+    assert response.text == json.dumps(
+        obj=response.json(),
+        separators=(',', ':'),
+    )
+
+
 def assert_vws_response(
     response: Response,
     status_code: int,
@@ -191,17 +222,10 @@ def assert_vws_response(
     assert response.headers.keys() == response_header_keys
     assert response.headers['Connection'] == 'keep-alive'
     assert response.headers['Content-Length'] == str(len(response.text))
-    # This confirms that the formatting style used matches what is expected.
-    # There are no spaces in the separators.
-    assert response.text == json.dumps(
-        obj=response.json(),
-        separators=(',', ':'),
-    )
     assert response.headers['Content-Type'] == 'application/json'
     assert response.headers['Server'] == 'nginx'
-    transaction_id = response.json()['transaction_id']
-    assert len(transaction_id) == 32
-    assert all(char in hexdigits for char in transaction_id)
+    assert_json_separators(response=response)
+    assert_valid_transaction_id(response=response)
     assert_valid_date_header(response=response)
 
 

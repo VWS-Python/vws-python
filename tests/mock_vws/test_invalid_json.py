@@ -14,6 +14,9 @@ from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     VuforiaDatabaseKeys,
+    assert_json_separators,
+    assert_valid_date_header,
+    assert_valid_transaction_id,
     assert_vws_failure,
     authorization_header,
     rfc_1123_date,
@@ -120,6 +123,34 @@ class TestInvalidJSON:
                 status_code=codes.UNAUTHORIZED,
                 result_code=ResultCodes.AUTHENTICATION_FAILURE,
             )
+            return
+
+        if netloc == 'cloudreco.vuforia.com':
+            assert response.status_code == codes.UNAUTHORIZED
+            assert_valid_transaction_id(response=response)
+            assert_json_separators(response=response)
+            assert response.json().keys() == {'transaction_id', 'result_code'}
+            result_code = response.json()['result_code']
+            assert result_code == ResultCodes.AUTHENTICATION_FAILURE.value
+            response_header_keys = {
+                'Connection',
+                'Content-Length',
+                'Content-Type',
+                'Date',
+                'Server',
+                'WWW-Authenticate',
+            }
+
+            assert response.headers.keys() == response_header_keys
+            assert response.headers['Connection'] == 'keep-alive'
+            expected_content_type = 'application/json'
+            assert response.headers['Content-Length'] == str(
+                len(response.text)
+            )
+            assert response.headers['Content-Type'] == expected_content_type
+            assert_valid_date_header(response=response)
+            assert response.headers['Server'] == 'nginx'
+            assert response.headers['WWW-Authenticate'] == 'VWS'
             return
 
         assert response.status_code == codes.BAD_REQUEST
