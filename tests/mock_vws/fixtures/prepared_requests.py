@@ -66,8 +66,6 @@ def _add_target(
     prepared_request = request.prepare()  # type: ignore
 
     return TargetAPIEndpoint(
-        # We expect a bad request error because we have not given the required
-        # JSON body elements.
         successful_headers_status_code=codes.BAD_REQUEST,
         successful_headers_result_code=ResultCodes.FAIL,
         prepared_request=prepared_request,
@@ -397,7 +395,7 @@ def _update_target(
     )
     data: Dict[str, Any] = {}
     request_path = f'/targets/{target_id}'
-    content = bytes(str(data), encoding='utf-8')
+    content = bytes(json.dumps(data), encoding='utf-8')
     content_type = 'application/json'
 
     date = rfc_1123_date()
