@@ -2,6 +2,8 @@
 Fixtures which prepare requests.
 """
 
+import base64
+import io
 import json
 from typing import Any, Dict
 from urllib.parse import urljoin
@@ -26,12 +28,19 @@ VWS_HOST = 'https://vws.vuforia.com'
 @pytest.fixture()
 def _add_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
+    png_rgb: io.BytesIO,
 ) -> TargetAPIEndpoint:
     """
     Return details of the endpoint for adding a target.
     """
+    image_data = png_rgb.read()
+    image_data_encoded = base64.b64encode(image_data).decode('ascii')
     date = rfc_1123_date()
-    data: Dict[str, Any] = {}
+    data: Dict[str, Any] = {
+        'name': 'example_name',
+        'width': 1,
+        'image': image_data_encoded,
+    }
     request_path = '/targets'
     content_type = 'application/json'
     method = POST
@@ -66,10 +75,8 @@ def _add_target(
     prepared_request = request.prepare()  # type: ignore
 
     return TargetAPIEndpoint(
-        # We expect a bad request error because we have not given the required
-        # JSON body elements.
-        successful_headers_status_code=codes.BAD_REQUEST,
-        successful_headers_result_code=ResultCodes.FAIL,
+        successful_headers_status_code=codes.CREATED,
+        successful_headers_result_code=ResultCodes.TARGET_CREATED,
         prepared_request=prepared_request,
         access_key=access_key,
         secret_key=secret_key,
@@ -397,7 +404,7 @@ def _update_target(
     )
     data: Dict[str, Any] = {}
     request_path = f'/targets/{target_id}'
-    content = bytes(str(data), encoding='utf-8')
+    content = bytes(json.dumps(data), encoding='utf-8')
     content_type = 'application/json'
 
     date = rfc_1123_date()
