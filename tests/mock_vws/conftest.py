@@ -55,7 +55,7 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
 
 @pytest.fixture()
 def target_id(
-    png_rgb_success: io.BytesIO,  # pylint: disable=redefined-outer-name
+    png_rgb_success: io.BytesIO,
     vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
 ) -> str:
     """
