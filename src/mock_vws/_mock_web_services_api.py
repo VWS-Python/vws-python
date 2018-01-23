@@ -573,7 +573,7 @@ class MockVuforiaWebServicesAPI:
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,  # pylint: disable=unused-argument
-        target: Target,  # pylint: disable=unused-argument
+        target: Target,
     ) -> str:
         """
         Get targets which may be considered duplicates of a given target.
