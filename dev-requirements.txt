@@ -5,7 +5,7 @@ dodgy==0.1.9  # Look for uploaded secrets
 flake8==3.5.0  # Lint
 flake8-quotes==0.13.0  # Require single quotes
 freezegun==0.3.9  # Freeze time in tests
-hypothesis==3.44.26  # Generate test cases
+hypothesis==3.45.0  # Generate test cases
 isort==4.3.4  # Lint imports
 mypy==0.560  # Type checking
 pip_check_reqs==2.0.1
@@ -18,4 +18,4 @@ pytest-envfiles==0.1.0  # Use files for environment variables for tests
 pytest==3.4.0  # Test runners
 timeout-decorator==0.4.0  # Decorate functions to time out.
 vulture==0.26
-yapf==0.20.1  # Automatic formatting for Python
+yapf==0.20.2  # Automatic formatting for Python
