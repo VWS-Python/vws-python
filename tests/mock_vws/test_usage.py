@@ -363,7 +363,7 @@ class TestCredentials:
     # in request headers (e.g. a leading space).
     @given(
         server_access_key=text(alphabet=string.ascii_letters),
-        server_secret_key=text(alphabet=string.ascii_letters)
+        server_secret_key=text(alphabet=string.ascii_letters),
     )
     def test_custom_credentials(
         self,

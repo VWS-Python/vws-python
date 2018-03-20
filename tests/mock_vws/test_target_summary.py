@@ -47,7 +47,7 @@ class TestTargetSummary:
                 'name': name,
                 'width': 1,
                 'image': image_data_encoded,
-            }
+            },
         )
 
         target_id = target_response.json()['target_id']
@@ -116,7 +116,7 @@ class TestTargetSummary:
                 'name': 'example',
                 'width': 1,
                 'image': image_data_encoded,
-            }
+            },
         )
 
         target_id = target_response.json()['target_id']
@@ -170,7 +170,7 @@ class TestTargetSummary:
                 'width': 1,
                 'image': image_data_encoded,
                 'active_flag': active_flag,
-            }
+            },
         )
 
         response = target_api_request(

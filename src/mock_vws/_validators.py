@@ -41,7 +41,7 @@ def authorization_header(  # pylint: disable=too-many-arguments
     content: bytes,
     content_type: str,
     date: str,
-    request_path: str
+    request_path: str,
 ) -> bytes:
     """
     Return an `Authorization` header which can be used for a request made to

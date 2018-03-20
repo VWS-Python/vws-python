@@ -48,7 +48,7 @@ def route(
                 route_name=method.__name__,
                 path_pattern=path_pattern,
                 http_methods=http_methods,
-            )
+            ),
         )
 
         return method
