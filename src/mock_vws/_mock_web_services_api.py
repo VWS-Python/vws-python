@@ -97,7 +97,7 @@ def set_content_length_header(
     wrapped: Callable[..., str],
     instance: 'MockVuforiaWebServicesAPI',  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict
+    kwargs: Dict,
 ) -> str:
     """
     Set the `Content-Length` header.
@@ -155,7 +155,7 @@ def route(
                 route_name=method.__name__,
                 path_pattern=path_pattern,
                 http_methods=http_methods,
-            )
+            ),
         )
 
         key_validator = validate_keys(
@@ -287,7 +287,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         target is for detection.
         """
         processing_time = datetime.timedelta(
-            seconds=self._processing_time_seconds
+            seconds=self._processing_time_seconds,
         )
 
         time_since_change = datetime.datetime.now() - self.last_modified_date
@@ -312,7 +312,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         pre_rating_time = datetime.timedelta(
             # That this is half of the total processing time is unrealistic.
             # In VWS it is not a constant percentage.
-            seconds=self._processing_time_seconds / 2
+            seconds=self._processing_time_seconds / 2,
         )
 
         time_since_upload = datetime.datetime.now() - self.upload_date
@@ -474,14 +474,14 @@ class MockVuforiaWebServicesAPI:
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
                 and target.active_flag
-            ]
+            ],
         )
 
         failed_images = len(
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.FAILED.value
-            ]
+            ],
         )
 
         inactive_images = len(
@@ -489,14 +489,14 @@ class MockVuforiaWebServicesAPI:
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
                 and not target.active_flag
-            ]
+            ],
         )
 
         processing_images = len(
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.PROCESSING.value
-            ]
+            ],
         )
 
         body = {

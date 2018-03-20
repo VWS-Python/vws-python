@@ -41,7 +41,7 @@ class TestUpdate:
             'Documented Content-Type',
             'Undocumented Content-Type',
             'Empty',
-        ]
+        ],
     )
     def test_content_types(
         self,
@@ -72,7 +72,7 @@ class TestUpdate:
             vuforia_database_keys=vuforia_database_keys,
             data={'name': 'Adam'},
             target_id=target_id,
-            content_type=content_type
+            content_type=content_type,
         )
 
         # Code is FORBIDDEN because the target is processing.
@@ -441,7 +441,8 @@ class TestTargetName:
         'name', [
             'a',
             'a' * 64,
-        ], ids=['Short name', 'Long name']
+        ],
+        ids=['Short name', 'Long name'],
     )
     def test_name_valid(
         self,
