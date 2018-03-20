@@ -22,7 +22,7 @@ def run_test(test_filename: str) -> None:
             str(path),
             '--cov=src',
             '--cov=tests',
-        ]
+        ],
     )
     sys.exit(result)
 

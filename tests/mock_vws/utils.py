@@ -292,7 +292,8 @@ def add_target_to_vws(
 
 
 def get_vws_target(
-    target_id: str, vuforia_database_keys: VuforiaDatabaseKeys
+    target_id: str,
+    vuforia_database_keys: VuforiaDatabaseKeys,
 ) -> Response:
     """
     Return a response from a request to the endpoint to get a target record.
@@ -392,7 +393,7 @@ def authorization_header(  # pylint: disable=too-many-arguments
     content: bytes,
     content_type: str,
     date: str,
-    request_path: str
+    request_path: str,
 ) -> bytes:
     """
     Return an `Authorization` header which can be used for a request made to
@@ -522,7 +523,7 @@ def delete_target(
         server_secret_key=vuforia_database_keys.server_secret_key,
         method=DELETE,
         content=b'',
-        request_path=f'/targets/{target_id}'
+        request_path=f'/targets/{target_id}',
     )
 
     result_code = response.json()['result_code']

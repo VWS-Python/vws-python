@@ -93,7 +93,7 @@ class TestDatabaseSummary:
         It is possible to get a success response.
         """
         response = database_summary(
-            vuforia_database_keys=vuforia_database_keys
+            vuforia_database_keys=vuforia_database_keys,
         )
 
         assert_vws_response(

@@ -23,6 +23,7 @@ from tests.mock_vws.utils import (
 pytest_plugins = [  # pylint: disable=invalid-name
     'tests.mock_vws.fixtures.prepared_requests',
     'tests.mock_vws.fixtures.images',
+    'tests.mock_vws.fixtures.credentials',
 ]
 
 
@@ -55,8 +56,8 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
 
 @pytest.fixture()
 def target_id(
-    png_rgb_success: io.BytesIO,  # pylint: disable=redefined-outer-name
-    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
+    png_rgb_success: io.BytesIO,
+    vuforia_database_keys: VuforiaDatabaseKeys,
 ) -> str:
     """
     Return the target ID of a target in the database.
@@ -84,7 +85,7 @@ def target_id(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia(
     request: SubRequest,
-    vuforia_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
+    vuforia_database_keys: VuforiaDatabaseKeys,
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
@@ -121,7 +122,7 @@ def verify_mock_vuforia(
 @pytest.fixture(params=[True, False], ids=['Real Vuforia', 'Mock Vuforia'])
 def verify_mock_vuforia_inactive(
     request: SubRequest,
-    inactive_database_keys: VuforiaDatabaseKeys,  # noqa: E501 pylint: disable=redefined-outer-name
+    inactive_database_keys: VuforiaDatabaseKeys,
 ) -> Generator:
     """
     Test functions which use this fixture are run twice. Once with the real
@@ -159,53 +160,22 @@ def verify_mock_vuforia_inactive(
 
 @pytest.fixture(
     params=[
-        # '_add_target',
-        # '_database_summary',
-        # '_delete_target',
-        # '_get_duplicates',
-        # '_get_target',
-        # '_target_list',
-        # '_target_summary',
-        # '_update_target',
+        '_add_target',
+        '_database_summary',
+        '_delete_target',
+        '_get_duplicates',
+        '_get_target',
+        '_target_list',
+        '_target_summary',
+        '_update_target',
         '_query',
-    ]
+    ],
 )
 def endpoint(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint.
     """
     endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param
+        request.param,
     )
     return endpoint_fixture
-
-
-@pytest.fixture()
-def vuforia_database_keys() -> VuforiaDatabaseKeys:
-    """
-    Return VWS credentials from environment variables.
-    """
-    credentials: VuforiaDatabaseKeys = VuforiaDatabaseKeys(
-        database_name=os.environ['VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
-        server_access_key=os.environ['VUFORIA_SERVER_ACCESS_KEY'],
-        server_secret_key=os.environ['VUFORIA_SERVER_SECRET_KEY'],
-        client_access_key=os.environ['VUFORIA_CLIENT_ACCESS_KEY'],
-        client_secret_key=os.environ['VUFORIA_CLIENT_SECRET_KEY'],
-    )
-    return credentials
-
-
-@pytest.fixture()
-def inactive_database_keys() -> VuforiaDatabaseKeys:
-    """
-    Return VWS credentials for an inactive project from environment variables.
-    """
-    credentials: VuforiaDatabaseKeys = VuforiaDatabaseKeys(
-        database_name=os.
-        environ['INACTIVE_VUFORIA_TARGET_MANAGER_DATABASE_NAME'],
-        server_access_key=os.environ['INACTIVE_VUFORIA_SERVER_ACCESS_KEY'],
-        server_secret_key=os.environ['INACTIVE_VUFORIA_SERVER_SECRET_KEY'],
-        client_access_key=os.environ['INACTIVE_VUFORIA_SERVER_ACCESS_KEY'],
-        client_secret_key=os.environ['INACTIVE_VUFORIA_SERVER_SECRET_KEY'],
-    )
-    return credentials
