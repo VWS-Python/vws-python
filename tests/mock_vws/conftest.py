@@ -168,13 +168,13 @@ def verify_mock_vuforia_inactive(
         '_target_list',
         '_target_summary',
         '_update_target',
-    ]
+    ],
 )
 def endpoint(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint.
     """
     endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param
+        request.param,
     )
     return endpoint_fixture
