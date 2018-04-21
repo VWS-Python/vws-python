@@ -6,7 +6,7 @@ flake8==3.5.0  # Lint
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==0.14.0  # Require single quotes
 freezegun==0.3.10  # Freeze time in tests
-hypothesis==3.50.2  # Generate test cases
+hypothesis==3.56.4  # Generate test cases
 isort==4.3.4  # Lint imports
 mypy==0.570  # Type checking
 pip_check_reqs==2.0.1
