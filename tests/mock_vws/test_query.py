@@ -41,7 +41,6 @@ def assert_success(response: Response) -> None:
     assert response.json()['result_code'] == 'Success'
     response_header_keys = {
         'Connection',
-        'Content-Encoding',
         'Content-Type',
         'Date',
         'Server',
@@ -65,7 +64,6 @@ def assert_success(response: Response) -> None:
     assert response.headers.keys() == response_header_keys
 
     assert response.headers['Connection'] == 'keep-alive'
-    assert response.headers['Content-Encoding'] == 'gzip'
     assert response.headers['Content-Type'] == 'application/json'
     assert_valid_date_header(response=response)
     assert response.headers['Server'] == 'nginx'

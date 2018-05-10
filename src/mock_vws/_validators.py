@@ -13,6 +13,7 @@ import uuid
 from json.decoder import JSONDecodeError
 from typing import Any, Callable, Dict, Set, Tuple
 
+import pytz
 import wrapt
 from PIL import Image
 from requests import codes
@@ -299,7 +300,10 @@ def validate_date(
         }
         return json_dump(body)
 
-    time_difference = datetime.datetime.now() - date_from_header
+    gmt = pytz.timezone('GMT')
+    now = datetime.datetime.now(tz=gmt)
+    date_from_header = date_from_header.replace(tzinfo=gmt)
+    time_difference = now - date_from_header
     maximum_time_difference = datetime.timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:

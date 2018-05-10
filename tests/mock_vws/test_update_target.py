@@ -438,7 +438,8 @@ class TestTargetName:
     """
 
     @pytest.mark.parametrize(
-        'name', [
+        'name',
+        [
             'a',
             'a' * 64,
         ],

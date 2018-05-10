@@ -12,7 +12,7 @@ with open('requirements.txt') as requirements:
 with open('dev-requirements.txt') as dev_requirements:
     DEV_REQUIRES = dev_requirements.readlines()
 
-with open('README.md') as f:
+with open('README.rst') as f:
     LONG_DESCRIPTION = f.read()
 
 setup(

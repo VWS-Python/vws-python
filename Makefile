@@ -7,14 +7,11 @@ lint:
 	flake8 .
 	isort --recursive --check-only
 	mypy src/ tests/ ci/
-	pip-extra-reqs src/
-	pip-missing-reqs src/
 	pydocstyle
 	pylint *.py src tests ci
 	pyroma .
 	vulture . --min-confidence 100
 	yapf --diff --recursive src/ tests/ ci/
-	markdownlint --config .markdownlint.json README.md CONTRIBUTING.md
 
 .PHONY: fix-lint
 fix-lint:
