@@ -33,7 +33,7 @@ class TestUnexpectedJSON:
         error responses.
         """
         if endpoint.prepared_request.headers.get(
-            'Content-Type'
+            'Content-Type',
         ) == 'application/json':
             return
         content = bytes(json.dumps({'key': 'value'}), encoding='utf-8')

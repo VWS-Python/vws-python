@@ -107,8 +107,10 @@ class TestFormat:
         endpoint: TargetAPIEndpoint,
     ) -> None:
         """
-        A `BAD_REQUEST` response is returned when the date given in the date
-        header is not in the expected format (RFC 1123).
+        A `BAD_REQUEST` response is returned by the Target API when the date
+        given in the date header is not in the expected format (RFC 1123).
+
+        No such error is returned by the Query API.
         """
         gmt = pytz.timezone('GMT')
         with freeze_time(datetime.now(tz=gmt)):
@@ -143,9 +145,10 @@ class TestFormat:
             request=endpoint.prepared_request,
         )
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
-            # TODO Auth failure
+            assert_query_success(response=response)
             return
 
         assert_vws_failure(
