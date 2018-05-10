@@ -13,6 +13,7 @@ from time import sleep
 from typing import Any, Dict
 from urllib.parse import urljoin
 
+import pytz
 import requests
 import timeout_decorator
 from requests import Response
@@ -155,6 +156,7 @@ def assert_valid_date_header(response: Response) -> None:
     date_from_response = email.utils.parsedate(date_response)
     assert date_from_response is not None
     year, month, day, hour, minute, second, _, _, _ = date_from_response
+    gmt = pytz.timezone('GMT')
     datetime_from_response = datetime.datetime(
         year=year,
         month=month,
@@ -162,8 +164,9 @@ def assert_valid_date_header(response: Response) -> None:
         hour=hour,
         minute=minute,
         second=second,
+        tzinfo=gmt,
     )
-    current_date = datetime.datetime.now()
+    current_date = datetime.datetime.now(tz=gmt)
     time_difference = abs(current_date - datetime_from_response)
     assert time_difference < datetime.timedelta(minutes=1)
 
