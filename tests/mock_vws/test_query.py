@@ -60,15 +60,12 @@ class TestQuery:
             'Content-Type': content_type_header,
         }
 
-        # The headers returned are non-deterministic. We therefore run this
-        # test multiple times in order to exercise multiple code paths.
-        for _ in range(10):
-            with requests.request(
-                method=POST,
-                url=url,
-                headers=headers,
-                data=encoded_data,
-                stream=True,
-            ) as response:
-                assert_query_success(response=response)
-                assert response.json()['results'] == []
+        with requests.request(
+            method=POST,
+            url=url,
+            headers=headers,
+            data=encoded_data,
+            stream=True,
+        ) as response:
+            assert_query_success(response=response)
+            assert response.json()['results'] == []
