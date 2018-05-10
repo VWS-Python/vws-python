@@ -13,6 +13,7 @@ from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     assert_vws_failure,
+    assert_vwq_failure,
     authorization_header,
     rfc_1123_date,
 )
@@ -29,8 +30,8 @@ class TestUnexpectedJSON:
         endpoint: TargetAPIEndpoint,
     ) -> None:
         """
-        Giving JSON to endpoints which do not take any JSON data returns
-        error responses.
+        Giving JSON to Target API endpoints which do not take any JSON data
+        returns error responses.
         """
         if endpoint.prepared_request.headers.get(
             'Content-Type',
@@ -84,11 +85,14 @@ class TestUnexpectedJSON:
             )
             return
 
-        assert response.text == ''
-        assert 'Content-Type' not in response.headers
-        netloc = urlparse(endpoint.prepared_request.url).netloc
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
-            assert response.status_code == codes.UNSUPPORTED_MEDIA_TYPE
-            # TODO response headers
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.UNSUPPORTED_MEDIA_TYPE,
+            )
         else:
+            assert response.text == ''
+            assert 'Content-Type' not in response.headers
             assert response.status_code == codes.BAD_REQUEST

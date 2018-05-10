@@ -628,3 +628,32 @@ def assert_query_success(response: Response) -> None:
     assert response.headers['Content-Type'] == 'application/json'
     assert_valid_date_header(response=response)
     assert response.headers['Server'] == 'nginx'
+
+
+def assert_vwq_failure(
+    response: Response,
+    status_code: int,
+) -> None:
+    """
+    Assert that a VWQ failure response is as expected.
+
+    Args:
+        response: The response returned by a request to VWQ.
+        status_code: The expected status code of the response.
+
+    Raises:
+        AssertionError: The response is not in the expected VWQ error format
+            for the given codes.
+    """
+    assert response.status_code == status_code
+    response_header_keys = {
+        'Connection',
+        'Content-Length',
+        'Date',
+        'Server',
+    }
+    assert response.headers.keys() == response_header_keys
+    assert response.headers['Connection'] == 'keep-alive'
+    assert response.headers['Content-Length'] == '0'
+    assert_valid_date_header(response=response)
+    assert response.headers['Server'] == 'nginx'

@@ -52,4 +52,5 @@ validators
 vuforia
 vuforia's
 vws
+vwq
 xxx
