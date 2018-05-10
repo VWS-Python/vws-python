@@ -7,8 +7,6 @@ lint:
 	flake8 .
 	isort --recursive --check-only
 	mypy src/ tests/ ci/
-	pip-extra-reqs src/
-	pip-missing-reqs src/
 	pydocstyle
 	pylint *.py src tests ci
 	pyroma .
