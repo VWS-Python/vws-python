@@ -12,7 +12,6 @@ lint:
 	pyroma .
 	vulture . --min-confidence 100
 	yapf --diff --recursive src/ tests/ ci/
-	markdownlint --config .markdownlint.json README.md CONTRIBUTING.md
 
 .PHONY: fix-lint
 fix-lint:
