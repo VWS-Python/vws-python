@@ -5,7 +5,6 @@ See
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 """
 
-import gzip
 import uuid
 from typing import Callable, List, Set
 
@@ -75,7 +74,7 @@ class MockVuforiaWebQueryAPI:
         self,
         request: _RequestObjectProxy,  # pylint: disable=unused-argument
         context: _Context,
-    ) -> bytes:
+    ) -> str:
         """
         Perform an image recognition query.
         """
@@ -86,8 +85,6 @@ class MockVuforiaWebQueryAPI:
             'query_id': uuid.uuid4().hex,
         }
 
-        text = json_dump(body)
-        context.headers['Content-Encoding'] = 'gzip'
-        value = gzip.compress(text.encode())
+        value = json_dump(body)
         context.headers['Content-Length'] = str(len(value))
         return value

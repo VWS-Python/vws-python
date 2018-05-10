@@ -7,6 +7,7 @@ from typing import Dict, Union
 from urllib.parse import urlparse
 
 import pytest
+import pytz
 import requests
 from freezegun import freeze_time
 from requests import codes
@@ -109,7 +110,8 @@ class TestFormat:
         A `BAD_REQUEST` response is returned when the date given in the date
         header is not in the expected format (RFC 1123).
         """
-        with freeze_time(datetime.now()):
+        gmt = pytz.timezone('GMT')
+        with freeze_time(datetime.now(tz=gmt)):
             now = datetime.now()
             date_incorrect_format = now.strftime('%a %b %d %H:%M:%S %Y')
 
@@ -179,7 +181,8 @@ class TestSkewedTime:
         """
         time_difference_from_now = timedelta(minutes=5, seconds=10)
         time_difference_from_now *= time_multiplier
-        with freeze_time(datetime.now() + time_difference_from_now):
+        gmt = pytz.timezone('GMT')
+        with freeze_time(datetime.now(tz=gmt) + time_difference_from_now):
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
@@ -235,7 +238,8 @@ class TestSkewedTime:
         """
         time_difference_from_now = timedelta(minutes=4, seconds=50)
         time_difference_from_now *= time_multiplier
-        with freeze_time(datetime.now() + time_difference_from_now):
+        gmt = pytz.timezone('GMT')
+        with freeze_time(datetime.now(tz=gmt) + time_difference_from_now):
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)

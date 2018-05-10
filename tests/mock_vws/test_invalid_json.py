@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse
 
 import pytest
+import pytz
 import requests
 from freezegun import freeze_time
 from requests import codes
@@ -42,7 +43,9 @@ class TestInvalidJSON:
         # endpoints.
         is_summary_endpoint = endpoint.prepared_request.path_url == '/summary'
         content = b'a'
-        time_to_freeze = datetime.now() + timedelta(minutes=date_skew_minutes)
+        gmt = pytz.timezone('GMT')
+        now = datetime.now(tz=gmt)
+        time_to_freeze = now + timedelta(minutes=date_skew_minutes)
         with freeze_time(time_to_freeze):
             date = rfc_1123_date()
 
