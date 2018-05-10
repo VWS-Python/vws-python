@@ -12,12 +12,6 @@ Install Python dependencies in a virtual environment.
 pip install --editable .[dev]
 ```
 
-Insall `npm` dependencies for linting Markdown files:
-
-```sh
-npm install -g markdownlint-cli
-```
-
 Spell checking requires `enchant`.
 This can be installed on macOS, for example, with [Homebrew](http://brew.sh):
 
@@ -30,8 +24,6 @@ and on Ubuntu with `apt`:
 ```sh
 apt-get install -y enchant
 ```
-
-and to lint
 
 ## Linting
 
