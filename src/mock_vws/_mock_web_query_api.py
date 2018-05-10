@@ -5,7 +5,6 @@ See
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 """
 
-import gzip
 import uuid
 from typing import Callable, List, Set
 
