@@ -609,7 +609,6 @@ def assert_query_success(response: Response) -> None:
     }
 
     assert response.headers.keys() == response_header_keys
-
     assert response.headers['Content-Length'] == str(response.raw.tell())
     assert response.headers['Connection'] == 'keep-alive'
     assert response.headers['Content-Type'] == 'application/json'
