@@ -4,7 +4,7 @@ codecov==2.0.15 # Upload coverage data
 dodgy==0.1.9  # Look for uploaded secrets
 flake8==3.5.0  # Lint
 flake8-commas==2.0.0  # Require silicon valley commas
-flake8-quotes==0.14.0  # Require single quotes
+flake8-quotes==1.0.0  # Require single quotes
 freezegun==0.3.10  # Freeze time in tests
 hypothesis==3.56.8  # Generate test cases
 isort==4.3.4  # Lint imports
