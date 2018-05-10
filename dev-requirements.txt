@@ -1,5 +1,5 @@
 autoflake==1.2
-check-manifest==0.36
+check-manifest==0.37
 codecov==2.0.15 # Upload coverage data
 dodgy==0.1.9  # Look for uploaded secrets
 flake8==3.5.0  # Lint
