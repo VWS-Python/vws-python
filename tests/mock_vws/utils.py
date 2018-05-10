@@ -604,25 +604,11 @@ def assert_query_success(response: Response) -> None:
         'Content-Type',
         'Date',
         'Server',
+        'Content-Length',
     }
 
-    # Sometimes `transfer-encoding: chunked` is in the response headers.
-    # The reason for this is not known.
-    # We therefore accept responses with and without the `transfer-encoding`
-    # header.
-    # As we do not know what determines whether `transfer-encoding` is chunked,
-    # the mock does not chunk responses.
-    # We therefore run `test_no_results` multiple times to ensure that this
-    # code path is hit.
-    if response.raw.chunked:
-        response_header_keys.add('transfer-encoding')
-        assert response.headers['transfer-encoding'] == 'chunked'
-    else:
-        response_header_keys.add('Content-Length')
-        assert response.headers['Content-Length'] == str(response.raw.tell())
-
     assert response.headers.keys() == response_header_keys
-
+    assert response.headers['Content-Length'] == str(response.raw.tell())
     assert response.headers['Connection'] == 'keep-alive'
     assert response.headers['Content-Type'] == 'application/json'
     assert_valid_date_header(response=response)
