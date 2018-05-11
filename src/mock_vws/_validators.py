@@ -274,7 +274,6 @@ def validate_authorization(
     return json_dump(body)
 
 
-
 @wrapt.decorator
 def validate_date(
     wrapped: Callable[..., str],
