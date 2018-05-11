@@ -182,6 +182,31 @@ def endpoint(request: SubRequest) -> TargetAPIEndpoint:
 
 @pytest.fixture(
     params=[
+        '_add_target',
+        '_database_summary',
+        '_delete_target',
+        '_get_duplicates',
+        '_get_target',
+        '_target_list',
+        '_target_summary',
+        '_update_target',
+        '_query',
+    ],
+)
+def any_endpoint(request: SubRequest) -> TargetAPIEndpoint:
+    """
+    Return details of an endpoint for the Target API or the Query API.
+
+    This is a temporary fixture for use while we expand the Query API mock.
+    """
+    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
+        request.param,
+    )
+    return endpoint_fixture
+
+
+@pytest.fixture(
+    params=[
         '_query',
     ],
 )
