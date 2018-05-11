@@ -324,6 +324,7 @@ def validate_date(
             context.headers['Content-Type'] = content_type
             text = 'Malformed date header.'
             context.headers['Content-Length'] = str(len(text))
+            context.headers['WWW-Authenticate'] = 'VWS'
             return text
 
         context.status_code = codes.BAD_REQUEST
