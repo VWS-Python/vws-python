@@ -7,19 +7,10 @@ matrix:
 env:
   matrix:
   - TEST_FILENAME=''
-  - TEST_FILENAME=test_add_target.py::TestActiveFlag
-  - TEST_FILENAME=test_add_target.py::TestApplicationMetadata
-  - TEST_FILENAME=test_add_target.py::TestContentTypes
-  - TEST_FILENAME=test_add_target.py::TestImage
-  - TEST_FILENAME=test_add_target.py::TestMissingData
-  - TEST_FILENAME=test_add_target.py::TestTargetName
-  - TEST_FILENAME=test_add_target.py::TestUnexpectedData
-  - TEST_FILENAME=test_add_target.py::TestWidth
+  - TEST_FILENAME=test_add_target.py
   - TEST_FILENAME=test_authorization_header.py
   - TEST_FILENAME=test_database_summary.py
-  - TEST_FILENAME=test_date_header.py::TestFormat
-  - TEST_FILENAME=test_date_header.py::TestMissing
-  - TEST_FILENAME=test_date_header.py::TestSkewedTime
+  - TEST_FILENAME=test_date_header.py
   - TEST_FILENAME=test_delete_target.py
   - TEST_FILENAME=test_get_duplicates.py
   - TEST_FILENAME=test_get_target.py
@@ -29,13 +20,7 @@ env:
   - TEST_FILENAME=test_target_list.py
   - TEST_FILENAME=test_target_summary.py
   - TEST_FILENAME=test_unexpected_json.py
-  - TEST_FILENAME=test_update_target.py::TestActiveFlag
-  - TEST_FILENAME=test_update_target.py::TestApplicationMetadata
-  - TEST_FILENAME=test_update_target.py::TestImage
-  - TEST_FILENAME=test_update_target.py::TestTargetName
-  - TEST_FILENAME=test_update_target.py::TestUnexpectedData
-  - TEST_FILENAME=test_update_target.py::TestUpdate
-  - TEST_FILENAME=test_update_target.py::TestWidth
+  - TEST_FILENAME=test_update_target.py
   - TEST_FILENAME=test_usage.py
 addons:
   apt:
