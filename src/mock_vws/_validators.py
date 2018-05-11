@@ -237,16 +237,11 @@ def validate_authorization(
     """
     request, context = args
 
-    if request.text is None:
-        content = b''
-    else:
-        content = bytes(request.text, encoding='utf-8')
-
     expected_authorization_header = authorization_header(
         access_key=bytes(instance.server_access_key, encoding='utf-8'),
         secret_key=bytes(instance.server_secret_key, encoding='utf-8'),
         method=request.method,
-        content=content,
+        content=request.body or b'',
         content_type=request.headers.get('Content-Type', ''),
         date=request.headers.get('Date', ''),
         request_path=request.path,
