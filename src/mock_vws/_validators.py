@@ -244,11 +244,7 @@ def validate_authorization(
         expected.
     """
     request, context = args
-
-    if request.text is None:
-        content = b''
-    else:
-        content = bytes(request.text, encoding='utf-8')
+    content = request.body or b''
 
     expected_authorization_header = authorization_header(
         access_key=bytes(instance.server_access_key, encoding='utf-8'),

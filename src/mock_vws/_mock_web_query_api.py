@@ -59,7 +59,7 @@ def route(
 
         decorators = [
             validate_auth_header_exists,
-            # validate_authorization,
+            validate_authorization,
         ]
 
         for decorator in decorators:
