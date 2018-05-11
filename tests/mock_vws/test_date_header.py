@@ -108,7 +108,9 @@ class TestFormat:
         gmt = pytz.timezone('GMT')
         with freeze_time(datetime.now(tz=gmt)):
             now = datetime.now()
-            date_incorrect_format = now.strftime('%a %b %d %H:%M:%S %Y')
+            # TODO: This actually works on query
+            # date_incorrect_format = now.strftime('%a %b %d %H:%M:%S %Y')
+            date_incorrect_format = now.strftime('%a %b %d %H:%M:%S')
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content = endpoint.prepared_request.body or b''
@@ -141,7 +143,11 @@ class TestFormat:
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
-            assert_query_success(response=response)
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.UNAUTHORIZED,
+                content_type='text/plain; charset=ISO-8859-1',
+            )
             return
 
         assert_vws_failure(

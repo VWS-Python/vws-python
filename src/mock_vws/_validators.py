@@ -318,13 +318,20 @@ def validate_date(
         }
         return json_dump(body)
     except ValueError:
-        if request.path != '/v1/query':
-            context.status_code = codes.BAD_REQUEST
-            body = {
-                'transaction_id': uuid.uuid4().hex,
-                'result_code': ResultCodes.FAIL.value,
-            }
-            return json_dump(body)
+        if request.path == '/v1/query':
+            context.status_code = codes.UNAUTHORIZED
+            content_type = 'text/plain; charset=ISO-8859-1'
+            context.headers['Content-Type'] = content_type
+            text = 'Malformed date header.'
+            context.headers['Content-Length'] = str(len(text))
+            return text
+
+        context.status_code = codes.BAD_REQUEST
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json_dump(body)
 
     gmt = pytz.timezone('GMT')
     now = datetime.datetime.now(tz=gmt)
