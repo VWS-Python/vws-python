@@ -24,6 +24,10 @@ from tests.mock_vws.utils import (
 )
 
 
+_VWS_MAX_TIME_SKEW = timedelta(minutes=5)
+_LEEWAY = timedelta(seconds=10)
+
+
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestMissing:
     """
@@ -182,7 +186,7 @@ class TestSkewedTime:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
-        time_difference_from_now = timedelta(minutes=5, seconds=10)
+        time_difference_from_now = _VWS_MAX_TIME_SKEW + _LEEWAY
         time_difference_from_now *= time_multiplier
         gmt = pytz.timezone('GMT')
         with freeze_time(datetime.now(tz=gmt) + time_difference_from_now):
@@ -239,7 +243,7 @@ class TestSkewedTime:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
-        time_difference_from_now = timedelta(minutes=4, seconds=50)
+        time_difference_from_now = _VWS_MAX_TIME_SKEW - _LEEWAY
         time_difference_from_now *= time_multiplier
         gmt = pytz.timezone('GMT')
         with freeze_time(datetime.now(tz=gmt) + time_difference_from_now):
