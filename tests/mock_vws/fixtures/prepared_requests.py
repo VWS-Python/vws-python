@@ -476,6 +476,7 @@ def _query(
         date=date,
         request_path=request_path,
     )
+    import pdb; pdb.set_trace()
 
     headers = {
         'Authorization': authorization_string,

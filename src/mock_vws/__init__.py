@@ -66,6 +66,9 @@ class MockVWS(ContextDecorator):
         if server_secret_key is None:
             server_secret_key = uuid.uuid4().hex
 
+        client_access_key = uuid.uuid4().hex
+        client_secret_key = uuid.uuid4().hex
+
         self._real_http = real_http
         self._mock = Mocker()
         self._state = state
@@ -73,6 +76,8 @@ class MockVWS(ContextDecorator):
 
         self.server_access_key = server_access_key
         self.server_secret_key = server_secret_key
+        self.client_access_key = client_access_key
+        self.client_secret_key = client_secret_key
         self.database_name = database_name
 
     def __enter__(self) -> 'MockVWS':
@@ -92,8 +97,8 @@ class MockVWS(ContextDecorator):
         )
 
         mock_vwq_api = MockVuforiaWebQueryAPI(
-            server_access_key=self.server_access_key,
-            server_secret_key=self.server_secret_key,
+            client_access_key=self.client_access_key,
+            client_secret_key=self.client_secret_key,
         )
 
         date = email.utils.formatdate(None, localtime=False, usegmt=True)

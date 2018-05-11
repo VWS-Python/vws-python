@@ -353,16 +353,16 @@ class MockVuforiaWebServicesAPI:
 
         Attributes:
             database_name: The name of a VWS target manager database name.
-            server_access_key (str): A VWS server access key.
-            server_secret_key (str): A VWS server secret key.
+            access_key (str): A VWS server access key.
+            secret_key (str): A VWS server secret key.
             targets: The ``Target``s in the database.
             routes: The `Route`s to be used in the mock.
             state: The state of the services being mocked.
         """
         self.database_name = database_name
 
-        self.server_access_key: str = server_access_key
-        self.server_secret_key: str = server_secret_key
+        self.access_key: str = server_access_key
+        self.secret_key: str = server_secret_key
 
         self.targets: List[Target] = []
         self.routes: Set[Route] = ROUTES

@@ -77,22 +77,22 @@ class MockVuforiaWebQueryAPI:
 
     def __init__(
         self,
-        server_access_key: str,
-        server_secret_key: str,
+        client_access_key: str,
+        client_secret_key: str,
     ) -> None:
         """
         Args:
-            server_access_key: A VWS server access key.
-            server_secret_key: A VWS server secret key.
+            client_access_key: A VWS client access key.
+            client_secret_key: A VWS client secret key.
 
         Attributes:
             routes: The `Route`s to be used in the mock.
-            server_access_key (str): A VWS server access key.
-            server_secret_key (str): A VWS server secret key.
+            access_key (str): A VWS client access key.
+            secret_key (str): A VWS client secret key.
         """
         self.routes: Set[Route] = ROUTES
-        self.server_access_key: str = server_access_key
-        self.server_secret_key: str = server_secret_key
+        self.access_key: str = server_access_key
+        self.secret_key: str = server_secret_key
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
