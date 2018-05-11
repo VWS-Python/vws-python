@@ -203,15 +203,15 @@ def validate_auth_header_exists(
         An `UNAUTHORIZED` response if there is no "Authorization" header.
     """
     request, context = args
-    if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-        }
-        return json_dump(body)
+    if 'Authorization' in request.headers:
+        return wrapped(*args, **kwargs)
 
-    return wrapped(*args, **kwargs)
+    context.status_code = codes.UNAUTHORIZED
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+    }
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -247,15 +247,15 @@ def validate_authorization(
         request_path=request.path,
     )
 
-    if request.headers['Authorization'] != expected_authorization_header:
-        context.status_code = codes.BAD_REQUEST
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
+    if request.headers['Authorization'] == expected_authorization_header:
+        return wrapped(*args, **kwargs)
 
-    return wrapped(*args, **kwargs)
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
 
 
 @wrapt.decorator
