@@ -75,6 +75,16 @@ class TestUnexpectedJSON:
             request=endpoint.prepared_request,
         )
 
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.UNSUPPORTED_MEDIA_TYPE,
+                content_type=None,
+            )
+            return
+
         # This is an undocumented difference between `/summary` and other
         # endpoints.
         if endpoint.prepared_request.path_url == '/summary':
@@ -85,14 +95,6 @@ class TestUnexpectedJSON:
             )
             return
 
-        url = str(endpoint.prepared_request.url)
-        netloc = urlparse(url).netloc
-        if netloc == 'cloudreco.vuforia.com':
-            assert_vwq_failure(
-                response=response,
-                status_code=codes.UNSUPPORTED_MEDIA_TYPE,
-            )
-        else:
-            assert response.text == ''
-            assert 'Content-Type' not in response.headers
-            assert response.status_code == codes.BAD_REQUEST
+        assert response.text == ''
+        assert 'Content-Type' not in response.headers
+        assert response.status_code == codes.BAD_REQUEST
