@@ -124,6 +124,7 @@ class TestInvalidJSON:
             assert_vwq_failure(
                 response=response,
                 status_code=codes.BAD_REQUEST,
+                content_type='text/html',
             )
             expected_text = (
                 'java.lang.RuntimeException: RESTEASY007500: '
