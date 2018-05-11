@@ -221,6 +221,7 @@ def validate_auth_header_exists(
     }
     return json_dump(body)
 
+
 @wrapt.decorator
 def validate_authorization(
     wrapped: Callable[..., str],
