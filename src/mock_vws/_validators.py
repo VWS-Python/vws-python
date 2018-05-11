@@ -203,24 +203,23 @@ def validate_auth_header_exists(
         An `UNAUTHORIZED` response if there is no "Authorization" header.
     """
     request, context = args
-    if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED
-        if wrapped.__name__ == 'query':
-            text = 'Authorization header missing.'
-            content_type = 'text/plain; charset=ISO-8859-1'
-            context.headers['Content-Type'] = content_type
-            context.headers['Content-Length'] = str(len(text))
-            context.headers['WWW-Authenticate'] = 'VWS'
-            return text
+    if 'Authorization' in request.headers:
+        return wrapped(*args, **kwargs)
 
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-        }
-        return json_dump(body)
+    context.status_code = codes.UNAUTHORIZED
+    if wrapped.__name__ == 'query':
+        text = 'Authorization header missing.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        context.headers['Content-Length'] = str(len(text))
+        context.headers['WWW-Authenticate'] = 'VWS'
+        return text
 
-    return wrapped(*args, **kwargs)
-
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+    }
+    return json_dump(body)
 
 @wrapt.decorator
 def validate_authorization(
@@ -255,15 +254,25 @@ def validate_authorization(
         request_path=request.path,
     )
 
-    if request.headers['Authorization'] != expected_authorization_header:
-        context.status_code = codes.BAD_REQUEST
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
+    if request.headers['Authorization'] == expected_authorization_header:
+        return wrapped(*args, **kwargs)
 
-    return wrapped(*args, **kwargs)
+    if wrapped.__name__ == 'query':
+        context.status_code = codes.UNAUTHORIZED
+        text = 'Malformed authorization header.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        context.headers['Content-Length'] = str(len(text))
+        context.headers['WWW-Authenticate'] = 'VWS'
+        return text
+
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
 
 
 @wrapt.decorator

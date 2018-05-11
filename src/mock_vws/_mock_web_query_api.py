@@ -58,8 +58,8 @@ def route(
         )
 
         decorators = [
-            validate_auth_header_exists,
             validate_authorization,
+            validate_auth_header_exists,
         ]
 
         for decorator in decorators:
@@ -77,12 +77,24 @@ class MockVuforiaWebQueryAPI:
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        server_access_key: str,
+        server_secret_key: str,
+    ) -> None:
         """
+        Args:
+            server_access_key: A VWS server access key.
+            server_secret_key: A VWS server secret key.
+
         Attributes:
             routes: The `Route`s to be used in the mock.
+            server_access_key (str): A VWS server access key.
+            server_secret_key (str): A VWS server secret key.
         """
         self.routes: Set[Route] = ROUTES
+        self.server_access_key: str = server_access_key
+        self.server_secret_key: str = server_secret_key
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
