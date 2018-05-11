@@ -626,6 +626,7 @@ def assert_vwq_failure(
 
     Args:
         response: The response returned by a request to VWQ.
+        content_type: The expected Content-Type header.
         status_code: The expected status code of the response.
 
     Raises:

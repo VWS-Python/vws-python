@@ -12,7 +12,6 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
-    assert_valid_date_header,
     assert_vwq_failure,
     assert_vws_failure,
     rfc_1123_date,
@@ -49,7 +48,8 @@ class TestAuthorizationHeader:
             request=endpoint.prepared_request,
         )
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
             assert_vwq_failure(
                 response=response,
@@ -87,7 +87,8 @@ class TestAuthorizationHeader:
             request=endpoint.prepared_request,
         )
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
             assert_vwq_failure(
                 response=response,

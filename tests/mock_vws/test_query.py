@@ -7,13 +7,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import pytest
 import requests
 
-from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
-    assert_query_success,
-    authorization_header,
-    rfc_1123_date,
-)
+from tests.mock_vws.utils import TargetAPIEndpoint, assert_query_success
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
