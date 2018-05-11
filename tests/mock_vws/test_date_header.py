@@ -25,7 +25,7 @@ from tests.mock_vws.utils import (
 
 
 _VWS_MAX_TIME_SKEW = timedelta(minutes=5)
-_VWQ_MAX_TIME_SKEW = timedelta(days=2000)
+_VWQ_MAX_TIME_SKEW = timedelta(minutes=64, seconds=51)
 _LEEWAY = timedelta(seconds=10)
 
 
@@ -181,8 +181,9 @@ class TestSkewedTime:
         endpoint: TargetAPIEndpoint,
     ) -> None:
         """
-        If the date header is more than five minutes before or after the
-        request is sent, a `FORBIDDEN` response is returned.
+        If the date header is more than five minutes (target API) or 65 minutes
+        (query API) before or after the request is sent, a `FORBIDDEN` response
+        is returned.
 
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
