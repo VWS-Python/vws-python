@@ -207,7 +207,7 @@ def validate_auth_header_exists(
         return wrapped(*args, **kwargs)
 
     context.status_code = codes.UNAUTHORIZED
-    if wrapped.__name__ == 'query':
+    if request.path == '/v1/query':
         text = 'Authorization header missing.'
         content_type = 'text/plain; charset=ISO-8859-1'
         context.headers['Content-Type'] = content_type
@@ -258,7 +258,7 @@ def validate_authorization(
     if request.headers['Authorization'] == expected_authorization_header:
         return wrapped(*args, **kwargs)
 
-    if wrapped.__name__ == 'query':
+    if request.path == '/v1/query':
         context.status_code = codes.UNAUTHORIZED
         text = 'Malformed authorization header.'
         content_type = 'text/plain; charset=ISO-8859-1'
@@ -304,7 +304,20 @@ def validate_date(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
-    except (KeyError, ValueError):
+    except KeyError:
+        context.status_code = codes.BAD_REQUEST
+        if request.path == '/v1/query':
+            content_type = 'text/plain; charset=ISO-8859-1'
+            context.headers['Content-Type'] = content_type
+            text = 'Date header required.'
+            context.headers['Content-Length'] = str(len(text))
+            return text
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json_dump(body)
+    except ValueError:
         context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
