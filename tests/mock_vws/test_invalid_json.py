@@ -14,8 +14,8 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
-    assert_vws_failure,
     assert_vwq_failure,
+    assert_vws_failure,
     authorization_header,
     rfc_1123_date,
 )
