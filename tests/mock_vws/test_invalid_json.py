@@ -51,10 +51,6 @@ class TestInvalidJSON:
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        takes_json_data = (
-            endpoint.auth_header_content_type == 'application/json'
-        )
-
         authorization_string = authorization_header(
             access_key=endpoint.access_key,
             secret_key=endpoint.secret_key,
@@ -85,6 +81,10 @@ class TestInvalidJSON:
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
+        )
+
+        takes_json_data = (
+            endpoint.auth_header_content_type == 'application/json'
         )
 
         if date_is_skewed and takes_json_data:
