@@ -4,13 +4,8 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
-import io
-from urllib.parse import urljoin
-
 import pytest
 import requests
-from requests_mock import POST
-from urllib3.filepost import encode_multipart_formdata
 
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,

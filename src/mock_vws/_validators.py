@@ -255,7 +255,6 @@ def validate_authorization(
         date=request.headers.get('Date', ''),
         request_path=request.path,
     )
-    import pdb; pdb.set_trace()
 
     if request.headers['Authorization'] == expected_authorization_header:
         return wrapped(*args, **kwargs)
