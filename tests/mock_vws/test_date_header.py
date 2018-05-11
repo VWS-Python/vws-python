@@ -69,7 +69,8 @@ class TestMissing:
             request=endpoint.prepared_request,
         )
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
             expected_content_type = 'text/plain; charset=ISO-8859-1'
             assert response.text == 'Date header required.'
@@ -285,7 +286,8 @@ class TestSkewedTime:
             stream=True,
         )
 
-        netloc = urlparse(endpoint.prepared_request.url).netloc
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
             assert_query_success(response=response)
             return

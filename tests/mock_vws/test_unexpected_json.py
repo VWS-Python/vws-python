@@ -30,8 +30,8 @@ class TestUnexpectedJSON:
         endpoint: TargetAPIEndpoint,
     ) -> None:
         """
-        Giving JSON to Target API endpoints which do not take any JSON data
-        returns error responses.
+        Giving JSON to endpoints which do not take any JSON data returns error
+        responses.
         """
         if endpoint.prepared_request.headers.get(
             'Content-Type',

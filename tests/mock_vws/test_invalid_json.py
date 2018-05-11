@@ -116,7 +116,8 @@ class TestInvalidJSON:
             return
 
         assert response.status_code == codes.BAD_REQUEST
-        netloc = urlparse(endpoint.prepared_request.url).netloc
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
             assert_vwq_failure(
                 response=response,
