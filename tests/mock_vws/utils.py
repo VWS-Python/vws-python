@@ -647,7 +647,6 @@ def assert_vwq_failure(
     if status_code == codes.UNAUTHORIZED:
         response_header_keys.add('WWW-Authenticate')
         assert response.headers['WWW-Authenticate'] == 'VWS'
-        assert response.text == 'Authorization header missing.'
 
     assert response.headers.keys() == response_header_keys
     assert response.headers['Connection'] == 'keep-alive'
