@@ -95,6 +95,6 @@ class TestUnexpectedJSON:
             )
             return
 
+        assert response.status_code == codes.BAD_REQUEST
         assert response.text == ''
         assert 'Content-Type' not in response.headers
-        assert response.status_code == codes.BAD_REQUEST
