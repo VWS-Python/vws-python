@@ -318,12 +318,13 @@ def validate_date(
         }
         return json_dump(body)
     except ValueError:
-        context.status_code = codes.BAD_REQUEST
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
+        if request.path != '/v1/query':
+            context.status_code = codes.BAD_REQUEST
+            body = {
+                'transaction_id': uuid.uuid4().hex,
+                'result_code': ResultCodes.FAIL.value,
+            }
+            return json_dump(body)
 
     gmt = pytz.timezone('GMT')
     now = datetime.datetime.now(tz=gmt)
