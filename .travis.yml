@@ -48,7 +48,6 @@ before_install:
 - travis_retry pip install --upgrade pip setuptools
 install:
 - travis_retry pip install --upgrade --editable .[dev]
-- travis_retry npm install -g markdownlint-cli
 cache: pip
 before_script:
 - python ci/set_secrets_file.py
