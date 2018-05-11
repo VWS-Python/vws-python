@@ -19,6 +19,7 @@ from tests.mock_vws.utils import (
     assert_valid_date_header,
     assert_vws_failure,
     assert_vws_response,
+    assert_vwq_failure,
     authorization_header,
     rfc_1123_date,
 )
@@ -71,25 +72,13 @@ class TestMissing:
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':
-            response_header_keys = {
-                'Connection',
-                'Content-Length',
-                'Content-Type',
-                'Date',
-                'Server',
-            }
-
-            assert response.headers.keys() == response_header_keys
-            assert response.headers['Connection'] == 'keep-alive'
             expected_content_type = 'text/plain; charset=ISO-8859-1'
-            assert response.headers['Content-Length'] == str(
-                len(response.text)
-            )
-            assert response.headers['Content-Type'] == expected_content_type
-            assert_valid_date_header(response=response)
-            assert response.headers['Server'] == 'nginx'
             assert response.text == 'Date header required.'
-            assert response.status_code == codes.BAD_REQUEST
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
+                content_type=expected_content_type,
+            )
             return
 
         assert_vws_failure(

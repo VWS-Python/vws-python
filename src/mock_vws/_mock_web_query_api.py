@@ -59,6 +59,7 @@ def route(
 
         decorators = [
             validate_authorization,
+            validate_date,
             validate_auth_header_exists,
         ]
 
