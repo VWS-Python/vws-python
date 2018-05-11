@@ -14,9 +14,6 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
-    assert_json_separators,
-    assert_valid_date_header,
-    assert_valid_transaction_id,
     assert_vws_failure,
     assert_vwq_failure,
     authorization_header,
