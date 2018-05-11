@@ -10,7 +10,7 @@ import hmac
 import json
 from string import hexdigits
 from time import sleep
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
 import pytz
@@ -109,6 +109,7 @@ class TargetAPIEndpoint:
         self.successful_headers_result_code = successful_headers_result_code
         headers = prepared_request.headers
         content_type = headers.get('Content-Type', '')
+        content_type = content_type.split(';')[0]
         assert isinstance(content_type, str)
         self.auth_header_content_type: str = content_type
         self.access_key = access_key
@@ -611,5 +612,43 @@ def assert_query_success(response: Response) -> None:
     assert response.headers['Content-Length'] == str(response.raw.tell())
     assert response.headers['Connection'] == 'keep-alive'
     assert response.headers['Content-Type'] == 'application/json'
+    assert_valid_date_header(response=response)
+    assert response.headers['Server'] == 'nginx'
+
+
+def assert_vwq_failure(
+    response: Response,
+    status_code: int,
+    content_type: Optional[str],
+) -> None:
+    """
+    Assert that a VWQ failure response is as expected.
+
+    Args:
+        response: The response returned by a request to VWQ.
+        content_type: The expected Content-Type header.
+        status_code: The expected status code of the response.
+
+    Raises:
+        AssertionError: The response is not in the expected VWQ error format
+            for the given codes.
+    """
+    assert response.status_code == status_code
+    response_header_keys = {
+        'Connection',
+        'Content-Length',
+        'Date',
+        'Server',
+    }
+
+    response_header_keys.add('Content-Type')
+    assert response.headers['Content-Type'] == content_type
+
+    response_header_keys.add('WWW-Authenticate')
+    assert response.headers['WWW-Authenticate'] == 'VWS'
+
+    assert response.headers.keys() == response_header_keys
+    assert response.headers['Connection'] == 'keep-alive'
+    assert response.headers['Content-Length'] == str(len(response.text))
     assert_valid_date_header(response=response)
     assert response.headers['Server'] == 'nginx'

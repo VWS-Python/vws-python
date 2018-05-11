@@ -15,6 +15,8 @@ from requests_mock.response import _Context
 from mock_vws._constants import ResultCodes
 from mock_vws._mock_common import Route, json_dump
 
+from ._validators import validate_auth_header_exists, validate_authorization
+
 ROUTES = set([])
 
 
@@ -50,6 +52,14 @@ def route(
             ),
         )
 
+        decorators = [
+            validate_authorization,
+            validate_auth_header_exists,
+        ]
+
+        for decorator in decorators:
+            method = decorator(method)
+
         return method
 
     return decorator
@@ -62,12 +72,24 @@ class MockVuforiaWebQueryAPI:
     This implementation is tied to the implementation of `requests_mock`.
     """
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        client_access_key: str,
+        client_secret_key: str,
+    ) -> None:
         """
+        Args:
+            client_access_key: A VWS client access key.
+            client_secret_key: A VWS client secret key.
+
         Attributes:
             routes: The `Route`s to be used in the mock.
+            access_key (str): A VWS client access key.
+            secret_key (str): A VWS client secret key.
         """
         self.routes: Set[Route] = ROUTES
+        self.access_key: str = client_access_key
+        self.secret_key: str = client_secret_key
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(

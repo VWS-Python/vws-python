@@ -207,6 +207,14 @@ def validate_auth_header_exists(
         return wrapped(*args, **kwargs)
 
     context.status_code = codes.UNAUTHORIZED
+    if request.path == '/v1/query':
+        text = 'Authorization header missing.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        context.headers['Content-Length'] = str(len(text))
+        context.headers['WWW-Authenticate'] = 'VWS'
+        return text
+
     body = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
@@ -237,18 +245,28 @@ def validate_authorization(
     """
     request, context = args
 
+    content_type = request.headers.get('Content-Type', '').split(';')[0]
     expected_authorization_header = authorization_header(
-        access_key=bytes(instance.server_access_key, encoding='utf-8'),
-        secret_key=bytes(instance.server_secret_key, encoding='utf-8'),
+        access_key=bytes(instance.access_key, encoding='utf-8'),
+        secret_key=bytes(instance.secret_key, encoding='utf-8'),
         method=request.method,
         content=request.body or b'',
-        content_type=request.headers.get('Content-Type', ''),
+        content_type=content_type,
         date=request.headers.get('Date', ''),
         request_path=request.path,
     )
 
     if request.headers['Authorization'] == expected_authorization_header:
         return wrapped(*args, **kwargs)
+
+    if request.path == '/v1/query':
+        context.status_code = codes.UNAUTHORIZED
+        text = 'Malformed authorization header.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        context.headers['Content-Length'] = str(len(text))
+        context.headers['WWW-Authenticate'] = 'VWS'
+        return text
 
     context.status_code = codes.BAD_REQUEST
     body = {
