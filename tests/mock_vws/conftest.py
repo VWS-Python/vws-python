@@ -114,6 +114,10 @@ def verify_mock_vuforia(
             decode('ascii'),
             server_secret_key=vuforia_database_keys.server_secret_key.
             decode('ascii'),
+            client_access_key=vuforia_database_keys.client_access_key.
+            decode('ascii'),
+            client_secret_key=vuforia_database_keys.client_secret_key.
+            decode('ascii'),
             processing_time_seconds=0.1,
         ):
             yield
@@ -174,6 +178,31 @@ def verify_mock_vuforia_inactive(
 def endpoint(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint.
+    """
+    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
+        request.param,
+    )
+    return endpoint_fixture
+
+
+@pytest.fixture(
+    params=[
+        '_add_target',
+        '_database_summary',
+        '_delete_target',
+        '_get_duplicates',
+        '_get_target',
+        '_target_list',
+        '_target_summary',
+        '_update_target',
+        '_query',
+    ],
+)
+def any_endpoint(request: SubRequest) -> TargetAPIEndpoint:
+    """
+    Return details of an endpoint for the Target API or the Query API.
+
+    This is a temporary fixture for use while we expand the Query API mock.
     """
     endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
         request.param,

@@ -31,6 +31,8 @@ class MockVWS(ContextDecorator):
         state: States=States.WORKING,
         server_access_key: Optional[str]=None,
         server_secret_key: Optional[str]=None,
+        client_access_key: Optional[str]=None,
+        client_secret_key: Optional[str]=None,
         database_name: Optional[str]=None,
         processing_time_seconds: Union[int, float]=0.5,
     ) -> None:
@@ -45,6 +47,8 @@ class MockVWS(ContextDecorator):
                 By default this is a random string.
             server_access_key: A VWS server access key for the mock.
             server_secret_key: A VWS server secret key for the mock.
+            client_access_key: A VWS client access key for the mock.
+            client_secret_key: A VWS client secret key for the mock.
             processing_time_seconds: The number of seconds to process each
                 image for. In the real Vuforia Web Services, this is not
                 deterministic.
@@ -66,6 +70,12 @@ class MockVWS(ContextDecorator):
         if server_secret_key is None:
             server_secret_key = uuid.uuid4().hex
 
+        if client_access_key is None:
+            client_access_key = uuid.uuid4().hex
+
+        if client_secret_key is None:
+            client_secret_key = uuid.uuid4().hex
+
         self._real_http = real_http
         self._mock = Mocker()
         self._state = state
@@ -73,6 +83,8 @@ class MockVWS(ContextDecorator):
 
         self.server_access_key = server_access_key
         self.server_secret_key = server_secret_key
+        self.client_access_key = client_access_key
+        self.client_secret_key = client_secret_key
         self.database_name = database_name
 
     def __enter__(self) -> 'MockVWS':
@@ -92,8 +104,8 @@ class MockVWS(ContextDecorator):
         )
 
         mock_vwq_api = MockVuforiaWebQueryAPI(
-            server_access_key=self.server_access_key,
-            server_secret_key=self.server_secret_key,
+            client_access_key=self.client_access_key,
+            client_secret_key=self.client_secret_key,
         )
 
         date = email.utils.formatdate(None, localtime=False, usegmt=True)

@@ -245,12 +245,13 @@ def validate_authorization(
     """
     request, context = args
 
+    content_type = request.headers.get('Content-Type', '').split(';')[0]
     expected_authorization_header = authorization_header(
-        access_key=bytes(instance.server_access_key, encoding='utf-8'),
-        secret_key=bytes(instance.server_secret_key, encoding='utf-8'),
+        access_key=bytes(instance.access_key, encoding='utf-8'),
+        secret_key=bytes(instance.secret_key, encoding='utf-8'),
         method=request.method,
         content=request.body or b'',
-        content_type=request.headers.get('Content-Type', ''),
+        content_type=content_type,
         date=request.headers.get('Date', ''),
         request_path=request.path,
     )
