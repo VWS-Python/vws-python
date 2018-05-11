@@ -18,6 +18,7 @@ from tests.mock_vws.utils import (
     assert_valid_date_header,
     assert_valid_transaction_id,
     assert_vws_failure,
+    assert_vwq_failure,
     authorization_header,
     rfc_1123_date,
 )
@@ -53,7 +54,6 @@ class TestInvalidJSON:
         takes_json_data = (
             endpoint.auth_header_content_type == 'application/json'
         )
-        endpoint_headers = dict(endpoint.prepared_request.headers)
 
         authorization_string = authorization_header(
             access_key=endpoint.access_key,
@@ -118,35 +118,19 @@ class TestInvalidJSON:
             )
             return
 
+        assert response.status_code == codes.BAD_REQUEST
         netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':
-            assert response.status_code == codes.UNAUTHORIZED
-            assert_valid_transaction_id(response=response)
-            assert_json_separators(response=response)
-            assert response.json().keys() == {'transaction_id', 'result_code'}
-            result_code = response.json()['result_code']
-            assert result_code == ResultCodes.AUTHENTICATION_FAILURE.value
-            response_header_keys = {
-                'Connection',
-                'Content-Length',
-                'Content-Type',
-                'Date',
-                'Server',
-                'WWW-Authenticate',
-            }
-
-            assert response.headers.keys() == response_header_keys
-            assert response.headers['Connection'] == 'keep-alive'
-            expected_content_type = 'application/json'
-            assert response.headers['Content-Length'] == str(
-                len(response.text)
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
             )
-            assert response.headers['Content-Type'] == expected_content_type
-            assert_valid_date_header(response=response)
-            assert response.headers['Server'] == 'nginx'
-            assert response.headers['WWW-Authenticate'] == 'VWS'
+            expected_text = (
+                'java.lang.RuntimeException: RESTEASY007500: '
+                'Could find no Content-Disposition header within part'
+            )
+            assert response.text == expected_text
             return
 
-        assert response.status_code == codes.BAD_REQUEST
         assert response.text == ''
         assert 'Content-Type' not in response.headers

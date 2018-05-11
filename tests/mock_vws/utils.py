@@ -638,8 +638,12 @@ def assert_vwq_failure(
         'Date',
         'Server',
     }
+
+    if len(response.text):
+        response_header_keys.add('Content-Type')
+
     assert response.headers.keys() == response_header_keys
     assert response.headers['Connection'] == 'keep-alive'
-    assert response.headers['Content-Length'] == '0'
+    assert response.headers['Content-Length'] == str(len(response.text))
     assert_valid_date_header(response=response)
     assert response.headers['Server'] == 'nginx'
