@@ -205,6 +205,14 @@ def validate_auth_header_exists(
     request, context = args
     if 'Authorization' not in request.headers:
         context.status_code = codes.UNAUTHORIZED
+        if wrapped.__name__ == 'query':
+            text = 'Authorization header missing.'
+            content_type = 'text/plain; charset=ISO-8859-1'
+            context.headers['Content-Type'] = content_type
+            context.headers['Content-Length'] = str(len(text))
+            context.headers['WWW-Authenticate'] = 'VWS'
+            return text
+
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,

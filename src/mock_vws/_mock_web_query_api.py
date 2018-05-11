@@ -15,6 +15,13 @@ from requests_mock.response import _Context
 from mock_vws._constants import ResultCodes
 from mock_vws._mock_common import Route, json_dump
 
+from ._validators import (
+    validate_auth_header_exists,
+    validate_authorization,
+    validate_date,
+    validate_not_invalid_json,
+)
+
 ROUTES = set([])
 
 
@@ -49,6 +56,14 @@ def route(
                 http_methods=http_methods,
             ),
         )
+
+        decorators = [
+            validate_auth_header_exists,
+            # validate_authorization,
+        ]
+
+        for decorator in decorators:
+            method = decorator(method)
 
         return method
 
