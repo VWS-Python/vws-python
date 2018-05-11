@@ -23,6 +23,9 @@ from tests.mock_vws.utils import (
     rfc_1123_date,
 )
 
+_VWS_MAX_TIME_SKEW = timedelta(minutes=5)
+_LEEWAY = timedelta(seconds=10)
+
 
 _VWS_MAX_TIME_SKEW = timedelta(minutes=5)
 _VWQ_MAX_TIME_SKEW = timedelta(minutes=64, seconds=51)
