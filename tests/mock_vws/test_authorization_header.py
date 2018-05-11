@@ -14,6 +14,7 @@ from tests.mock_vws.utils import (
     TargetAPIEndpoint,
     assert_valid_date_header,
     assert_vws_failure,
+    assert_vwq_failure,
     rfc_1123_date,
 )
 
@@ -27,7 +28,7 @@ class TestAuthorizationHeader:
     def test_missing(self, endpoint: TargetAPIEndpoint) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
-        is given.
+        is given for the Target API, but .
         """
         date = rfc_1123_date()
         endpoint_headers = dict(endpoint.prepared_request.headers)
@@ -49,33 +50,18 @@ class TestAuthorizationHeader:
 
         netloc = urlparse(endpoint.prepared_request.url).netloc
         if netloc == 'cloudreco.vuforia.com':
-            assert response.status_code == codes.UNAUTHORIZED
-            assert response.text == 'Authorization header missing.'
-            response_header_keys = {
-                'Connection',
-                'Content-Length',
-                'Content-Type',
-                'Date',
-                'Server',
-                'WWW-Authenticate',
-            }
-
-            assert response.headers.keys() == response_header_keys
-            assert response.headers['Connection'] == 'keep-alive'
-            expected_content_type = 'text/plain; charset=ISO-8859-1'
-            assert response.headers['Content-Length'] == str(
-                len(response.text)
-            )
-            assert response.headers['Content-Type'] == expected_content_type
-            assert_valid_date_header(response=response)
-            assert response.headers['Server'] == 'nginx'
-            assert response.headers['WWW-Authenticate'] == 'VWS'
-        else:
-            assert_vws_failure(
+            assert_vwq_failure(
                 response=response,
                 status_code=codes.UNAUTHORIZED,
-                result_code=ResultCodes.AUTHENTICATION_FAILURE,
+                content_type='text/plain; charset=ISO-8859-1',
             )
+            return
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNAUTHORIZED,
+            result_code=ResultCodes.AUTHENTICATION_FAILURE,
+        )
 
     def test_incorrect(self, endpoint: TargetAPIEndpoint) -> None:
         """

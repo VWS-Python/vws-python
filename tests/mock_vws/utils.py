@@ -10,7 +10,7 @@ import hmac
 import json
 from string import hexdigits
 from time import sleep
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
 import pytz
@@ -619,6 +619,7 @@ def assert_query_success(response: Response) -> None:
 def assert_vwq_failure(
     response: Response,
     status_code: int,
+    content_type: Optional[str],
 ) -> None:
     """
     Assert that a VWQ failure response is as expected.
@@ -639,8 +640,14 @@ def assert_vwq_failure(
         'Server',
     }
 
-    if len(response.text):
+    if content_type is not None:
         response_header_keys.add('Content-Type')
+        assert response.headers['Content-Type'] == content_type
+
+    if status_code == codes.UNAUTHORIZED:
+        response_header_keys.add('WWW-Authenticate')
+        assert response.headers['WWW-Authenticate'] == 'VWS'
+        assert response.text == 'Authorization header missing.'
 
     assert response.headers.keys() == response_header_keys
     assert response.headers['Connection'] == 'keep-alive'
