@@ -27,7 +27,7 @@ class TestAuthorizationHeader:
     def test_missing(self, any_endpoint: TargetAPIEndpoint) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
-        is given for the Target API, but .
+        is given.
         """
         endpoint = any_endpoint
         date = rfc_1123_date()
