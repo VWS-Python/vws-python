@@ -112,10 +112,10 @@ To change the state, use the ``state`` parameter when calling the mock.
 
 The states available in ``States`` are:
 
--  ``WORKING``.
-This is the default state of the mock.
--  ``PROJECT_INACTIVE``.
-This happens when the license key has been deleted.
+- ``WORKING``.
+  This is the default state of the mock.
+- ``PROJECT_INACTIVE``.
+  This happens when the license key has been deleted.
 
 The mock is tested against the real Vuforia Web Services.
 This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.
