@@ -96,7 +96,6 @@ class MockVuforiaWebQueryAPI:
         self.routes: Set[Route] = ROUTES
         self.access_key: str = client_access_key
         self.secret_key: str = client_secret_key
->>>>>>> origin/master
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
