@@ -153,7 +153,7 @@ def validate_not_invalid_json(
     """
     request, context = args
 
-    if request.text is None:
+    if not request.body:
         return wrapped(*args, **kwargs)
 
     if request.path == '/summary':
@@ -178,6 +178,8 @@ def validate_not_invalid_json(
             'result_code': ResultCodes.FAIL.value,
         }
         return json_dump(body)
+    except UnicodeDecodeError:
+        return wrapped(*args, **kwargs)
 
     is_query = bool(request.path == '/v1/query')
     if is_query:
