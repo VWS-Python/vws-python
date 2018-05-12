@@ -36,11 +36,12 @@ class TestMissing:
 
     def test_no_date_header(
         self,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
+        endpoint = any_endpoint
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)

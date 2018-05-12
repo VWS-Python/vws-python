@@ -319,6 +319,7 @@ def validate_date(
         A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
+    is_query = bool(request.path == '/v1/query')
 
     try:
         date_from_header = datetime.datetime.strptime(
@@ -327,11 +328,12 @@ def validate_date(
         )
     except KeyError:
         context.status_code = codes.BAD_REQUEST
-        if request.path == '/v1/query':
+        if is_query:
+            text = 'Date header required.'
             content_type = 'text/plain; charset=ISO-8859-1'
             context.headers['Content-Type'] = content_type
-            text = 'Date header required.'
             return text
+
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
