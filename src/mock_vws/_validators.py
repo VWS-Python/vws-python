@@ -179,6 +179,14 @@ def validate_not_invalid_json(
         }
         return json_dump(body)
 
+    is_query = bool(request.path == '/v1/query')
+    if is_query:
+        text = ''
+        context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
+        context.headers.pop('Content-Type')
+        context.headers['Content-Length'] = str(len(text))
+        return text
+
     return wrapped(*args, **kwargs)
 
 
