@@ -641,11 +641,13 @@ def assert_vwq_failure(
         'Server',
     }
 
-    response_header_keys.add('Content-Type')
-    assert response.headers['Content-Type'] == content_type
+    if content_type is not None:
+        response_header_keys.add('Content-Type')
+        assert response.headers['Content-Type'] == content_type
 
-    response_header_keys.add('WWW-Authenticate')
-    assert response.headers['WWW-Authenticate'] == 'VWS'
+    if status_code == codes.UNAUTHORIZED:
+        response_header_keys.add('WWW-Authenticate')
+        assert response.headers['WWW-Authenticate'] == 'VWS'
 
     assert response.headers.keys() == response_header_keys
     assert response.headers['Connection'] == 'keep-alive'

@@ -146,6 +146,8 @@ def validate_not_invalid_json(
         The result of calling the endpoint.
         An `UNAUTHORIZED` response if there is data given to the database
         summary endpoint.
+        An `UNSUPPORTED_MEDIA_TYPE` error if JSON is given to the query
+        endpoint.
         A `BAD_REQUEST` response with a FAIL result code if there is invalid
         JSON given to a POST or PUT request.
         A `BAD_REQUEST` with empty text if there is data given to another
@@ -153,7 +155,7 @@ def validate_not_invalid_json(
     """
     request, context = args
 
-    if request.text is None:
+    if not request.body:
         return wrapped(*args, **kwargs)
 
     if request.path == '/summary':
@@ -178,6 +180,18 @@ def validate_not_invalid_json(
             'result_code': ResultCodes.FAIL.value,
         }
         return json_dump(body)
+    except UnicodeDecodeError:
+        # This logic is fishy.
+        # See https://github.com/adamtheturtle/vws-python/issues/548.
+        return wrapped(*args, **kwargs)
+
+    is_query = bool(request.path == '/v1/query')
+    if is_query:
+        text = ''
+        context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
+        context.headers.pop('Content-Type')
+        context.headers['Content-Length'] = str(len(text))
+        return text
 
     return wrapped(*args, **kwargs)
 
