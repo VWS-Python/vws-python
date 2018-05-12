@@ -171,10 +171,21 @@ def validate_not_invalid_json(
         context.headers.pop('Content-Type')
         return ''
 
+    is_query = bool(request.path == '/v1/query')
+
     try:
         request.json()
     except JSONDecodeError:
         context.status_code = codes.BAD_REQUEST
+        if is_query:
+            text = (
+                'java.lang.RuntimeException: RESTEASY007500: '
+                'Could find no Content-Disposition header within part'
+            )
+            context.headers['Content-Type'] = 'text/html'
+            context.headers['Content-Length'] = str(len(text))
+            return text
+
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
@@ -185,7 +196,6 @@ def validate_not_invalid_json(
         # See https://github.com/adamtheturtle/vws-python/issues/548.
         return wrapped(*args, **kwargs)
 
-    is_query = bool(request.path == '/v1/query')
     if is_query:
         text = ''
         context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
