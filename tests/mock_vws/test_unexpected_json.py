@@ -33,6 +33,7 @@ class TestUnexpectedJSON:
         Giving JSON to endpoints which do not take any JSON data returns error
         responses.
         """
+        endpoint = any_endpoint
         if endpoint.prepared_request.headers.get(
             'Content-Type',
         ) == 'application/json':
