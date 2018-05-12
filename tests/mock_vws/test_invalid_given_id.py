@@ -25,13 +25,14 @@ class TestInvalidGivenID:
     def test_not_real_id(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
         target_id: str,
     ) -> None:
         """
         A `NOT_FOUND` error is returned when an endpoint is given a target ID
         of a target which does not exist.
         """
+        endpoint = any_endpoint
         if not endpoint.prepared_request.path_url.endswith(target_id):
             return
 
