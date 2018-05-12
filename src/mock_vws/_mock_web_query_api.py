@@ -13,7 +13,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes
-from mock_vws._mock_common import Route, json_dump
+from mock_vws._mock_common import Route, json_dump, set_content_length_header
 
 from ._validators import (
     validate_auth_header_exists,
@@ -62,6 +62,7 @@ def route(
             validate_date,
             validate_not_invalid_json,
             validate_auth_header_exists,
+            set_content_length_header,
         ]
 
         for decorator in decorators:
