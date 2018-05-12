@@ -183,7 +183,6 @@ def validate_not_invalid_json(
                 'Could find no Content-Disposition header within part'
             )
             context.headers['Content-Type'] = 'text/html'
-            context.headers['Content-Length'] = str(len(text))
             return text
 
         body = {
@@ -200,7 +199,6 @@ def validate_not_invalid_json(
         text = ''
         context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
         context.headers.pop('Content-Type')
-        context.headers['Content-Length'] = str(len(text))
         return text
 
     return wrapped(*args, **kwargs)
@@ -235,7 +233,6 @@ def validate_auth_header_exists(
         text = 'Authorization header missing.'
         content_type = 'text/plain; charset=ISO-8859-1'
         context.headers['Content-Type'] = content_type
-        context.headers['Content-Length'] = str(len(text))
         context.headers['WWW-Authenticate'] = 'VWS'
         return text
 
@@ -288,7 +285,6 @@ def validate_authorization(
         text = 'Malformed authorization header.'
         content_type = 'text/plain; charset=ISO-8859-1'
         context.headers['Content-Type'] = content_type
-        context.headers['Content-Length'] = str(len(text))
         context.headers['WWW-Authenticate'] = 'VWS'
         return text
 
