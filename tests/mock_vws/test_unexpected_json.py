@@ -79,6 +79,7 @@ class TestUnexpectedJSON:
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
+            assert response.text == ''
             assert_vwq_failure(
                 response=response,
                 status_code=codes.UNSUPPORTED_MEDIA_TYPE,
