@@ -331,7 +331,6 @@ def validate_date(
             content_type = 'text/plain; charset=ISO-8859-1'
             context.headers['Content-Type'] = content_type
             text = 'Date header required.'
-            context.headers['Content-Length'] = str(len(text))
             return text
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -344,7 +343,6 @@ def validate_date(
             content_type = 'text/plain; charset=ISO-8859-1'
             context.headers['Content-Type'] = content_type
             text = 'Malformed date header.'
-            context.headers['Content-Length'] = str(len(text))
             context.headers['WWW-Authenticate'] = 'VWS'
             return text
 
