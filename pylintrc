@@ -76,6 +76,7 @@ disable=
     too-many-locals,
     too-many-arguments,
     too-many-instance-attributes,
+    too-many-return-statements,
     locally-disabled,
     # Let flake8 handle unused imports
     unused-import,
