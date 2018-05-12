@@ -30,12 +30,13 @@ class TestInvalidJSON:
     @pytest.mark.parametrize('date_skew_minutes', [0, 10])
     def test_invalid_json(
         self,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
         date_skew_minutes: int,
     ) -> None:
         """
         Giving invalid JSON to endpoints returns error responses.
         """
+        endpoint = any_endpoint
         date_is_skewed = not date_skew_minutes == 0
         # This is an undocumented difference between `/summary` and other
         # endpoints.
