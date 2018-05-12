@@ -3,6 +3,7 @@ Tests for giving invalid JSON to endpoints.
 """
 
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 
 import pytest
 import pytz
@@ -13,6 +14,7 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
+    assert_vwq_failure,
     assert_vws_failure,
     authorization_header,
     rfc_1123_date,
@@ -114,5 +116,20 @@ class TestInvalidJSON:
             return
 
         assert response.status_code == codes.BAD_REQUEST
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
+                content_type='text/html',
+            )
+            expected_text = (
+                'java.lang.RuntimeException: RESTEASY007500: '
+                'Could find no Content-Disposition header within part'
+            )
+            assert response.text == expected_text
+            return
+
         assert response.text == ''
         assert 'Content-Type' not in response.headers
