@@ -27,12 +27,13 @@ class TestUnexpectedJSON:
 
     def test_does_not_take_data(
         self,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         Giving JSON to endpoints which do not take any JSON data returns error
         responses.
         """
+        endpoint = any_endpoint
         if endpoint.prepared_request.headers.get(
             'Content-Type',
         ) == 'application/json':
@@ -78,6 +79,7 @@ class TestUnexpectedJSON:
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
+            assert response.text == ''
             assert_vwq_failure(
                 response=response,
                 status_code=codes.UNSUPPORTED_MEDIA_TYPE,
