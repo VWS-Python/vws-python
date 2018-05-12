@@ -3,6 +3,7 @@ Tests for giving JSON data to endpoints which do not expect it.
 """
 
 import json
+from urllib.parse import urlparse
 
 import pytest
 import requests
@@ -11,6 +12,7 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
+    assert_vwq_failure,
     assert_vws_failure,
     authorization_header,
     rfc_1123_date,
@@ -25,7 +27,7 @@ class TestUnexpectedJSON:
 
     def test_does_not_take_data(
         self,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         Giving JSON to endpoints which do not take any JSON data returns error
@@ -72,6 +74,16 @@ class TestUnexpectedJSON:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.UNSUPPORTED_MEDIA_TYPE,
+                content_type=None,
+            )
+            return
 
         # This is an undocumented difference between `/summary` and other
         # endpoints.
