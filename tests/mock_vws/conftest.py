@@ -186,14 +186,14 @@ def endpoint(request: SubRequest) -> TargetAPIEndpoint:
 
 @pytest.fixture(
     params=[
-        # '_add_target',
-        # '_database_summary',
-        # '_delete_target',
-        # '_get_duplicates',
-        # '_get_target',
-        # '_target_list',
-        # '_target_summary',
-        # '_update_target',
+        '_add_target',
+        '_database_summary',
+        '_delete_target',
+        '_get_duplicates',
+        '_get_target',
+        '_target_list',
+        '_target_summary',
+        '_update_target',
         '_query',
     ],
 )
