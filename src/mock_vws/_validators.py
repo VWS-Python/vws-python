@@ -319,13 +319,27 @@ def validate_date(
         A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
+    is_query = bool(request.path == '/v1/query')
 
     try:
         date_from_header = datetime.datetime.strptime(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
-    except (KeyError, ValueError):
+    except KeyError:
+        context.status_code = codes.BAD_REQUEST
+        if is_query:
+            text = 'Date header required.'
+            content_type = 'text/plain; charset=ISO-8859-1'
+            context.headers['Content-Type'] = content_type
+            return text
+
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json_dump(body)
+    except ValueError:
         context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,

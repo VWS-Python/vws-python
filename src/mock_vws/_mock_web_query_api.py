@@ -18,6 +18,7 @@ from mock_vws._mock_common import Route, json_dump, set_content_length_header
 from ._validators import (
     validate_auth_header_exists,
     validate_authorization,
+    validate_date,
     validate_not_invalid_json,
 )
 
@@ -58,6 +59,7 @@ def route(
 
         decorators = [
             validate_authorization,
+            validate_date,
             validate_not_invalid_json,
             validate_auth_header_exists,
             set_content_length_header,

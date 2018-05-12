@@ -4,6 +4,7 @@ Tests for the `Date` header.
 
 from datetime import datetime, timedelta
 from typing import Dict, Union
+from urllib.parse import urlparse
 
 import pytest
 import pytz
@@ -14,6 +15,7 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
+    assert_vwq_failure,
     assert_vws_failure,
     assert_vws_response,
     authorization_header,
@@ -32,11 +34,12 @@ class TestMissing:
 
     def test_no_date_header(
         self,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
+        endpoint = any_endpoint
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
@@ -64,6 +67,18 @@ class TestMissing:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            expected_content_type = 'text/plain; charset=ISO-8859-1'
+            assert response.text == 'Date header required.'
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
+                content_type=expected_content_type,
+            )
+            return
 
         assert_vws_failure(
             response=response,
