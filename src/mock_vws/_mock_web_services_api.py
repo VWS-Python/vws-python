@@ -21,7 +21,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes, TargetStatuses
-from mock_vws._mock_common import Route, json_dump
+from mock_vws._mock_common import Route, json_dump, set_content_length_header
 
 from ._constants import States
 from ._validators import (
@@ -90,32 +90,6 @@ def parse_target_id(
 
     new_args = args + (matching_target, )
     return wrapped(*new_args, **kwargs)
-
-
-@wrapt.decorator
-def set_content_length_header(
-    wrapped: Callable[..., str],
-    instance: 'MockVuforiaWebServicesAPI',  # pylint: disable=unused-argument
-    args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict,
-) -> str:
-    """
-    Set the `Content-Length` header.
-
-    Args:
-        wrapped: An endpoint function for `requests_mock`.
-        instance: The class that the endpoint function is in.
-        args: The arguments given to the endpoint function.
-        kwargs: The keyword arguments given to the endpoint function.
-
-    Returns:
-        The result of calling the endpoint.
-    """
-    _, context = args
-
-    result = wrapped(*args, **kwargs)
-    context.headers['Content-Length'] = str(len(result))
-    return result
 
 
 ROUTES = set([])
