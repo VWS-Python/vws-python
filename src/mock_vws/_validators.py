@@ -340,7 +340,7 @@ def validate_date(
         }
         return json_dump(body)
     except ValueError:
-        if request.path == '/v1/query':
+        if is_query:
             context.status_code = codes.UNAUTHORIZED
             content_type = 'text/plain; charset=ISO-8859-1'
             context.headers['Content-Type'] = content_type
