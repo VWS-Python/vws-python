@@ -343,11 +343,8 @@ class TestIncludeTargetData:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
-
-        We assert that the response is a success, but not that the preference
-        is enforced.
+        A ``BAD_REQUEST`` error is given when a string that is not one of
+        'none', 'top' or 'all'.
         """
         image_content = high_quality_image.read()
         date = rfc_1123_date()
