@@ -14,7 +14,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+    Endpoint,
     assert_query_success,
     assert_vwq_failure,
     assert_vws_failure,
@@ -36,7 +36,7 @@ class TestMissing:
 
     def test_no_date_header(
         self,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
@@ -97,7 +97,7 @@ class TestFormat:
 
     def test_incorrect_date_format(
         self,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
@@ -174,7 +174,7 @@ class TestSkewedTime:
     def test_date_out_of_range(
         self,
         time_multiplier: int,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
     ) -> None:
         """
         If the date header is more than five minutes (target API) or 65 minutes
@@ -239,7 +239,7 @@ class TestSkewedTime:
     def test_date_in_range(
         self,
         time_multiplier: int,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
     ) -> None:
         """
         If a date header is within five minutes before or after the request

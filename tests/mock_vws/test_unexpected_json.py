@@ -11,7 +11,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+    Endpoint,
     assert_vwq_failure,
     assert_vws_failure,
     authorization_header,
@@ -27,7 +27,7 @@ class TestUnexpectedJSON:
 
     def test_does_not_take_data(
         self,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
     ) -> None:
         """
         Giving JSON to endpoints which do not take any JSON data returns error

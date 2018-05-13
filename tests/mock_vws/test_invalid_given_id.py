@@ -8,7 +8,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+    Endpoint,
     VuforiaDatabaseKeys,
     assert_vws_failure,
     delete_target,
@@ -25,7 +25,7 @@ class TestInvalidGivenID:
     def test_not_real_id(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
         target_id: str,
     ) -> None:
         """

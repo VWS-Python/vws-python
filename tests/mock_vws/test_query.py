@@ -7,7 +7,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import pytest
 import requests
 
-from tests.mock_vws.utils import TargetAPIEndpoint, assert_query_success
+from tests.mock_vws.utils import Endpoint, assert_query_success
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -18,7 +18,7 @@ class TestQuery:
 
     def test_no_results(
         self,
-        query_endpoint: TargetAPIEndpoint,
+        query_endpoint: Endpoint,
     ) -> None:
         """
         When there are no matching images in the database, an empty list of

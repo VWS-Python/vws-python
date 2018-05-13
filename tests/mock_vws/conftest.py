@@ -13,7 +13,7 @@ from requests_mock import GET
 
 from mock_vws import MockVWS, States
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+    Endpoint,
     VuforiaDatabaseKeys,
     add_target_to_vws,
     delete_target,
@@ -175,13 +175,11 @@ def verify_mock_vuforia_inactive(
         '_query',
     ],
 )
-def endpoint(request: SubRequest) -> TargetAPIEndpoint:
+def endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of an endpoint for the Target API or the Query API.
     """
-    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param,
-    )
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
 
 
@@ -190,11 +188,9 @@ def endpoint(request: SubRequest) -> TargetAPIEndpoint:
         '_query',
     ],
 )
-def query_endpoint(request: SubRequest) -> TargetAPIEndpoint:
+def query_endpoint(request: SubRequest) -> Endpoint:
     """
     Return details of the query endpoint.
     """
-    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param,
-    )
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture

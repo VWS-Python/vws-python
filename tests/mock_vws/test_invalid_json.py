@@ -13,7 +13,7 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+    Endpoint,
     assert_vwq_failure,
     assert_vws_failure,
     authorization_header,
@@ -30,7 +30,7 @@ class TestInvalidJSON:
     @pytest.mark.parametrize('date_skew_minutes', [0, 10])
     def test_invalid_json(
         self,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
         date_skew_minutes: int,
     ) -> None:
         """
