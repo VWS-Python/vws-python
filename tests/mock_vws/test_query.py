@@ -220,7 +220,7 @@ class TestMaxNumResults:
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        num_results: Union[bytes, float],
+        num_results: bytes,
     ) -> None:
         """
         An error is returned if ``max_num_results`` is given as something other

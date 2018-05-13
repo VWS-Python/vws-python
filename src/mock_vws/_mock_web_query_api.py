@@ -105,7 +105,7 @@ class MockVuforiaWebQueryAPI:
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
         self,
-        request: _RequestObjectProxy,  # pylint: disable=unused-argument
+        request: _RequestObjectProxy,
         context: _Context,
     ) -> str:
         """
