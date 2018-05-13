@@ -28,6 +28,7 @@ pytest_plugins = [  # pylint: disable=invalid-name
 ]
 
 LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
 
 
 def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
@@ -48,7 +49,7 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
 
     if 'results' not in response.json():  # pragma: no cover
         message = f'Results not found.\nResponse is: {response.json()}'
-        LOGGER.warn(message)
+        LOGGER.debug(message)
 
     targets = response.json()['results']
 
