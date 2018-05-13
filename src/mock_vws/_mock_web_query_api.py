@@ -105,7 +105,7 @@ class MockVuforiaWebQueryAPI:
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
         self,
-        request: _RequestObjectProxy,  # pylint: disable=unused-argument
+        request: _RequestObjectProxy,
         context: _Context,
     ) -> str:
         """
@@ -120,9 +120,33 @@ class MockVuforiaWebQueryAPI:
                 'boundary': pdict['boundary'].encode(),
             },
         )
-        max_num_results = int(parsed.get('max_num_results', [b'1'])[0])
 
-        if max_num_results < 1 or max_num_results > 50:
+        [max_num_results] = parsed.get('max_num_results', [b'1'])
+        try:
+            invalid_type_error = (
+                f"Invalid value '{max_num_results.decode()}' in form data "
+                "part 'max_result'. "
+                'Expecting integer value in range from 1 to 50 (inclusive).'
+            )
+        except AttributeError:
+            invalid_type_error = (
+                f"Invalid value '{max_num_results}' in form data part "
+                "'max_result'. "
+                'Expecting integer value in range from 1 to 50 (inclusive).'
+            )
+
+        try:
+            max_num_results_int = int(max_num_results)
+        except ValueError:
+            context.status_code = codes.BAD_REQUEST
+            return invalid_type_error
+
+        java_max_int = 2147483647
+        if max_num_results_int > java_max_int:
+            context.status_code = codes.BAD_REQUEST
+            return invalid_type_error
+
+        if max_num_results_int < 1 or max_num_results_int > 50:
             context.status_code = codes.BAD_REQUEST
             out_of_range_error = (
                 f'Integer out of range ({max_num_results}) in form data part '
