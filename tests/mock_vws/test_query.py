@@ -213,9 +213,9 @@ class TestMaxNumResults:
         )
 
     @pytest.mark.parametrize(
-		'num_results',
-		[b'0.1', b'1.1', b'a', b'2147483648'],
-	)
+        'num_results',
+        [b'0.1', b'1.1', b'a', b'2147483648'],
+    )
     def test_invalid_type(
         self,
         high_quality_image: io.BytesIO,
@@ -226,8 +226,8 @@ class TestMaxNumResults:
         An error is returned if ``max_num_results`` is given as something other
         than an integer.
 
-		Integers greater than 2147483647 are not considered integers because
-		they are bigger than Java's maximum integer.
+        Integers greater than 2147483647 are not considered integers because
+        they are bigger than Java's maximum integer.
         """
         image_content = high_quality_image.read()
         date = rfc_1123_date()
