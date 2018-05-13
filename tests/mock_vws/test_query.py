@@ -149,7 +149,7 @@ class TestMaxNumResults:
         assert_query_success(response=response)
         assert response.json()['results'] == []
 
-    @pytest.mark.parametrize('num_results', [0, 51])
+    @pytest.mark.parametrize('num_results', [-1, 0, 51])
     def test_out_of_range(
         self,
         high_quality_image: io.BytesIO,
@@ -157,7 +157,13 @@ class TestMaxNumResults:
         num_results: int,
     ) -> None:
         """
-        XXX
+        An error is returned if ``max_num_results`` is given as an integer
+        out of the range (1, 50).
+
+        The documentation at
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.  # noqa: F401
+        states that this must be between 1 and 10, but in practice, 50 is the
+        maximum.
         """
         image_content = high_quality_image.read()
         date = rfc_1123_date()
