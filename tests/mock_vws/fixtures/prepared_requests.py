@@ -16,7 +16,7 @@ from urllib3.filepost import encode_multipart_formdata
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+    Endpoint,
     VuforiaDatabaseKeys,
     authorization_header,
     rfc_1123_date,
@@ -31,7 +31,7 @@ VWQ_HOST = 'https://cloudreco.vuforia.com'
 def _add_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     png_rgb: io.BytesIO,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for adding a target.
     """
@@ -76,7 +76,7 @@ def _add_target(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.CREATED,
         successful_headers_result_code=ResultCodes.TARGET_CREATED,
         prepared_request=prepared_request,
@@ -89,7 +89,7 @@ def _add_target(
 def _delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for deleting a target.
     """
@@ -127,7 +127,7 @@ def _delete_target(
     )
 
     prepared_request = request.prepare()  # type: ignore
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -139,7 +139,7 @@ def _delete_target(
 @pytest.fixture()
 def _database_summary(
     vuforia_database_keys: VuforiaDatabaseKeys,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting details about the database.
     """
@@ -175,7 +175,7 @@ def _database_summary(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -188,7 +188,7 @@ def _database_summary(
 def _get_duplicates(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting potential duplicates of a
     target.
@@ -229,7 +229,7 @@ def _get_duplicates(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -242,7 +242,7 @@ def _get_duplicates(
 def _get_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting details of a target.
     """
@@ -282,7 +282,7 @@ def _get_target(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -292,9 +292,7 @@ def _get_target(
 
 
 @pytest.fixture()
-def _target_list(
-    vuforia_database_keys: VuforiaDatabaseKeys,
-) -> TargetAPIEndpoint:
+def _target_list(vuforia_database_keys: VuforiaDatabaseKeys) -> Endpoint:
     """
     Return details of the endpoint for getting a list of targets.
     """
@@ -330,7 +328,7 @@ def _target_list(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -343,7 +341,7 @@ def _target_list(
 def _target_summary(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting a summary report of a target.
     """
@@ -383,7 +381,7 @@ def _target_summary(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -396,7 +394,7 @@ def _target_summary(
 def _update_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for updating a target.
     """
@@ -439,7 +437,7 @@ def _update_target(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -452,7 +450,7 @@ def _update_target(
 def _query(
     vuforia_database_keys: VuforiaDatabaseKeys,
     high_quality_image: io.BytesIO,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for making an image recognition query.
     """
@@ -492,7 +490,7 @@ def _query(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
