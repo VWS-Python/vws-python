@@ -284,6 +284,14 @@ class TestIncludeTargetData:
     Tests for the ``include_target_data`` parameter.
     """
 
+    def test_default(self) -> None:
+        """
+        The default ``include_target_data`` is 'top'.
+
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+
     @pytest.mark.parametrize('include_target_data', ['top', 'none', 'all'])
     def test_valid(
         self,
