@@ -4,6 +4,7 @@ Configuration, plugins and fixtures for `pytest`.
 
 import base64
 import io
+import logging
 import os
 from typing import Generator
 
@@ -26,6 +27,8 @@ pytest_plugins = [  # pylint: disable=invalid-name
     'tests.mock_vws.fixtures.credentials',
 ]
 
+LOGGER = logging.getLogger(__name__)
+
 
 def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     """
@@ -44,9 +47,8 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     )
 
     if 'results' not in response.json():  # pragma: no cover
-        print('Results not found.')
-        print('Response is:')
-        print(response.json())
+        message = f'Results not found.\nResponse is: {response.json()}'
+        LOGGER.warn(message)
 
     targets = response.json()['results']
 
