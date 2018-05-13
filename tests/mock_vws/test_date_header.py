@@ -176,7 +176,7 @@ class TestSkewedTime:
     def test_date_out_of_range(
         self,
         time_multiplier: int,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         If the date header is more than five minutes (target API) or 65 minutes
@@ -186,6 +186,7 @@ class TestSkewedTime:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
+        endpoint = any_endpoint
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         skew = {
@@ -240,7 +241,7 @@ class TestSkewedTime:
     def test_date_in_range(
         self,
         time_multiplier: int,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         If a date header is within five minutes before or after the request
@@ -249,6 +250,7 @@ class TestSkewedTime:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
+        endpoint = any_endpoint
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         skew = {
