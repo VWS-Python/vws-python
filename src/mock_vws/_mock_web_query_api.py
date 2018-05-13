@@ -120,7 +120,23 @@ class MockVuforiaWebQueryAPI:
                 'boundary': pdict['boundary'].encode(),
             },
         )
-        max_num_results = int(parsed.get('max_num_results', [b'1'])[0])
+
+        [max_num_results] = parsed.get('max_num_results', [b'1'])
+        try:
+            max_num_results = int(max_num_results)
+        except ValueError:
+            try:
+                max_num_results = max_num_results.decode()
+            except AttributeError:
+                pass
+
+            context.status_code = codes.BAD_REQUEST
+            invalid_type_error = (
+                f"Invalid value '{max_num_results}' in form data part "
+                "'max_result'. "
+                'Expecting integer value in range from 1 to 50 (inclusive).'
+            )
+            return invalid_type_error
 
         if max_num_results < 1 or max_num_results > 50:
             context.status_code = codes.BAD_REQUEST
