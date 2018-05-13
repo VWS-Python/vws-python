@@ -116,5 +116,4 @@ class MockVuforiaWebQueryAPI:
         }
 
         value = json_dump(body)
-        context.headers['Content-Length'] = str(len(value))
         return value
