@@ -336,3 +336,64 @@ class TestIncludeTargetData:
 
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+    def test_invalid_value(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+
+        We assert that the response is a success, but not that the preference
+        is enforced.
+        """
+        image_content = high_quality_image.read()
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        include_target_data = 'a'
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'include_target_data': (None, include_target_data, 'text/plain'),
+        }
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        expected_text = (
+            "Invalid value 'a' in form data part 'include_target_data'. "
+            "Expecting one of the (unquoted) string values 'all', 'none' or "
+            "'top'."
+        )
+        assert response.text == expected_text
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            content_type='application/json',
+        )

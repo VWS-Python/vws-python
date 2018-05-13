@@ -174,6 +174,8 @@ This is not the case.
 The documentation page `How To Perform an Image Recognition Query <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ states that 10 is the maximum allowed value of ``max_num_results``.
 However, the maximum allowed value is 50.
 
+A response to an invalid query may have an ``application/json`` content type but include text (not JSON) data.
+
 Performing a release
 --------------------
 
