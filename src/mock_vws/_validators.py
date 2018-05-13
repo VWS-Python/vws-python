@@ -340,6 +340,14 @@ def validate_date(
         }
         return json_dump(body)
     except ValueError:
+        if is_query:
+            context.status_code = codes.UNAUTHORIZED
+            context.headers['WWW-Authenticate'] = 'VWS'
+            text = 'Malformed date header.'
+            content_type = 'text/plain; charset=ISO-8859-1'
+            context.headers['Content-Type'] = content_type
+            return text
+
         context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
