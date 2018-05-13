@@ -27,13 +27,12 @@ class TestUnexpectedJSON:
 
     def test_does_not_take_data(
         self,
-        any_endpoint: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         Giving JSON to endpoints which do not take any JSON data returns error
         responses.
         """
-        endpoint = any_endpoint
         if endpoint.prepared_request.headers.get(
             'Content-Type',
         ) == 'application/json':

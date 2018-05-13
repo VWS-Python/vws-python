@@ -175,11 +175,9 @@ def verify_mock_vuforia_inactive(
         '_query',
     ],
 )
-def any_endpoint(request: SubRequest) -> TargetAPIEndpoint:
+def endpoint(request: SubRequest) -> TargetAPIEndpoint:
     """
     Return details of an endpoint for the Target API or the Query API.
-
-    This is a temporary fixture for use while we expand the Query API mock.
     """
     endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
         request.param,
