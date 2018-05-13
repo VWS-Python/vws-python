@@ -21,7 +21,6 @@ from tests.mock_vws.utils import (
     rfc_1123_date,
 )
 
-
 VWQ_HOST = 'https://cloudreco.vuforia.com'
 
 
@@ -83,7 +82,7 @@ class TestMaxNumResults:
     Tests for the ``max_num_results`` parameter.
     """
 
-    def test_default(self):
+    def test_default(self) -> None:
         """
         The default ``max_num_results`` is 1.
 
@@ -106,7 +105,7 @@ class TestMaxNumResults:
         number of results is enforced.
 
         The documentation at
-        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.  # noqa: F401
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.  # noqa: E501
         states that this must be between 1 and 10, but in practice, 50 is the
         maximum.
         """
@@ -161,7 +160,7 @@ class TestMaxNumResults:
         out of the range (1, 50).
 
         The documentation at
-        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.  # noqa: F401
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.  # noqa: E501
         states that this must be between 1 and 10, but in practice, 50 is the
         maximum.
         """
@@ -212,10 +211,7 @@ class TestMaxNumResults:
             status_code=codes.BAD_REQUEST,
         )
 
-
-    def test_invalid_type(
-        self,
-    ) -> None:
+    def test_invalid_type(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
