@@ -5,9 +5,12 @@ See
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 """
 
+import cgi
+import io
 import uuid
 from typing import Callable, List, Set
 
+from requests import codes
 from requests_mock import POST
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
@@ -108,6 +111,25 @@ class MockVuforiaWebQueryAPI:
         """
         Perform an image recognition query.
         """
+        body_file = io.BytesIO(request.body)
+
+        _, pdict = cgi.parse_header(request.headers['Content-Type'])
+        parsed = cgi.parse_multipart(
+            fp=body_file,
+            pdict={
+                'boundary': pdict['boundary'].encode(),
+            },
+        )
+        max_num_results = int(parsed.get('max_num_results', [b'1'])[0])
+
+        if max_num_results < 1 or max_num_results > 50:
+            context.status_code = codes.BAD_REQUEST
+            out_of_range_error = (
+                f'Integer out of range ({max_num_results}) in form data part '
+                "'max_result'. Accepted range is from 1 to 50 (inclusive)."
+            )
+            return out_of_range_error
+
         results: List[str] = []
         body = {
             'result_code': ResultCodes.SUCCESS.value,
