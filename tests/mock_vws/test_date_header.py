@@ -98,19 +98,21 @@ class TestFormat:
 
     def test_incorrect_date_format(
         self,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
-        A `BAD_REQUEST` response is returned by the Target API when the date
-        given in the date header is not in the expected format (RFC 1123).
+        A `BAD_REQUEST` response is returned when the date given in the date
+        header is not in the expected format (RFC 1123) to VWS API.
 
-        No such error is returned by the Query API.
+        An `UNAUTHORIZED` response is returned to the VWQ API.
+
+        See https://github.com/adamtheturtle/vws-python/issues/553 for trying
+        more formats.
         """
+        endpoint = any_endpoint
         gmt = pytz.timezone('GMT')
         with freeze_time(datetime.now(tz=gmt)):
             now = datetime.now()
-            # TODO: This actually works on query
-            # date_incorrect_format = now.strftime('%a %b %d %H:%M:%S %Y')
             date_incorrect_format = now.strftime('%a %b %d %H:%M:%S')
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
@@ -144,6 +146,7 @@ class TestFormat:
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
+            assert response.text == 'Malformed date header.'
             assert_vwq_failure(
                 response=response,
                 status_code=codes.UNAUTHORIZED,

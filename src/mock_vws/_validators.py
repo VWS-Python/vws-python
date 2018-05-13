@@ -342,10 +342,10 @@ def validate_date(
     except ValueError:
         if is_query:
             context.status_code = codes.UNAUTHORIZED
+            context.headers['WWW-Authenticate'] = 'VWS'
+            text = 'Malformed date header.'
             content_type = 'text/plain; charset=ISO-8859-1'
             context.headers['Content-Type'] = content_type
-            text = 'Malformed date header.'
-            context.headers['WWW-Authenticate'] = 'VWS'
             return text
 
         context.status_code = codes.BAD_REQUEST
