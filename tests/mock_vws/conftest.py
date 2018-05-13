@@ -184,16 +184,3 @@ def endpoint(request: SubRequest) -> Endpoint:
     """
     endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
-
-
-@pytest.fixture(
-    params=[
-        '_query',
-    ],
-)
-def query_endpoint(request: SubRequest) -> Endpoint:
-    """
-    Return details of the query endpoint.
-    """
-    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
-    return endpoint_fixture
