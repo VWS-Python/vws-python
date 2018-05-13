@@ -227,6 +227,7 @@ class TestSkewedTime:
             request=endpoint.prepared_request,
         )
 
+        # Even with the query endpoint, we get a JSON response.
         assert_vws_failure(
             response=response,
             status_code=codes.FORBIDDEN,
@@ -289,7 +290,6 @@ class TestSkewedTime:
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
-            stream=True,
         )
 
         url = str(endpoint.prepared_request.url)
