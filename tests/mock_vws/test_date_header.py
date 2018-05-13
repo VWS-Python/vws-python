@@ -36,12 +36,11 @@ class TestMissing:
 
     def test_no_date_header(
         self,
-        any_endpoint: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when no `Date` header is given.
         """
-        endpoint = any_endpoint
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content = endpoint.prepared_request.body or b''
         assert isinstance(content, bytes)
@@ -98,7 +97,7 @@ class TestFormat:
 
     def test_incorrect_date_format(
         self,
-        any_endpoint: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
@@ -109,7 +108,6 @@ class TestFormat:
         See https://github.com/adamtheturtle/vws-python/issues/553 for trying
         more formats.
         """
-        endpoint = any_endpoint
         gmt = pytz.timezone('GMT')
         with freeze_time(datetime.now(tz=gmt)):
             now = datetime.now()
@@ -176,7 +174,7 @@ class TestSkewedTime:
     def test_date_out_of_range(
         self,
         time_multiplier: int,
-        any_endpoint: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         If the date header is more than five minutes (target API) or 65 minutes
@@ -186,7 +184,6 @@ class TestSkewedTime:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
-        endpoint = any_endpoint
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         skew = {
@@ -242,7 +239,7 @@ class TestSkewedTime:
     def test_date_in_range(
         self,
         time_multiplier: int,
-        any_endpoint: TargetAPIEndpoint,
+        endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         If a date header is within five minutes before or after the request
@@ -251,7 +248,6 @@ class TestSkewedTime:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
-        endpoint = any_endpoint
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         skew = {

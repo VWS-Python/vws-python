@@ -24,12 +24,11 @@ class TestAuthorizationHeader:
     Tests for what happens when the `Authorization` header is not as expected.
     """
 
-    def test_missing(self, any_endpoint: TargetAPIEndpoint) -> None:
+    def test_missing(self, endpoint: TargetAPIEndpoint) -> None:
         """
         An `UNAUTHORIZED` response is returned when no `Authorization` header
         is given.
         """
-        endpoint = any_endpoint
         date = rfc_1123_date()
         endpoint_headers = dict(endpoint.prepared_request.headers)
 
@@ -65,12 +64,11 @@ class TestAuthorizationHeader:
             result_code=ResultCodes.AUTHENTICATION_FAILURE,
         )
 
-    def test_incorrect(self, any_endpoint: TargetAPIEndpoint) -> None:
+    def test_incorrect(self, endpoint: TargetAPIEndpoint) -> None:
         """
         If an incorrect `Authorization` header is given, a `BAD_REQUEST`
         response is given.
         """
-        endpoint = any_endpoint
         date = rfc_1123_date()
 
         headers: Dict[str, Union[str, bytes]] = {
