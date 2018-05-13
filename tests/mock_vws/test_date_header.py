@@ -100,7 +100,9 @@ class TestFormat:
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when the date given in the date
-        header is not in the expected format (RFC 1123).
+        header is not in the expected format (RFC 1123) to VWS API.
+
+        An `UNAUTHORIZED` response is returned to the VWQ API.
 
         See https://github.com/adamtheturtle/vws-python/issues/553 for trying
         more formats.
@@ -138,6 +140,17 @@ class TestFormat:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            assert response.text == 'Malformed date header.'
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.UNAUTHORIZED,
+                content_type='text/plain; charset=ISO-8859-1',
+            )
+            return
 
         assert_vws_failure(
             response=response,
