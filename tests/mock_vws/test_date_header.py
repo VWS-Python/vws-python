@@ -15,6 +15,7 @@ from requests import codes
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     TargetAPIEndpoint,
+    assert_query_success,
     assert_vwq_failure,
     assert_vws_failure,
     assert_vws_response,
@@ -23,6 +24,7 @@ from tests.mock_vws.utils import (
 )
 
 _VWS_MAX_TIME_SKEW = timedelta(minutes=5)
+_VWQ_MAX_TIME_SKEW = timedelta(minutes=65)
 _LEEWAY = timedelta(seconds=10)
 
 
@@ -174,16 +176,23 @@ class TestSkewedTime:
     def test_date_out_of_range(
         self,
         time_multiplier: int,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
-        If the date header is more than five minutes before or after the
-        request is sent, a `FORBIDDEN` response is returned.
+        If the date header is more than five minutes (target API) or 65 minutes
+        (query API) before or after the request is sent, a `FORBIDDEN` response
+        is returned.
 
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
-        skew = _VWS_MAX_TIME_SKEW
+        endpoint = any_endpoint
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        skew = {
+            'vws.vuforia.com': _VWS_MAX_TIME_SKEW,
+            'cloudreco.vuforia.com': _VWQ_MAX_TIME_SKEW,
+        }[netloc]
         time_difference_from_now = skew + _LEEWAY
         time_difference_from_now *= time_multiplier
         gmt = pytz.timezone('GMT')
@@ -218,6 +227,7 @@ class TestSkewedTime:
             request=endpoint.prepared_request,
         )
 
+        # Even with the query endpoint, we get a JSON response.
         assert_vws_failure(
             response=response,
             status_code=codes.FORBIDDEN,
@@ -232,7 +242,7 @@ class TestSkewedTime:
     def test_date_in_range(
         self,
         time_multiplier: int,
-        endpoint: TargetAPIEndpoint,
+        any_endpoint: TargetAPIEndpoint,
     ) -> None:
         """
         If a date header is within five minutes before or after the request
@@ -241,7 +251,13 @@ class TestSkewedTime:
         Because there is a small delay in sending requests and Vuforia isn't
         consistent, some leeway is given.
         """
-        skew = _VWS_MAX_TIME_SKEW
+        endpoint = any_endpoint
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        skew = {
+            'vws.vuforia.com': _VWS_MAX_TIME_SKEW,
+            'cloudreco.vuforia.com': _VWQ_MAX_TIME_SKEW,
+        }[netloc]
         time_difference_from_now = skew - _LEEWAY
         time_difference_from_now *= time_multiplier
         gmt = pytz.timezone('GMT')
@@ -275,6 +291,12 @@ class TestSkewedTime:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            assert_query_success(response=response)
+            return
 
         assert_vws_response(
             response=response,

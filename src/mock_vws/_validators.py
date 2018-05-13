@@ -359,7 +359,11 @@ def validate_date(
     now = datetime.datetime.now(tz=gmt)
     date_from_header = date_from_header.replace(tzinfo=gmt)
     time_difference = now - date_from_header
-    maximum_time_difference = datetime.timedelta(minutes=5)
+
+    if is_query:
+        maximum_time_difference = datetime.timedelta(minutes=65)
+    else:
+        maximum_time_difference = datetime.timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:
         context.status_code = codes.FORBIDDEN
