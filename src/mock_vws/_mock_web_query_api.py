@@ -154,6 +154,9 @@ class MockVuforiaWebQueryAPI:
             )
             return out_of_range_error
 
+        include_target_data = parsed.get('include_target_data', [b'top'])
+        allowed_included_target_data = {'top', 'all', 'none'}
+
         results: List[str] = []
         body = {
             'result_code': ResultCodes.SUCCESS.value,
