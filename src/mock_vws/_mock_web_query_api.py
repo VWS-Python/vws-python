@@ -149,13 +149,23 @@ class MockVuforiaWebQueryAPI:
         if max_num_results_int < 1 or max_num_results_int > 50:
             context.status_code = codes.BAD_REQUEST
             out_of_range_error = (
-                f'Integer out of range ({max_num_results}) in form data part '
-                "'max_result'. Accepted range is from 1 to 50 (inclusive)."
+                f'Integer out of range ({max_num_results.decode()}) in form '
+                "data part 'max_result'. "
+                'Accepted range is from 1 to 50 (inclusive).'
             )
             return out_of_range_error
 
-        include_target_data = parsed.get('include_target_data', [b'top'])
-        allowed_included_target_data = {'top', 'all', 'none'}
+        [include_target_data] = parsed.get('include_target_data', [b'top'])
+        allowed_included_target_data = {b'top', b'all', b'none'}
+        if include_target_data not in allowed_included_target_data:
+            unexpected_include_target_data_message = (
+                f"Invalid value '{include_target_data.decode()}' in form data part "
+                "'include_target_data'. "
+                "Expecting one of the (unquoted) string values 'all', 'none' "
+                "or 'top'."
+            )
+            context.status_code = codes.BAD_REQUEST
+            return unexpected_include_target_data_message
 
         results: List[str] = []
         body = {
