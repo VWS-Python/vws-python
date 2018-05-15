@@ -158,14 +158,14 @@ class MockVuforiaWebQueryAPI:
         [include_target_data] = parsed.get('include_target_data', [b'top'])
         allowed_included_target_data = {b'top', b'all', b'none'}
         if include_target_data not in allowed_included_target_data:
-            unexpected_include_target_data_message = (
-                f"Invalid value '{include_target_data.decode()}' in form data part "
-                "'include_target_data'. "
+            unexpected_target_data_message = (
+                f"Invalid value '{include_target_data.decode()}' in form data "
+                "part 'include_target_data'. "
                 "Expecting one of the (unquoted) string values 'all', 'none' "
                 "or 'top'."
             )
             context.status_code = codes.BAD_REQUEST
-            return unexpected_include_target_data_message
+            return unexpected_target_data_message
 
         results: List[str] = []
         body = {
