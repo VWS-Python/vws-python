@@ -402,3 +402,48 @@ class TestIncludeTargetData:
             status_code=codes.BAD_REQUEST,
             content_type='application/json',
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestAcceptHeader:
+    """
+    Tests for the ``Accept`` header.
+    """
+
+    def test_valid(self):
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+
+    def test_invalid(self):
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestActiveFlag:
+    """
+    Tests for active targets.
+    """
+
+    def test_inactive(self)
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestMaximumImageSize:
+    """
+    Tests for maximum image sizes.
+    """
+
+    def test_inactive(self)
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
