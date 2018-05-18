@@ -122,18 +122,11 @@ class MockVuforiaWebQueryAPI:
         )
 
         [max_num_results] = parsed.get('max_num_results', [b'1'])
-        try:
-            invalid_type_error = (
-                f"Invalid value '{max_num_results.decode()}' in form data "
-                "part 'max_result'. "
-                'Expecting integer value in range from 1 to 50 (inclusive).'
-            )
-        except AttributeError:
-            invalid_type_error = (
-                f"Invalid value '{max_num_results}' in form data part "
-                "'max_result'. "
-                'Expecting integer value in range from 1 to 50 (inclusive).'
-            )
+        invalid_type_error = (
+            f"Invalid value '{max_num_results.decode()}' in form data "
+            "part 'max_result'. "
+            'Expecting integer value in range from 1 to 50 (inclusive).'
+        )
 
         try:
             max_num_results_int = int(max_num_results)
@@ -149,8 +142,8 @@ class MockVuforiaWebQueryAPI:
         if max_num_results_int < 1 or max_num_results_int > 50:
             context.status_code = codes.BAD_REQUEST
             out_of_range_error = (
-                f'Integer out of range ({max_num_results.decode()}) in form '
-                "data part 'max_result'. "
+                f'Integer out of range ({max_num_results_int}) in form data '
+                "part 'max_result'. "
                 'Accepted range is from 1 to 50 (inclusive).'
             )
             return out_of_range_error
