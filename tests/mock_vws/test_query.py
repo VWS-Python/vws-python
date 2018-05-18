@@ -442,7 +442,13 @@ class TestMaximumImageSize:
     Tests for maximum image sizes.
     """
 
-    def test_inactive(self)
+    def test_png(self)
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+
+    def test_jpeg(self)
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
