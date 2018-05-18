@@ -453,3 +453,22 @@ class TestMaximumImageSize:
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestImageFormats:
+    """
+    Tests for various image formats.
+    """
+
+    def test_supported(self)
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+
+    def test_unsupported(self)
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
