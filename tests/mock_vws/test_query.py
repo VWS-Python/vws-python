@@ -392,7 +392,8 @@ class TestIncludeTargetData:
         )
 
         expected_text = (
-            "Invalid value 'a' in form data part 'include_target_data'. "
+            f"Invalid value '{include_target_data}' in form data part "
+            "'include_target_data'. "
             "Expecting one of the (unquoted) string values 'all', 'none' or "
             "'top'."
         )
@@ -429,7 +430,7 @@ class TestActiveFlag:
     Tests for active targets.
     """
 
-    def test_inactive(self)
+    def test_inactive(self):
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
@@ -442,13 +443,13 @@ class TestMaximumImageSize:
     Tests for maximum image sizes.
     """
 
-    def test_png(self)
+    def test_png(self):
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
 
-    def test_jpeg(self)
+    def test_jpeg(self):
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
@@ -461,13 +462,13 @@ class TestImageFormats:
     Tests for various image formats.
     """
 
-    def test_supported(self)
+    def test_supported(self):
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
 
-    def test_unsupported(self)
+    def test_unsupported(self):
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
