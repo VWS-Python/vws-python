@@ -357,7 +357,7 @@ class TestIncludeTargetData:
         image_content = high_quality_image.read()
         date = rfc_1123_date()
         request_path = '/v1/query'
-        include_target_data = 1
+        include_target_data = 'a' * 100
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
