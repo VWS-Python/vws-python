@@ -111,9 +111,8 @@ class MockVuforiaWebQueryAPI:
         """
         Perform an image recognition query.
         """
-        if request.headers.get(
-            'Accept', 'application/json',
-        ) != 'application/json':
+        if request.headers['Accept'] not in ('application/json', '*/*'):
+            context.headers.pop('Content-Type')
             context.status_code = codes.NOT_ACCEPTABLE
             return ''
 
