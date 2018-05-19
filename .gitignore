@@ -100,3 +100,9 @@ secrets.tar
 
 # macOS attributes
 *.DS_Store
+
+# pyre
+.pyre/
+
+# pytest
+.pytest_cache/
