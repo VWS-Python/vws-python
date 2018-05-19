@@ -345,11 +345,6 @@ class TestIncludeTargetData:
         assert_query_success(response=response)
         assert response.json()['results'] == []
 
-    @pytest.mark.parametrize(
-        'include_target_data',
-        ['a', 'a' * 40000],
-        ids=['short', 'long'],
-    )
     def test_invalid_value(
         self,
         high_quality_image: io.BytesIO,
