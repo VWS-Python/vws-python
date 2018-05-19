@@ -4,6 +4,7 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
+import base64
 import io
 from typing import Dict, Union
 from urllib.parse import urljoin
@@ -16,10 +17,12 @@ from urllib3.filepost import encode_multipart_formdata
 
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
+    add_target_to_vws,
     assert_query_success,
     assert_vwq_failure,
     authorization_header,
     rfc_1123_date,
+    wait_for_target_processed,
 )
 
 VWQ_HOST = 'https://cloudreco.vuforia.com'
@@ -86,6 +89,23 @@ class TestQuery:
         results is returned.
         """
         image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
