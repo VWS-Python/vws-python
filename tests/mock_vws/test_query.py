@@ -411,14 +411,17 @@ class TestAcceptHeader:
     Tests for the ``Accept`` header.
     """
 
+    @pytest.mark.parametrize(
+        'extra_headers',
+        [{'Accept': 'application/json'}, {}]
+    )
     def test_valid(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        An ``Accept`` header can be given iff its value is "application/json".
         """
         image_content = high_quality_image.read()
         date = rfc_1123_date()
@@ -444,7 +447,7 @@ class TestAcceptHeader:
             'Authorization': authorization_string,
             'Date': date,
             'Content-Type': content_type_header,
-            'Accept': 'application/json',
+            **extra_headers,
         }
 
         response = requests.request(
@@ -463,8 +466,8 @@ class TestAcceptHeader:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        A NOT_ACCEPTABLE response is returned if an ``Accept`` header is given
+        with a value which is not "application/json".
         """
         image_content = high_quality_image.read()
         date = rfc_1123_date()
