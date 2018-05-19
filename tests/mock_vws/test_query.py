@@ -5,7 +5,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import io
-from typing import Union
+from typing import Dict, Union
 from urllib.parse import urljoin
 
 import pytest
@@ -419,6 +419,7 @@ class TestAcceptHeader:
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        extra_headers: Dict[str, str],
     ) -> None:
         """
         An ``Accept`` header can be given iff its value is "application/json".
