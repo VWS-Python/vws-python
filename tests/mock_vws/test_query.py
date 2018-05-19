@@ -349,7 +349,6 @@ class TestIncludeTargetData:
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        include_target_data: str,
     ) -> None:
         """
         A ``BAD_REQUEST`` error is given when a string that is not one of
@@ -358,6 +357,7 @@ class TestIncludeTargetData:
         image_content = high_quality_image.read()
         date = rfc_1123_date()
         request_path = '/v1/query'
+        include_target_data = 'a'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
