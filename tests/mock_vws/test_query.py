@@ -40,7 +40,52 @@ class TestQuery:
         When there are no matching images in the database, an empty list of
         results is returned.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+    def test_match(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        When there are no matching images in the database, an empty list of
+        results is returned.
+        """
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
@@ -110,7 +155,7 @@ class TestMaxNumResults:
         states that this must be between 1 and 10, but in practice, 50 is the
         maximum.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -165,7 +210,7 @@ class TestMaxNumResults:
         states that this must be between 1 and 10, but in practice, 50 is the
         maximum.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -229,7 +274,7 @@ class TestMaxNumResults:
         Integers greater than 2147483647 are not considered integers because
         they are bigger than Java's maximum integer.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -306,7 +351,7 @@ class TestIncludeTargetData:
         We assert that the response is a success, but not that the preference
         is enforced.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -354,7 +399,7 @@ class TestIncludeTargetData:
         A ``BAD_REQUEST`` error is given when a string that is not one of
         'none', 'top' or 'all'.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         include_target_data = 'a'
@@ -424,7 +469,7 @@ class TestAcceptHeader:
         """
         An ``Accept`` header can be given iff its value is "application/json".
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
@@ -470,7 +515,7 @@ class TestAcceptHeader:
         A NOT_ACCEPTABLE response is returned if an ``Accept`` header is given
         with a value which is not "application/json".
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
