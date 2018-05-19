@@ -345,10 +345,16 @@ class TestIncludeTargetData:
         assert_query_success(response=response)
         assert response.json()['results'] == []
 
+    @pytest.mark.parametrize(
+        'include_target_data',
+        ['a', 'a' * 40000],
+        ids=['short', 'long'],
+    )
     def test_invalid_value(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        include_target_data: str,
     ) -> None:
         """
         A ``BAD_REQUEST`` error is given when a string that is not one of
@@ -357,7 +363,6 @@ class TestIncludeTargetData:
         image_content = high_quality_image.read()
         date = rfc_1123_date()
         request_path = '/v1/query'
-        include_target_data = 'a' * 100
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
