@@ -500,8 +500,11 @@ class TestAcceptHeader:
             data=content,
         )
 
-        assert_query_success(response=response)
-        assert response.json()['results'] == []
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.NOT_ACCEPTABLE,
+            content_type=None,
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
