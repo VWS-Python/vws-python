@@ -8,8 +8,10 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import cgi
 import io
 import uuid
-from typing import Callable, List, Set
+from json.decoder import JSONDecodeError
+from typing import Any, Callable, Dict, List, Set, Tuple
 
+import wrapt
 from requests import codes
 from requests_mock import POST
 from requests_mock.request import _RequestObjectProxy
@@ -23,10 +25,42 @@ from ._validators import (
     validate_auth_header_exists,
     validate_authorization,
     validate_date,
-    validate_not_invalid_json,
 )
 
 ROUTES = set([])
+
+
+@wrapt.decorator
+def validate_fields(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate body fields given to the query endpoint.
+    """
+    request, context = args
+
+    try:
+        request.json()
+    except JSONDecodeError:
+        context.status_code = codes.BAD_REQUEST
+        text = (
+            'java.lang.RuntimeException: RESTEASY007500: '
+            'Could find no Content-Disposition header within part'
+        )
+        context.headers['Content-Type'] = 'text/html'
+        return text
+    except UnicodeDecodeError:
+        # This logic is fishy.
+        # See https://github.com/adamtheturtle/vws-python/issues/548.
+        return wrapped(*args, **kwargs)
+
+    text = ''
+    context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
+    context.headers.pop('Content-Type')
+    return text
 
 
 def route(
@@ -64,7 +98,7 @@ def route(
         decorators = [
             validate_authorization,
             validate_date,
-            validate_not_invalid_json,
+            validate_fields,
             validate_auth_header_exists,
             set_content_length_header,
         ]
@@ -172,12 +206,13 @@ class MockVuforiaWebQueryAPI:
             context.status_code = codes.BAD_REQUEST
             return unexpected_target_data_message
 
-        results: List[str] = []
+        results: List[Dict[str, Any]] = []
         [image] = parsed['image']
         for target in self.mock_web_services_api.targets:
             if target.image.getvalue() == image:
+                target_timestamp = int(target.last_modified_date.timestamp())
                 target_data = {
-                    'target_timestamp': int(target.last_modified_date.timestamp()),
+                    'target_timestamp': target_timestamp,
                     'name': target.name,
                     'application_metadata': None,
                 }
