@@ -4,8 +4,10 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
+import calendar
 import base64
 import io
+import time
 from typing import Dict, Union
 from urllib.parse import urljoin
 
@@ -101,6 +103,7 @@ class TestQuery:
         )
 
         target_id = response.json()['target_id']
+        approximate_target_created = calendar.timegm(time.gmtime())
 
         wait_for_target_processed(
             target_id=target_id,
@@ -150,7 +153,9 @@ class TestQuery:
         }
         assert target_data['application_metadata'] is None
         assert target_data['name'] == name
-        assert target_data['target_timestamp'] is not None
+        target_timestamp = target_data['target_timestamp']
+        time_difference = abs(approximate_target_created - target_timestamp)
+        assert time_difference < 5
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
