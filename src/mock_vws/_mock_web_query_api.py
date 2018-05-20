@@ -26,8 +26,44 @@ from ._validators import (
     validate_not_invalid_json,
 )
 
+import wrapt
+from typing import Any, Tuple, Dict
+from json.decoder import JSONDecodeError
+
 ROUTES = set([])
 
+
+@wrapt.decorator
+def validate_fields(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    TODO
+    """
+    request, context = args
+
+    try:
+        request.json()
+    except JSONDecodeError:
+        context.status_code = codes.BAD_REQUEST
+        text = (
+            'java.lang.RuntimeException: RESTEASY007500: '
+            'Could find no Content-Disposition header within part'
+        )
+        context.headers['Content-Type'] = 'text/html'
+        return text
+    except UnicodeDecodeError:
+        # This logic is fishy.
+        # See https://github.com/adamtheturtle/vws-python/issues/548.
+        return wrapped(*args, **kwargs)
+
+    text = ''
+    context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
+    context.headers.pop('Content-Type')
+    return text
 
 def route(
     path_pattern: str,
@@ -64,7 +100,7 @@ def route(
         decorators = [
             validate_authorization,
             validate_date,
-            validate_not_invalid_json,
+            validate_fields,
             validate_auth_header_exists,
             set_content_length_header,
         ]

@@ -31,9 +31,9 @@ VWQ_HOST = 'https://cloudreco.vuforia.com'
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestQuery:
+class TestSuccess:
     """
-    Tests for the query endpoint.
+    Tests for successful calls to the query endpoint.
     """
 
     def test_no_results(
