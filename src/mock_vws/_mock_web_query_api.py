@@ -25,7 +25,6 @@ from ._validators import (
     validate_auth_header_exists,
     validate_authorization,
     validate_date,
-    validate_not_invalid_json,
 )
 
 ROUTES = set([])
@@ -39,7 +38,7 @@ def validate_fields(
     kwargs: Dict,
 ) -> str:
     """
-    TODO
+    Validate body fields given to the query endpoint.
     """
     request, context = args
 
@@ -207,7 +206,7 @@ class MockVuforiaWebQueryAPI:
             context.status_code = codes.BAD_REQUEST
             return unexpected_target_data_message
 
-        results: List[str] = []
+        results: List[Dict[str, Any]] = []
         [image] = parsed['image']
         for target in self.mock_web_services_api.targets:
             if target.image.getvalue() == image:

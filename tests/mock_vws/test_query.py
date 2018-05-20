@@ -497,7 +497,7 @@ class TestAcceptHeader:
         'extra_headers',
         [
             {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
             },
             {},
         ],
@@ -604,7 +604,7 @@ class TestActiveFlag:
     Tests for active targets.
     """
 
-    def test_inactive(self):
+    def test_inactive(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
@@ -617,13 +617,13 @@ class TestMaximumImageSize:
     Tests for maximum image sizes.
     """
 
-    def test_png(self):
+    def test_png(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
 
-    def test_jpeg(self):
+    def test_jpeg(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
@@ -636,13 +636,13 @@ class TestImageFormats:
     Tests for various image formats.
     """
 
-    def test_supported(self):
+    def test_supported(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
 
-    def test_unsupported(self):
+    def test_unsupported(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
