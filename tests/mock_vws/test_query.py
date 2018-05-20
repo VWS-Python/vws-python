@@ -170,8 +170,9 @@ class TestIncorrectFields:
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
-        return
-        image_content = high_quality_image.getvalue()
+        """
+        XXX
+        """
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {}
