@@ -17,6 +17,7 @@ from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes
 from mock_vws._mock_common import Route, json_dump, set_content_length_header
+from mock_vws._mock_web_services_api import MockVuforiaWebServicesAPI
 
 from ._validators import (
     validate_auth_header_exists,
@@ -87,20 +88,25 @@ class MockVuforiaWebQueryAPI:
         self,
         client_access_key: str,
         client_secret_key: str,
+        mock_web_services_api: MockVuforiaWebServicesAPI,
     ) -> None:
         """
         Args:
             client_access_key: A VWS client access key.
             client_secret_key: A VWS client secret key.
+            mock_web_services_api: An instance of a mock web services API.
 
         Attributes:
             routes: The `Route`s to be used in the mock.
             access_key (str): A VWS client access key.
             secret_key (str): A VWS client secret key.
+            mock_web_services_api (MockVuforiaWebServicesAPI): An instance of a
+                mock web services API.
         """
         self.routes: Set[Route] = ROUTES
         self.access_key: str = client_access_key
         self.secret_key: str = client_secret_key
+        self.mock_web_services_api = mock_web_services_api
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
@@ -168,7 +174,18 @@ class MockVuforiaWebQueryAPI:
 
         results: List[str] = []
         [image] = parsed['image']
-        import pdb; pdb.set_trace()
+        for target in self.mock_web_services_api.targets:
+            if target.image.getvalue() == image:
+                target_data = {
+                    'target_timestamp': int(target.last_modified_date.timestamp()),
+                    'name': target.name,
+                    'application_metadata': None,
+                }
+                result = {
+                    'target_id': target.target_id,
+                    'target_data': target_data,
+                }
+                results.append(result)
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,

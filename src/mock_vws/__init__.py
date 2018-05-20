@@ -106,6 +106,7 @@ class MockVWS(ContextDecorator):
         mock_vwq_api = MockVuforiaWebQueryAPI(
             client_access_key=self.client_access_key,
             client_secret_key=self.client_secret_key,
+            mock_web_services_api=mock_vws_api,
         )
 
         date = email.utils.formatdate(None, localtime=False, usegmt=True)

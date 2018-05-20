@@ -154,6 +154,7 @@ class TestQuery:
         assert target_data['application_metadata'] is None
         assert target_data['name'] == name
         target_timestamp = target_data['target_timestamp']
+        assert isinstance(target_timestamp, int)
         time_difference = abs(approximate_target_created - target_timestamp)
         assert time_difference < 5
 
