@@ -85,13 +85,13 @@ class TestQuery:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        When there are no matching images in the database, an empty list of
-        results is returned.
+        If the exact image that was added is queried for, target data is shown.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        name = 'example_name'
         add_target_data = {
-            'name': 'example_name',
+            'name': name,
             'width': 1,
             'image': image_data_encoded,
         }
@@ -139,7 +139,18 @@ class TestQuery:
         )
 
         assert_query_success(response=response)
-        assert response.json()['results'] == []
+        [result] = response.json()['results']
+        assert result.keys() == {'target_id', 'target_data'}
+        assert result['target_id'] == target_id
+        target_data = result['target_data']
+        assert target_data.keys() == {
+            'application_metadata',
+            'name',
+            'target_timestamp',
+        }
+        assert target_data['application_metadata'] is None
+        assert target_data['name'] == name
+        assert target_data['target_timestamp'] is not None
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
