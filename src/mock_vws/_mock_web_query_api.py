@@ -65,6 +65,7 @@ def validate_fields(
     text = ''
     context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
     context.headers.pop('Content-Type')
+    import pdb; pdb.set_trace()
     return text
 
 def route(

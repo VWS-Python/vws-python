@@ -179,11 +179,6 @@ def validate_not_invalid_json(
             'result_code': ResultCodes.FAIL.value,
         }
         return json_dump(body)
-    except UnicodeDecodeError:
-        import pdb; pdb.set_trace()
-        # This logic is fishy.
-        # See https://github.com/adamtheturtle/vws-python/issues/548.
-        return wrapped(*args, **kwargs)
 
     return wrapped(*args, **kwargs)
 
