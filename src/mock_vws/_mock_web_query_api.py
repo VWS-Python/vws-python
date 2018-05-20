@@ -167,6 +167,9 @@ class MockVuforiaWebQueryAPI:
             return unexpected_target_data_message
 
         results: List[str] = []
+        [image] = parsed['image']
+        import pdb; pdb.set_trace()
+
         body = {
             'result_code': ResultCodes.SUCCESS.value,
             'results': results,
