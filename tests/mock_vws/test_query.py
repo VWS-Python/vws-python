@@ -4,7 +4,10 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
+import calendar
+import base64
 import io
+import time
 from typing import Dict, Union
 from urllib.parse import urljoin
 
@@ -16,10 +19,12 @@ from urllib3.filepost import encode_multipart_formdata
 
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
+    add_target_to_vws,
     assert_query_success,
     assert_vwq_failure,
     authorization_header,
     rfc_1123_date,
+    wait_for_target_processed,
 )
 
 VWQ_HOST = 'https://cloudreco.vuforia.com'
@@ -75,6 +80,83 @@ class TestQuery:
 
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+    def test_match(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        If the exact image that was added is queried for, target data is shown.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        name = 'example_name'
+        add_target_data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+        approximate_target_created = calendar.timegm(time.gmtime())
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert_query_success(response=response)
+        [result] = response.json()['results']
+        assert result.keys() == {'target_id', 'target_data'}
+        assert result['target_id'] == target_id
+        target_data = result['target_data']
+        assert target_data.keys() == {
+            'application_metadata',
+            'name',
+            'target_timestamp',
+        }
+        assert target_data['application_metadata'] is None
+        assert target_data['name'] == name
+        target_timestamp = target_data['target_timestamp']
+        assert isinstance(target_timestamp, int)
+        time_difference = abs(approximate_target_created - target_timestamp)
+        assert time_difference < 5
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
