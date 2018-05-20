@@ -40,7 +40,7 @@ class TestQuery:
         When there are no matching images in the database, an empty list of
         results is returned.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
@@ -110,7 +110,7 @@ class TestMaxNumResults:
         states that this must be between 1 and 10, but in practice, 50 is the
         maximum.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -165,7 +165,7 @@ class TestMaxNumResults:
         states that this must be between 1 and 10, but in practice, 50 is the
         maximum.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -229,7 +229,7 @@ class TestMaxNumResults:
         Integers greater than 2147483647 are not considered integers because
         they are bigger than Java's maximum integer.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -306,7 +306,7 @@ class TestIncludeTargetData:
         We assert that the response is a success, but not that the preference
         is enforced.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
@@ -354,7 +354,7 @@ class TestIncludeTargetData:
         A ``BAD_REQUEST`` error is given when a string that is not one of
         'none', 'top' or 'all'.
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         include_target_data = 'a'
@@ -424,7 +424,7 @@ class TestAcceptHeader:
         """
         An ``Accept`` header can be given iff its value is "application/json".
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
@@ -470,7 +470,7 @@ class TestAcceptHeader:
         A NOT_ACCEPTABLE response is returned if an ``Accept`` header is given
         with a value which is not "application/json".
         """
-        image_content = high_quality_image.read()
+        image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
