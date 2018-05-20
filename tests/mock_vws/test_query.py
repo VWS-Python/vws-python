@@ -4,8 +4,8 @@ Tests for the mock of the query endpoint.
 https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
 """
 
-import calendar
 import base64
+import calendar
 import io
 import time
 from typing import Dict, Union
@@ -495,7 +495,12 @@ class TestAcceptHeader:
 
     @pytest.mark.parametrize(
         'extra_headers',
-        [{'Accept': 'application/json'}, {}]
+        [
+            {
+                'Accept': 'application/json'
+            },
+            {},
+        ],
     )
     def test_valid(
         self,

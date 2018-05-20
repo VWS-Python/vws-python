@@ -8,8 +8,10 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import cgi
 import io
 import uuid
-from typing import Callable, List, Set
+from json.decoder import JSONDecodeError
+from typing import Any, Callable, Dict, List, Set, Tuple
 
+import wrapt
 from requests import codes
 from requests_mock import POST
 from requests_mock.request import _RequestObjectProxy
@@ -25,10 +27,6 @@ from ._validators import (
     validate_date,
     validate_not_invalid_json,
 )
-
-import wrapt
-from typing import Any, Tuple, Dict
-from json.decoder import JSONDecodeError
 
 ROUTES = set([])
 
@@ -64,6 +62,7 @@ def validate_fields(
     context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
     context.headers.pop('Content-Type')
     return text
+
 
 def route(
     path_pattern: str,
@@ -212,8 +211,9 @@ class MockVuforiaWebQueryAPI:
         [image] = parsed['image']
         for target in self.mock_web_services_api.targets:
             if target.image.getvalue() == image:
+                target_timestamp = int(target.last_modified_date.timestamp())
                 target_data = {
-                    'target_timestamp': int(target.last_modified_date.timestamp()),
+                    'target_timestamp': target_timestamp,
                     'name': target.name,
                     'application_metadata': None,
                 }
