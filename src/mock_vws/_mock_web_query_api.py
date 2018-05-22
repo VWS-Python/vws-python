@@ -8,7 +8,6 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import cgi
 import io
 import uuid
-from json.decoder import JSONDecodeError
 from typing import Any, Callable, Dict, List, Set, Tuple
 
 import wrapt
@@ -28,6 +27,56 @@ from ._validators import (
 )
 
 ROUTES = set([])
+
+
+@wrapt.decorator
+def validate_content_type_header(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the ``Content-Type`` header.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An ``UNSUPPORTED_MEDIA_TYPE`` response if the ``Content-Type`` header
+        main part is not 'multipart/form-data'.
+        A ``BAD_REQUEST`` response if the ``Content-Type`` header does not
+        contain a boundary which is in the request body.
+    """
+    request, context = args
+
+    main_value, pdict = cgi.parse_header(request.headers['Content-Type'])
+    if main_value != 'multipart/form-data':
+        context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
+        context.headers.pop('Content-Type')
+        return ''
+
+    if 'boundary' not in pdict:
+        context.status_code = codes.BAD_REQUEST
+        context.headers['Content-Type'] = 'text/html'
+        return (
+            'java.io.IOException: RESTEASY007550: '
+            'Unable to get boundary for multipart'
+        )
+
+    if pdict['boundary'].encode() not in request.body:
+        context.status_code = codes.BAD_REQUEST
+        context.headers['Content-Type'] = 'text/html'
+        return (
+            'java.lang.RuntimeException: RESTEASY007500: '
+            'Could find no Content-Disposition header within part'
+        )
+
+    return wrapped(*args, **kwargs)
 
 
 @wrapt.decorator
@@ -63,36 +112,31 @@ def validate_accept_header(
 
 
 @wrapt.decorator
-def validate_fields(
+def validate_response_body_type(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
     """
-    Validate body fields given to the query endpoint.
+    Validate body type.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
         instance: The class that the endpoint function is in.
         args: The arguments given to the endpoint function.
         kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNSUPPORTED_MEDIA_TYPE` response if the request body is valid UTF-8
+        encoded text.
     """
     request, context = args
 
     try:
-        request.json()
-    except JSONDecodeError:
-        context.status_code = codes.BAD_REQUEST
-        text = (
-            'java.lang.RuntimeException: RESTEASY007500: '
-            'Could find no Content-Disposition header within part'
-        )
-        context.headers['Content-Type'] = 'text/html'
-        return text
+        request.body.decode('utf-8')
     except UnicodeDecodeError:
-        # This logic is fishy.
-        # See https://github.com/adamtheturtle/vws-python/issues/548.
         return wrapped(*args, **kwargs)
 
     text = ''
@@ -136,7 +180,8 @@ def route(
         decorators = [
             validate_authorization,
             validate_date,
-            validate_fields,
+            validate_response_body_type,
+            validate_content_type_header,
             validate_accept_header,
             validate_auth_header_exists,
             set_content_length_header,
