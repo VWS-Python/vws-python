@@ -38,7 +38,7 @@ def validate_content_type_header(
     kwargs: Dict,
 ) -> str:
     """
-    Validate the accept header.
+    Validate the ``Content-Type`` header.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -48,8 +48,10 @@ def validate_content_type_header(
 
     Returns:
         The result of calling the endpoint.
-        A `NOT_ACCEPTABLE` response if the Accept header is given and is not
-        'application/json' or '*/*'.
+        An ``UNSUPPORTED_MEDIA_TYPE`` response if the ``Content-Type`` header
+        main part is not 'multipart/form-data'.
+        A ``BAD_REQUEST`` response if the ``Content-Type`` header does not
+        contain a boundary which is in the request body.
     """
     request, context = args
 
