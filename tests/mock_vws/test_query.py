@@ -147,7 +147,11 @@ class TestContentType:
 
     @pytest.mark.parametrize(
         'content_type',
-        ['multipart/form-data', 'multipart/form-data; extra=1'],
+        [
+            'multipart/form-data',
+            'multipart/form-data; extra',
+            'multipart/form-data; extra=1',
+        ],
     )
     def test_no_boundary(
         self,
