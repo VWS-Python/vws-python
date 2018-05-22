@@ -182,7 +182,7 @@ def validate_extra_fields(
 
     known_parameters = {'image', 'max_num_results', 'include_target_data'}
 
-    if len(parsed.keys() - known_parameters) == 0:
+    if not (parsed.keys() - known_parameters):
         return wrapped(*args, **kwargs)
 
     context.status_code = codes.BAD_REQUEST
