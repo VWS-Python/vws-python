@@ -498,7 +498,7 @@ class TestIncorrectFields:
         request_path = '/v1/query'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'extra_field': (None, 1 , 'text/plain'),
+            'extra_field': (None, 1, 'text/plain'),
         }
         content, content_type_header = encode_multipart_formdata(body)
         method = POST
@@ -547,11 +547,11 @@ class TestIncorrectFields:
 
         The extra field error takes precedence.
         """
-        image_content = high_quality_image.getvalue()
+        high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
-            'extra_field': (None, 1 , 'text/plain'),
+            'extra_field': (None, 1, 'text/plain'),
         }
         content, content_type_header = encode_multipart_formdata(body)
         method = POST
