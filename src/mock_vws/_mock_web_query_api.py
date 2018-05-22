@@ -135,10 +135,8 @@ def validate_response_body_type(
     request, context = args
 
     try:
-        request.json()
+        request.body.decode('utf-8')
     except UnicodeDecodeError:
-        # This logic is fishy.
-        # See https://github.com/adamtheturtle/vws-python/issues/548.
         return wrapped(*args, **kwargs)
 
     text = ''
