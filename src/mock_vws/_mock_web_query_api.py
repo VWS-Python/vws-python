@@ -31,6 +31,38 @@ ROUTES = set([])
 
 
 @wrapt.decorator
+def validate_accept_header(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the accept header.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `NOT_ACCEPTABLE` response if the Accept header is given and is not
+        'application/json' or '*/*'.
+    """
+    request, context = args
+
+    accept = request.headers.get('Accept')
+    if accept in ('application/json', '*/*', None):
+        return wrapped(*args, **kwargs)
+
+    context.headers.pop('Content-Type')
+    context.status_code = codes.NOT_ACCEPTABLE
+    return ''
+
+
+@wrapt.decorator
 def validate_fields(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
@@ -39,6 +71,12 @@ def validate_fields(
 ) -> str:
     """
     Validate body fields given to the query endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
     """
     request, context = args
 
@@ -99,6 +137,7 @@ def route(
             validate_authorization,
             validate_date,
             validate_fields,
+            validate_accept_header,
             validate_auth_header_exists,
             set_content_length_header,
         ]
@@ -151,12 +190,6 @@ class MockVuforiaWebQueryAPI:
         """
         Perform an image recognition query.
         """
-        accept = request.headers.get('Accept')
-        if accept not in ('application/json', '*/*', None):
-            context.headers.pop('Content-Type')
-            context.status_code = codes.NOT_ACCEPTABLE
-            return ''
-
         body_file = io.BytesIO(request.body)
 
         _, pdict = cgi.parse_header(request.headers['Content-Type'])
