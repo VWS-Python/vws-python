@@ -54,10 +54,11 @@ def validate_content_type_header(
     request, context = args
 
     content_type_header = request.headers['Content-Type']
-    try:
-        pre_semicolon, post_semicolon = content_type_header.split(';')
-    except:
-        pass
+    split_length = content_type_header.split(';')
+    text = (
+        'java.io.IOException: RESTEASY007550: '
+        'Unable to get boundary for multipart'
+    )
 
     if accept in ('application/json', '*/*', None):
         return wrapped(*args, **kwargs)
