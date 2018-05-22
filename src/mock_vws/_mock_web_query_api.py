@@ -53,28 +53,21 @@ def validate_content_type_header(
     """
     request, context = args
 
-    content_type_header = request.headers['Content-Type']
-    split_header = content_type_header.split(';')
-    if len(split_header) == 1:
+    main_value, pdict = cgi.parse_header(request.headers['Content-Type'])
+    if main_value != 'multipart/form-data':
         context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
         context.headers.pop('Content-Type')
         return ''
 
-    if split_header[0] != 'multipart/form-data':
-        context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
-        context.headers.pop('Content-Type')
-        return ''
+    if 'boundary' not in pdict:
+        context.status_code = codes.BAD_REQUEST
+        context.headers['Content-Type'] = 'text/html'
+        return (
+            'java.io.IOException: RESTEASY007550: '
+            'Unable to get boundary for multipart'
+        )
 
-    second_part = split_header[1]
-
-
-    text = (
-        'java.io.IOException: RESTEASY007550: '
-        'Unable to get boundary for multipart'
-    )
-
-    if accept in ('application/json', '*/*', None):
-        return wrapped(*args, **kwargs)
+    return wrapped(*args, **kwargs)
 
 
 @wrapt.decorator
@@ -184,6 +177,7 @@ def route(
             validate_authorization,
             validate_date,
             validate_fields,
+            validate_content_type_header,
             validate_accept_header,
             validate_auth_header_exists,
             set_content_length_header,
