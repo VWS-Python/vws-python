@@ -105,7 +105,7 @@ class TestContentType:
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
-        content, _ = encode_multipart_formdata(body)
+        content, content_type_header = encode_multipart_formdata(body)
         method = POST
 
         content_type = 'text/html'
@@ -122,6 +122,9 @@ class TestContentType:
             request_path=request_path,
         )
 
+        _, boundary = content_type_header.split(';')
+
+        content_type = 'text/html; ' + boundary
         headers = {
             'Authorization': authorization_string,
             'Date': date,

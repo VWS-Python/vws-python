@@ -54,7 +54,17 @@ def validate_content_type_header(
     request, context = args
 
     content_type_header = request.headers['Content-Type']
-    split_length = content_type_header.split(';')
+    split_header = content_type_header.split(';')
+    if len(split_header) == 1:
+        context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
+        context.headers.pop('Content-Type')
+        return ''
+
+    if split_header[0] != 'multipart/form-data':
+        context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
+        context.headers.pop('Content-Type')
+        return ''
+
     text = (
         'java.io.IOException: RESTEASY007550: '
         'Unable to get boundary for multipart'
