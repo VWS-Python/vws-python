@@ -147,6 +147,7 @@ def validate_fields_given(
     context.status_code = codes.BAD_REQUEST
     return 'No image.'
 
+
 @wrapt.decorator
 def validate_response_body_type(
     wrapped: Callable[..., str],
