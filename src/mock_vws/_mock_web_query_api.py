@@ -65,6 +65,9 @@ def validate_content_type_header(
         context.headers.pop('Content-Type')
         return ''
 
+    second_part = split_header[1]
+
+
     text = (
         'java.io.IOException: RESTEASY007550: '
         'Unable to get boundary for multipart'

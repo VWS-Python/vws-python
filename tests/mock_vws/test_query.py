@@ -145,10 +145,15 @@ class TestContentType:
             content_type=None,
         )
 
+    @pytest.mark.parametrize(
+        'content_type',
+        ['multipart/form-data', 'multipart/form-data; extra=1'],
+    )
     def test_no_boundary(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        content_type: str,
     ) -> None:
         """
         If no boundary is given, a ``BAD_REQUEST`` is returned.
@@ -176,7 +181,7 @@ class TestContentType:
         headers = {
             'Authorization': authorization_string,
             'Date': date,
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': content_type,
         }
 
         response = requests.request(
