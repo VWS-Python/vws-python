@@ -98,8 +98,9 @@ class TestContentType:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        If a Content-Type header which is not ``multipart/form-data``, an
-        ``UNSUPPORTED_MEDIA_TYPE`` response is given.
+        If a Content-Type header which is not ``multipart/form-data`` is given
+        with the correct boundary, an ``UNSUPPORTED_MEDIA_TYPE`` response is
+        given.
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
@@ -264,7 +265,8 @@ class TestContentType:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        If a bogus boundary is given, a ``BAD_REQUEST`` is returned.
+        If sections that are not the boundary section are given in the header,
+        that is fine.
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
@@ -430,6 +432,60 @@ class TestSuccess:
         assert isinstance(target_timestamp, int)
         time_difference = abs(approximate_target_created - target_timestamp)
         assert time_difference < 5
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestIncorrectFields:
+    """
+    Tests for unexpected fields.
+    """
+
+    def test_missing_image(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        If an image is not given, a ``BAD_REQUEST`` response is given.
+        """
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        body = {}
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert response.text == 'No image.'
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            content_type='application/json',
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
