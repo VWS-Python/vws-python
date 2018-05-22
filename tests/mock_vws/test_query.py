@@ -169,7 +169,7 @@ class TestContentType:
         headers = {
             'Authorization': authorization_string,
             'Date': date,
-            'Content-Type': 'multipart/form-data; boundary=1',
+            'Content-Type': 'multipart/form-data; boundary=example_boundary',
         }
 
         response = requests.request(
