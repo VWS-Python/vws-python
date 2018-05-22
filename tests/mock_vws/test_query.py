@@ -445,7 +445,7 @@ class TestIncorrectFields:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        If an image is not given, a ``BAD_REQUEST`` response is given.
+        If an image is not given, a ``BAD_REQUEST`` response is returned.
         """
         date = rfc_1123_date()
         request_path = '/v1/query'
@@ -491,14 +491,66 @@ class TestIncorrectFields:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        When there are no matching images in the database, an empty list of
-        results is returned.
+        If extra fields are given, a ``BAD_REQUEST`` response is returned.
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
         request_path = '/v1/query'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'extra_field': (None, 1 , 'text/plain'),
+        }
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert response.text == 'Unknown parameters in the request.'
+        assert_vwq_failure(
+            response=response,
+            content_type='application/json',
+            status_code=codes.BAD_REQUEST,
+        )
+
+    def test_missing_image_and_extra_fields(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        If extra fields are given and no image field is given, a
+        ``BAD_REQUEST`` response is returned.
+
+        The extra field error takes precedence.
+        """
+        image_content = high_quality_image.getvalue()
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        body = {
             'extra_field': (None, 1 , 'text/plain'),
         }
         content, content_type_header = encode_multipart_formdata(body)
