@@ -67,6 +67,14 @@ def validate_content_type_header(
             'Unable to get boundary for multipart'
         )
 
+    if pdict['boundary'].encode() not in request.body:
+        context.status_code = codes.BAD_REQUEST
+        context.headers['Content-Type'] = 'text/html'
+        return (
+            'java.lang.RuntimeException: RESTEASY007500: '
+            'Could find no Content-Disposition header within part'
+        )
+
     return wrapped(*args, **kwargs)
 
 
