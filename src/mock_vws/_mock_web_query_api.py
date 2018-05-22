@@ -31,6 +31,24 @@ ROUTES = set([])
 
 
 @wrapt.decorator
+def validate_accept_header(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    request, context = args
+
+    accept = request.headers.get('Accept')
+    if accept in ('application/json', '*/*', None):
+        return wrapped(*args, **kwargs)
+
+    context.headers.pop('Content-Type')
+    context.status_code = codes.NOT_ACCEPTABLE
+    return ''
+
+
+@wrapt.decorator
 def validate_fields(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
@@ -99,6 +117,7 @@ def route(
             validate_authorization,
             validate_date,
             validate_fields,
+            validate_accept_header,
             validate_auth_header_exists,
             set_content_length_header,
         ]
@@ -151,12 +170,6 @@ class MockVuforiaWebQueryAPI:
         """
         Perform an image recognition query.
         """
-        accept = request.headers.get('Accept')
-        if accept not in ('application/json', '*/*', None):
-            context.headers.pop('Content-Type')
-            context.status_code = codes.NOT_ACCEPTABLE
-            return ''
-
         body_file = io.BytesIO(request.body)
 
         _, pdict = cgi.parse_header(request.headers['Content-Type'])
