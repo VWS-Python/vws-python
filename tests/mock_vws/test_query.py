@@ -77,6 +77,11 @@ class TestContentType:
             data=content,
         )
 
+        expected_text = (
+            'java.io.IOException: RESTEASY007550: '
+            'Unable to get boundary for multipart'
+        )
+        assert response.text == expected_text
         assert_vwq_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
@@ -124,6 +129,11 @@ class TestContentType:
             data=content,
         )
 
+        expected_text = (
+            'java.lang.RuntimeException: RESTEASY007500: '
+            'Could find no Content-Disposition header within part'
+        )
+        assert response.text == expected_text
         assert_vwq_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
