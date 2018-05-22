@@ -112,14 +112,14 @@ def validate_accept_header(
 
 
 @wrapt.decorator
-def validate_fields_given(
+def validate_image_field_given(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
     """
-    Validate the fields given.
+    Validate that the image field is given.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -129,6 +129,7 @@ def validate_fields_given(
 
     Returns:
         The result of calling the endpoint.
+        A ``BAD_REQUEST`` response if the image field is not given.
     """
     request, context = args
     body_file = io.BytesIO(request.body)
@@ -146,6 +147,46 @@ def validate_fields_given(
 
     context.status_code = codes.BAD_REQUEST
     return 'No image.'
+
+
+@wrapt.decorator
+def validate_extra_fields(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate that the no unknown fields are given.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A ``BAD_REQUEST`` response if extra fields are given.
+    """
+    request, context = args
+    body_file = io.BytesIO(request.body)
+
+    _, pdict = cgi.parse_header(request.headers['Content-Type'])
+    parsed = cgi.parse_multipart(
+        fp=body_file,
+        pdict={
+            'boundary': pdict['boundary'].encode(),
+        },
+    )
+
+    known_parameters = {'image', 'max_num_results', 'include_target_data'}
+
+    if not parsed.keys() - known_parameters:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    return 'Unknown parameters in the request.'
 
 
 @wrapt.decorator
@@ -218,7 +259,8 @@ def route(
             validate_authorization,
             validate_date,
             validate_response_body_type,
-            validate_fields_given,
+            validate_image_field_given,
+            validate_extra_fields,
             validate_content_type_header,
             validate_accept_header,
             validate_auth_header_exists,
