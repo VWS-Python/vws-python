@@ -40,7 +40,7 @@ class TestContentType:
         'content_type',
         [
             'text/html',
-            ''
+            '',
         ],
     )
     def test_incorrect_no_boundary(
