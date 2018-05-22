@@ -442,7 +442,6 @@ class TestIncorrectFields:
 
     def test_missing_image(
         self,
-        high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
@@ -450,8 +449,7 @@ class TestIncorrectFields:
         """
         date = rfc_1123_date()
         request_path = '/v1/query'
-        body = {}
-        content, content_type_header = encode_multipart_formdata(body)
+        content, content_type_header = encode_multipart_formdata({})
         method = POST
 
         access_key = vuforia_database_keys.client_access_key
