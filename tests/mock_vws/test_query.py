@@ -42,7 +42,7 @@ class TestContentType:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        XXX
+        If no boundary is given, a ``BAD_REQUEST`` is returned.
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
@@ -94,7 +94,7 @@ class TestContentType:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        XXX
+        If a bogus boundary is given, a ``BAD_REQUEST`` is returned.
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
