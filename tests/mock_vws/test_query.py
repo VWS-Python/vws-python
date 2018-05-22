@@ -31,19 +31,18 @@ VWQ_HOST = 'https://cloudreco.vuforia.com'
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
-class TestFoo:
+class TestContentType:
     """
-    Tests for successful calls to the query endpoint.
+    Tests for the Content-Type header.
     """
 
-    def test_foobar(
+    def test_no_boundary(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        When there are no matching images in the database, an empty list of
-        results is returned.
+        XXX
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
@@ -66,7 +65,55 @@ class TestFoo:
         )
 
         bogus_content_type_header = (
-            'multipart/form-data; boundary=1'
+            'multipart/form-data'
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': bogus_content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+    def test_bogus_boundary(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        XXX
+        """
+        image_content = high_quality_image.getvalue()
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        content, _ = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        bogus_content_type_header = (
+            'multipart/form-data'
         )
 
         headers = {
