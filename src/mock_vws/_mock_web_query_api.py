@@ -112,6 +112,42 @@ def validate_accept_header(
 
 
 @wrapt.decorator
+def validate_fields_given(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the fields given.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    request, context = args
+    body_file = io.BytesIO(request.body)
+
+    _, pdict = cgi.parse_header(request.headers['Content-Type'])
+    parsed = cgi.parse_multipart(
+        fp=body_file,
+        pdict={
+            'boundary': pdict['boundary'].encode(),
+        },
+    )
+
+    if 'image' in parsed.keys():
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    return 'No image.'
+
+@wrapt.decorator
 def validate_response_body_type(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
@@ -181,6 +217,7 @@ def route(
             validate_authorization,
             validate_date,
             validate_response_body_type,
+            validate_fields_given,
             validate_content_type_header,
             validate_accept_header,
             validate_auth_header_exists,

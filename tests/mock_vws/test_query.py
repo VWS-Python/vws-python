@@ -98,8 +98,9 @@ class TestContentType:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        If a Content-Type header which is not ``multipart/form-data``, an
-        ``UNSUPPORTED_MEDIA_TYPE`` response is given.
+        If a Content-Type header which is not ``multipart/form-data`` is given
+        with the correct boundary, an ``UNSUPPORTED_MEDIA_TYPE`` response is
+        given.
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
@@ -264,7 +265,8 @@ class TestContentType:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        If a bogus boundary is given, a ``BAD_REQUEST`` is returned.
+        If sections that are not the boundary section are given in the header,
+        that is fine.
         """
         image_content = high_quality_image.getvalue()
         date = rfc_1123_date()
@@ -444,7 +446,7 @@ class TestIncorrectFields:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        XXX
+        If an image is not given, a ``BAD_REQUEST`` response is given.
         """
         date = rfc_1123_date()
         request_path = '/v1/query'
