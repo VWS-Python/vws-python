@@ -53,13 +53,14 @@ def validate_content_type_header(
     """
     request, context = args
 
-    accept = request.headers.get('Accept')
+    content_type_header = request.headers['Content-Type']
+    try:
+        pre_semicolon, post_semicolon = content_type_header.split(';')
+    except:
+        pass
+
     if accept in ('application/json', '*/*', None):
         return wrapped(*args, **kwargs)
-
-    context.headers.pop('Content-Type')
-    context.status_code = codes.NOT_ACCEPTABLE
-    return ''
 
 
 @wrapt.decorator
