@@ -64,14 +64,10 @@ class TestContentType:
             request_path=request_path,
         )
 
-        bogus_content_type_header = (
-            'multipart/form-data'
-        )
-
         headers = {
             'Authorization': authorization_string,
             'Date': date,
-            'Content-Type': bogus_content_type_header,
+            'Content-Type': 'multipart/form-data',
         }
 
         response = requests.request(
@@ -81,8 +77,11 @@ class TestContentType:
             data=content,
         )
 
-        assert_query_success(response=response)
-        assert response.json()['results'] == []
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            content_type='text/html',
+        )
 
     def test_bogus_boundary(
         self,
@@ -112,14 +111,10 @@ class TestContentType:
             request_path=request_path,
         )
 
-        bogus_content_type_header = (
-            'multipart/form-data'
-        )
-
         headers = {
             'Authorization': authorization_string,
             'Date': date,
-            'Content-Type': bogus_content_type_header,
+            'Content-Type': 'multipart/form-data; boundary=1',
         }
 
         response = requests.request(
@@ -129,8 +124,11 @@ class TestContentType:
             data=content,
         )
 
-        assert_query_success(response=response)
-        assert response.json()['results'] == []
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.BAD_REQUEST,
+            content_type='text/html',
+        )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
