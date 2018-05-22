@@ -37,6 +37,20 @@ def validate_accept_header(
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
+    """
+    Validate the accept header.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `NOT_ACCEPTABLE` response if the Accept header is given and is not
+        'application/json' or '*/*'.
+    """
     request, context = args
 
     accept = request.headers.get('Accept')
@@ -57,6 +71,12 @@ def validate_fields(
 ) -> str:
     """
     Validate body fields given to the query endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
     """
     request, context = args
 
