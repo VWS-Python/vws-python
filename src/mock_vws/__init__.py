@@ -27,6 +27,7 @@ class MockVWS(ContextDecorator):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
+        base_vws_url: str,
         real_http: bool=False,
         state: States=States.WORKING,
         server_access_key: Optional[str]=None,

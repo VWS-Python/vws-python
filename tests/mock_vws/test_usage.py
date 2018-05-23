@@ -384,3 +384,24 @@ class TestCredentials:
                 server_access_key=server_access_key,
                 server_secret_key=server_secret_key,
             )
+
+
+class TestCustomBaseURLs:
+    """
+    Tests for using custom base URLs.
+    """
+
+    def test_foo(self):
+        with MockVWS(
+            base_vws_url='https://vuforia.example.com',
+            real_http=False,
+        ):
+            requests.get(
+                url='https://vuforia.example.com/summary',
+                headers={
+                    'Date': rfc_1123_date(),
+                    'Authorization': 'bad_auth_token',
+                },
+                data=b'',
+            )
+            pass
