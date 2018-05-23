@@ -28,6 +28,7 @@ class MockVWS(ContextDecorator):
     def __init__(  # pylint: disable=too-many-arguments
         self,
         base_vws_url: str = 'https://vws.vuforia.com',
+        base_vwq_url: str = 'https://cloudreco.vuforia.com',
         real_http: bool=False,
         state: States=States.WORKING,
         server_access_key: Optional[str]=None,
@@ -53,6 +54,7 @@ class MockVWS(ContextDecorator):
             processing_time_seconds: The number of seconds to process each
                 image for. In the real Vuforia Web Services, this is not
                 deterministic.
+            TODO
 
         Attributes:
             server_access_key (str): A VWS server access key for the mock.
@@ -89,6 +91,7 @@ class MockVWS(ContextDecorator):
         self.database_name = database_name
 
         self._base_vws_url = base_vws_url
+        self._base_vwq_url = base_vwq_url
 
     def __enter__(self) -> 'MockVWS':
         """
@@ -138,7 +141,8 @@ class MockVWS(ContextDecorator):
 
             for route in mock_vwq_api.routes:
                 url_pattern = urljoin(
-                    base='https://cloudreco.vuforia.com',
+                    # base='https://cloudreco.vuforia.com',
+                    base=self._base_vwq_url,
                     url=route.path_pattern + '$',
                 )
 

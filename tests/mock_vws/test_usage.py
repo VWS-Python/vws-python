@@ -391,17 +391,24 @@ class TestCustomBaseURLs:
     Tests for using custom base URLs.
     """
 
-    def test_foo(self):
+    def test_custom_base_vws_url(self):
         with MockVWS(
-            base_vws_url='https://vuforia.example.com',
+            base_vws_url='https://vuforia.vws.example.com',
             real_http=False,
         ):
-            requests.get(
-                url='https://vuforia.example.com/summary',
-                headers={
-                    'Date': rfc_1123_date(),
-                    'Authorization': 'bad_auth_token',
-                },
-                data=b'',
-            )
-            pass
+            with pytest.raises(NoMockAddress):
+                requests.get('https://vws.vuforia.com/summary')
+
+            requests.get(url='https://vuforia.vws.example.com/summary')
+            requests.post('https://cloudreco.vuforia.com/v1/query')
+
+    def test_custom_base_vwq_url(self):
+        with MockVWS(
+            base_vwq_url='https://vuforia.vwq.example.com',
+            real_http=False,
+        ):
+            with pytest.raises(NoMockAddress):
+                requests.post('https://cloudreco.vuforia.com/v1/query')
+
+            requests.post(url='https://vuforia.vwq.example.com/v1/query')
+            requests.get('https://vws.vuforia.com/summary')
