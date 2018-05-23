@@ -54,7 +54,9 @@ class MockVWS(ContextDecorator):
             processing_time_seconds: The number of seconds to process each
                 image for. In the real Vuforia Web Services, this is not
                 deterministic.
-            TODO
+            base_cloudreco_url: The base URL for the VWQ Query API.
+            base_cloudreco_url: The base URL for the VWS target API.
+
 
         Attributes:
             server_access_key (str): A VWS server access key for the mock.
