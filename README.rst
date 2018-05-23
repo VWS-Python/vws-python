@@ -121,6 +121,11 @@ The mock is tested against the real Vuforia Web Services.
 This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.
 However, the mocks of these error states are based on observations as they cannot be reliably reproduced.
 
+Custom base URLs
+~~~~~~~~~~~~~~~~
+
+Python mock for the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
+There 
 Processing time
 ~~~~~~~~~~~~~~~
 

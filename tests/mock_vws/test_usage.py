@@ -410,7 +410,7 @@ class TestCustomBaseURLs:
         It is possible to use a custom base cloud recognition URL.
         """
         with MockVWS(
-            base_cloudreco_url='https://vuforia.vwq.example.com',
+            base_vwq_url='https://vuforia.vwq.example.com',
             real_http=False,
         ):
             with pytest.raises(NoMockAddress):
