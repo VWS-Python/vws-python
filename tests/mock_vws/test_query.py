@@ -1135,3 +1135,12 @@ class TestImageFormats:
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestProcessing:
+    """
+    Tests for targets in the processing state.
+    """
+    # Targets go back to processing after being updated.
+    assert response.json()['status'] == TargetStatuses.PROCESSING.value
