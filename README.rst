@@ -124,8 +124,11 @@ However, the mocks of these error states are based on observations as they canno
 Custom base URLs
 ~~~~~~~~~~~~~~~~
 
-Python mock for the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
-There 
+``MockVWS`` mocks the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
+These APIs have base URLs ``https://vws.vuforia.com`` and ``https://cloudreco.vuforia.com`` respectively.
+
+``MockVWS`` takes the optional parameters ``base_vws_url`` and ``base_vwq_url`` to modify the base URLs of the mocked endpoints.
+
 Processing time
 ~~~~~~~~~~~~~~~
 
