@@ -367,7 +367,7 @@ class MockVuforiaWebQueryAPI:
         results: List[Dict[str, Any]] = []
         [image] = parsed['image']
         for target in self.mock_web_services_api.targets:
-            if target.image.getvalue() == image:
+            if target.image.getvalue() == image and target.active_flag:
                 target_timestamp = int(target.last_modified_date.timestamp())
                 target_data = {
                     'target_timestamp': target_timestamp,
