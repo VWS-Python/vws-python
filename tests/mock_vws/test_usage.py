@@ -391,7 +391,7 @@ class TestCustomBaseURLs:
     Tests for using custom base URLs.
     """
 
-    def test_custom_base_vws_url(self):
+    def test_custom_base_vws_url(self) -> None:
         """
         It is possible to use a custom base VWS URL.
         """
@@ -405,7 +405,7 @@ class TestCustomBaseURLs:
             requests.get(url='https://vuforia.vws.example.com/summary')
             requests.post('https://cloudreco.vuforia.com/v1/query')
 
-    def test_custom_base_vwq_url(self):
+    def test_custom_base_vwq_url(self) -> None:
         """
         It is possible to use a custom base cloud recognition URL.
         """

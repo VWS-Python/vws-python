@@ -143,7 +143,6 @@ class MockVWS(ContextDecorator):
 
             for route in mock_vwq_api.routes:
                 url_pattern = urljoin(
-                    # base='https://cloudreco.vuforia.com',
                     base=self._base_vwq_url,
                     url=route.path_pattern + '$',
                 )
