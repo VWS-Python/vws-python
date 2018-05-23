@@ -1199,8 +1199,13 @@ class TestProcessing:
             data=content,
         )
 
+        # We assert that after making a query, the target is in th processing
+        # state.
         # There is a race condition here.
-        # We assert that after making a query, 
+        # This is really a check that the test is valid.
+        # If the target is no longer in the processing state here, it may be
+        # that the test was valid, but the target went into the processed
+        # state.
         get_target_response = get_vws_target(
             vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
