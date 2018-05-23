@@ -378,7 +378,6 @@ class TestSuccess:
         )
 
         target_id = response.json()['target_id']
-        approximate_target_created = calendar.timegm(time.gmtime())
 
         wait_for_target_processed(
             target_id=target_id,
