@@ -23,6 +23,7 @@ from tests.mock_vws.utils import (
     assert_query_success,
     assert_vwq_failure,
     authorization_header,
+    get_vws_target,
     rfc_1123_date,
     wait_for_target_processed,
 )
