@@ -17,6 +17,8 @@ from requests import codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
+from mock_vws._constants import TargetStatuses
+
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
