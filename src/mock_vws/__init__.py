@@ -27,7 +27,7 @@ class MockVWS(ContextDecorator):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        base_vws_url: str,
+        base_vws_url: str = 'https://vws.vuforia.com',
         real_http: bool=False,
         state: States=States.WORKING,
         server_access_key: Optional[str]=None,
@@ -88,6 +88,8 @@ class MockVWS(ContextDecorator):
         self.client_secret_key = client_secret_key
         self.database_name = database_name
 
+        self._base_vws_url = base_vws_url
+
     def __enter__(self) -> 'MockVWS':
         """
         Start an instance of a Vuforia mock with access keys set from
@@ -122,7 +124,7 @@ class MockVWS(ContextDecorator):
         with Mocker(real_http=self._real_http) as mock:
             for route in mock_vws_api.routes:
                 url_pattern = urljoin(
-                    base='https://vws.vuforia.com',
+                    base=self._base_vws_url,
                     url=route.path_pattern + '$',
                 )
 
