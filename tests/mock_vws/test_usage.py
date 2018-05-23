@@ -392,6 +392,9 @@ class TestCustomBaseURLs:
     """
 
     def test_custom_base_vws_url(self):
+        """
+        It is possible to use a custom base VWS URL.
+        """
         with MockVWS(
             base_vws_url='https://vuforia.vws.example.com',
             real_http=False,
@@ -403,8 +406,11 @@ class TestCustomBaseURLs:
             requests.post('https://cloudreco.vuforia.com/v1/query')
 
     def test_custom_base_vwq_url(self):
+        """
+        It is possible to use a custom base cloud recognition URL.
+        """
         with MockVWS(
-            base_vwq_url='https://vuforia.vwq.example.com',
+            base_cloudreco_url='https://vuforia.vwq.example.com',
             real_http=False,
         ):
             with pytest.raises(NoMockAddress):
