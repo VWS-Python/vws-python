@@ -1041,8 +1041,7 @@ class TestActiveFlag:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        Images which are not active are not matched.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
