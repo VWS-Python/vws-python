@@ -1142,5 +1142,87 @@ class TestProcessing:
     """
     Tests for targets in the processing state.
     """
-    # Targets go back to processing after being updated.
-    assert response.json()['status'] == TargetStatuses.PROCESSING.value
+
+    def test_processing(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        TODO
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        name = 'example_name'
+        add_target_data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+        approximate_target_created = calendar.timegm(time.gmtime())
+
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        # There is a race condition here.
+        # We assert that after making a query, 
+        get_target_response = get_vws_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        # Targets go back to processing after being updated.
+        target_status = get_target_response.json()['status']
+        assert target_status == TargetStatuses.PROCESSING.value
+
+        assert_query_success(response=response)
+        [result] = response.json()['results']
+        assert result.keys() == {'target_id', 'target_data'}
+        assert result['target_id'] == target_id
+        target_data = result['target_data']
+        assert target_data.keys() == {
+            'application_metadata',
+            'name',
+            'target_timestamp',
+        }
+        assert target_data['application_metadata'] is None
+        assert target_data['name'] == name
+        target_timestamp = target_data['target_timestamp']
+        assert isinstance(target_timestamp, int)
+        time_difference = abs(approximate_target_created - target_timestamp)
+        assert time_difference < 5
