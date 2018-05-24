@@ -1230,7 +1230,22 @@ class TestProcessing:
         target_status = get_target_response.json()['status']
         assert target_status == TargetStatuses.PROCESSING.value
 
-        # TODO: Text
+        # Sometimes we get a 500 error, sometimes we do not.
+
+        if response.status_code == codes.OK:  # pragma: nocover
+            assert response.json()['results'] == []
+            assert_query_success(response=response)
+            return
+
+
+        # We do not mark this with "pragma: nocover" because we choose to
+        # implement the mock to have this behaviour.
+        # The response text for a 500 response is not consistent.
+        # Therefore we only test for consistent features.
+        assert 'Error 500 Server Error' in response.text
+        assert 'HTTP ERROR 500' in response.text
+        assert 'Problem accessing /v1/query' in response.text
+
         assert_vwq_failure(
             response=response,
             content_type='text/html; charset=ISO-8859-1',
