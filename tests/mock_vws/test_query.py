@@ -17,12 +17,14 @@ from requests import codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
+from mock_vws._constants import TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
     assert_query_success,
     assert_vwq_failure,
     authorization_header,
+    get_vws_target,
     rfc_1123_date,
     wait_for_target_processed,
 )
@@ -1135,3 +1137,114 @@ class TestImageFormats:
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestProcessing:
+    """
+    Tests for targets in the processing state.
+    """
+
+    @pytest.mark.parametrize(
+        'active_flag',
+        [True, False],
+    )
+    def test_processing(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        active_flag: bool,
+    ) -> None:
+        """
+        TODO
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        name = 'example_name'
+        add_target_data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': active_flag,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        # We assert that after making a query, the target is in th processing
+        # state.
+        #
+        # There is a race condition here.
+        #
+        # This is really a check that the test is valid.
+        #
+        # If the target is no longer in the processing state here, it may be
+        # that the test was valid, but the target went into the processed
+        # state.
+        #
+        # If the target is no longer in the processing state here, that is a
+        # flaky test that is the test's fault and this must be rethought.
+        get_target_response = get_vws_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        # Targets go back to processing after being updated.
+        target_status = get_target_response.json()['status']
+        assert target_status == TargetStatuses.PROCESSING.value
+
+        # Sometimes we get a 500 error, sometimes we do not.
+
+        if response.status_code == codes.OK:  # pragma: no cover
+            assert response.json()['results'] == []
+            assert_query_success(response=response)
+            return
+
+        # We do not mark this with "pragma: no cover" because we choose to
+        # implement the mock to have this behavior.
+        # The response text for a 500 response is not consistent.
+        # Therefore we only test for consistent features.
+        assert 'Error 500 Server Error' in response.text
+        assert 'HTTP ERROR 500' in response.text
+        assert 'Problem accessing /v1/query' in response.text
+
+        assert_vwq_failure(
+            response=response,
+            content_type='text/html; charset=ISO-8859-1',
+            status_code=codes.INTERNAL_SERVER_ERROR,
+        )

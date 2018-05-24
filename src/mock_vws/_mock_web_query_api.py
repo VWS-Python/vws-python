@@ -8,6 +8,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import cgi
 import io
 import uuid
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Set, Tuple
 
 import wrapt
@@ -16,7 +17,7 @@ from requests_mock import POST
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from mock_vws._constants import ResultCodes
+from mock_vws._constants import ResultCodes, TargetStatuses
 from mock_vws._mock_common import Route, json_dump, set_content_length_header
 from mock_vws._mock_web_services_api import MockVuforiaWebServicesAPI
 
@@ -367,18 +368,36 @@ class MockVuforiaWebQueryAPI:
         results: List[Dict[str, Any]] = []
         [image] = parsed['image']
         for target in self.mock_web_services_api.targets:
-            if target.image.getvalue() == image and target.active_flag:
-                target_timestamp = int(target.last_modified_date.timestamp())
-                target_data = {
-                    'target_timestamp': target_timestamp,
-                    'name': target.name,
-                    'application_metadata': None,
-                }
-                result = {
-                    'target_id': target.target_id,
-                    'target_data': target_data,
-                }
-                results.append(result)
+            if target.image.getvalue() == image:
+                if target.status == TargetStatuses.PROCESSING.value:
+                    # We return an example 500 response.
+                    # Each response given by Vuforia is different.
+                    #
+                    # Sometimes Vuforia will do the equivalent of `continue`
+                    # here, but we choose to:
+                    # * Do the most unexpected thing.
+                    # * Be consistent with every response.
+                    resources_dir = Path(__file__).parent / 'resources'
+                    filename = 'match_processing_response'
+                    match_processing_resp_file = resources_dir / filename
+                    context.status_code = codes.INTERNAL_SERVER_ERROR
+                    cache_control = 'must-revalidate,no-cache,no-store'
+                    context.headers['Cache-Control'] = cache_control
+                    content_type = 'text/html; charset=ISO-8859-1'
+                    context.headers['Content-Type'] = content_type
+                    return Path(match_processing_resp_file).read_text()
+                if target.active_flag:
+                    target_timestamp = target.last_modified_date.timestamp()
+                    target_data = {
+                        'target_timestamp': int(target_timestamp),
+                        'name': target.name,
+                        'application_metadata': None,
+                    }
+                    result = {
+                        'target_id': target.target_id,
+                        'target_data': target_data,
+                    }
+                    results.append(result)
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
