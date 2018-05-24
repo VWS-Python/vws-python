@@ -1224,19 +1224,8 @@ class TestProcessing:
         target_status = get_target_response.json()['status']
         assert target_status == TargetStatuses.PROCESSING.value
 
-        assert_query_success(response=response)
-        [result] = response.json()['results']
-        assert result.keys() == {'target_id', 'target_data'}
-        assert result['target_id'] == target_id
-        target_data = result['target_data']
-        assert target_data.keys() == {
-            'application_metadata',
-            'name',
-            'target_timestamp',
-        }
-        assert target_data['application_metadata'] is None
-        assert target_data['name'] == name
-        target_timestamp = target_data['target_timestamp']
-        assert isinstance(target_timestamp, int)
-        time_difference = abs(approximate_target_created - target_timestamp)
-        assert time_difference < 5
+        assert_vwq_failure(
+            response=response,
+            content_type='text/html; charset=ISO-8859-1',
+            status_code=codes.INTERNAL_SERVER_ERROR,
+        )

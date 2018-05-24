@@ -641,6 +641,11 @@ def assert_vwq_failure(
         'Server',
     }
 
+    if status_code == codes.INTERNAL_SERVER_ERROR:
+        response_header_keys.add('Cache-Control')
+        cache_control = 'must-revalidate,no-cache,no-store'
+        assert response.headers['Cache-Control'] == cache_control
+
     if content_type is not None:
         response_header_keys.add('Content-Type')
         assert response.headers['Content-Type'] == content_type
