@@ -8,6 +8,7 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 import cgi
 import io
 import uuid
+from pathlib import Path
 from typing import Any, Callable, Dict, List, Set, Tuple
 
 import wrapt
@@ -369,7 +370,13 @@ class MockVuforiaWebQueryAPI:
         for target in self.mock_web_services_api.targets:
             if target.image.getvalue() == image:
                 if target.status == TargetStatuses.PROCESSING.value:
-                    continue
+                    # We return an example 500 response.
+                    # Each response given by Vuforia is different.
+                    resources_dir = Path(__file__).parent / 'resources'
+                    filename = 'match_processing_response'
+                    match_processing_resp_file = resources_dir / filename
+                    context.status_code = codes.INTERNAL_SERVER_ERROR
+                    return match_processing_resp_file.read_text()
                 if target.active_flag:
                     target_timestamp = int(target.last_modified_date.timestamp())
                     target_data = {
