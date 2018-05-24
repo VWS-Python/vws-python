@@ -170,6 +170,13 @@ Therefore, an image given a ‘success’ status by the mock may not be given a 
 When updating an image for a target on the real Vuforia Web Services, the rating may stay the same.
 The mock changes the rating for a target to a different random number when the image is changed.
 
+Matching targets in the processing state
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Matching a target which is in the processing state sometimes returns a successful response with no results.
+Sometimes a 500 (INTERNAL SERVER ERROR) response is given.
+The mock always gives a 500 response.
+
 .. |Build Status| image:: https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master
    :target: https://travis-ci.org/adamtheturtle/vws-python
 .. |codecov| image:: https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg
