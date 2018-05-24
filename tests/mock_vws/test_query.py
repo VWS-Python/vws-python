@@ -1146,10 +1146,15 @@ class TestProcessing:
     Tests for targets in the processing state.
     """
 
+    @pytest.mark.parametrize(
+        'active_flag',
+        [True, False],
+    )
     def test_processing(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        active_flag: bool,
     ) -> None:
         """
         TODO
@@ -1161,6 +1166,7 @@ class TestProcessing:
             'name': name,
             'width': 1,
             'image': image_data_encoded,
+            'active_flag': active_flag,
         }
         response = add_target_to_vws(
             vuforia_database_keys=vuforia_database_keys,
@@ -1224,6 +1230,7 @@ class TestProcessing:
         target_status = get_target_response.json()['status']
         assert target_status == TargetStatuses.PROCESSING.value
 
+        # TODO: Text
         assert_vwq_failure(
             response=response,
             content_type='text/html; charset=ISO-8859-1',
