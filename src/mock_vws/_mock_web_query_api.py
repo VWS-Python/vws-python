@@ -372,6 +372,11 @@ class MockVuforiaWebQueryAPI:
                 if target.status == TargetStatuses.PROCESSING.value:
                     # We return an example 500 response.
                     # Each response given by Vuforia is different.
+                    #
+                    # Sometimes Vuforia will do the equivalent of `continue`
+                    # here, but we choose to:
+                    # * Do the most unexpected thing.
+                    # * Be consistent with every response.
                     resources_dir = Path(__file__).parent / 'resources'
                     filename = 'match_processing_response'
                     match_processing_resp_file = resources_dir / filename
