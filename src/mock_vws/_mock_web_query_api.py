@@ -381,11 +381,15 @@ class MockVuforiaWebQueryAPI:
                     filename = 'match_processing_response'
                     match_processing_resp_file = resources_dir / filename
                     context.status_code = codes.INTERNAL_SERVER_ERROR
+                    cache_control = 'must-revalidate,no-cache,no-store'
+                    context.headers['Cache-Control'] = cache_control
+                    content_type = 'text/html; charset=ISO-8859-1'
+                    context.headers['Content-Type'] = content_type
                     return match_processing_resp_file.read_text()
                 if target.active_flag:
-                    target_timestamp = int(target.last_modified_date.timestamp())
+                    target_timestamp = target.last_modified_date.timestamp()
                     target_data = {
-                        'target_timestamp': target_timestamp,
+                        'target_timestamp': int(target_timestamp),
                         'name': target.name,
                         'application_metadata': None,
                     }

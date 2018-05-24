@@ -18,7 +18,6 @@ from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
 from mock_vws._constants import TargetStatuses
-
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
@@ -381,7 +380,6 @@ class TestSuccess:
         )
 
         target_id = response.json()['target_id']
-        approximate_target_created = calendar.timegm(time.gmtime())
 
         wait_for_target_processed(
             target_id=target_id,
@@ -1174,7 +1172,6 @@ class TestProcessing:
         )
 
         target_id = response.json()['target_id']
-        approximate_target_created = calendar.timegm(time.gmtime())
 
         date = rfc_1123_date()
         request_path = '/v1/query'
@@ -1236,7 +1233,6 @@ class TestProcessing:
             assert response.json()['results'] == []
             assert_query_success(response=response)
             return
-
 
         # We do not mark this with "pragma: nocover" because we choose to
         # implement the mock to have this behaviour.
