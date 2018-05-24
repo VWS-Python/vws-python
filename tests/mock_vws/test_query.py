@@ -380,6 +380,7 @@ class TestSuccess:
         )
 
         target_id = response.json()['target_id']
+        approximate_target_created = calendar.timegm(time.gmtime())
 
         wait_for_target_processed(
             target_id=target_id,
@@ -1229,13 +1230,13 @@ class TestProcessing:
 
         # Sometimes we get a 500 error, sometimes we do not.
 
-        if response.status_code == codes.OK:  # pragma: nocover
+        if response.status_code == codes.OK:  # pragma: no cover
             assert response.json()['results'] == []
             assert_query_success(response=response)
             return
 
-        # We do not mark this with "pragma: nocover" because we choose to
-        # implement the mock to have this behaviour.
+        # We do not mark this with "pragma: no cover" because we choose to
+        # implement the mock to have this behavior.
         # The response text for a 500 response is not consistent.
         # Therefore we only test for consistent features.
         assert 'Error 500 Server Error' in response.text
