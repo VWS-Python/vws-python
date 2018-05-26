@@ -1005,7 +1005,11 @@ class TestUpdate:
     Tests for updated targets.
     """
 
-    def test_updated_target(self) -> None:
+    def test_updated_target(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
         After a target is updated, only the new image can be matched.
         The match result includes the updated name, timestamp and application
