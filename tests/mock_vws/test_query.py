@@ -368,11 +368,13 @@ class TestSuccess:
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        metadata_encoded = base64.b64encode(b'example').decode('ascii')
         name = 'example_name'
         add_target_data = {
             'name': name,
             'width': 1,
             'image': image_data_encoded,
+            'application_metadata': metadata_encoded,
         }
         response = add_target_to_vws(
             vuforia_database_keys=vuforia_database_keys,
@@ -428,7 +430,7 @@ class TestSuccess:
             'name',
             'target_timestamp',
         }
-        assert target_data['application_metadata'] is None
+        assert target_data['application_metadata'] == metadata_encoded
         assert target_data['name'] == name
         target_timestamp = target_data['target_timestamp']
         assert isinstance(target_timestamp, int)

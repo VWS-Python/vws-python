@@ -191,6 +191,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         width: float,
         image: io.BytesIO,
         processing_time_seconds: Union[int, float],
+        application_metadata: str,
     ) -> None:
         """
         Args:
@@ -201,6 +202,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
             processing_time_seconds: The number of seconds to process each
                 image for. In the real Vuforia Web Services, this is not
                 deterministic.
+            application_metadata: The base64 encoded application metadata
+                associated with the target.
 
         Attributes:
             name (str): The name of the target.
@@ -216,6 +219,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
             image (io.BytesIO): The image data associated with the target.
             reco_rating (str): An empty string ("for now" according to
                 Vuforia's documentation).
+            application_metadata (str): The base64 encoded application metadata
+                associated with the target.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
@@ -227,6 +232,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.image = image
         self.reco_rating = ''
         self._processing_time_seconds = processing_time_seconds
+        self.application_metadata = application_metadata
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
@@ -385,6 +391,7 @@ class MockVuforiaWebServicesAPI:
             image=image_file,
             active_flag=active_flag,
             processing_time_seconds=self._processing_time_seconds,
+            application_metadata=request.json().get('application_metadata'),
         )
         self.targets.append(new_target)
 

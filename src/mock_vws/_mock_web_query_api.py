@@ -391,7 +391,7 @@ class MockVuforiaWebQueryAPI:
                     target_data = {
                         'target_timestamp': int(target_timestamp),
                         'name': target.name,
-                        'application_metadata': None,
+                        'application_metadata': target.application_metadata,
                     }
                     result = {
                         'target_id': target.target_id,
