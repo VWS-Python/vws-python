@@ -26,6 +26,7 @@ from tests.mock_vws.utils import (
     authorization_header,
     get_vws_target,
     rfc_1123_date,
+    update_target,
     wait_for_target_processed,
 )
 
@@ -1158,7 +1159,10 @@ class TestProcessing:
         active_flag: bool,
     ) -> None:
         """
-        TODO
+        When a target with a matching image is in the processing state it is
+        not matched.
+
+        Sometimes an `INTERNAL_SERVER_ERROR` response is returned.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
