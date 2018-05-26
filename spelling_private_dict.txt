@@ -13,6 +13,7 @@ dev
 dict
 filename
 foo
+formdata
 github
 greyscale
 hexdigits
@@ -44,6 +45,7 @@ reimplementation
 rfc
 rgb
 str
+timestamp
 todo
 txt
 unmocked
@@ -52,6 +54,6 @@ usefixtures
 validators
 vuforia
 vuforia's
-vws
 vwq
+vws
 xxx
