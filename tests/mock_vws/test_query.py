@@ -1260,9 +1260,10 @@ class TestUpdate:
 
     def test_updated_target(self):
         """
-        XXX
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+
+        After a target is updated, only the new image can be matched.
+        The match result includes the updated name, timestamp and application
+        metadata.
         """
-        # Updated metadata
-        # Updated image (old not match)
-        # Updated name
-        pass
