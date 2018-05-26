@@ -1060,11 +1060,23 @@ class TestUpdate:
             'application_metadata': new_metadata_encoded,
         }
 
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+        [result] = response.json()['results']
+        target_data = result['target_data']
+        target_timestamp = target_data['target_timestamp']
+        original_target_timestamp = int(target_timestamp)
+
         update_target(
             vuforia_database_keys=vuforia_database_keys,
             data=update_data,
             target_id=target_id,
         )
+
+        approximate_target_updated = calendar.timegm(time.gmtime())
 
         wait_for_target_processed(
             target_id=target_id,
@@ -1090,9 +1102,9 @@ class TestUpdate:
         assert target_data['application_metadata'] == new_metadata_encoded
         assert target_data['name'] == new_name
         target_timestamp = target_data['target_timestamp']
-        # TODO Check timestamp new
         assert isinstance(target_timestamp, int)
-        time_difference = abs(approximate_target_created - target_timestamp)
+        assert target_timestamp > original_target_timestamp
+        time_difference = abs(approximate_target_updated - target_timestamp)
         assert time_difference < 5
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
