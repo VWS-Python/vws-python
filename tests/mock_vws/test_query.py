@@ -1017,7 +1017,8 @@ class TestUpdate:
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
-        metadata_encoded = base64.b64encode(b'example').decode('ascii')
+        metadata = b'example_metadata'
+        metadata_encoded = base64.b64encode(metadata).decode('ascii')
         name = 'example_name'
         add_target_data = {
             'name': name,
@@ -1040,7 +1041,17 @@ class TestUpdate:
 
         # TODO Update Data - maybe inverse image?
 
-        update_data = {}
+        new_name = name + '2'
+        new_metadata = metadata + '2'
+        new_image_data_encoded = base64.b64encode(
+            new_image_content,
+        ).decode('ascii')
+        metadata_encoded = base64.b64encode(new_metadata).decode('ascii')
+        update_data = {
+            'name': new_name,
+            'image': new_image_data_encoded,
+            'application_metadata': new_metadata_encoded,
+        }
 
         update_target(
             vuforia_database_keys=vuforia_database_keys,
