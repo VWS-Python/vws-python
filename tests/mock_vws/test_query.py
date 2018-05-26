@@ -1001,7 +1001,7 @@ class TestUpdate:
     Tests for updated targets.
     """
 
-    def test_updated_target(self):
+    def test_updated_target(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
