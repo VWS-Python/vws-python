@@ -1296,10 +1296,12 @@ class TestUpdate:
 
         # TODO Update Data - maybe inverse image?
 
+        update_data = {}
+
         update_target(
-            vuforia_database_keys: VuforiaDatabaseKeys,
-            data: Dict[str, Any],
-            target_id: str,
+            vuforia_database_keys=vuforia_database_keys,
+            data=update_data,
+            target_id=target_id,
         )
 
         wait_for_target_processed(
