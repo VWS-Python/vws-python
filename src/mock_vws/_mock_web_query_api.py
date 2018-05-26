@@ -6,11 +6,13 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 """
 
 import cgi
+import datetime
 import io
 import uuid
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Set, Tuple
 
+import pytz
 import wrapt
 from requests import codes
 from requests_mock import POST
@@ -21,13 +23,71 @@ from mock_vws._constants import ResultCodes, TargetStatuses
 from mock_vws._mock_common import Route, json_dump, set_content_length_header
 from mock_vws._mock_web_services_api import MockVuforiaWebServicesAPI
 
-from ._validators import (
-    validate_auth_header_exists,
-    validate_authorization,
-    validate_date,
-)
+from ._validators import validate_auth_header_exists, validate_authorization
 
 ROUTES = set([])
+
+
+@wrapt.decorator
+def validate_date(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the date header given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the date is not given, or is in the wrong
+        format.
+        A `FORBIDDEN` response if the date is out of range.
+    """
+    request, context = args
+
+    try:
+        date_from_header = datetime.datetime.strptime(
+            request.headers['Date'],
+            '%a, %d %b %Y %H:%M:%S GMT',
+        )
+    except KeyError:
+        context.status_code = codes.BAD_REQUEST
+        text = 'Date header required.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        return text
+    except ValueError:
+        context.status_code = codes.UNAUTHORIZED
+        context.headers['WWW-Authenticate'] = 'VWS'
+        text = 'Malformed date header.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        return text
+
+    gmt = pytz.timezone('GMT')
+    now = datetime.datetime.now(tz=gmt)
+    date_from_header = date_from_header.replace(tzinfo=gmt)
+    time_difference = now - date_from_header
+
+    maximum_time_difference = datetime.timedelta(minutes=65)
+
+    if abs(time_difference) >= maximum_time_difference:
+        context.status_code = codes.FORBIDDEN
+
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
+        }
+        return json_dump(body)
+
+    return wrapped(*args, **kwargs)
 
 
 @wrapt.decorator
