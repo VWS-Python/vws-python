@@ -276,6 +276,39 @@ def validate_authorization(
 
 
 @wrapt.decorator
+def validate_date_header_given(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the date header is given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the date is not given.
+    """
+    request, context = args
+
+    if 'Date' in request.headers:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
+
+@wrapt.decorator
 def validate_date(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
@@ -298,35 +331,13 @@ def validate_date(
         A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
-    is_query = bool(request.path == '/v1/query')
 
     try:
         date_from_header = datetime.datetime.strptime(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
-    except KeyError:
-        context.status_code = codes.BAD_REQUEST
-        if is_query:
-            text = 'Date header required.'
-            content_type = 'text/plain; charset=ISO-8859-1'
-            context.headers['Content-Type'] = content_type
-            return text
-
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
     except ValueError:
-        if is_query:
-            context.status_code = codes.UNAUTHORIZED
-            context.headers['WWW-Authenticate'] = 'VWS'
-            text = 'Malformed date header.'
-            content_type = 'text/plain; charset=ISO-8859-1'
-            context.headers['Content-Type'] = content_type
-            return text
-
         context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -339,10 +350,7 @@ def validate_date(
     date_from_header = date_from_header.replace(tzinfo=gmt)
     time_difference = now - date_from_header
 
-    if is_query:
-        maximum_time_difference = datetime.timedelta(minutes=65)
-    else:
-        maximum_time_difference = datetime.timedelta(minutes=5)
+    maximum_time_difference = datetime.timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:
         context.status_code = codes.FORBIDDEN
