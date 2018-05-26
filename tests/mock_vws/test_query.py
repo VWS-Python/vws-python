@@ -1250,3 +1250,20 @@ class TestProcessing:
             content_type='text/html; charset=ISO-8859-1',
             status_code=codes.INTERNAL_SERVER_ERROR,
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestUpdate:
+    """
+    Tests for updated targets.
+    """
+
+    def test_updated_target(self):
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+
+        After a target is updated, only the new image can be matched.
+        The match result includes the updated name, timestamp and application
+        metadata.
+        """
