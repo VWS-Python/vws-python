@@ -1041,19 +1041,19 @@ class TestUpdate:
             vuforia_database_keys=vuforia_database_keys,
         )
 
-        pil_image = Image.open(image_file)
-        inverted_image = PIL.ImageOps.invert(image)
+        pil_image = Image.open(high_quality_image)
+        inverted_image = PIL.ImageOps.invert(pil_image)
         image_buffer = io.BytesIO()
-        pul_image.save(image_buffer, 'PNG')
+        pil_image.save(image_buffer, 'PNG')
         image_buffer.seek(0)
         new_image_content = image_buffer.getvalue()
 
         new_name = name + '2'
-        new_metadata = metadata + '2'
+        new_metadata = metadata + b'2'
         new_image_data_encoded = base64.b64encode(
             new_image_content,
         ).decode('ascii')
-        metadata_encoded = base64.b64encode(new_metadata).decode('ascii')
+        new_metadata_encoded = base64.b64encode(new_metadata).decode('ascii')
         update_data = {
             'name': new_name,
             'image': new_image_data_encoded,
