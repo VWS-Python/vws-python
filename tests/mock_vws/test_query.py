@@ -11,6 +11,8 @@ import time
 from typing import Any, Dict, Union
 from urllib.parse import urljoin
 
+from PIL import Image
+import PIL.ImageOps
 import pytest
 import requests
 from requests import Response, codes
@@ -1039,7 +1041,12 @@ class TestUpdate:
             vuforia_database_keys=vuforia_database_keys,
         )
 
-        # TODO Update Data - maybe inverse image?
+        pil_image = Image.open(image_file)
+        inverted_image = PIL.ImageOps.invert(image)
+        image_buffer = io.BytesIO()
+        pul_image.save(image_buffer, 'PNG')
+        image_buffer.seek(0)
+        new_image_content = image_buffer.getvalue()
 
         new_name = name + '2'
         new_metadata = metadata + '2'
@@ -1064,7 +1071,7 @@ class TestUpdate:
             vuforia_database_keys=vuforia_database_keys,
         )
 
-        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        body = {'image': ('image.jpeg', new_image_content, 'image/jpeg')}
         response = query(
             vuforia_database_keys=vuforia_database_keys,
             body=body,
@@ -1080,9 +1087,10 @@ class TestUpdate:
             'name',
             'target_timestamp',
         }
-        assert target_data['application_metadata'] == metadata_encoded
-        assert target_data['name'] == name
+        assert target_data['application_metadata'] == new_metadata_encoded
+        assert target_data['name'] == new_name
         target_timestamp = target_data['target_timestamp']
+        # TODO Check timestamp new
         assert isinstance(target_timestamp, int)
         time_difference = abs(approximate_target_created - target_timestamp)
         assert time_difference < 5
