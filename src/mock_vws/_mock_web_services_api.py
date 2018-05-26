@@ -29,6 +29,7 @@ from ._validators import (
     validate_auth_header_exists,
     validate_authorization,
     validate_date,
+    validate_date_header_given,
     validate_image_color_space,
     validate_image_data_type,
     validate_image_encoding,
@@ -145,6 +146,7 @@ def route(
                 key_validator,
                 validate_not_invalid_json,
                 validate_date,
+                validate_date_header_given,
                 validate_auth_header_exists,
                 set_content_length_header,
             ]
@@ -165,6 +167,7 @@ def route(
                 validate_width,
                 key_validator,
                 validate_date,
+                validate_date_header_given,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
                 set_content_length_header,
