@@ -372,36 +372,11 @@ class TestSuccess:
         results is returned.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
 
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert_query_success(response=response)
@@ -466,7 +441,7 @@ class TestSuccess:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestIncorrectFields:
     """
-    Tests for unexpected fields.
+    Tests for incorrect and unexpected fields.
     """
 
     def test_missing_image(
@@ -476,35 +451,9 @@ class TestIncorrectFields:
         """
         If an image is not given, a ``BAD_REQUEST`` response is returned.
         """
-        date = rfc_1123_date()
-        request_path = '/v1/query'
-        content, content_type_header = encode_multipart_formdata({})
-        method = POST
-
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body={},
         )
 
         assert response.text == 'No image.'
