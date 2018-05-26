@@ -29,6 +29,37 @@ ROUTES = set([])
 
 
 @wrapt.decorator
+def validate_date_header_given(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the date header is given to the query endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the date is not given.
+    """
+    request, context = args
+
+    if 'Date' in request.headers:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    content_type = 'text/plain; charset=ISO-8859-1'
+    context.headers['Content-Type'] = content_type
+    return 'Date header required.'
+
+
+@wrapt.decorator
 def validate_date(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
@@ -46,7 +77,6 @@ def validate_date(
 
     Returns:
         The result of calling the endpoint.
-        A `BAD_REQUEST` response if the date is not given.
         An `UNAUTHORIZED` response if the date is in the wrong format.
         A `FORBIDDEN` response if the date is out of range.
     """
@@ -57,12 +87,6 @@ def validate_date(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
-    except KeyError:
-        context.status_code = codes.BAD_REQUEST
-        text = 'Date header required.'
-        content_type = 'text/plain; charset=ISO-8859-1'
-        context.headers['Content-Type'] = content_type
-        return text
     except ValueError:
         context.status_code = codes.UNAUTHORIZED
         context.headers['WWW-Authenticate'] = 'VWS'
@@ -319,6 +343,7 @@ def route(
         decorators = [
             validate_authorization,
             validate_date,
+            validate_date_header_given,
             validate_response_body_type,
             validate_image_field_given,
             validate_extra_fields,
