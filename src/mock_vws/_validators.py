@@ -276,6 +276,39 @@ def validate_authorization(
 
 
 @wrapt.decorator
+def validate_date_header_given(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the date header is given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the date is not given.
+    """
+    request, context = args
+
+    if 'Date' in request.headers:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
+
+@wrapt.decorator
 def validate_date(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
@@ -304,13 +337,6 @@ def validate_date(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
-    except KeyError:
-        context.status_code = codes.BAD_REQUEST
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
     except ValueError:
         context.status_code = codes.BAD_REQUEST
         body = {
