@@ -36,7 +36,7 @@ def validate_date(
     kwargs: Dict,
 ) -> str:
     """
-    Validate the date header given to a VWS endpoint.
+    Validate the date header given to the query endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -46,8 +46,8 @@ def validate_date(
 
     Returns:
         The result of calling the endpoint.
-        A `BAD_REQUEST` response if the date is not given, or is in the wrong
-        format.
+        A `BAD_REQUEST` response if the date is not given.
+        An `UNAUTHORIZED` response if the date is in the wrong format.
         A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
@@ -78,16 +78,16 @@ def validate_date(
 
     maximum_time_difference = datetime.timedelta(minutes=65)
 
-    if abs(time_difference) >= maximum_time_difference:
-        context.status_code = codes.FORBIDDEN
+    if abs(time_difference) < maximum_time_difference:
+        return wrapped(*args, **kwargs)
 
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
-        }
-        return json_dump(body)
+    context.status_code = codes.FORBIDDEN
 
-    return wrapped(*args, **kwargs)
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.REQUEST_TIME_TOO_SKEWED.value,
+    }
+    return json_dump(body)
 
 
 @wrapt.decorator
