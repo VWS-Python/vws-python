@@ -298,7 +298,6 @@ def validate_date(
         A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
-    is_query = bool(request.path == '/v1/query')
 
     try:
         date_from_header = datetime.datetime.strptime(
@@ -307,26 +306,12 @@ def validate_date(
         )
     except KeyError:
         context.status_code = codes.BAD_REQUEST
-        if is_query:
-            text = 'Date header required.'
-            content_type = 'text/plain; charset=ISO-8859-1'
-            context.headers['Content-Type'] = content_type
-            return text
-
         body = {
             'transaction_id': uuid.uuid4().hex,
             'result_code': ResultCodes.FAIL.value,
         }
         return json_dump(body)
     except ValueError:
-        if is_query:
-            context.status_code = codes.UNAUTHORIZED
-            context.headers['WWW-Authenticate'] = 'VWS'
-            text = 'Malformed date header.'
-            content_type = 'text/plain; charset=ISO-8859-1'
-            context.headers['Content-Type'] = content_type
-            return text
-
         context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -339,10 +324,7 @@ def validate_date(
     date_from_header = date_from_header.replace(tzinfo=gmt)
     time_difference = now - date_from_header
 
-    if is_query:
-        maximum_time_difference = datetime.timedelta(minutes=65)
-    else:
-        maximum_time_difference = datetime.timedelta(minutes=5)
+    maximum_time_difference = datetime.timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:
         context.status_code = codes.FORBIDDEN
