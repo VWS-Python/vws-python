@@ -8,12 +8,12 @@ import base64
 import calendar
 import io
 import time
-from typing import Dict, Union
+from typing import Any, Dict, Union
 from urllib.parse import urljoin
 
 import pytest
 import requests
-from requests import codes
+from requests import Response, codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
@@ -30,6 +30,55 @@ from tests.mock_vws.utils import (
 )
 
 VWQ_HOST = 'https://cloudreco.vuforia.com'
+
+
+def query(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    body: Dict[str, Any],
+) -> Response:
+    """
+    Make a request to the endpoint to make an image recognition query.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        body: The request body to send in ``multipart/formdata`` format.
+
+    Returns:
+        The response returned by the API.
+    """
+    date = rfc_1123_date()
+    request_path = '/v1/query'
+    content, content_type_header = encode_multipart_formdata(body)
+    method = POST
+
+    access_key = vuforia_database_keys.client_access_key
+    secret_key = vuforia_database_keys.client_secret_key
+    authorization_string = authorization_header(
+        access_key=access_key,
+        secret_key=secret_key,
+        method=method,
+        content=content,
+        # Note that this is not the actual Content-Type header value sent.
+        content_type='multipart/form-data',
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type_header,
+    }
+
+    response = requests.request(
+        method=method,
+        url=urljoin(base=VWQ_HOST, url=request_path),
+        headers=headers,
+        data=content,
+    )
+
+    return response
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -323,36 +372,11 @@ class TestSuccess:
         results is returned.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
 
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert_query_success(response=response)
@@ -388,36 +412,12 @@ class TestSuccess:
             target_id=target_id,
             vuforia_database_keys=vuforia_database_keys,
         )
-        date = rfc_1123_date()
-        request_path = '/v1/query'
+
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
 
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert_query_success(response=response)
@@ -441,7 +441,7 @@ class TestSuccess:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestIncorrectFields:
     """
-    Tests for unexpected fields.
+    Tests for incorrect and unexpected fields.
     """
 
     def test_missing_image(
@@ -451,35 +451,9 @@ class TestIncorrectFields:
         """
         If an image is not given, a ``BAD_REQUEST`` response is returned.
         """
-        date = rfc_1123_date()
-        request_path = '/v1/query'
-        content, content_type_header = encode_multipart_formdata({})
-        method = POST
-
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body={},
         )
 
         assert response.text == 'No image.'
@@ -498,39 +472,14 @@ class TestIncorrectFields:
         If extra fields are given, a ``BAD_REQUEST`` response is returned.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'extra_field': (None, 1, 'text/plain'),
         }
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
 
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert response.text == 'Unknown parameters in the request.'
@@ -542,7 +491,6 @@ class TestIncorrectFields:
 
     def test_missing_image_and_extra_fields(
         self,
-        high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
@@ -551,39 +499,13 @@ class TestIncorrectFields:
 
         The extra field error takes precedence.
         """
-        high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {
             'extra_field': (None, 1, 'text/plain'),
         }
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
 
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert response.text == 'Unknown parameters in the request.'
@@ -628,39 +550,14 @@ class TestMaxNumResults:
         maximum.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'max_num_results': (None, num_results, 'text/plain'),
         }
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
 
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert_query_success(response=response)
@@ -683,39 +580,14 @@ class TestMaxNumResults:
         maximum.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'max_num_results': (None, num_results, 'text/plain'),
         }
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
 
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         expected_text = (
@@ -747,39 +619,13 @@ class TestMaxNumResults:
         they are bigger than Java's maximum integer.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'max_num_results': (None, num_results, 'text/plain'),
         }
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
-
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         expected_text = (
@@ -824,39 +670,13 @@ class TestIncludeTargetData:
         is enforced.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
         }
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
-
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert_query_success(response=response)
@@ -872,40 +692,14 @@ class TestIncludeTargetData:
         'none', 'top' or 'all'.
         """
         image_content = high_quality_image.getvalue()
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         include_target_data = 'a'
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
         }
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
-
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         expected_text = (
@@ -1067,36 +861,11 @@ class TestActiveFlag:
             target_id=target_id,
             vuforia_database_keys=vuforia_database_keys,
         )
-        date = rfc_1123_date()
-        request_path = '/v1/query'
+
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
-
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         assert_query_success(response=response)
@@ -1176,36 +945,10 @@ class TestProcessing:
 
         target_id = response.json()['target_id']
 
-        date = rfc_1123_date()
-        request_path = '/v1/query'
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
-        content, content_type_header = encode_multipart_formdata(body)
-        method = POST
-
-        access_key = vuforia_database_keys.client_access_key
-        secret_key = vuforia_database_keys.client_secret_key
-        authorization_string = authorization_header(
-            access_key=access_key,
-            secret_key=secret_key,
-            method=method,
-            content=content,
-            # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
-            date=date,
-            request_path=request_path,
-        )
-
-        headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
-        }
-
-        response = requests.request(
-            method=method,
-            url=urljoin(base=VWQ_HOST, url=request_path),
-            headers=headers,
-            data=content,
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
         )
 
         # We assert that after making a query, the target is in th processing
@@ -1258,7 +1001,7 @@ class TestUpdate:
     Tests for updated targets.
     """
 
-    def test_updated_target(self):
+    def test_updated_target(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
