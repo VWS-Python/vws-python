@@ -37,7 +37,7 @@ def query(
     body: Dict[str, Any],
 ) -> Response:
     """
-    Make a request to the endpoint to update a target.
+    Make a request to the endpoint to make an image recognition query.
 
     Args:
         vuforia_database_keys: The credentials to use to connect to
