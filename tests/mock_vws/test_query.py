@@ -539,11 +539,12 @@ class TestMaxNumResults:
         num_results: Union[int, bytes],
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        Numbers between 1 and 50 are valid inputs.
 
         We assert that the response is a success, but not that the maximum
         number of results is enforced.
+
+        This is because uploading 50 images would be very slow.
 
         The documentation at
         https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.  # noqa: E501
@@ -748,11 +749,8 @@ class TestIncludeTargetData:
         include_target_data: str,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
-
-        We assert that the response is a success, but not that the preference
-        is enforced.
+        When ``include_target_data`` is set to "none" (case insensitive), no
+        results include target data.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
@@ -793,11 +791,8 @@ class TestIncludeTargetData:
         include_target_data: str,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
-
-        We assert that the response is a success, but not that the preference
-        is enforced.
+        When ``include_target_data`` is set to "all" (case insensitive), all
+        results include target data.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
