@@ -4,10 +4,9 @@ Tests for the mock of the target list endpoint.
 
 import pytest
 from requests import codes
-from requests_mock import GET
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import target_api_request
+from tests.mock_vws.utils import list_targets
 from tests.mock_vws.utils.assertions import assert_vws_response
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
@@ -25,13 +24,7 @@ class TestTargetList:
         """
         It is possible to get a success response.
         """
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/targets',
-        )
+        response = list_targets(vuforia_database_keys=vuforia_database_keys)
         assert_vws_response(
             response=response,
             status_code=codes.OK,
@@ -49,13 +42,7 @@ class TestTargetList:
         """
         Targets in the database are returned in the list.
         """
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/targets',
-        )
+        response = list_targets(vuforia_database_keys=vuforia_database_keys)
         assert response.json()['results'] == [target_id]
 
 
@@ -72,14 +59,7 @@ class TestInactiveProject:
         """
         The project's active state does not affect the target list.
         """
-        response = target_api_request(
-            server_access_key=inactive_database_keys.server_access_key,
-            server_secret_key=inactive_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/targets',
-        )
-
+        response = list_targets(vuforia_database_keys=inactive_database_keys)
         assert_vws_response(
             response=response,
             status_code=codes.OK,
