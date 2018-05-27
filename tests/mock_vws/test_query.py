@@ -568,11 +568,12 @@ class TestMaxNumResults:
         num_results: Union[int, bytes],
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        Numbers between 1 and 50 are valid inputs.
 
         We assert that the response is a success, but not that the maximum
         number of results is enforced.
+
+        This is because uploading 50 images would be very slow.
 
         The documentation at
         https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.  # noqa: E501
