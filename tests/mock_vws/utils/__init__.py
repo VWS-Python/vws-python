@@ -2,72 +2,22 @@
 Utilities for tests for the VWS mock.
 """
 
-import base64
-import datetime
-import email.utils
-import hashlib
-import hmac
 import json
-from string import hexdigits
 from time import sleep
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from urllib.parse import urljoin
 
-import pytz
 import requests
 import timeout_decorator
-from requests import Response, codes
+from requests import Response
 from requests_mock import DELETE, GET, POST, PUT
 
 from mock_vws._constants import ResultCodes, TargetStatuses
-
-
-class VuforiaDatabaseKeys:
-    """
-    Credentials for VWS APIs.
-    """
-
-    def __init__(
-        self,
-        server_access_key: str,
-        server_secret_key: str,
-        client_access_key: str,
-        client_secret_key: str,
-        database_name: str,
-    ) -> None:
-        """
-        Args:
-            database_name: The name of a VWS target manager database name.
-            server_access_key: A VWS server access key.
-            server_secret_key: A VWS server secret key.
-            client_access_key: A VWS client access key.
-            client_secret_key: A VWS client secret key.
-
-        Attributes:
-            database_name (str): The name of a VWS target manager database
-                name.
-            server_access_key (bytes): A VWS server access key.
-            server_secret_key (bytes): A VWS server secret key.
-            client_access_key (bytes): A VWS client access key.
-            client_secret_key (bytes): A VWS client secret key.
-        """
-        self.server_access_key: bytes = bytes(
-            server_access_key,
-            encoding='utf-8',
-        )
-        self.server_secret_key: bytes = bytes(
-            server_secret_key,
-            encoding='utf-8',
-        )
-        self.client_access_key: bytes = bytes(
-            client_access_key,
-            encoding='utf-8',
-        )
-        self.client_secret_key: bytes = bytes(
-            client_secret_key,
-            encoding='utf-8',
-        )
-        self.database_name = database_name
+from mock_vws.utils.authorization import (
+    VuforiaDatabaseKeys,
+    rfc_1123_date,
+    authorization_header,
+)
 
 
 class Endpoint:
@@ -114,137 +64,6 @@ class Endpoint:
         self.auth_header_content_type: str = content_type
         self.access_key = access_key
         self.secret_key = secret_key
-
-
-def assert_vws_failure(
-    response: Response,
-    status_code: int,
-    result_code: ResultCodes,
-) -> None:
-    """
-    Assert that a VWS failure response is as expected.
-
-    Args:
-        response: The response returned by a request to VWS.
-        status_code: The expected status code of the response.
-        result_code: The expected result code of the response.
-
-    Raises:
-        AssertionError: The response is not in the expected VWS error format
-            for the given codes.
-    """
-    assert response.json().keys() == {'transaction_id', 'result_code'}
-    assert_vws_response(
-        response=response,
-        status_code=status_code,
-        result_code=result_code,
-    )
-
-
-def assert_valid_date_header(response: Response) -> None:
-    """
-    Assert that a response includes a `Date` header which is within one minute
-    of "now".
-
-    Args:
-        response: The response returned by a request to a Vuforia service.
-
-    Raises:
-        AssertionError: The response does not include a `Date` header which is
-            within one minute of "now".
-    """
-    date_response = response.headers['Date']
-    date_from_response = email.utils.parsedate(date_response)
-    assert date_from_response is not None
-    year, month, day, hour, minute, second, _, _, _ = date_from_response
-    gmt = pytz.timezone('GMT')
-    datetime_from_response = datetime.datetime(
-        year=year,
-        month=month,
-        day=day,
-        hour=hour,
-        minute=minute,
-        second=second,
-        tzinfo=gmt,
-    )
-    current_date = datetime.datetime.now(tz=gmt)
-    time_difference = abs(current_date - datetime_from_response)
-    assert time_difference < datetime.timedelta(minutes=1)
-
-
-def assert_valid_transaction_id(response: Response) -> None:
-    """
-    Assert that a response includes a valid transaction ID.
-
-    Args:
-        response: The response returned by a request to a Vuforia service.
-
-    Raises:
-        AssertionError: The response does not include a valid transaction ID.
-    """
-    transaction_id = response.json()['transaction_id']
-    assert len(transaction_id) == 32
-    assert all(char in hexdigits for char in transaction_id)
-
-
-def assert_json_separators(response: Response) -> None:
-    """
-    Assert that a JSON response is formatted correctly.
-
-    Args:
-        response: The response returned by a request to a Vuforia service.
-
-    Raises:
-        AssertionError: The response JSON is not formatted correctly.
-    """
-    assert response.text == json.dumps(
-        obj=response.json(),
-        separators=(',', ':'),
-    )
-
-
-def assert_vws_response(
-    response: Response,
-    status_code: int,
-    result_code: ResultCodes,
-) -> None:
-    """
-    Assert that a VWS response is as expected, at least in part.
-
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
-    implies that the expected status code can be worked out from the result
-    code. However, this is not the case as the real results differ from the
-    documentation.
-
-    For example, it is possible to get a "Fail" result code and a 400 error.
-
-    Args:
-        response: The response returned by a request to VWS.
-        status_code: The expected status code of the response.
-        result_code: The expected result code of the response.
-
-    Raises:
-        AssertionError: The response is not in the expected VWS format for the
-            given codes.
-    """
-    assert response.status_code == status_code
-    response_result_code = response.json()['result_code']
-    assert response_result_code == result_code.value
-    response_header_keys = {
-        'Connection',
-        'Content-Length',
-        'Content-Type',
-        'Date',
-        'Server',
-    }
-    assert response.headers.keys() == response_header_keys
-    assert response.headers['Connection'] == 'keep-alive'
-    assert response.headers['Content-Length'] == str(len(response.text))
-    assert response.headers['Content-Type'] == 'application/json'
-    assert response.headers['Server'] == 'nginx'
-    assert_json_separators(response=response)
-    assert_valid_transaction_id(response=response)
-    assert_valid_date_header(response=response)
 
 
 def add_target_to_vws(
@@ -368,82 +187,6 @@ def wait_for_target_processed(
         # of calls made to the API, to decrease the likelihood of hitting the
         # request quota.
         sleep(0.2)
-
-
-def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
-    """
-    Return the Base64 encoded HMAC-SHA1 hash of the given `data` using the
-    provided `key`.
-    """
-    hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
-    hashed.update(msg=data)
-    return base64.b64encode(s=hashed.digest())
-
-
-def rfc_1123_date() -> str:
-    """
-    Return the date formatted as per RFC 2616, section 3.3.1, rfc1123-date, as
-    described in
-    https://library.vuforia.com/articles/Training/Using-the-VWS-API.
-    """
-    return email.utils.formatdate(None, localtime=False, usegmt=True)
-
-
-def authorization_header(  # pylint: disable=too-many-arguments
-    access_key: bytes,
-    secret_key: bytes,
-    method: str,
-    content: bytes,
-    content_type: str,
-    date: str,
-    request_path: str,
-) -> bytes:
-    """
-    Return an `Authorization` header which can be used for a request made to
-    the VWS API with the given attributes.
-
-    See https://library.vuforia.com/articles/Training/Using-the-VWS-API.
-
-    Args:
-        access_key: A VWS server or client access key.
-        secret_key: A VWS server or client secret key.
-        method: The HTTP method which will be used in the request.
-        content: The request body which will be used in the request.
-        content_type: The `Content-Type` header which is expected by
-            endpoint. This does not necessarily have to match the
-            `Content-Type` sent in the headers. In particular, for the query
-            API, this must be set to `multipart/form-data` but the header must
-            include the boundary.
-        date: The current date which must exactly match the date sent in the
-            `Date` header.
-        request_path: The path to the endpoint which will be used in the
-            request.
-
-    Returns:
-        Return an `Authorization` header which can be used for a request made
-        to the VWS API with the given attributes.
-    """
-    hashed = hashlib.md5()
-    hashed.update(content)
-    content_md5_hex = hashed.hexdigest()
-
-    components_to_sign = [
-        method,
-        content_md5_hex,
-        content_type,
-        date,
-        request_path,
-    ]
-    string_to_sign = '\n'.join(components_to_sign)
-    signature = compute_hmac_base64(
-        key=secret_key,
-        data=bytes(
-            string_to_sign,
-            encoding='utf-8',
-        ),
-    )
-    auth_header = b'VWS %s:%s' % (access_key, signature)
-    return auth_header
 
 
 def target_api_request(
@@ -581,86 +324,3 @@ def update_target(
     )
 
     return response
-
-
-def assert_query_success(response: Response) -> None:
-    """
-    Assert that the given response is a success response for performing an
-    image recognition query.
-
-    Raises:
-        AssertionError: The given response is not a valid success response
-            for performing an image recognition query.
-    """
-    assert response.status_code == codes.OK
-    assert response.json().keys() == {'result_code', 'results', 'query_id'}
-
-    query_id = response.json()['query_id']
-    assert len(query_id) == 32
-    assert all(char in hexdigits for char in query_id)
-
-    assert response.json()['result_code'] == 'Success'
-    # Figure out when this header is applied.
-    # See https://github.com/adamtheturtle/vws-python/issues/602.
-    content_encoding = response.headers.pop('Content-Encoding', 'gzip')
-    assert content_encoding == 'gzip'
-
-    response_header_keys = {
-        'Connection',
-        'Content-Length',
-        'Content-Type',
-        'Date',
-        'Server',
-    }
-
-    assert response.headers.keys() == response_header_keys
-    assert response.headers['Content-Length'] == str(response.raw.tell())
-    assert response.headers['Connection'] == 'keep-alive'
-    assert response.headers['Content-Type'] == 'application/json'
-    assert_valid_date_header(response=response)
-    assert response.headers['Server'] == 'nginx'
-
-
-def assert_vwq_failure(
-    response: Response,
-    status_code: int,
-    content_type: Optional[str],
-) -> None:
-    """
-    Assert that a VWQ failure response is as expected.
-
-    Args:
-        response: The response returned by a request to VWQ.
-        content_type: The expected Content-Type header.
-        status_code: The expected status code of the response.
-
-    Raises:
-        AssertionError: The response is not in the expected VWQ error format
-            for the given codes.
-    """
-    assert response.status_code == status_code
-    response_header_keys = {
-        'Connection',
-        'Content-Length',
-        'Date',
-        'Server',
-    }
-
-    if status_code == codes.INTERNAL_SERVER_ERROR:
-        response_header_keys.add('Cache-Control')
-        cache_control = 'must-revalidate,no-cache,no-store'
-        assert response.headers['Cache-Control'] == cache_control
-
-    if content_type is not None:
-        response_header_keys.add('Content-Type')
-        assert response.headers['Content-Type'] == content_type
-
-    if status_code == codes.UNAUTHORIZED:
-        response_header_keys.add('WWW-Authenticate')
-        assert response.headers['WWW-Authenticate'] == 'VWS'
-
-    assert response.headers.keys() == response_header_keys
-    assert response.headers['Connection'] == 'keep-alive'
-    assert response.headers['Content-Length'] == str(len(response.text))
-    assert_valid_date_header(response=response)
-    assert response.headers['Server'] == 'nginx'
