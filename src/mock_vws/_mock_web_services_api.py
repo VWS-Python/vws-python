@@ -653,10 +653,11 @@ class MockVuforiaWebServicesAPI:
                 return json_dump(body)
             target.name = name
 
-        image = request.json()['image']
-        decoded = base64.b64decode(image)
-        image_file = io.BytesIO(decoded)
-        target.image = image_file
+        if 'image' in request.json():
+            image = request.json()['image']
+            decoded = base64.b64decode(image)
+            image_file = io.BytesIO(decoded)
+            target.image = image_file
 
         # In the real implementation, the tracking rating can stay the same.
         # However, for demonstration purposes, the tracking rating changes but
