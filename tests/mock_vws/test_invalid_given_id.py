@@ -32,6 +32,11 @@ class TestInvalidGivenID:
         if not endpoint.prepared_request.path_url.endswith(target_id):
             return
 
+        wait_for_target_processed(
+            vuforia_database_keys=database_keys,
+            target_id=target_id,
+        )
+
         delete_target(
             vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,

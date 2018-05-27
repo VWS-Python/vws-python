@@ -47,6 +47,10 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     targets = response.json()['results']
 
     for target in targets:
+        wait_for_target_processed(
+            vuforia_database_keys=database_keys,
+            target_id=target_id,
+        )
         delete_target(vuforia_database_keys=database_keys, target_id=target)
 
 

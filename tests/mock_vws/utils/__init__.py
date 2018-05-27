@@ -256,14 +256,9 @@ def delete_target(
             to delete the target in.
         target_id: The ID of the target to delete.
 
-    Raises:
-        AssertionError: The deletion was not a success.
+    Returns:
+        The response returned by the API.
     """
-    wait_for_target_processed(
-        vuforia_database_keys=vuforia_database_keys,
-        target_id=target_id,
-    )
-
     response = target_api_request(
         server_access_key=vuforia_database_keys.server_access_key,
         server_secret_key=vuforia_database_keys.server_secret_key,
@@ -272,8 +267,7 @@ def delete_target(
         request_path=f'/targets/{target_id}',
     )
 
-    result_code = response.json()['result_code']
-    assert result_code == ResultCodes.SUCCESS.value
+    return response
 
 
 def update_target(
