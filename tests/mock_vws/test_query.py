@@ -653,18 +653,41 @@ class TestIncludeTargetData:
         The default ``include_target_data`` is 'top'.
         """
         image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        for name in ('example_1', 'example_2'):
+            add_target_data = {
+                'name': name,
+                'width': 1,
+                'image': image_data_encoded,
+            }
+
+            response = add_target_to_vws(
+                vuforia_database_keys=vuforia_database_keys,
+                data=add_target_data,
+            )
+
+            target_id = response.json()['target_id']
+
+            wait_for_target_processed(
+                target_id=target_id,
+                vuforia_database_keys=vuforia_database_keys,
+            )
 
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
+            'max_num_results': (None, 2, 'text/plain'),
         }
+
         response = query(
             vuforia_database_keys=vuforia_database_keys,
             body=body,
         )
 
         assert_query_success(response=response)
-        assert response.json()['results'] == []
+        result_1, result_2 = response.json()['results']
+        assert 'target_data' in result_1
+        assert 'target_data' not in result_2
 
 
     @pytest.mark.parametrize('include_target_data', ['top', 'TOP'])
@@ -675,8 +698,8 @@ class TestIncludeTargetData:
         include_target_data: str,
     ) -> None:
         """
-        We assert that the response is a success, but not that the preference
-        is enforced.
+        When ``include_target_data`` is set to "top" (case insensitive), only
+        the first result includes target data.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
