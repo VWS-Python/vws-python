@@ -202,7 +202,7 @@ class TestTargetName:
     @pytest.mark.parametrize(
         'name',
         [
-            'a',
+            'á',
             'a' * 64,
         ],
         ids=['Short name', 'Long name'],
