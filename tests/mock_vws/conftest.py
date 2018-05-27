@@ -10,7 +10,6 @@ from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
-from requests_mock import GET
 
 from mock_vws import MockVWS, States
 from tests.mock_vws.utils import (
@@ -18,7 +17,7 @@ from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
     delete_target,
-    target_api_request,
+    list_targets,
 )
 
 pytest_plugins = [  # pylint: disable=invalid-name
@@ -39,13 +38,7 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
         database_keys: The credentials to the Vuforia target database to delete
             all targets in.
     """
-    response = target_api_request(
-        server_access_key=database_keys.server_access_key,
-        server_secret_key=database_keys.server_secret_key,
-        method=GET,
-        content=b'',
-        request_path='/targets',
-    )
+    response = list_targets(vuforia_database_keys=database_keys)
 
     if 'results' not in response.json():  # pragma: no cover
         message = f'Results not found.\nResponse is: {response.json()}'
