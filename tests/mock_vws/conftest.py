@@ -10,8 +10,10 @@ from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
+from requests import codes
 
 from mock_vws import MockVWS, States
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
     Endpoint,
     add_target_to_vws,
@@ -20,6 +22,7 @@ from tests.mock_vws.utils import (
     update_target,
     wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_vws_response
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 pytest_plugins = [  # pylint: disable=invalid-name
@@ -58,7 +61,16 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
             data={'active_flag': False},
             target_id=target,
         )
-        delete_target(vuforia_database_keys=database_keys, target_id=target)
+        wait_for_target_processed(
+            vuforia_database_keys=database_keys,
+            target_id=target,
+        )
+        response = delete_target(vuforia_database_keys=database_keys, target_id=target)
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
 
 
 @pytest.fixture()
