@@ -1305,6 +1305,9 @@ class TestDeleted:
             target_id=target_id,
         )
 
+        # Passes with 60, fails with 5
+        time.sleep(60)
+
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
         response = query(
