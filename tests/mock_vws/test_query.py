@@ -1359,6 +1359,7 @@ class TestDeleted:
             target_id=target_id,
         )
 
+        # TODO retry in a loop instead
         time.sleep(30)
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
