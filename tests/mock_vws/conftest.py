@@ -50,7 +50,7 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     for target in targets:
         wait_for_target_processed(
             vuforia_database_keys=database_keys,
-            target_id=target_id,
+            target_id=target,
         )
         delete_target(vuforia_database_keys=database_keys, target_id=target)
 
