@@ -526,9 +526,6 @@ class TestMaxNumResults:
     def test_default(self) -> None:
         """
         The default ``max_num_results`` is 1.
-
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
@@ -553,7 +550,6 @@ class TestMaxNumResults:
 
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'max_num_results': (None, 2, 'text/plain'),
         }
 
         response = query(
@@ -562,9 +558,7 @@ class TestMaxNumResults:
         )
 
         assert_query_success(response=response)
-        result_1, result_2 = response.json()['results']
-        assert 'target_data' in result_1
-        assert 'target_data' not in result_2
+        assert len(response.json()['results']) == 1
 
     @pytest.mark.parametrize('num_results', [1, b'1', 50])
     def test_valid(
