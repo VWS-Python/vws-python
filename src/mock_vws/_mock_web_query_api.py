@@ -21,7 +21,7 @@ from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 from mock_vws._mock_common import Route, json_dump, set_content_length_header
-from mock_vws._mock_web_services_api import MockVuforiaWebServicesAPI
+from mock_vws._mock_web_services_api import MockVuforiaWebServicesAPI, Target
 
 from ._validators import validate_auth_header_exists, validate_authorization
 
@@ -522,8 +522,8 @@ class MockVuforiaWebQueryAPI:
             },
         )
 
-        results: List[Dict[str, Any]] = []
         [image] = parsed['image']
+        matches: Set[Target] = set([])
         for target in self.mock_web_services_api.targets:
             if target.image.getvalue() == image:
                 if target.status == TargetStatuses.PROCESSING.value:
@@ -544,17 +544,21 @@ class MockVuforiaWebQueryAPI:
                     context.headers['Content-Type'] = content_type
                     return Path(match_processing_resp_file).read_text()
                 if target.active_flag:
-                    target_timestamp = target.last_modified_date.timestamp()
-                    target_data = {
-                        'target_timestamp': int(target_timestamp),
-                        'name': target.name,
-                        'application_metadata': target.application_metadata,
-                    }
-                    result = {
-                        'target_id': target.target_id,
-                        'target_data': target_data,
-                    }
-                    results.append(result)
+                    matches.add(target)
+
+        results: List[Dict[str, Any]] = []
+        for target in matches:
+            target_timestamp = target.last_modified_date.timestamp()
+            target_data = {
+                'target_timestamp': int(target_timestamp),
+                'name': target.name,
+                'application_metadata': target.application_metadata,
+            }
+            result = {
+                'target_id': target.target_id,
+                'target_data': target_data,
+            }
+            results.append(result)
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
