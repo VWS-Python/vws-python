@@ -675,13 +675,11 @@ class TestIncludeTargetData:
         include_target_data: str,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
-
         We assert that the response is a success, but not that the preference
         is enforced.
         """
         image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
         for name in ('example_1', 'example_2'):
             add_target_data = {
                 'name': name,
@@ -692,6 +690,13 @@ class TestIncludeTargetData:
             response = add_target_to_vws(
                 vuforia_database_keys=vuforia_database_keys,
                 data=add_target_data,
+            )
+
+            target_id = response.json()['target_id']
+
+            wait_for_target_processed(
+                target_id=target_id,
+                vuforia_database_keys=vuforia_database_keys,
             )
 
         body = {
@@ -705,7 +710,7 @@ class TestIncludeTargetData:
         )
 
         assert_query_success(response=response)
-        assert result_1, result_2 = response.json()['results']
+        result_1, result_2 = response.json()['results']
         import pdb; pdb.set_trace()
 
 
