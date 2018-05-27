@@ -13,7 +13,7 @@ from requests import Response
 from requests_mock import DELETE, GET, POST, PUT
 
 from mock_vws._constants import ResultCodes, TargetStatuses
-from mock_vws.utils.authorization import (
+from tests.mock_vws.utils.authorization import (
     VuforiaDatabaseKeys,
     rfc_1123_date,
     authorization_header,
