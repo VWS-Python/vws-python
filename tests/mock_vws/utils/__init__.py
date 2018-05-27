@@ -1,5 +1,5 @@
 """
-Utilities for tests for the VWS mock.
+Utilities for tests.
 """
 
 import json

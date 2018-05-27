@@ -1,5 +1,5 @@
 """
-XXX
+Authorization helpers.
 """
 
 import base64
