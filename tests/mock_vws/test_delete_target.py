@@ -4,7 +4,6 @@ Tests for deleting targets.
 
 import pytest
 from requests import codes
-from requests_mock import DELETE
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (

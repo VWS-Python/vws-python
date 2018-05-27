@@ -7,7 +7,11 @@ import requests
 from requests import codes
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import Endpoint, delete_target
+from tests.mock_vws.utils import (
+    Endpoint,
+    delete_target,
+    wait_for_target_processed,
+)
 from tests.mock_vws.utils.assertions import assert_vws_failure
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
@@ -33,7 +37,7 @@ class TestInvalidGivenID:
             return
 
         wait_for_target_processed(
-            vuforia_database_keys=database_keys,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
