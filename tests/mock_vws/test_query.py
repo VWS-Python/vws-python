@@ -656,8 +656,7 @@ class TestIncludeTargetData:
         implementing this test.
         """
 
-    @pytest.mark.parametrize('include_target_data', ['top', 'none', 'all'])
-    def test_valid(
+    def test_top(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -673,7 +672,59 @@ class TestIncludeTargetData:
         image_content = high_quality_image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'include_target_data': (None, include_target_data, 'text/plain'),
+            'include_target_data': (None, 'top', 'text/plain'),
+        }
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+    def test_none(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        include_target_data: str,
+    ) -> None:
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+
+        We assert that the response is a success, but not that the preference
+        is enforced.
+        """
+        image_content = high_quality_image.getvalue()
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'include_target_data': (None, 'none', 'text/plain'),
+        }
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+    def test_all(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        include_target_data: str,
+    ) -> None:
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+
+        We assert that the response is a success, but not that the preference
+        is enforced.
+        """
+        image_content = high_quality_image.getvalue()
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'include_target_data': (None, 'all', 'text/plain'),
         }
         response = query(
             vuforia_database_keys=vuforia_database_keys,
