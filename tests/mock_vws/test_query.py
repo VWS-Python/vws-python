@@ -1103,7 +1103,7 @@ class TestProcessing:
             body=body,
         )
 
-        # We assert that after making a query, the target is in the processing
+        # We assert that after making a query, the target is in th processing
         # state.
         #
         # There is a race condition here.
@@ -1275,3 +1275,36 @@ class TestDeleted:
         """
         XXX
         """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+        approximate_target_created = calendar.timegm(time.gmtime())
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,,
+            target_id=target_id,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
