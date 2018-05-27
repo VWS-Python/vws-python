@@ -651,10 +651,21 @@ class TestIncludeTargetData:
     def test_default(self) -> None:
         """
         The default ``include_target_data`` is 'top'.
-
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
         """
+        image_content = high_quality_image.getvalue()
+
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'include_target_data': (None, include_target_data, 'text/plain'),
+        }
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
 
     @pytest.mark.parametrize('include_target_data', ['top', 'TOP'])
     def test_top(
@@ -671,17 +682,32 @@ class TestIncludeTargetData:
         is enforced.
         """
         image_content = high_quality_image.getvalue()
+        for name in ('example_1', 'example_2'):
+            add_target_data = {
+                'name': name,
+                'width': 1,
+                'image': image_data_encoded,
+            }
+
+            response = add_target_to_vws(
+                vuforia_database_keys=vuforia_database_keys,
+                data=add_target_data,
+            )
+
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
         }
+
         response = query(
             vuforia_database_keys=vuforia_database_keys,
             body=body,
         )
 
         assert_query_success(response=response)
-        assert response.json()['results'] == []
+        assert result_1, result_2 = response.json()['results']
+        import pdb; pdb.set_trace()
+
 
     @pytest.mark.parametrize('include_target_data', ['none', 'NONE'])
     def test_none(
