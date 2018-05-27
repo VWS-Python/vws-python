@@ -133,7 +133,7 @@ def get_vws_target(
         method=GET,
         content=b'',
         request_path='/targets/' + target_id,
-    )  # type: Response
+    )
     return response
 
 
@@ -153,7 +153,7 @@ def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
         method=GET,
         content=b'',
         request_path='/summary',
-    )  # type: Response
+    )
     return response
 
 
@@ -195,7 +195,7 @@ def target_api_request(
     method: str,
     content: bytes,
     request_path: str,
-) -> requests.Response:
+) -> Response:
     """
     Make a request to the Vuforia Target API.
 
