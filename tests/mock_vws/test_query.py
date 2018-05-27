@@ -26,6 +26,7 @@ from tests.mock_vws.utils import (
     authorization_header,
     get_vws_target,
     rfc_1123_date,
+    update_target,
     wait_for_target_processed,
 )
 
@@ -927,7 +928,10 @@ class TestProcessing:
         active_flag: bool,
     ) -> None:
         """
-        TODO
+        When a target with a matching image is in the processing state it is
+        not matched.
+
+        Sometimes an `INTERNAL_SERVER_ERROR` response is returned.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
@@ -1001,12 +1005,109 @@ class TestUpdate:
     Tests for updated targets.
     """
 
-    def test_updated_target(self) -> None:
+    def test_updated_target(
+        self,
+        high_quality_image: io.BytesIO,
+        different_high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
-
         After a target is updated, only the new image can be matched.
         The match result includes the updated name, timestamp and application
         metadata.
         """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        metadata = b'example_metadata'
+        metadata_encoded = base64.b64encode(metadata).decode('ascii')
+        name = 'example_name'
+        add_target_data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+            'application_metadata': metadata_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+        calendar.timegm(time.gmtime())
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        new_image_content = different_high_quality_image.getvalue()
+
+        new_name = name + '2'
+        new_metadata = metadata + b'2'
+        new_image_data_encoded = base64.b64encode(new_image_content,
+                                                  ).decode('ascii')
+        new_metadata_encoded = base64.b64encode(new_metadata).decode('ascii')
+        update_data = {
+            'name': new_name,
+            'image': new_image_data_encoded,
+            'application_metadata': new_metadata_encoded,
+        }
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+        [result] = response.json()['results']
+        target_data = result['target_data']
+        target_timestamp = target_data['target_timestamp']
+        original_target_timestamp = int(target_timestamp)
+
+        update_target(
+            vuforia_database_keys=vuforia_database_keys,
+            data=update_data,
+            target_id=target_id,
+        )
+
+        approximate_target_updated = calendar.timegm(time.gmtime())
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        body = {'image': ('image.jpeg', new_image_content, 'image/jpeg')}
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        [result] = response.json()['results']
+        assert result.keys() == {'target_id', 'target_data'}
+        assert result['target_id'] == target_id
+        target_data = result['target_data']
+        assert target_data.keys() == {
+            'application_metadata',
+            'name',
+            'target_timestamp',
+        }
+        assert target_data['application_metadata'] == new_metadata_encoded
+        assert target_data['name'] == new_name
+        target_timestamp = target_data['target_timestamp']
+        assert isinstance(target_timestamp, int)
+        # In the future we might want to test that
+        # target_timestamp > original_target_timestamp
+        # However, this requires us to set the mock processing time at > 1
+        # second.
+        assert target_timestamp >= original_target_timestamp
+        time_difference = abs(approximate_target_updated - target_timestamp)
+        assert time_difference < 5
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
