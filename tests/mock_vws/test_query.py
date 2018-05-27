@@ -594,6 +594,29 @@ class TestMaxNumResults:
         assert_query_success(response=response)
         assert response.json()['results'] == []
 
+    def test_valid_works(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        num_results: Union[int, bytes],
+    ) -> None:
+        """
+        A maximum of ``max_num_results`` results are returned.
+        """
+        image_content = high_quality_image.getvalue()
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'max_num_results': (None, 2, 'text/plain'),
+        }
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert len(response.json()['results']) == 2
+
     @pytest.mark.parametrize('num_results', [-1, 0, 51])
     def test_out_of_range(
         self,
