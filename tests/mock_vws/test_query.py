@@ -679,7 +679,6 @@ class TestIncludeTargetData:
 
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'include_target_data': (None, include_target_data, 'text/plain'),
             'max_num_results': (None, 2, 'text/plain'),
         }
 
