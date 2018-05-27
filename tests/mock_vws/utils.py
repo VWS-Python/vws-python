@@ -602,10 +602,10 @@ def assert_query_success(response: Response) -> None:
     assert response.json()['result_code'] == 'Success'
     response_header_keys = {
         'Connection',
+        'Content-Length',
         'Content-Type',
         'Date',
         'Server',
-        'Content-Length',
     }
 
     assert response.headers.keys() == response_header_keys

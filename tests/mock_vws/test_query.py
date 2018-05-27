@@ -702,6 +702,7 @@ class TestIncludeTargetData:
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'include_target_data': (None, include_target_data, 'text/plain'),
+            'max_num_results': (None, 2, 'text/plain'),
         }
 
         response = query(
@@ -711,8 +712,8 @@ class TestIncludeTargetData:
 
         assert_query_success(response=response)
         result_1, result_2 = response.json()['results']
-        import pdb; pdb.set_trace()
-
+        assert 'target_data' in result_1
+        assert 'target_data' not in result_2
 
     @pytest.mark.parametrize('include_target_data', ['none', 'NONE'])
     def test_none(
