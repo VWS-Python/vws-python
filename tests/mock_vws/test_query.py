@@ -19,15 +19,19 @@ from urllib3.filepost import encode_multipart_formdata
 
 from mock_vws._constants import TargetStatuses
 from tests.mock_vws.utils import (
-    VuforiaDatabaseKeys,
     add_target_to_vws,
-    assert_query_success,
-    assert_vwq_failure,
-    authorization_header,
     get_vws_target,
-    rfc_1123_date,
     update_target,
     wait_for_target_processed,
+)
+from tests.mock_vws.utils.assertions import (
+    assert_query_success,
+    assert_vwq_failure,
+)
+from tests.mock_vws.utils.authorization import (
+    VuforiaDatabaseKeys,
+    authorization_header,
+    rfc_1123_date,
 )
 
 VWQ_HOST = 'https://cloudreco.vuforia.com'

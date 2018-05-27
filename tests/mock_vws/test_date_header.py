@@ -13,12 +13,14 @@ from freezegun import freeze_time
 from requests import codes
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import (
-    Endpoint,
+from tests.mock_vws.utils import Endpoint
+from tests.mock_vws.utils.assertions import (
     assert_query_success,
     assert_vwq_failure,
     assert_vws_failure,
     assert_vws_response,
+)
+from tests.mock_vws.utils.authorization import (
     authorization_header,
     rfc_1123_date,
 )

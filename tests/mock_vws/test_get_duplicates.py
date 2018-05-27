@@ -12,13 +12,13 @@ from requests_mock import GET
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    VuforiaDatabaseKeys,
     add_target_to_vws,
-    assert_vws_response,
     get_vws_target,
     target_api_request,
     wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

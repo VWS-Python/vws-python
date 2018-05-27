@@ -10,12 +10,12 @@ import requests
 from requests import codes
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import (
-    Endpoint,
+from tests.mock_vws.utils import Endpoint
+from tests.mock_vws.utils.assertions import (
     assert_vwq_failure,
     assert_vws_failure,
-    rfc_1123_date,
 )
+from tests.mock_vws.utils.authorization import rfc_1123_date
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

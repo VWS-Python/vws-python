@@ -7,11 +7,9 @@ from requests import codes
 from requests_mock import GET
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import (
-    VuforiaDatabaseKeys,
-    assert_vws_response,
-    target_api_request,
-)
+from tests.mock_vws.utils import target_api_request
+from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
