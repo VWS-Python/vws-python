@@ -439,6 +439,7 @@ class MockVuforiaWebQueryAPI:
             return out_of_range_error
 
         [include_target_data] = parsed.get('include_target_data', [b'top'])
+        include_target_data = include_target_data.lower()
         allowed_included_target_data = {b'top', b'all', b'none'}
         if include_target_data not in allowed_included_target_data:
             unexpected_target_data_message = (
