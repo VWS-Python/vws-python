@@ -560,12 +560,10 @@ class MockVuforiaWebQueryAPI:
             result = {
                 'target_id': target.target_id,
             }
-            add_target_data = bool(
-                (include_target_data == b'all') or
-                (include_target_data == b'top' and not len(results))
-            )
-            if add_target_data:
-                result['target_data'] = target_data,
+            if include_target_data == b'all':
+                result['target_data'] = target_data
+            if include_target_data == b'top' and not len(results):
+                result['target_data'] = target_data
             results.append(result)
 
         body = {

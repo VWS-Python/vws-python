@@ -692,7 +692,6 @@ class TestIncludeTargetData:
         assert 'target_data' in result_1
         assert 'target_data' not in result_2
 
-
     @pytest.mark.parametrize('include_target_data', ['top', 'TOP'])
     def test_top(
         self,
