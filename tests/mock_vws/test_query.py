@@ -1306,8 +1306,6 @@ class TestDeleted:
             target_id=target_id,
         )
 
-        time.sleep(6.95)
-
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
         response = query(
@@ -1356,12 +1354,12 @@ class TestDeleted:
             vuforia_database_keys=vuforia_database_keys,
         )
 
-        delete_target(
+        response = delete_target(
             vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
-        time.sleep(7.05)
+        time.sleep(30)
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
