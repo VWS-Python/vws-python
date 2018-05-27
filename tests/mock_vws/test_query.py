@@ -604,6 +604,25 @@ class TestMaxNumResults:
         A maximum of ``max_num_results`` results are returned.
         """
         image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        for name in ('example_1', 'example_2', 'example_3'):
+            add_target_data = {
+                'name': name,
+                'width': 1,
+                'image': image_data_encoded,
+            }
+
+            response = add_target_to_vws(
+                vuforia_database_keys=vuforia_database_keys,
+                data=add_target_data,
+            )
+
+            target_id = response.json()['target_id']
+
+            wait_for_target_processed(
+                target_id=target_id,
+                vuforia_database_keys=vuforia_database_keys,
+            )
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'max_num_results': (None, 2, 'text/plain'),
