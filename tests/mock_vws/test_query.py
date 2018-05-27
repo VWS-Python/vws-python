@@ -20,6 +20,7 @@ from urllib3.filepost import encode_multipart_formdata
 from mock_vws._constants import TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
+    delete_target,
     get_vws_target,
     update_target,
     wait_for_target_processed,
@@ -1300,7 +1301,7 @@ class TestDeleted:
         )
 
         delete_target(
-            vuforia_database_keys=vuforia_database_keys,,
+            vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
 
