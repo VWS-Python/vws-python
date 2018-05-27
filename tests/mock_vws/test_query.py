@@ -1305,8 +1305,9 @@ class TestDeleted:
             target_id=target_id,
         )
 
-        # Passes with 60, fails with 5
-        time.sleep(60)
+        # All approximate
+        # Passes with 6.99, fails with 6.95
+        time.sleep(6.99)
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
