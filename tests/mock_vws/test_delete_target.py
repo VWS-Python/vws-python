@@ -12,7 +12,10 @@ from tests.mock_vws.utils import (
     target_api_request,
     wait_for_target_processed,
 )
-from tests.mock_vws.utils.assertions import assert_vws_failure
+from tests.mock_vws.utils.assertions import (
+    assert_vws_failure,
+    assert_vws_response,
+)
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
@@ -75,7 +78,7 @@ class TestDelete:
             request_path=request_path,
         )
 
-        assert_vws_failure(
+        assert_vws_response(
             response=response,
             status_code=codes.OK,
             result_code=ResultCodes.SUCCESS,
