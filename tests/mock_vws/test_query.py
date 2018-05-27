@@ -1278,7 +1278,8 @@ class TestDeleted:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        XXX
+        Within approximately 7 seconds of deleting a target, querying for its
+        image results in an ``INTERNAL_SERVER_ERROR``.
         """
         image_content = high_quality_image.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
@@ -1305,9 +1306,62 @@ class TestDeleted:
             target_id=target_id,
         )
 
-        # All approximate
-        # Passes with 6.99, fails with 6.95
-        time.sleep(6.99)
+        time.sleep(6.95)
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        # The response text for a 500 response is not consistent.
+        # Therefore we only test for consistent features.
+        assert 'Error 500 Server Error' in response.text
+        assert 'HTTP ERROR 500' in response.text
+        assert 'Problem accessing /v1/query' in response.text
+
+        assert_vwq_failure(
+            response=response,
+            content_type='text/html; charset=ISO-8859-1',
+            status_code=codes.INTERNAL_SERVER_ERROR,
+        )
+
+    def test_deleted_and_wait(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        After waiting approximately 7 seconds (we wait more to be safer), a
+        deleted target is not found when its image is queried for.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+        approximate_target_created = calendar.timegm(time.gmtime())
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        time.sleep(7.05)
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
@@ -1317,3 +1371,4 @@ class TestDeleted:
         )
 
         assert_query_success(response=response)
+        assert response.json()['results'] == []
