@@ -523,7 +523,11 @@ class TestMaxNumResults:
     Tests for the ``max_num_results`` parameter.
     """
 
-    def test_default(self) -> None:
+    def test_default(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
         The default ``max_num_results`` is 1.
         """
