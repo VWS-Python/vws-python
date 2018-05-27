@@ -638,6 +638,8 @@ class MockVuforiaWebServicesAPI:
                 }
                 context.status_code = codes.BAD_REQUEST
                 return json_dump(body)
+            application_metadata = request.json()['application_metadata']
+            target.application_metadata = application_metadata
 
         if 'name' in request.json():
             name = request.json()['name']
@@ -650,6 +652,11 @@ class MockVuforiaWebServicesAPI:
                 }
                 return json_dump(body)
             target.name = name
+
+        image = request.json()['image']
+        decoded = base64.b64decode(image)
+        image_file = io.BytesIO(decoded)
+        target.image = image_file
 
         # In the real implementation, the tracking rating can stay the same.
         # However, for demonstration purposes, the tracking rating changes but
