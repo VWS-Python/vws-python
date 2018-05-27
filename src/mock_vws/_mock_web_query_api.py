@@ -522,6 +522,9 @@ class MockVuforiaWebQueryAPI:
             },
         )
 
+        [include_target_data] = parsed.get('include_target_data', [b'top'])
+        include_target_data = include_target_data.lower()
+
         [image] = parsed['image']
         matches: Set[Target] = set([])
         for target in self.mock_web_services_api.targets:
@@ -556,8 +559,13 @@ class MockVuforiaWebQueryAPI:
             }
             result = {
                 'target_id': target.target_id,
-                'target_data': target_data,
             }
+            add_target_data = bool(
+                (include_target_data == b'all') or
+                (include_target_data == b'top' and not len(results))
+            )
+            if add_target_data:
+                result['target_data'] = target_data,
             results.append(result)
 
         body = {
