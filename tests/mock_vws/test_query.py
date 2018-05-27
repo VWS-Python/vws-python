@@ -602,7 +602,6 @@ class TestMaxNumResults:
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        num_results: Union[int, bytes],
     ) -> None:
         """
         A maximum of ``max_num_results`` results are returned.
