@@ -17,6 +17,7 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     delete_target,
     list_targets,
+    update_target,
     wait_for_target_processed,
 )
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
@@ -50,6 +51,11 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     for target in targets:
         wait_for_target_processed(
             vuforia_database_keys=database_keys,
+            target_id=target,
+        )
+        update_target(
+            vuforia_database_keys=database_keys,
+            data={'active_flag': False},
             target_id=target,
         )
         delete_target(vuforia_database_keys=database_keys, target_id=target)
