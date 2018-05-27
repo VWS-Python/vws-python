@@ -557,13 +557,22 @@ class MockVuforiaWebQueryAPI:
                 'name': target.name,
                 'application_metadata': target.application_metadata,
             }
-            result = {
-                'target_id': target.target_id,
-            }
+
             if include_target_data == b'all':
-                result['target_data'] = target_data
-            if include_target_data == b'top' and not len(results):
-                result['target_data'] = target_data
+                result = {
+                    'target_id': target.target_id,
+                    'target_data': target_data,
+                }
+            elif include_target_data == b'top' and not results:
+                result = {
+                    'target_id': target.target_id,
+                    'target_data': target_data,
+                }
+            else:
+                result = {
+                    'target_id': target.target_id,
+                }
+
             results.append(result)
 
         body = {
