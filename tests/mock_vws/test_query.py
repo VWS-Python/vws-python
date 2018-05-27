@@ -1096,7 +1096,11 @@ class TestUpdate:
         assert target_data['name'] == new_name
         target_timestamp = target_data['target_timestamp']
         assert isinstance(target_timestamp, int)
-        assert target_timestamp > original_target_timestamp
+        # In the future we might want to test that
+        # target_timestamp > original_target_timestamp
+        # However, this requires us to set the mock processing time at > 1
+        # second.
+        assert target_timestamp >= original_target_timestamp
         time_difference = abs(approximate_target_updated - target_timestamp)
         assert time_difference < 5
 
