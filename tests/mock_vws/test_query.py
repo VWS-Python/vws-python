@@ -656,6 +656,7 @@ class TestIncludeTargetData:
         implementing this test.
         """
 
+    @pytest.mark.parametrize('include_target_data', ['top', 'TOP'])
     def test_top(
         self,
         high_quality_image: io.BytesIO,
@@ -672,7 +673,7 @@ class TestIncludeTargetData:
         image_content = high_quality_image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'include_target_data': (None, 'top', 'text/plain'),
+            'include_target_data': (None, include_target_data, 'text/plain'),
         }
         response = query(
             vuforia_database_keys=vuforia_database_keys,
@@ -682,6 +683,7 @@ class TestIncludeTargetData:
         assert_query_success(response=response)
         assert response.json()['results'] == []
 
+    @pytest.mark.parametrize('include_target_data', ['none', 'NONE'])
     def test_none(
         self,
         high_quality_image: io.BytesIO,
@@ -698,7 +700,7 @@ class TestIncludeTargetData:
         image_content = high_quality_image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'include_target_data': (None, 'none', 'text/plain'),
+            'include_target_data': (None, include_target_data, 'text/plain'),
         }
         response = query(
             vuforia_database_keys=vuforia_database_keys,
@@ -708,6 +710,7 @@ class TestIncludeTargetData:
         assert_query_success(response=response)
         assert response.json()['results'] == []
 
+    @pytest.mark.parametrize('include_target_data', ['all', 'ALL'])
     def test_all(
         self,
         high_quality_image: io.BytesIO,
@@ -724,7 +727,7 @@ class TestIncludeTargetData:
         image_content = high_quality_image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'include_target_data': (None, 'all', 'text/plain'),
+            'include_target_data': (None, include_target_data, 'text/plain'),
         }
         response = query(
             vuforia_database_keys=vuforia_database_keys,
@@ -741,7 +744,7 @@ class TestIncludeTargetData:
     ) -> None:
         """
         A ``BAD_REQUEST`` error is given when a string that is not one of
-        'none', 'top' or 'all'.
+        'none', 'top' or 'all' (case insensitive).
         """
         image_content = high_quality_image.getvalue()
         include_target_data = 'a'
