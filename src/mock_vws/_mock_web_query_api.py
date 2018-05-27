@@ -121,6 +121,54 @@ def validate_max_num_results(
 
 
 @wrapt.decorator
+def validate_include_target_data(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the ``include_target_data`` field is either an accepted value or
+    not given.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the ``include_target_data`` field is not an
+        accepted value.
+    """
+    request, context = args
+    body_file = io.BytesIO(request.body)
+
+    _, pdict = cgi.parse_header(request.headers['Content-Type'])
+    parsed = cgi.parse_multipart(
+        fp=body_file,
+        pdict={
+            'boundary': pdict['boundary'].encode(),
+        },
+    )
+
+    [include_target_data] = parsed.get('include_target_data', [b'top'])
+    include_target_data = include_target_data.lower()
+    allowed_included_target_data = {b'top', b'all', b'none'}
+    if include_target_data in allowed_included_target_data:
+        return wrapped(*args, **kwargs)
+
+    unexpected_target_data_message = (
+        f"Invalid value '{include_target_data.decode()}' in form data part "
+        "'include_target_data'. "
+        "Expecting one of the (unquoted) string values 'all', 'none' or 'top'."
+    )
+    context.status_code = codes.BAD_REQUEST
+    return unexpected_target_data_message
+
+
+@wrapt.decorator
 def validate_date(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
@@ -406,6 +454,7 @@ def route(
             validate_date,
             validate_date_header_given,
             validate_request_body_type,
+            validate_include_target_data,
             validate_max_num_results,
             validate_image_field_given,
             validate_extra_fields,
@@ -472,19 +521,6 @@ class MockVuforiaWebQueryAPI:
                 'boundary': pdict['boundary'].encode(),
             },
         )
-
-        [include_target_data] = parsed.get('include_target_data', [b'top'])
-        include_target_data = include_target_data.lower()
-        allowed_included_target_data = {b'top', b'all', b'none'}
-        if include_target_data not in allowed_included_target_data:
-            unexpected_target_data_message = (
-                f"Invalid value '{include_target_data.decode()}' in form data "
-                "part 'include_target_data'. "
-                "Expecting one of the (unquoted) string values 'all', 'none' "
-                "or 'top'."
-            )
-            context.status_code = codes.BAD_REQUEST
-            return unexpected_target_data_message
 
         results: List[Dict[str, Any]] = []
         [image] = parsed['image']
