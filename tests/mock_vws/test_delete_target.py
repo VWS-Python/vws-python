@@ -4,15 +4,17 @@ Tests for deleting targets.
 
 import pytest
 from requests import codes
-from requests_mock import DELETE
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
+    delete_target,
     get_vws_target,
-    target_api_request,
     wait_for_target_processed,
 )
-from tests.mock_vws.utils.assertions import assert_vws_failure
+from tests.mock_vws.utils.assertions import (
+    assert_vws_failure,
+    assert_vws_response,
+)
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
@@ -36,14 +38,9 @@ class TestDelete:
         There is a race condition here - if the target goes into a success or
         fail state before the deletion attempt.
         """
-        request_path = '/targets/' + target_id
-
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=DELETE,
-            content=b'',
-            request_path=request_path,
+        response = delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
         assert_vws_failure(
@@ -65,17 +62,12 @@ class TestDelete:
             target_id=target_id,
         )
 
-        request_path = '/targets/' + target_id
-
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=DELETE,
-            content=b'',
-            request_path=request_path,
+        response = delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
-        assert_vws_failure(
+        assert_vws_response(
             response=response,
             status_code=codes.OK,
             result_code=ResultCodes.SUCCESS,

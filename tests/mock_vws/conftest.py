@@ -14,11 +14,12 @@ from _pytest.fixtures import SubRequest
 from mock_vws import MockVWS, States
 from tests.mock_vws.utils import (
     Endpoint,
-    VuforiaDatabaseKeys,
     add_target_to_vws,
     delete_target,
     list_targets,
+    wait_for_target_processed,
 )
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 pytest_plugins = [  # pylint: disable=invalid-name
     'tests.mock_vws.fixtures.prepared_requests',
@@ -47,6 +48,10 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
     targets = response.json()['results']
 
     for target in targets:
+        wait_for_target_processed(
+            vuforia_database_keys=database_keys,
+            target_id=target_id,
+        )
         delete_target(vuforia_database_keys=database_keys, target_id=target)
 
 
