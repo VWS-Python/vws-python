@@ -1103,7 +1103,7 @@ class TestProcessing:
             body=body,
         )
 
-        # We assert that after making a query, the target is in th processing
+        # We assert that after making a query, the target is in the processing
         # state.
         #
         # There is a race condition here.
@@ -1259,3 +1259,19 @@ class TestUpdate:
         )
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestDeleted:
+    """
+    Tests for matching deleted targets.
+    """
+
+    def test_deleted(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        XXX
+        """
