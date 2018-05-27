@@ -15,6 +15,11 @@ from requests import Response, codes
 from requests_mock import POST
 
 from mock_vws._constants import ResultCodes
+from mock_vws.utils import (
+    VuforiaDatabaseKeys,
+    authorization_header,
+    rfc_1123_date,
+)
 
 
 def assert_vws_failure(
