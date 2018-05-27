@@ -169,3 +169,16 @@ def high_quality_image() -> io.BytesIO:
     path = 'tests/mock_vws/data/high_quality_image.jpg'
     with open(path, 'rb') as high_quality_image_file:
         return io.BytesIO(high_quality_image_file.read())
+
+
+@pytest.fixture()
+def different_high_quality_image() -> io.BytesIO:
+    """
+    Return an image file which is expected to have a 'success' status when
+    added to a target and a high tracking rating.
+
+    This is necessarily different to ``high_quality_image``.
+    """
+    path = 'tests/mock_vws/data/different_high_quality_image.jpg'
+    with open(path, 'rb') as high_quality_image_file:
+        return io.BytesIO(high_quality_image_file.read())

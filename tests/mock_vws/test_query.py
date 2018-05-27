@@ -11,8 +11,6 @@ import time
 from typing import Any, Dict, Union
 from urllib.parse import urljoin
 
-from PIL import Image
-import PIL.ImageOps
 import pytest
 import requests
 from requests import Response, codes
@@ -1010,6 +1008,7 @@ class TestUpdate:
     def test_updated_target(
         self,
         high_quality_image: io.BytesIO,
+        different_high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
@@ -1034,25 +1033,19 @@ class TestUpdate:
         )
 
         target_id = response.json()['target_id']
-        approximate_target_created = calendar.timegm(time.gmtime())
+        calendar.timegm(time.gmtime())
 
         wait_for_target_processed(
             target_id=target_id,
             vuforia_database_keys=vuforia_database_keys,
         )
 
-        pil_image = Image.open(high_quality_image)
-        inverted_image = PIL.ImageOps.invert(pil_image)
-        image_buffer = io.BytesIO()
-        pil_image.save(image_buffer, 'PNG')
-        image_buffer.seek(0)
-        new_image_content = image_buffer.getvalue()
+        new_image_content = different_high_quality_image.getvalue()
 
         new_name = name + '2'
         new_metadata = metadata + b'2'
-        new_image_data_encoded = base64.b64encode(
-            new_image_content,
-        ).decode('ascii')
+        new_image_data_encoded = base64.b64encode(new_image_content,
+                                                  ).decode('ascii')
         new_metadata_encoded = base64.b64encode(new_metadata).decode('ascii')
         update_data = {
             'name': new_name,
