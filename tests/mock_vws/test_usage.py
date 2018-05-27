@@ -167,6 +167,8 @@ class TestProcessingTime:
                 status = response.json()['status']
                 if status != TargetStatuses.PROCESSING.value:
                     elapsed_time = datetime.datetime.now() - start_time
+                    # There is a race condition in this test - if it starts to
+                    # fail, maybe extend the acceptable range.
                     assert elapsed_time < datetime.timedelta(seconds=0.55)
                     assert elapsed_time > datetime.timedelta(seconds=0.49)
                     return
