@@ -247,7 +247,7 @@ def target_api_request(
 def delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> None:
+) -> Response:
     """
     Delete a given target.
 
