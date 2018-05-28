@@ -529,7 +529,17 @@ class MockVuforiaWebQueryAPI:
 
         [image] = parsed['image']
         matches: Set[Target] = set([])
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+
+        minimum_time_since_delete = datetime.timedelta(seconds=7)
+
         for target in self.mock_web_services_api.targets:
+            time_difference = now - target.delete_date
+            delete_processing = bool(
+                target.delete_date and
+                time_difference < minimum_time_since_delete
+            )
             if target.image.getvalue() == image:
                 if target.status == TargetStatuses.PROCESSING.value:
                     # We return an example 500 response.
@@ -548,7 +558,7 @@ class MockVuforiaWebQueryAPI:
                     content_type = 'text/html; charset=ISO-8859-1'
                     context.headers['Content-Type'] = content_type
                     return Path(match_processing_resp_file).read_text()
-                if target.delete_date:
+                if delete_processing:
                     # We return an example 500 response.
                     # Each response given by Vuforia is different.
                     resources_dir = Path(__file__).parent / 'resources'
@@ -560,7 +570,7 @@ class MockVuforiaWebQueryAPI:
                     content_type = 'text/html; charset=ISO-8859-1'
                     context.headers['Content-Type'] = content_type
                     return Path(match_processing_resp_file).read_text()
-                if target.active_flag:
+                if target.active_flag and not target.delete_date:
                     matches.add(target)
 
         results: List[Dict[str, Any]] = []

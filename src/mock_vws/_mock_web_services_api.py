@@ -13,6 +13,7 @@ import statistics
 import uuid
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
+import pytz
 import wrapt
 from PIL import Image, ImageStat
 from requests import codes
@@ -231,7 +232,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.upload_date: datetime.datetime = datetime.datetime.now()
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        self.upload_date: datetime.datetime = now
         self.last_modified_date = self.upload_date
         self.processed_tracking_rating = random.randint(0, 5)
         self.image = image
@@ -276,7 +279,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
             seconds=self._processing_time_seconds,
         )
 
-        time_since_change = datetime.datetime.now() - self.last_modified_date
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        time_since_change = now - self.last_modified_date
 
         if time_since_change <= processing_time:
             return str(TargetStatuses.PROCESSING.value)
@@ -301,7 +306,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
             seconds=self._processing_time_seconds / 2,
         )
 
-        time_since_upload = datetime.datetime.now() - self.upload_date
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        time_since_upload = now - self.upload_date
 
         if time_since_upload <= pre_rating_time:
             return -1
@@ -433,7 +440,9 @@ class MockVuforiaWebServicesAPI:
             }
             return json_dump(body)
 
-        target.delete_date = datetime.datetime.now()
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        target.delete_date = now
 
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -675,7 +684,9 @@ class MockVuforiaWebServicesAPI:
         available_values = list(set(range(6)) - set([target.tracking_rating]))
         target.processed_tracking_rating = random.choice(available_values)
 
-        target.last_modified_date = datetime.datetime.now()
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        target.last_modified_date = now
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
