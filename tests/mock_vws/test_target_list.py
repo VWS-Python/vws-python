@@ -6,7 +6,11 @@ import pytest
 from requests import codes
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import list_targets
+from tests.mock_vws.utils import (
+    delete_target,
+    list_targets,
+    wait_for_target_processed,
+)
 from tests.mock_vws.utils.assertions import assert_vws_response
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
@@ -44,6 +48,26 @@ class TestTargetList:
         """
         response = list_targets(vuforia_database_keys=vuforia_database_keys)
         assert response.json()['results'] == [target_id]
+
+    def test_deleted(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        target_id: str,
+    ) -> None:
+        """
+        Deleted targets are not returned in the list.
+        """
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+        response = list_targets(vuforia_database_keys=vuforia_database_keys)
+        assert response.json()['results'] == []
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
