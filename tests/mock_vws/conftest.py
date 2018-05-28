@@ -56,6 +56,9 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
             vuforia_database_keys=database_keys,
             target_id=target,
         )
+
+        # Even deleted targets can be matched by a query for a few seconds so
+        # we change the target to inactive before deleting it.
         update_target(
             vuforia_database_keys=database_keys,
             data={'active_flag': False},
@@ -65,7 +68,10 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
             vuforia_database_keys=database_keys,
             target_id=target,
         )
-        response = delete_target(vuforia_database_keys=database_keys, target_id=target)
+        response = delete_target(
+            vuforia_database_keys=database_keys,
+            target_id=target,
+        )
         assert_vws_response(
             response=response,
             status_code=codes.OK,
