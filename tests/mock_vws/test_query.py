@@ -1182,7 +1182,7 @@ class TestProcessing:
             body=body,
         )
 
-        # We assert that after making a query, the target is in th processing
+        # We assert that after making a query, the target is in the processing
         # state.
         #
         # There is a race condition here.
