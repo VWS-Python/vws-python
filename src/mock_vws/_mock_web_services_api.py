@@ -224,6 +224,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
                 Vuforia's documentation).
             application_metadata (str): The base64 encoded application metadata
                 associated with the target.
+            delete_date (Optional[datetime.datetime]): The time that the target
+                was deleted.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
@@ -236,6 +238,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.reco_rating = ''
         self._processing_time_seconds = processing_time_seconds
         self.application_metadata = application_metadata
+        self.delete_date = None
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
@@ -429,9 +432,7 @@ class MockVuforiaWebServicesAPI:
             }
             return json_dump(body)
 
-        self.targets = [
-            item for item in self.targets if item.target_id != target.target_id
-        ]
+        target.delete_date = datetime.datetime.now()
 
         body = {
             'transaction_id': uuid.uuid4().hex,
