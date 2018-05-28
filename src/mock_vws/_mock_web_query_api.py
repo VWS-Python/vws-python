@@ -522,6 +522,8 @@ class MockVuforiaWebQueryAPI:
             },
         )
 
+        [max_num_results] = parsed.get('max_num_results', [b'1'])
+
         [include_target_data] = parsed.get('include_target_data', [b'top'])
         include_target_data = include_target_data.lower()
 
@@ -577,7 +579,7 @@ class MockVuforiaWebQueryAPI:
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
-            'results': results,
+            'results': results[:int(max_num_results)],
             'query_id': uuid.uuid4().hex,
         }
 

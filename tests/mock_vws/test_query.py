@@ -527,16 +527,49 @@ class TestMaxNumResults:
     Tests for the ``max_num_results`` parameter.
     """
 
-    def test_default(self) -> None:
+    def test_default(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
         The default ``max_num_results`` is 1.
-
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
         """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        for name in ('example_1', 'example_2'):
+            add_target_data = {
+                'name': name,
+                'width': 1,
+                'image': image_data_encoded,
+            }
+
+            response = add_target_to_vws(
+                vuforia_database_keys=vuforia_database_keys,
+                data=add_target_data,
+            )
+
+            target_id = response.json()['target_id']
+
+            wait_for_target_processed(
+                target_id=target_id,
+                vuforia_database_keys=vuforia_database_keys,
+            )
+
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+        }
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert len(response.json()['results']) == 1
 
     @pytest.mark.parametrize('num_results', [1, b'1', 50])
-    def test_valid(
+    def test_valid_foo(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -568,6 +601,47 @@ class TestMaxNumResults:
 
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+    def test_valid_works(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        A maximum of ``max_num_results`` results are returned.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        for name in ('example_1', 'example_2', 'example_3'):
+            add_target_data = {
+                'name': name,
+                'width': 1,
+                'image': image_data_encoded,
+            }
+
+            response = add_target_to_vws(
+                vuforia_database_keys=vuforia_database_keys,
+                data=add_target_data,
+            )
+
+            target_id = response.json()['target_id']
+
+            wait_for_target_processed(
+                target_id=target_id,
+                vuforia_database_keys=vuforia_database_keys,
+            )
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'max_num_results': (None, 2, 'text/plain'),
+        }
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert len(response.json()['results']) == 2
 
     @pytest.mark.parametrize('num_results', [-1, 0, 51])
     def test_out_of_range(
