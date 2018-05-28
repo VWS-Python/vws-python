@@ -340,3 +340,29 @@ def list_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
     )
 
     return response
+
+
+def target_summary(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
+) -> Response:
+    """
+    Get a summary of a target.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        target_id: The ID of the target to get a summary for.
+
+    Returns:
+        The response returned by the API.
+    """
+    response = target_api_request(
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
+        method=GET,
+        content=b'',
+        request_path='/summary/' + target_id,
+    )
+
+    return response

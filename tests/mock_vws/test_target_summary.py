@@ -8,12 +8,12 @@ import io
 
 import pytest
 from requests import codes
-from requests_mock import GET
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
-    target_api_request,
+    get_vws_target,
+    target_summary,
     wait_for_target_processed,
 )
 from tests.mock_vws.utils.assertions import assert_vws_response
@@ -54,12 +54,9 @@ class TestTargetSummary:
 
         date_after_add_target = datetime.datetime.now().date()
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_id,
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
         assert_vws_response(
@@ -128,20 +125,14 @@ class TestTargetSummary:
             target_id=target_id,
         )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_id,
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
-        get_target_response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/targets/' + target_id,
+        get_target_response = get_vws_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
         target_record = get_target_response.json()['target_record']
@@ -173,12 +164,9 @@ class TestTargetSummary:
             },
         )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_response.json()['target_id'],
+        target_id = target_response.json()['target_id']
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
-
         assert response.json()['active_flag'] == active_flag

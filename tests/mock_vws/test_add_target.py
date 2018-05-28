@@ -12,7 +12,11 @@ import pytest
 from requests import Response, codes
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import add_target_to_vws
+from tests.mock_vws.utils import (
+    add_target_to_vws,
+    delete_target,
+    wait_for_target_processed,
+)
 from tests.mock_vws.utils.assertions import (
     assert_vws_failure,
     assert_vws_response,
@@ -299,6 +303,47 @@ class TestTargetName:
             status_code=codes.FORBIDDEN,
             result_code=ResultCodes.TARGET_NAME_EXIST,
         )
+
+    def test_deleted_existing_target_name(
+        self,
+        png_rgb: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        A target can be added with the name of a deleted target.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_success(response=response)
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
