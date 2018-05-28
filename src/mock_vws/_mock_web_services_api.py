@@ -79,7 +79,7 @@ def parse_target_id(
     try:
         [matching_target] = [
             target for target in instance.targets
-            if target.target_id == target_id
+            if target.target_id == target_id and not target.delete_date
         ]
     except ValueError:
         body: Dict[str, str] = {
@@ -375,7 +375,8 @@ class MockVuforiaWebServicesAPI:
         """
         name = request.json()['name']
 
-        if any(target.name == name for target in self.targets):
+        targets = (target for target in self.targets if not target.delete_date)
+        if any(target.name == name for target in targets):
             context.status_code = codes.FORBIDDEN
             body = {
                 'transaction_id': uuid.uuid4().hex,
@@ -458,7 +459,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
-                and target.active_flag
+                and target.active_flag and not target.delete_date
             ],
         )
 
@@ -466,6 +467,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.FAILED.value
+                and not target.delete_date
             ],
         )
 
@@ -473,7 +475,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
-                and not target.active_flag
+                and not target.active_flag and not target.delete_date
             ],
         )
 
@@ -481,6 +483,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.PROCESSING.value
+                and not target.delete_date
             ],
         )
 
@@ -514,7 +517,10 @@ class MockVuforiaWebServicesAPI:
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Get-a-Target-List-for-a-Cloud-Database
         """
-        results = [target.target_id for target in self.targets]
+        results = [
+            target.target_id for target in self.targets
+            if not target.delete_date
+        ]
 
         body: Dict[str, Union[str, List[str]]] = {
             'transaction_id': uuid.uuid4().hex,
@@ -645,7 +651,10 @@ class MockVuforiaWebServicesAPI:
         if 'name' in request.json():
             name = request.json()['name']
             other_targets = set(self.targets) - set([target])
-            if any(other.name == name for other in other_targets):
+            if any(
+                other.name == name for other in other_targets
+                if not other.delete_date
+            ):
                 context.status_code = codes.FORBIDDEN
                 body = {
                     'transaction_id': uuid.uuid4().hex,
