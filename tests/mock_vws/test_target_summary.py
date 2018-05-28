@@ -54,12 +54,9 @@ class TestTargetSummary:
 
         date_after_add_target = datetime.datetime.now().date()
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_id,
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
         assert_vws_response(
@@ -128,12 +125,9 @@ class TestTargetSummary:
             target_id=target_id,
         )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_id,
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
         get_target_response = target_api_request(
@@ -173,12 +167,9 @@ class TestTargetSummary:
             },
         )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_response.json()['target_id'],
+        target_id = target_response.json()['target_id']
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
-
         assert response.json()['active_flag'] == active_flag
