@@ -80,6 +80,8 @@ class TestUnexpectedJSON:
         url = str(endpoint.prepared_request.url)
         netloc = urlparse(url).netloc
         if netloc == 'cloudreco.vuforia.com':
+            # The multipart/formdata boundary is no longer in the given
+            # content.
             assert response.text == ''
             assert_vwq_failure(
                 response=response,

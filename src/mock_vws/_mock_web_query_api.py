@@ -383,40 +383,6 @@ def validate_extra_fields(
     return 'Unknown parameters in the request.'
 
 
-@wrapt.decorator
-def validate_request_body_type(
-    wrapped: Callable[..., str],
-    instance: Any,  # pylint: disable=unused-argument
-    args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict,
-) -> str:
-    """
-    Validate the request body type.
-
-    Args:
-        wrapped: An endpoint function for `requests_mock`.
-        instance: The class that the endpoint function is in.
-        args: The arguments given to the endpoint function.
-        kwargs: The keyword arguments given to the endpoint function.
-
-    Returns:
-        The result of calling the endpoint.
-        An `UNSUPPORTED_MEDIA_TYPE` response if the request body is valid UTF-8
-        encoded text.
-    """
-    request, context = args
-
-    try:
-        request.body.decode('utf-8')
-    except UnicodeDecodeError:
-        return wrapped(*args, **kwargs)
-
-    text = ''
-    context.status_code = codes.UNSUPPORTED_MEDIA_TYPE
-    context.headers.pop('Content-Type')
-    return text
-
-
 def route(
     path_pattern: str,
     http_methods: List[str],
@@ -453,7 +419,6 @@ def route(
             validate_authorization,
             validate_date,
             validate_date_header_given,
-            validate_request_body_type,
             validate_include_target_data,
             validate_max_num_results,
             validate_image_field_given,
