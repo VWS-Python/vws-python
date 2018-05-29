@@ -13,6 +13,7 @@ import statistics
 import uuid
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
+import pytz
 import wrapt
 from PIL import Image, ImageStat
 from requests import codes
@@ -79,7 +80,7 @@ def parse_target_id(
     try:
         [matching_target] = [
             target for target in instance.targets
-            if target.target_id == target_id
+            if target.target_id == target_id and not target.delete_date
         ]
     except ValueError:
         body: Dict[str, str] = {
@@ -224,18 +225,23 @@ class Target:  # pylint: disable=too-many-instance-attributes
                 Vuforia's documentation).
             application_metadata (str): The base64 encoded application metadata
                 associated with the target.
+            delete_date (Optional[datetime.datetime]): The time that the target
+                was deleted.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.upload_date: datetime.datetime = datetime.datetime.now()
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        self.upload_date: datetime.datetime = now
         self.last_modified_date = self.upload_date
         self.processed_tracking_rating = random.randint(0, 5)
         self.image = image
         self.reco_rating = ''
         self._processing_time_seconds = processing_time_seconds
         self.application_metadata = application_metadata
+        self.delete_date: Optional[datetime.datetime] = None
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
@@ -273,7 +279,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
             seconds=self._processing_time_seconds,
         )
 
-        time_since_change = datetime.datetime.now() - self.last_modified_date
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        time_since_change = now - self.last_modified_date
 
         if time_since_change <= processing_time:
             return str(TargetStatuses.PROCESSING.value)
@@ -298,7 +306,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
             seconds=self._processing_time_seconds / 2,
         )
 
-        time_since_upload = datetime.datetime.now() - self.upload_date
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        time_since_upload = now - self.upload_date
 
         if time_since_upload <= pre_rating_time:
             return -1
@@ -372,7 +382,8 @@ class MockVuforiaWebServicesAPI:
         """
         name = request.json()['name']
 
-        if any(target.name == name for target in self.targets):
+        targets = (target for target in self.targets if not target.delete_date)
+        if any(target.name == name for target in targets):
             context.status_code = codes.FORBIDDEN
             body = {
                 'transaction_id': uuid.uuid4().hex,
@@ -429,9 +440,9 @@ class MockVuforiaWebServicesAPI:
             }
             return json_dump(body)
 
-        self.targets = [
-            item for item in self.targets if item.target_id != target.target_id
-        ]
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        target.delete_date = now
 
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -457,7 +468,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
-                and target.active_flag
+                and target.active_flag and not target.delete_date
             ],
         )
 
@@ -465,6 +476,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.FAILED.value
+                and not target.delete_date
             ],
         )
 
@@ -472,7 +484,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
-                and not target.active_flag
+                and not target.active_flag and not target.delete_date
             ],
         )
 
@@ -480,6 +492,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.PROCESSING.value
+                and not target.delete_date
             ],
         )
 
@@ -513,7 +526,10 @@ class MockVuforiaWebServicesAPI:
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Get-a-Target-List-for-a-Cloud-Database
         """
-        results = [target.target_id for target in self.targets]
+        results = [
+            target.target_id for target in self.targets
+            if not target.delete_date
+        ]
 
         body: Dict[str, Union[str, List[str]]] = {
             'transaction_id': uuid.uuid4().hex,
@@ -644,7 +660,10 @@ class MockVuforiaWebServicesAPI:
         if 'name' in request.json():
             name = request.json()['name']
             other_targets = set(self.targets) - set([target])
-            if any(other.name == name for other in other_targets):
+            if any(
+                other.name == name for other in other_targets
+                if not other.delete_date
+            ):
                 context.status_code = codes.FORBIDDEN
                 body = {
                     'transaction_id': uuid.uuid4().hex,
@@ -665,7 +684,9 @@ class MockVuforiaWebServicesAPI:
         available_values = list(set(range(6)) - set([target.tracking_rating]))
         target.processed_tracking_rating = random.choice(available_values)
 
-        target.last_modified_date = datetime.datetime.now()
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        target.last_modified_date = now
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
