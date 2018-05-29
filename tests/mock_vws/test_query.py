@@ -1460,4 +1460,46 @@ class TestDeleted:
 
             assert total_waited < 60
 
-    # TODO No sleep and inactive
+    def test_deleted_inactive(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        No error is returned when querying for an image of recently deleted,
+        inactive target.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
