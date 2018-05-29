@@ -1058,7 +1058,7 @@ class TestAcceptHeader:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestActiveFlag:
     """
-    Tests for active targets.
+    Tests for active versus inactive targets.
     """
 
     def test_inactive(
