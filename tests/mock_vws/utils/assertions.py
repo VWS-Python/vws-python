@@ -6,13 +6,10 @@ import datetime
 import email.utils
 import json
 from string import hexdigits
-from typing import Any, Dict, Optional
-from urllib.parse import urljoin
+from typing import Optional
 
 import pytz
-import requests
 from requests import Response, codes
-from requests_mock import POST
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils.authorization import (
@@ -151,53 +148,6 @@ def assert_vws_response(
     assert_json_separators(response=response)
     assert_valid_transaction_id(response=response)
     assert_valid_date_header(response=response)
-
-
-def add_target_to_vws(
-    vuforia_database_keys: VuforiaDatabaseKeys,
-    data: Dict[str, Any],
-    content_type: str = 'application/json',
-) -> Response:
-    """
-    Return a response from a request to the endpoint to add a target.
-
-    Args:
-        vuforia_database_keys: The credentials to use to connect to Vuforia.
-        data: The data to send, in JSON format, to the endpoint.
-        content_type: The `Content-Type` header to use.
-
-    Returns:
-        The response returned by the API.
-    """
-    date = rfc_1123_date()
-    request_path = '/targets'
-
-    content = bytes(json.dumps(data), encoding='utf-8')
-
-    authorization_string = authorization_header(
-        access_key=vuforia_database_keys.server_access_key,
-        secret_key=vuforia_database_keys.server_secret_key,
-        method=POST,
-        content=content,
-        content_type=content_type,
-        date=date,
-        request_path=request_path,
-    )
-
-    headers = {
-        'Authorization': authorization_string,
-        'Date': date,
-        'Content-Type': content_type,
-    }
-
-    response = requests.request(
-        method=POST,
-        url=urljoin(base='https://vws.vuforia.com/', url=request_path),
-        headers=headers,
-        data=content,
-    )
-
-    return response
 
 
 def assert_query_success(response: Response) -> None:
