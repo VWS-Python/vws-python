@@ -532,13 +532,14 @@ class MockVuforiaWebQueryAPI:
         gmt = pytz.timezone('GMT')
         now = datetime.datetime.now(tz=gmt)
 
-        minimum_time_since_delete = datetime.timedelta(seconds=7)
+        # See https://github.com/adamtheturtle/vws-python/issues/623 for making
+        # this customizable.
+        minimum_time_since_delete = datetime.timedelta(seconds=3)
 
         for target in self.mock_web_services_api.targets:
-            time_difference = now - target.delete_date
             delete_processing = bool(
-                target.delete_date and
-                time_difference < minimum_time_since_delete
+                target.delete_date
+                and (now - target.delete_date) < minimum_time_since_delete,
             )
             if target.image.getvalue() == image:
                 if target.status == TargetStatuses.PROCESSING.value:

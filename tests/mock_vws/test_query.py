@@ -1431,17 +1431,33 @@ class TestDeleted:
             target_id=target_id,
         )
 
-        # TODO retry in a loop instead
-        time.sleep(30)
-
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        response = query(
-            vuforia_database_keys=vuforia_database_keys,
-            body=body,
-        )
+        # In practice, we have seen a delay of up to 30 seconds between
+        # deleting a target and having no 500 errors.
+        #
+        # We wait up to 60 seconds to be safe.
+        total_waited = 0
+        while True:
+            response = query(
+                vuforia_database_keys=vuforia_database_keys,
+                body=body,
+            )
 
-        assert_query_success(response=response)
-        assert response.json()['results'] == []
+            try:
+                assert_query_success(response=response)
+            except AssertionError:
+                # The response text for a 500 response is not consistent.
+                # Therefore we only test for consistent features.
+                assert 'Error 500 Server Error' in response.text
+                assert 'HTTP ERROR 500' in response.text
+                assert 'Problem accessing /v1/query' in response.text
+                time.sleep(2)
+                total_waited += 2
+            else:
+                assert response.json()['results'] == []
+                break
+
+            assert total_waited < 60
 
     # TODO No sleep and inactive
