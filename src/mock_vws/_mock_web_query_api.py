@@ -559,7 +559,7 @@ class MockVuforiaWebQueryAPI:
                     content_type = 'text/html; charset=ISO-8859-1'
                     context.headers['Content-Type'] = content_type
                     return Path(match_processing_resp_file).read_text()
-                if delete_processing:
+                if target.active_flag and delete_processing:
                     # We return an example 500 response.
                     # Each response given by Vuforia is different.
                     resources_dir = Path(__file__).parent / 'resources'
