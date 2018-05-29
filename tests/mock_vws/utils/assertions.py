@@ -12,11 +12,6 @@ import pytz
 from requests import Response, codes
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils.authorization import (
-    VuforiaDatabaseKeys,
-    authorization_header,
-    rfc_1123_date,
-)
 
 
 def assert_vws_failure(
