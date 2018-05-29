@@ -241,7 +241,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         self.reco_rating = ''
         self._processing_time_seconds = processing_time_seconds
         self.application_metadata = application_metadata
-        self.delete_date = None
+        self.delete_date: Optional[datetime.datetime] = None
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
