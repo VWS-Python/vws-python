@@ -494,7 +494,18 @@ class MockVuforiaWebQueryAPI:
 
         [image] = parsed['image']
         matches: Set[Target] = set([])
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+
+        # See https://github.com/adamtheturtle/vws-python/issues/623 for making
+        # this customizable.
+        minimum_time_since_delete = datetime.timedelta(seconds=3)
+
         for target in self.mock_web_services_api.targets:
+            delete_processing = bool(
+                target.delete_date
+                and (now - target.delete_date) < minimum_time_since_delete,
+            )
             if target.image.getvalue() == image:
                 if target.status == TargetStatuses.PROCESSING.value:
                     # We return an example 500 response.
@@ -513,7 +524,19 @@ class MockVuforiaWebQueryAPI:
                     content_type = 'text/html; charset=ISO-8859-1'
                     context.headers['Content-Type'] = content_type
                     return Path(match_processing_resp_file).read_text()
-                if target.active_flag:
+                if target.active_flag and delete_processing:
+                    # We return an example 500 response.
+                    # Each response given by Vuforia is different.
+                    resources_dir = Path(__file__).parent / 'resources'
+                    filename = 'match_processing_response'
+                    match_processing_resp_file = resources_dir / filename
+                    context.status_code = codes.INTERNAL_SERVER_ERROR
+                    cache_control = 'must-revalidate,no-cache,no-store'
+                    context.headers['Cache-Control'] = cache_control
+                    content_type = 'text/html; charset=ISO-8859-1'
+                    context.headers['Content-Type'] = content_type
+                    return Path(match_processing_resp_file).read_text()
+                if target.active_flag and not target.delete_date:
                     matches.add(target)
 
         results: List[Dict[str, Any]] = []

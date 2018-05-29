@@ -20,6 +20,7 @@ from urllib3.filepost import encode_multipart_formdata
 from mock_vws._constants import TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
+    delete_target,
     get_vws_target,
     update_target,
     wait_for_target_processed,
@@ -1057,7 +1058,7 @@ class TestAcceptHeader:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestActiveFlag:
     """
-    Tests for active targets.
+    Tests for active versus inactive targets.
     """
 
     def test_inactive(
@@ -1335,5 +1336,170 @@ class TestUpdate:
             vuforia_database_keys=vuforia_database_keys,
             body=body,
         )
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestDeleted:
+    """
+    Tests for matching deleted targets.
+    """
+
+    def test_deleted(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        Within approximately 7 seconds of deleting a target, querying for its
+        image results in an ``INTERNAL_SERVER_ERROR``.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        # The response text for a 500 response is not consistent.
+        # Therefore we only test for consistent features.
+        assert 'Error 500 Server Error' in response.text
+        assert 'HTTP ERROR 500' in response.text
+        assert 'Problem accessing /v1/query' in response.text
+
+        assert_vwq_failure(
+            response=response,
+            content_type='text/html; charset=ISO-8859-1',
+            status_code=codes.INTERNAL_SERVER_ERROR,
+        )
+
+    def test_deleted_and_wait(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        After waiting approximately 7 seconds (we wait more to be safer), a
+        deleted target is not found when its image is queried for.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        response = delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        # In practice, we have seen a delay of up to 30 seconds between
+        # deleting a target and having no 500 errors.
+        #
+        # We wait up to 60 seconds to be safe.
+        total_waited = 0
+        while True:
+            response = query(
+                vuforia_database_keys=vuforia_database_keys,
+                body=body,
+            )
+
+            try:
+                assert_query_success(response=response)
+            except AssertionError:
+                # The response text for a 500 response is not consistent.
+                # Therefore we only test for consistent features.
+                assert 'Error 500 Server Error' in response.text
+                assert 'HTTP ERROR 500' in response.text
+                assert 'Problem accessing /v1/query' in response.text
+                time.sleep(2)
+                total_waited += 2
+            else:
+                assert response.json()['results'] == []
+                break
+
+            assert total_waited < 60
+
+    def test_deleted_inactive(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        No error is returned when querying for an image of recently deleted,
+        inactive target.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'active_flag': False,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
         assert_query_success(response=response)
         assert response.json()['results'] == []
