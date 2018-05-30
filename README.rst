@@ -177,6 +177,13 @@ Matching a target which is in the processing state sometimes returns a successfu
 Sometimes a 500 (INTERNAL SERVER ERROR) response is given.
 The mock always gives a 500 response.
 
+Matching deleted targets
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Matching a target which has been deleted returns a 500 (INTERNAL SERVER ERROR) response within the first few seconds.
+This timeframe is not consistent on the real Vuforia Web Services.
+On the mock, this timeframe is always three seconds.
+
 .. |Build Status| image:: https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master
    :target: https://travis-ci.org/adamtheturtle/vws-python
 .. |codecov| image:: https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg

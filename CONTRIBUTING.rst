@@ -176,6 +176,8 @@ However, the maximum allowed value is 50.
 
 A response to an invalid query may have an ``application/json`` content type but include text (not JSON) data.
 
+After deleting a target, for up to approximately 30 seconds, matching it with a query returns a 500 response.
+
 Performing a release
 --------------------
 
