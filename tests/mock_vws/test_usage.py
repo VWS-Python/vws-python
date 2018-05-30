@@ -421,4 +421,12 @@ class TestCustomBaseURLs:
             requests.post(url='https://vuforia.vwq.example.com/v1/query')
             requests.get('https://vws.vuforia.com/summary')
 
-# TODO test here
+
+class TestCustomQueryRecognizesDeletionSeconds:
+    """
+    Tests for setting the amount of time after a target has been deleted
+    until it is not recognized by the query endpoint.
+    """
+
+    def test_default(self):
+        pass
