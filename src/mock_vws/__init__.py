@@ -115,6 +115,7 @@ class MockVWS(ContextDecorator):
             client_access_key=self.client_access_key,
             client_secret_key=self.client_secret_key,
             mock_web_services_api=mock_vws_api,
+            query_recognizes_deletion_seconds=3,
         )
 
         date = email.utils.formatdate(None, localtime=False, usegmt=True)

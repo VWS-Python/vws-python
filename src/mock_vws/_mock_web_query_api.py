@@ -449,12 +449,16 @@ class MockVuforiaWebQueryAPI:
         client_access_key: str,
         client_secret_key: str,
         mock_web_services_api: MockVuforiaWebServicesAPI,
+        query_recognizes_deletion_seconds: int,
     ) -> None:
         """
         Args:
             client_access_key: A VWS client access key.
             client_secret_key: A VWS client secret key.
             mock_web_services_api: An instance of a mock web services API.
+            query_recognizes_deletion_seconds: The number of seconds after a
+                target has been deleted that the query endpoint will return a
+                500 response for on a match.
 
         Attributes:
             routes: The `Route`s to be used in the mock.
@@ -470,7 +474,9 @@ class MockVuforiaWebQueryAPI:
         self.access_key: str = client_access_key
         self.secret_key: str = client_secret_key
         self.mock_web_services_api = mock_web_services_api
-        self.query_recognizes_deletion_seconds = 3
+        self.query_recognizes_deletion_seconds = (
+            query_recognizes_deletion_seconds
+        )
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
