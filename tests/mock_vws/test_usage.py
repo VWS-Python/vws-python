@@ -420,3 +420,5 @@ class TestCustomBaseURLs:
 
             requests.post(url='https://vuforia.vwq.example.com/v1/query')
             requests.get('https://vws.vuforia.com/summary')
+
+# TODO test here

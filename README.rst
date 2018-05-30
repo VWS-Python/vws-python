@@ -184,6 +184,8 @@ Matching a target which has been deleted returns a 500 (INTERNAL SERVER ERROR) r
 This timeframe is not consistent on the real Vuforia Web Services.
 On the mock, this timeframe is always three seconds.
 
+TODO explain option here
+
 .. |Build Status| image:: https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master
    :target: https://travis-ci.org/adamtheturtle/vws-python
 .. |codecov| image:: https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg
