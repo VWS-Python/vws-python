@@ -462,11 +462,15 @@ class MockVuforiaWebQueryAPI:
             secret_key (str): A VWS client secret key.
             mock_web_services_api (MockVuforiaWebServicesAPI): An instance of a
                 mock web services API.
+            query_recognizes_deletion_seconds (int): The number of seconds
+                after a target has been deleted that the query endpoint will
+                return a 500 response for on a match.
         """
         self.routes: Set[Route] = ROUTES
         self.access_key: str = client_access_key
         self.secret_key: str = client_secret_key
         self.mock_web_services_api = mock_web_services_api
+        self.query_recognizes_deletion_seconds = 3
 
     @route(path_pattern='/v1/query', http_methods=[POST])
     def query(
@@ -497,9 +501,9 @@ class MockVuforiaWebQueryAPI:
         gmt = pytz.timezone('GMT')
         now = datetime.datetime.now(tz=gmt)
 
-        # See https://github.com/adamtheturtle/vws-python/issues/623 for making
-        # this customizable.
-        minimum_time_since_delete = datetime.timedelta(seconds=3)
+        minimum_time_since_delete = datetime.timedelta(
+            seconds=self.query_recognizes_deletion_seconds,
+        )
 
         for target in self.mock_web_services_api.targets:
             delete_processing = bool(
