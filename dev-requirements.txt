@@ -1,3 +1,4 @@
+attrs==18.1.0  # Modern attrs is required for pytest
 autoflake==1.2
 check-manifest==0.37
 codecov==2.0.15 # Upload coverage data
