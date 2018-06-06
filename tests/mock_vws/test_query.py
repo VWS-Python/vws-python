@@ -18,7 +18,7 @@ from requests import codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
-from mock_vws._constants import TargetStatuses
+from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     delete_target,
@@ -29,7 +29,10 @@ from tests.mock_vws.utils import (
 )
 from tests.mock_vws.utils.assertions import (
     assert_query_success,
+    assert_valid_transaction_id,
+    assert_valid_date_header,
     assert_vwq_failure,
+    assert_vws_failure,
 )
 from tests.mock_vws.utils.authorization import (
     VuforiaDatabaseKeys,
@@ -1077,7 +1080,7 @@ class TestImageFormats:
     Tests for various image formats.
     """
 
-    @pytest.mark.parametrize('file_format', ['png', 'jpg'])
+    @pytest.mark.parametrize('file_format', ['png', 'jpeg'])
     def test_supported(
         self,
         high_quality_image: io.BytesIO,
@@ -1104,7 +1107,11 @@ class TestImageFormats:
         assert_query_success(response=response)
         assert response.json()['results'] == []
 
-    def test_unsupported(self) -> None:
+    def test_unsupported(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
@@ -1123,8 +1130,15 @@ class TestImageFormats:
             body=body,
         )
 
-        assert_query_success(response=response)
-        assert response.json()['results'] == []
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            content_type='application/json',
+        )
+        assert response.json().keys() == {'transaction_id', 'result_code'}
+        assert_valid_transaction_id(response=response)
+        assert_valid_date_header(response=response)
+        # TODO assert weird separators
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
