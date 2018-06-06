@@ -17,7 +17,7 @@ pylint==1.9.1  # Lint
 pyroma==2.3.1  # Packaging best practices checker
 pytest-cov==2.5.1  # Measure code coverage
 pytest-envfiles==0.1.0  # Use files for environment variables for tests
-pytest==3.6.0  # Test runners
+pytest==3.6.1  # Test runners
 timeout-decorator==0.4.0  # Decorate functions to time out.
 vulture==0.27
 yapf==0.21.0  # Automatic formatting for Python
