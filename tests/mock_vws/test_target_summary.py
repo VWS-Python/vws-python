@@ -141,6 +141,13 @@ class TestTargetSummary:
         assert response.json()['tracking_rating'] in range(6)
         assert response.json()['status'] == TargetStatuses.FAILED.value
 
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestActiveFlag:
+    """
+    Tests for the active flag related parts of the summary.
+    """
+
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag(
         self,
