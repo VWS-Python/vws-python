@@ -95,6 +95,10 @@ class TestTargetSummary:
         # While processing the tracking rating is -1.
         assert response.json()['tracking_rating'] == -1
 
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
+
     def test_after_processing(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -140,6 +144,9 @@ class TestTargetSummary:
         assert response.json()['tracking_rating'] == tracking_rating
         assert response.json()['tracking_rating'] in range(6)
         assert response.json()['status'] == TargetStatuses.FAILED.value
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -177,3 +184,13 @@ class TestActiveFlag:
             target_id=target_id,
         )
         assert response.json()['active_flag'] == active_flag
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestRecognitionCounts:
+    """
+    Tests for the recognition counts in the summary.
+    """
+
+    def test_recognition(self):
+        pass
