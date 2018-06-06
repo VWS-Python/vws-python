@@ -1138,8 +1138,17 @@ class TestImageFormats:
         assert response.json().keys() == {'transaction_id', 'result_code'}
         assert_valid_transaction_id(response=response)
         assert_valid_date_header(response=response)
-        # TODO assert weird separators
-        # TODO assert result code
+        result_code = response.json()['result_code']
+        transaction_id = response.json()['transaction_id']
+        assert result_code == ResultCodes.BAD_IMAGE.value
+        # The separators are inconsistent and we test this.
+        expected_text = (
+            '{{"transaction_id": "{transaction_id}","result_code":"{result_code}"}}'
+        ).format(
+            transaction_id=transaction_id,
+            result_code=result_code,
+        )
+        assert response.text == expected_text
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
