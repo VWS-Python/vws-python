@@ -11,6 +11,7 @@ import requests
 import timeout_decorator
 from requests import Response
 from requests_mock import DELETE, GET, POST, PUT
+from urllib3.filepost import encode_multipart_formdata
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils.authorization import (
@@ -363,6 +364,56 @@ def target_summary(
         method=GET,
         content=b'',
         request_path='/summary/' + target_id,
+    )
+
+    return response
+
+
+def query(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    body: Dict[str, Any],
+) -> Response:
+    """
+    Make a request to the endpoint to make an image recognition query.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        body: The request body to send in ``multipart/formdata`` format.
+
+    Returns:
+        The response returned by the API.
+    """
+    date = rfc_1123_date()
+    request_path = '/v1/query'
+    content, content_type_header = encode_multipart_formdata(body)
+    method = POST
+
+    access_key = vuforia_database_keys.client_access_key
+    secret_key = vuforia_database_keys.client_secret_key
+    authorization_string = authorization_header(
+        access_key=access_key,
+        secret_key=secret_key,
+        method=method,
+        content=content,
+        # Note that this is not the actual Content-Type header value sent.
+        content_type='multipart/form-data',
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type_header,
+    }
+
+    vwq_host = 'https://cloudreco.vuforia.com'
+    response = requests.request(
+        method=method,
+        url=urljoin(base=vwq_host, url=request_path),
+        headers=headers,
+        data=content,
     )
 
     return response

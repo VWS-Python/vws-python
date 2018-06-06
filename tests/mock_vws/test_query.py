@@ -8,12 +8,12 @@ import base64
 import calendar
 import io
 import time
-from typing import Any, Dict, Union
+from typing import Dict, Union
 from urllib.parse import urljoin
 
 import pytest
 import requests
-from requests import Response, codes
+from requests import codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
@@ -22,6 +22,7 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     delete_target,
     get_vws_target,
+    query,
     update_target,
     wait_for_target_processed,
 )
@@ -36,55 +37,6 @@ from tests.mock_vws.utils.authorization import (
 )
 
 VWQ_HOST = 'https://cloudreco.vuforia.com'
-
-
-def query(
-    vuforia_database_keys: VuforiaDatabaseKeys,
-    body: Dict[str, Any],
-) -> Response:
-    """
-    Make a request to the endpoint to make an image recognition query.
-
-    Args:
-        vuforia_database_keys: The credentials to use to connect to
-            Vuforia.
-        body: The request body to send in ``multipart/formdata`` format.
-
-    Returns:
-        The response returned by the API.
-    """
-    date = rfc_1123_date()
-    request_path = '/v1/query'
-    content, content_type_header = encode_multipart_formdata(body)
-    method = POST
-
-    access_key = vuforia_database_keys.client_access_key
-    secret_key = vuforia_database_keys.client_secret_key
-    authorization_string = authorization_header(
-        access_key=access_key,
-        secret_key=secret_key,
-        method=method,
-        content=content,
-        # Note that this is not the actual Content-Type header value sent.
-        content_type='multipart/form-data',
-        date=date,
-        request_path=request_path,
-    )
-
-    headers = {
-        'Authorization': authorization_string,
-        'Date': date,
-        'Content-Type': content_type_header,
-    }
-
-    response = requests.request(
-        method=method,
-        url=urljoin(base=VWQ_HOST, url=request_path),
-        headers=headers,
-        data=content,
-    )
-
-    return response
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

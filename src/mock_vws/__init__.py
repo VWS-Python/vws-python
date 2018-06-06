@@ -37,6 +37,7 @@ class MockVWS(ContextDecorator):
         client_secret_key: Optional[str]=None,
         database_name: Optional[str]=None,
         processing_time_seconds: Union[int, float]=0.5,
+        query_recognizes_deletion_seconds: Union[int, float]=3,
     ) -> None:
         """
         Args:
@@ -56,6 +57,9 @@ class MockVWS(ContextDecorator):
                 deterministic.
             base_vwq_url: The base URL for the VWQ API.
             base_vws_url: The base URL for the VWS API.
+            query_recognizes_deletion_seconds: The number of seconds after a
+                target has been deleted that the query endpoint will return a
+                500 response for on a match.
 
 
         Attributes:
@@ -95,6 +99,10 @@ class MockVWS(ContextDecorator):
         self._base_vws_url = base_vws_url
         self._base_vwq_url = base_vwq_url
 
+        self._query_recognizes_deletion_seconds = (
+            query_recognizes_deletion_seconds
+        )
+
     def __enter__(self) -> 'MockVWS':
         """
         Start an instance of a Vuforia mock with access keys set from
@@ -115,7 +123,9 @@ class MockVWS(ContextDecorator):
             client_access_key=self.client_access_key,
             client_secret_key=self.client_secret_key,
             mock_web_services_api=mock_vws_api,
-            query_recognizes_deletion_seconds=3,
+            query_recognizes_deletion_seconds=(
+                self._query_recognizes_deletion_seconds
+            ),
         )
 
         date = email.utils.formatdate(None, localtime=False, usegmt=True)
