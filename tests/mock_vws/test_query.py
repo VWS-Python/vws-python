@@ -1087,8 +1087,7 @@ class TestImageFormats:
         file_format: str,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        PNG and JPEG formats are supported.
         """
         image_buffer = io.BytesIO()
         pil_image = Image.open(high_quality_image)
@@ -1111,8 +1110,7 @@ class TestImageFormats:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        File formats which are not PNG or JPEG are not supported.
         """
         file_format = 'tiff'
         image_buffer = io.BytesIO()
