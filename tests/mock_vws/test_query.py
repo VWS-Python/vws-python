@@ -1139,6 +1139,7 @@ class TestImageFormats:
         assert_valid_transaction_id(response=response)
         assert_valid_date_header(response=response)
         # TODO assert weird separators
+        # TODO assert result code
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
