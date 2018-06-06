@@ -499,7 +499,6 @@ class TestCustomQueryRecognizesDeletionSeconds:
         XXX
         """
         with MockVWS(
-            real_http=False,
             client_access_key=vuforia_database_keys.client_access_key.decode(),
             client_secret_key=vuforia_database_keys.client_secret_key.decode(),
             server_access_key=vuforia_database_keys.server_access_key.decode(),
@@ -511,4 +510,28 @@ class TestCustomQueryRecognizesDeletionSeconds:
             )
 
         expected = 3
+        assert abs(expected - seconds_to_recognize_deletion) < 0.2
+
+    def test_custom(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        XXX
+        """
+        query_recognizes_deletion = 0.5
+        with MockVWS(
+            client_access_key=vuforia_database_keys.client_access_key.decode(),
+            client_secret_key=vuforia_database_keys.client_secret_key.decode(),
+            server_access_key=vuforia_database_keys.server_access_key.decode(),
+            server_secret_key=vuforia_database_keys.server_secret_key.decode(),
+            query_recognizes_deletion_seconds=query_recognizes_deletion,
+        ) as mock:
+            seconds_to_recognize_deletion = self._seconds_to_recognize_deletion(
+                high_quality_image=high_quality_image,
+                vuforia_database_keys=vuforia_database_keys,
+            )
+
+        expected = query_recognizes_deletion
         assert abs(expected - seconds_to_recognize_deletion) < 0.2
