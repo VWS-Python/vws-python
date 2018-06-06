@@ -433,11 +433,11 @@ class TestCustomQueryRecognizesDeletionSeconds:
     until it is not recognized by the query endpoint.
     """
 
-    def _seconds_to_recognize_deletion(
+    def _recognize_deletion_seconds(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
-    ) -> datetime.timedelta:
+    ) -> float:
         """
         XXX
         """
@@ -496,21 +496,25 @@ class TestCustomQueryRecognizesDeletionSeconds:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        XXX
+        By default it takes three seconds for the Query API on the mock to
+        recognize that a target has been deleted.
+
+        The real Query API takes between seven and thirty seconds.
+        See ``test_query`` for more information.
         """
         with MockVWS(
             client_access_key=vuforia_database_keys.client_access_key.decode(),
             client_secret_key=vuforia_database_keys.client_secret_key.decode(),
             server_access_key=vuforia_database_keys.server_access_key.decode(),
             server_secret_key=vuforia_database_keys.server_secret_key.decode(),
-        ) as mock:
-            seconds_to_recognize_deletion = self._seconds_to_recognize_deletion(
+        ):
+            recognize_deletion_seconds = self._recognize_deletion_seconds(
                 high_quality_image=high_quality_image,
                 vuforia_database_keys=vuforia_database_keys,
             )
 
         expected = 3
-        assert abs(expected - seconds_to_recognize_deletion) < 0.2
+        assert abs(expected - recognize_deletion_seconds) < 0.2
 
     def test_custom(
         self,
@@ -518,9 +522,10 @@ class TestCustomQueryRecognizesDeletionSeconds:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        XXX
+        It is possible to use set a custom amount of time that it takes for the
+        Query API on the mock to recognize that a target has been deleted.
         """
-        # We choose a low time for a quick test
+        # We choose a low time for a quick test.
         query_recognizes_deletion = 0.1
         with MockVWS(
             client_access_key=vuforia_database_keys.client_access_key.decode(),
@@ -528,11 +533,11 @@ class TestCustomQueryRecognizesDeletionSeconds:
             server_access_key=vuforia_database_keys.server_access_key.decode(),
             server_secret_key=vuforia_database_keys.server_secret_key.decode(),
             query_recognizes_deletion_seconds=query_recognizes_deletion,
-        ) as mock:
-            seconds_to_recognize_deletion = self._seconds_to_recognize_deletion(
+        ):
+            recognize_deletion_seconds = self._recognize_deletion_seconds(
                 high_quality_image=high_quality_image,
                 vuforia_database_keys=vuforia_database_keys,
             )
 
         expected = query_recognizes_deletion
-        assert abs(expected - seconds_to_recognize_deletion) < 0.2
+        assert abs(expected - recognize_deletion_seconds) < 0.2

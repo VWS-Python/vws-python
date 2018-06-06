@@ -10,7 +10,7 @@ import datetime
 import io
 import uuid
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Set, Tuple
+from typing import Any, Callable, Dict, List, Set, Tuple, Union
 
 import pytz
 import wrapt
@@ -449,7 +449,7 @@ class MockVuforiaWebQueryAPI:
         client_access_key: str,
         client_secret_key: str,
         mock_web_services_api: MockVuforiaWebServicesAPI,
-        query_recognizes_deletion_seconds: int,
+        query_recognizes_deletion_seconds: Union[int, float],
     ) -> None:
         """
         Args:

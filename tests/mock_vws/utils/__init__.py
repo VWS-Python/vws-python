@@ -408,7 +408,6 @@ def query(
         'Content-Type': content_type_header,
     }
 
-
     vwq_host = 'https://cloudreco.vuforia.com'
     response = requests.request(
         method=method,

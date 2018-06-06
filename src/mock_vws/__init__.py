@@ -57,6 +57,9 @@ class MockVWS(ContextDecorator):
                 deterministic.
             base_vwq_url: The base URL for the VWQ API.
             base_vws_url: The base URL for the VWS API.
+            query_recognizes_deletion_seconds: The number of seconds after a
+                target has been deleted that the query endpoint will return a
+                500 response for on a match.
 
 
         Attributes:
@@ -122,7 +125,7 @@ class MockVWS(ContextDecorator):
             mock_web_services_api=mock_vws_api,
             query_recognizes_deletion_seconds=(
                 self._query_recognizes_deletion_seconds
-            )
+            ),
         )
 
         date = email.utils.formatdate(None, localtime=False, usegmt=True)
