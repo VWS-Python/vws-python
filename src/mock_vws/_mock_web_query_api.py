@@ -71,11 +71,17 @@ def validate_image_format(
         return wrapped(*args, **kwargs)
 
     context.status_code = codes.UNPROCESSABLE_ENTITY
-    body = {
-        'transaction_id': uuid.uuid4().hex,
-        'result_code': ResultCodes.BAD_IMAGE.value,
-    }
-    return json_dump(body)
+    transaction_id = uuid.uuid4().hex
+    result_code = ResultCodes.BAD_IMAGE.value
+
+    # The response has an unsual format of separators, so we construct it
+    # manually.
+    return (
+        '{"transaction_id": '
+        f'"{transaction_id}",'
+        f'"result_code":"{result_code}"'
+        '}'
+    )
 
 
 @wrapt.decorator
@@ -471,12 +477,12 @@ def route(
             validate_date_header_given,
             validate_include_target_data,
             validate_max_num_results,
+            validate_image_format,
             validate_image_field_given,
             validate_extra_fields,
             validate_content_type_header,
             validate_accept_header,
             validate_auth_header_exists,
-            validate_image_format,
             set_content_length_header,
         ]
 
