@@ -32,7 +32,6 @@ from tests.mock_vws.utils.assertions import (
     assert_valid_date_header,
     assert_valid_transaction_id,
     assert_vwq_failure,
-    assert_vws_failure,
 )
 from tests.mock_vws.utils.authorization import (
     VuforiaDatabaseKeys,
