@@ -29,8 +29,8 @@ from tests.mock_vws.utils import (
 )
 from tests.mock_vws.utils.assertions import (
     assert_query_success,
-    assert_valid_transaction_id,
     assert_valid_date_header,
+    assert_valid_transaction_id,
     assert_vwq_failure,
     assert_vws_failure,
 )
@@ -1093,8 +1093,7 @@ class TestImageFormats:
         """
         image_buffer = io.BytesIO()
         pil_image = Image.open(high_quality_image)
-        image = pil_image.save(image_buffer, file_format)
-        image_buffer.seek(0)
+        pil_image.save(image_buffer, file_format)
         image_content = image_buffer.getvalue()
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
@@ -1119,8 +1118,7 @@ class TestImageFormats:
         file_format = 'tiff'
         image_buffer = io.BytesIO()
         pil_image = Image.open(high_quality_image)
-        image = pil_image.save(image_buffer, file_format)
-        image_buffer.seek(0)
+        pil_image.save(image_buffer, file_format)
         image_content = image_buffer.getvalue()
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
