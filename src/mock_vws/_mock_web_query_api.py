@@ -73,7 +73,7 @@ def validate_image_format(
     transaction_id = uuid.uuid4().hex
     result_code = ResultCodes.BAD_IMAGE.value
 
-    # The response has an unsual format of separators, so we construct it
+    # The response has an unusual format of separators, so we construct it
     # manually.
     return (
         '{"transaction_id": '
