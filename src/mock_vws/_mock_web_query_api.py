@@ -14,6 +14,7 @@ from typing import Any, Callable, Dict, List, Set, Tuple, Union
 
 import pytz
 import wrapt
+from PIL import Image
 from requests import codes
 from requests_mock import POST
 from requests_mock.request import _RequestObjectProxy
@@ -26,6 +27,60 @@ from mock_vws._mock_web_services_api import MockVuforiaWebServicesAPI, Target
 from ._validators import validate_auth_header_exists, validate_authorization
 
 ROUTES = set([])
+
+
+@wrapt.decorator
+def validate_image_format(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the format of the image given to the query endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
+        either a PNG or a JPEG.
+    """
+    request, context = args
+    body_file = io.BytesIO(request.body)
+
+    _, pdict = cgi.parse_header(request.headers['Content-Type'])
+    parsed = cgi.parse_multipart(
+        fp=body_file,
+        pdict={
+            'boundary': pdict['boundary'].encode(),
+        },
+    )
+
+    [image] = parsed['image']
+
+    image_file = io.BytesIO(image)
+    pil_image = Image.open(image_file)
+
+    if pil_image.format in ('PNG', 'JPEG'):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.UNPROCESSABLE_ENTITY
+    transaction_id = uuid.uuid4().hex
+    result_code = ResultCodes.BAD_IMAGE.value
+
+    # The response has an unusual format of separators, so we construct it
+    # manually.
+    return (
+        '{"transaction_id": '
+        f'"{transaction_id}",'
+        f'"result_code":"{result_code}"'
+        '}'
+    )
 
 
 @wrapt.decorator
@@ -421,6 +476,7 @@ def route(
             validate_date_header_given,
             validate_include_target_data,
             validate_max_num_results,
+            validate_image_format,
             validate_image_field_given,
             validate_extra_fields,
             validate_content_type_header,

@@ -13,11 +13,12 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from PIL import Image
 from requests import codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
 
-from mock_vws._constants import TargetStatuses
+from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     delete_target,
@@ -28,6 +29,8 @@ from tests.mock_vws.utils import (
 )
 from tests.mock_vws.utils.assertions import (
     assert_query_success,
+    assert_valid_date_header,
+    assert_valid_transaction_id,
     assert_vwq_failure,
 )
 from tests.mock_vws.utils.authorization import (
@@ -939,7 +942,6 @@ class TestAcceptHeader:
             date=date,
             request_path=request_path,
         )
-
         headers = {
             'Authorization': authorization_string,
             'Date': date,
@@ -1077,17 +1079,71 @@ class TestImageFormats:
     Tests for various image formats.
     """
 
-    def test_supported(self) -> None:
+    @pytest.mark.parametrize('file_format', ['png', 'jpeg'])
+    def test_supported(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        file_format: str,
+    ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        PNG and JPEG formats are supported.
         """
+        image_buffer = io.BytesIO()
+        pil_image = Image.open(high_quality_image)
+        pil_image.save(image_buffer, file_format)
+        image_content = image_buffer.getvalue()
 
-    def test_unsupported(self) -> None:
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+    def test_unsupported(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        File formats which are not PNG or JPEG are not supported.
         """
+        file_format = 'tiff'
+        image_buffer = io.BytesIO()
+        pil_image = Image.open(high_quality_image)
+        pil_image.save(image_buffer, file_format)
+        image_content = image_buffer.getvalue()
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            content_type='application/json',
+        )
+        assert response.json().keys() == {'transaction_id', 'result_code'}
+        assert_valid_transaction_id(response=response)
+        assert_valid_date_header(response=response)
+        result_code = response.json()['result_code']
+        transaction_id = response.json()['transaction_id']
+        assert result_code == ResultCodes.BAD_IMAGE.value
+        # The separators are inconsistent and we test this.
+        expected_text = (
+            '{"transaction_id": '
+            f'"{transaction_id}",'
+            f'"result_code":"{result_code}"'
+            '}'
+        )
+        assert response.text == expected_text
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
