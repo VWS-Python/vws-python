@@ -65,7 +65,6 @@ def validate_image_format(
     [image] = parsed['image']
 
     image_file = io.BytesIO(image)
-    # import pdb; pdb.set_trace()
     pil_image = Image.open(image_file)
 
     if pil_image.format in ('PNG', 'JPEG'):
