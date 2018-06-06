@@ -25,9 +25,11 @@ from tests.mock_vws.utils import (
     database_summary,
     delete_target,
     get_vws_target,
+    query,
     rfc_1123_date,
     wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_query_success
 
 
 def request_unmocked_address() -> None:
@@ -431,7 +433,7 @@ class TestCustomQueryRecognizesDeletionSeconds:
     until it is not recognized by the query endpoint.
     """
 
-    def _time_to_recognize_deletion(
+    def _seconds_to_recognize_deletion(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -485,7 +487,8 @@ class TestCustomQueryRecognizesDeletionSeconds:
                 continue
 
             assert response.json()['results'] == []
-            return datetime.datetime.now() - time_after_delete
+            time_difference = datetime.datetime.now() - time_after_delete
+            return time_difference.total_seconds()
 
     def test_default(
         self,
@@ -496,19 +499,16 @@ class TestCustomQueryRecognizesDeletionSeconds:
         XXX
         """
         with MockVWS(
-            base_vwq_url='https://vuforia.vwq.example.com',
             real_http=False,
             client_access_key=vuforia_database_keys.client_access_key.decode(),
             client_secret_key=vuforia_database_keys.client_secret_key.decode(),
             server_access_key=vuforia_database_keys.server_access_key.decode(),
             server_secret_key=vuforia_database_keys.server_secret_key.decode(),
         ) as mock:
-            time_to_recognize_deletion = self._time_to_recognize_deletion(
+            seconds_to_recognize_deletion = self._seconds_to_recognize_deletion(
                 high_quality_image=high_quality_image,
                 vuforia_database_keys=vuforia_database_keys,
             )
 
-        import pdb
-        pdb.set_trace()
-        expected == 3
-        assert abs(expected - 1) == 3
+        expected = 3
+        assert abs(expected - seconds_to_recognize_deletion) < 0.2
