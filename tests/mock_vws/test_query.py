@@ -13,6 +13,7 @@ from urllib.parse import urljoin
 
 import pytest
 import requests
+from PIL import Image
 from requests import codes
 from requests_mock import POST
 from urllib3.filepost import encode_multipart_formdata
@@ -939,7 +940,6 @@ class TestAcceptHeader:
             date=date,
             request_path=request_path,
         )
-
         headers = {
             'Authorization': authorization_string,
             'Date': date,
@@ -1077,11 +1077,51 @@ class TestImageFormats:
     Tests for various image formats.
     """
 
-    def test_supported(self) -> None:
+    def test_supported(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
+        image_buffer = io.BytesIO()
+        file_format = 'png'
+        pil_image = Image.open(high_quality_image)
+        image = pil_image.save(image_buffer, file_format)
+        image_buffer.seek(0)
+        image_content = image_buffer.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        name = 'example_name'
+        add_target_data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        [result] = response.json()['results']
+        assert result.keys() == {'target_id', 'target_data'}
+        assert result['target_id'] == target_id
 
     def test_unsupported(self) -> None:
         """
