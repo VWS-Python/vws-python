@@ -1077,39 +1077,22 @@ class TestImageFormats:
     Tests for various image formats.
     """
 
+    @pytest.mark.parametrize('file_format', ['png', 'jpg'])
     def test_supported(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        file_format: str,
     ) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
         image_buffer = io.BytesIO()
-        file_format = 'png'
         pil_image = Image.open(high_quality_image)
         image = pil_image.save(image_buffer, file_format)
         image_buffer.seek(0)
         image_content = image_buffer.getvalue()
-        image_data_encoded = base64.b64encode(image_content).decode('ascii')
-        name = 'example_name'
-        add_target_data = {
-            'name': name,
-            'width': 1,
-            'image': image_data_encoded,
-        }
-        response = add_target_to_vws(
-            vuforia_database_keys=vuforia_database_keys,
-            data=add_target_data,
-        )
-
-        target_id = response.json()['target_id']
-
-        wait_for_target_processed(
-            target_id=target_id,
-            vuforia_database_keys=vuforia_database_keys,
-        )
 
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
@@ -1119,15 +1102,29 @@ class TestImageFormats:
         )
 
         assert_query_success(response=response)
-        [result] = response.json()['results']
-        assert result.keys() == {'target_id', 'target_data'}
-        assert result['target_id'] == target_id
+        assert response.json()['results'] == []
 
     def test_unsupported(self) -> None:
         """
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
+        file_format = 'tiff'
+        image_buffer = io.BytesIO()
+        pil_image = Image.open(high_quality_image)
+        image = pil_image.save(image_buffer, file_format)
+        image_buffer.seek(0)
+        image_content = image_buffer.getvalue()
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
