@@ -520,7 +520,8 @@ class TestCustomQueryRecognizesDeletionSeconds:
         """
         XXX
         """
-        query_recognizes_deletion = 0.5
+        # We choose a low time for a quick test
+        query_recognizes_deletion = 0.1
         with MockVWS(
             client_access_key=vuforia_database_keys.client_access_key.decode(),
             client_secret_key=vuforia_database_keys.client_secret_key.decode(),
