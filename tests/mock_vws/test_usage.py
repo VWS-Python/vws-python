@@ -7,6 +7,7 @@ import datetime
 import io
 import socket
 import string
+import time
 import uuid
 
 import pytest
@@ -22,8 +23,10 @@ from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
     database_summary,
+    delete_target,
     get_vws_target,
     rfc_1123_date,
+    wait_for_target_processed,
 )
 
 
@@ -428,5 +431,84 @@ class TestCustomQueryRecognizesDeletionSeconds:
     until it is not recognized by the query endpoint.
     """
 
-    def test_default(self):
-        pass
+    def _time_to_recognize_deletion(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> datetime.timedelta:
+        """
+        XXX
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        response = delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        time_after_delete = datetime.datetime.now()
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        while True:
+            response = query(
+                vuforia_database_keys=vuforia_database_keys,
+                body=body,
+            )
+
+            try:
+                assert_query_success(response=response)
+            except AssertionError:
+                # The response text for a 500 response is not consistent.
+                # Therefore we only test for consistent features.
+                assert 'Error 500 Server Error' in response.text
+                assert 'HTTP ERROR 500' in response.text
+                assert 'Problem accessing /v1/query' in response.text
+                time.sleep(0.05)
+                continue
+
+            assert response.json()['results'] == []
+            return datetime.datetime.now() - time_after_delete
+
+    def test_default(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        XXX
+        """
+        with MockVWS(
+            base_vwq_url='https://vuforia.vwq.example.com',
+            real_http=False,
+            client_access_key=vuforia_database_keys.client_access_key.decode(),
+            client_secret_key=vuforia_database_keys.client_secret_key.decode(),
+            server_access_key=vuforia_database_keys.server_access_key.decode(),
+            server_secret_key=vuforia_database_keys.server_secret_key.decode(),
+        ) as mock:
+            time_to_recognize_deletion = self._time_to_recognize_deletion(
+                high_quality_image=high_quality_image,
+                vuforia_database_keys=vuforia_database_keys,
+            )
+
+        import pdb
+        pdb.set_trace()
+        expected == 3
+        assert abs(expected - 1) == 3
