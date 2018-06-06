@@ -7,6 +7,7 @@ import datetime
 import io
 
 import pytest
+import pytz
 from requests import codes
 
 from mock_vws._constants import ResultCodes, TargetStatuses
@@ -39,7 +40,9 @@ class TestTargetSummary:
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        date_before_add_target = datetime.datetime.now().date()
+        gmt = pytz.timezone('GMT')
+
+        date_before_add_target = datetime.datetime.now(tz=gmt).date()
 
         target_response = add_target_to_vws(
             vuforia_database_keys=vuforia_database_keys,
@@ -52,7 +55,7 @@ class TestTargetSummary:
 
         target_id = target_response.json()['target_id']
 
-        date_after_add_target = datetime.datetime.now().date()
+        date_after_add_target = datetime.datetime.now(tz=gmt).date()
 
         response = target_summary(
             vuforia_database_keys=vuforia_database_keys,
