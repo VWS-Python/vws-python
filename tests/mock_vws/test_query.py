@@ -1143,10 +1143,10 @@ class TestImageFormats:
         assert result_code == ResultCodes.BAD_IMAGE.value
         # The separators are inconsistent and we test this.
         expected_text = (
-            '{{"transaction_id": "{transaction_id}","result_code":"{result_code}"}}'
-        ).format(
-            transaction_id=transaction_id,
-            result_code=result_code,
+            '{"transaction_id": '
+            f'"{transaction_id}",'
+            f'"result_code":"{result_code}"'
+            '}'
         )
         assert response.text == expected_text
 
