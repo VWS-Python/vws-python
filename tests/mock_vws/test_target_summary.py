@@ -14,6 +14,7 @@ from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     get_vws_target,
+    query,
     target_summary,
     wait_for_target_processed,
 )
@@ -195,9 +196,49 @@ class TestRecognitionCounts:
     Tests for the recognition counts in the summary.
     """
 
-    def test_recognition(self) -> None:
+    def test_recognition(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+    ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this.
+        The recognition counts stay at 0 even after recognitions.
         """
-        pass
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+
+        target_response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data={
+                'name': 'example',
+                'width': 1,
+                'image': image_data_encoded,
+            },
+        )
+
+        target_id = target_response.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        query_response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        [result] = query_response.json()['results']
+        assert result['target_id'] == target_id
+
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        assert response.json()['status'] == TargetStatuses.SUCCESS.value
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
