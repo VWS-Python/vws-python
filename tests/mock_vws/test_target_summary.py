@@ -7,6 +7,7 @@ import datetime
 import io
 
 import pytest
+import pytz
 from requests import codes
 
 from mock_vws._constants import ResultCodes, TargetStatuses
@@ -39,7 +40,9 @@ class TestTargetSummary:
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        date_before_add_target = datetime.datetime.now().date()
+        gmt = pytz.timezone('GMT')
+
+        date_before_add_target = datetime.datetime.now(tz=gmt).date()
 
         target_response = add_target_to_vws(
             vuforia_database_keys=vuforia_database_keys,
@@ -52,7 +55,7 @@ class TestTargetSummary:
 
         target_id = target_response.json()['target_id']
 
-        date_after_add_target = datetime.datetime.now().date()
+        date_after_add_target = datetime.datetime.now(tz=gmt).date()
 
         response = target_summary(
             vuforia_database_keys=vuforia_database_keys,
@@ -94,6 +97,10 @@ class TestTargetSummary:
 
         # While processing the tracking rating is -1.
         assert response.json()['tracking_rating'] == -1
+
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
 
     def test_after_processing(
         self,
@@ -140,6 +147,9 @@ class TestTargetSummary:
         assert response.json()['tracking_rating'] == tracking_rating
         assert response.json()['tracking_rating'] in range(6)
         assert response.json()['status'] == TargetStatuses.FAILED.value
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -177,3 +187,17 @@ class TestActiveFlag:
             target_id=target_id,
         )
         assert response.json()['active_flag'] == active_flag
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestRecognitionCounts:
+    """
+    Tests for the recognition counts in the summary.
+    """
+
+    def test_recognition(self) -> None:
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this.
+        """
+        pass
