@@ -195,5 +195,9 @@ class TestRecognitionCounts:
     Tests for the recognition counts in the summary.
     """
 
-    def test_recognition(self):
+    def test_recognition(self) -> None:
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this.
+        """
         pass
