@@ -1617,3 +1617,19 @@ class TestDateFormats:
     > The data format must exactly match the Date that is sent in the ‘Date’
     > header.
     """
+
+    def test_date_formats(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        image_content = high_quality_image.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
