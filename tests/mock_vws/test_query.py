@@ -6,12 +6,14 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 
 import base64
 import calendar
+import datetime
 import io
 import time
 from typing import Dict, Union
 from urllib.parse import urljoin
 
 import pytest
+import pytz
 import requests
 from PIL import Image
 from requests import codes
@@ -1618,17 +1620,50 @@ class TestDateFormats:
     > header.
     """
 
+    @pytest.mark.parametrize('datetime_format', [
+        '%a %b %d %H:%M:%S %Y',
+    ])
     def test_date_formats(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        datetime_format: str,
     ) -> None:
         image_content = high_quality_image.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        response = query(
-            vuforia_database_keys=vuforia_database_keys,
-            body=body,
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        date = now.strftime(datetime_format)
+        request_path = '/v1/query'
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        vwq_host = 'https://cloudreco.vuforia.com'
+        response = requests.request(
+            method=method,
+            url=urljoin(base=vwq_host, url=request_path),
+            headers=headers,
+            data=content,
         )
 
         assert_query_success(response=response)
