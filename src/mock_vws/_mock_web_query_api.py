@@ -602,7 +602,10 @@ class MockVuforiaWebQueryAPI:
                     content_type = 'text/html; charset=ISO-8859-1'
                     context.headers['Content-Type'] = content_type
                     return Path(match_processing_resp_file).read_text()
-                if target.active_flag and not target.delete_date:
+                if (
+                    target.active_flag and not target.delete_date
+                    and target.status == TargetStatuses.SUCCESS.value
+                ):
                     matches.add(target)
 
         results: List[Dict[str, Any]] = []

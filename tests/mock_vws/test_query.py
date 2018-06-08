@@ -1511,3 +1511,47 @@ class TestDeleted:
 
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestTargetStatusFailed:
+    """
+    Tests for targets with the status "failed".
+    """
+
+    def test_status_failed(
+        self,
+        png_rgb: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        Targets with the status "failed" are not found in query results.
+        """
+        image_content = png_rgb.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
