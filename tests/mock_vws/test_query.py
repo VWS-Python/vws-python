@@ -1055,6 +1055,51 @@ class TestActiveFlag:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
+class TestBadImage:
+    """
+    Tests for bad images.
+    """
+
+    def test_corrupted(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        A "BadImage" result is returned when a corrupted image is given.
+        """
+        original_data = png_rgb.getvalue()
+        corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+
+        body = {'image': ('image.jpeg', corrupted_data, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            content_type='application/json',
+        )
+        assert response.json().keys() == {'transaction_id', 'result_code'}
+        assert_valid_transaction_id(response=response)
+        assert_valid_date_header(response=response)
+        result_code = response.json()['result_code']
+        transaction_id = response.json()['transaction_id']
+        assert result_code == ResultCodes.BAD_IMAGE.value
+        # The separators are inconsistent and we test this.
+        expected_text = (
+            '{"transaction_id": '
+            f'"{transaction_id}",'
+            f'"result_code":"{result_code}"'
+            '}'
+        )
+        assert response.text == expected_text
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestMaximumImageSize:
     """
     Tests for maximum image sizes.
