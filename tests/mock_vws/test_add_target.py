@@ -767,3 +767,32 @@ class TestApplicationMetadata:
             status_code=codes.UNPROCESSABLE_ENTITY,
             result_code=ResultCodes.FAIL,
         )
+
+    def test_too_large_foo(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        A base64 encoded string is valid application metadata.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        # 10000 not too small
+        metadata = b'a' * 100000
+        metadata_encoded = base64.b64encode(metadata).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'application_metadata': metadata_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_success(response=response)
