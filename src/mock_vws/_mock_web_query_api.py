@@ -299,6 +299,12 @@ def validate_date_format(
     """
     request, context = args
 
+    # We expect that more formats than this will be accepted.
+    # These are the accepted ones we know of at the time of writing.
+    known_accepted_formats = {
+        'X'
+    }
+
     try:
         datetime.datetime.strptime(
             request.headers['Date'],
