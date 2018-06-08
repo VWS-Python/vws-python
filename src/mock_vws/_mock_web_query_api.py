@@ -300,7 +300,7 @@ def validate_date_format(
     request, context = args
 
     try:
-        date_from_header = datetime.datetime.strptime(
+        datetime.datetime.strptime(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
