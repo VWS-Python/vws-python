@@ -39,6 +39,7 @@ pragma
 pytest
 readme
 readthedocs
+recognitions
 refactoring
 regex
 reimplementation
