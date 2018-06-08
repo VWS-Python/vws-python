@@ -1658,10 +1658,9 @@ class TestDateFormats:
             'Content-Type': content_type_header,
         }
 
-        vwq_host = 'https://cloudreco.vuforia.com'
         response = requests.request(
             method=method,
-            url=urljoin(base=vwq_host, url=request_path),
+            url=urljoin(base=VWQ_HOST, url=request_path),
             headers=headers,
             data=content,
         )
