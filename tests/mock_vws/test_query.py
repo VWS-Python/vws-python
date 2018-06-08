@@ -1066,8 +1066,7 @@ class TestBadImage:
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        A "BadImage" result is returned when a corrupted PNG is given.
         """
         original_data = png_rgb.getvalue()
         corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
