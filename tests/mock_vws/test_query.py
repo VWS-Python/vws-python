@@ -525,7 +525,7 @@ class TestMaxNumResults:
         assert len(response.json()['results']) == 1
 
     @pytest.mark.parametrize('num_results', [1, b'1', 50])
-    def test_valid_foo(
+    def test_valid_accepted(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
