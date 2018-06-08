@@ -1060,13 +1060,13 @@ class TestBadImage:
     Tests for bad images.
     """
 
-    def test_png(
+    def test_corrupted(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        A "BadImage" result is returned when a corrupted PNG is given.
+        A "BadImage" result is returned when a corrupted image is given.
         """
         original_data = png_rgb.getvalue()
         corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
@@ -1097,12 +1097,6 @@ class TestBadImage:
             '}'
         )
         assert response.text == expected_text
-
-    def test_jpeg(self) -> None:
-        """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
-        """
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
