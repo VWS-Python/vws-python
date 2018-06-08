@@ -1055,6 +1055,41 @@ class TestActiveFlag:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
+class TestBadImage:
+    """
+    Tests for bad images.
+    """
+
+    def test_png(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+        original_data = png_rgb.getvalue()
+        corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+
+        body = {'image': ('image.jpeg', corrupted_data, 'image/jpeg')}
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+    def test_jpeg(self) -> None:
+        """
+        See https://github.com/adamtheturtle/vws-python/issues/357 for
+        implementing this test.
+        """
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestMaximumImageSize:
     """
     Tests for maximum image sizes.
