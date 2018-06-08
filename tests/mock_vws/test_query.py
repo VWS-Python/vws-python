@@ -1516,7 +1516,7 @@ class TestDeleted:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestTargetStatusFailed:
     """
-    Tests for targets with the status failed
+    Tests for targets with the status "failed".
     """
 
     def test_status_failed(
@@ -1525,7 +1525,7 @@ class TestTargetStatusFailed:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        XXX
+        Targets with the status "failed" are not found in query results.
         """
         image_content = png_rgb.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
