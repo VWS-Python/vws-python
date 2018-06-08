@@ -278,14 +278,14 @@ def validate_include_target_data(
 
 
 @wrapt.decorator
-def validate_date(
+def validate_date_format(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
     """
-    Validate the date header given to the query endpoint.
+    Validate the format of the date header given to the query endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -296,7 +296,6 @@ def validate_date(
     Returns:
         The result of calling the endpoint.
         An `UNAUTHORIZED` response if the date is in the wrong format.
-        A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
 
@@ -312,6 +311,36 @@ def validate_date(
         content_type = 'text/plain; charset=ISO-8859-1'
         context.headers['Content-Type'] = content_type
         return text
+
+    return wrapped(*args, **kwargs)
+
+
+@wrapt.decorator
+def validate_date(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate date in the date header given to the query endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `FORBIDDEN` response if the date is out of range.
+    """
+    request, context = args
+
+    date_from_header = datetime.datetime.strptime(
+        request.headers['Date'],
+        '%a, %d %b %Y %H:%M:%S GMT',
+    )
 
     gmt = pytz.timezone('GMT')
     now = datetime.datetime.now(tz=gmt)
@@ -527,6 +556,7 @@ def route(
         decorators = [
             validate_authorization,
             validate_date,
+            validate_date_format,
             validate_date_header_given,
             validate_include_target_data,
             validate_max_num_results,
