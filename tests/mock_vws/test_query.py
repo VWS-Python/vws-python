@@ -1600,3 +1600,20 @@ class TestTargetStatusFailed:
 
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestDateFormats:
+    """
+    Tests for various date formats.
+
+    The date format for the VWS API as per
+    https://library.vuforia.com/articles/Training/Using-the-VWS-API.html must
+    be in the rfc1123-date format.
+
+    However, for the query endpoint, the documentation does not mention the
+    format. It says:
+
+    > The data format must exactly match the Date that is sent in the ‘Date’
+    > header.
+    """
