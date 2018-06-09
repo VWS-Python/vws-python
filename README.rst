@@ -185,6 +185,14 @@ This timeframe is not consistent on the real Vuforia Web Services.
 On the mock, this timeframe is three seconds by default.
 ``MockVWS`` takes a parameter ``query_recognizes_deletion_seconds`` to change this.
 
+Accepted date formats for the Query API
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Query API documentation is not clear on which date formats are expected exactly in the ``Date`` header.
+The mock is strict.
+That is, it accepts only a few date formats, and rejects all others.
+If you find a date format which is accepted by the real Query API but rejected by the mock, please create a GitHub issue.
+
 .. |Build Status| image:: https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master
    :target: https://travis-ci.org/adamtheturtle/vws-python
 .. |codecov| image:: https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg

@@ -277,6 +277,27 @@ def validate_include_target_data(
     return unexpected_target_data_message
 
 
+def _accepted_date_formats() -> Set[str]:
+    """
+    Return all known accepted date formats.
+
+    We expect that more formats than this will be accepted.
+    These are the accepted ones we know of at the time of writing.
+    """
+    known_accepted_formats = {
+        '%a, %b %d %H:%M:%S %Y',
+        '%a %b %d %H:%M:%S %Y',
+        '%a, %d %b %Y %H:%M:%S',
+        '%a %d %b %Y %H:%M:%S',
+    }
+
+    known_accepted_formats = known_accepted_formats.union(
+        set(date_format + ' GMT' for date_format in known_accepted_formats),
+    )
+
+    return known_accepted_formats
+
+
 @wrapt.decorator
 def validate_date_format(
     wrapped: Callable[..., str],
@@ -298,21 +319,22 @@ def validate_date_format(
         An `UNAUTHORIZED` response if the date is in the wrong format.
     """
     request, context = args
+    date_header = request.headers['Date']
 
-    try:
-        datetime.datetime.strptime(
-            request.headers['Date'],
-            '%a, %d %b %Y %H:%M:%S GMT',
-        )
-    except ValueError:
-        context.status_code = codes.UNAUTHORIZED
-        context.headers['WWW-Authenticate'] = 'VWS'
-        text = 'Malformed date header.'
-        content_type = 'text/plain; charset=ISO-8859-1'
-        context.headers['Content-Type'] = content_type
-        return text
+    for date_format in _accepted_date_formats():
+        try:
+            datetime.datetime.strptime(date_header, date_format)
+        except ValueError:
+            pass
+        else:
+            return wrapped(*args, **kwargs)
 
-    return wrapped(*args, **kwargs)
+    context.status_code = codes.UNAUTHORIZED
+    context.headers['WWW-Authenticate'] = 'VWS'
+    text = 'Malformed date header.'
+    content_type = 'text/plain; charset=ISO-8859-1'
+    context.headers['Content-Type'] = content_type
+    return text
 
 
 @wrapt.decorator
@@ -336,15 +358,19 @@ def validate_date(
         A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
+    date_header = request.headers['Date']
 
-    date_from_header = datetime.datetime.strptime(
-        request.headers['Date'],
-        '%a, %d %b %Y %H:%M:%S GMT',
-    )
+    for date_format in _accepted_date_formats():
+        try:
+            date = datetime.datetime.strptime(date_header, date_format)
+        except ValueError:
+            pass
+        else:
+            break
 
     gmt = pytz.timezone('GMT')
     now = datetime.datetime.now(tz=gmt)
-    date_from_header = date_from_header.replace(tzinfo=gmt)
+    date_from_header = date.replace(tzinfo=gmt)
     time_difference = now - date_from_header
 
     maximum_time_difference = datetime.timedelta(minutes=65)
