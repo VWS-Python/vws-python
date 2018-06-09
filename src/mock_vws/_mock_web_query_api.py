@@ -302,8 +302,16 @@ def validate_date_format(
     # We expect that more formats than this will be accepted.
     # These are the accepted ones we know of at the time of writing.
     known_accepted_formats = {
-        '%a, %d %b %Y %H:%M:%S GMT',
+        '%a, %b %d %H:%M:%S %Y',
+        '%a %b %d %H:%M:%S %Y',
+        '%a, %d %b %Y %H:%M:%S',
+        '%a %d %b %Y %H:%M:%S',
     }
+
+    formats_with_timezones = set(item + ' GMT' for item in known_accepted_formats)
+
+    formats = known_accepted_formats.union(formats_with_timezones)
+    import pdb; pdb.set_trace()
 
     try:
         datetime.datetime.strptime(
