@@ -872,3 +872,46 @@ def validate_metadata_type(
         'result_code': ResultCodes.FAIL.value,
     }
     return json_dump(body)
+
+
+@wrapt.decorator
+def validate_metadata_size(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate that the given application metadata is a string or 1024 * 1024
+    bytes or fewer.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if application metadata is given and
+        it is too large.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    application_metadata = request.json().get('application_metadata')
+    if application_metadata is None:
+        return wrapped(*args, **kwargs)
+    decoded = base64.b64decode(application_metadata)
+
+    if len(decoded) <= 1024 * 1024:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.UNPROCESSABLE_ENTITY
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.METADATA_TOO_LARGE.value,
+    }
+    return json_dump(body)

@@ -646,12 +646,11 @@ class TestApplicationMetadata:
     """
 
     @pytest.mark.parametrize(
-        'metadata',
-        [
+        'metadata', [
             b'a',
-            # This is the maximum metadata length.
             b'a' * (1024 * 1024),
         ],
+        ids=['Short', 'Max length']
     )
     def test_base64_encoded(
         self,
@@ -774,7 +773,6 @@ class TestApplicationMetadata:
             status_code=codes.UNPROCESSABLE_ENTITY,
             result_code=ResultCodes.FAIL,
         )
-
 
     def test_metadata_too_large(
         self,
