@@ -646,11 +646,12 @@ class TestApplicationMetadata:
     """
 
     @pytest.mark.parametrize(
-        'metadata', [
+        'metadata',
+        [
             b'a',
             b'a' * (1024 * 1024),
         ],
-        ids=['Short', 'Max length']
+        ids=['Short', 'Max length'],
     )
     def test_base64_encoded(
         self,
