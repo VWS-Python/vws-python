@@ -292,7 +292,7 @@ def _accepted_date_formats() -> Set[str]:
     }
 
     known_accepted_formats = known_accepted_formats.union(
-        set(date_format + ' GMT' for date_format in known_accepted_formats)
+        set(date_format + ' GMT' for date_format in known_accepted_formats),
     )
 
     return known_accepted_formats

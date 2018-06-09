@@ -1620,12 +1620,14 @@ class TestDateFormats:
     > header.
     """
 
-    @pytest.mark.parametrize('datetime_format', [
-        '%a, %b %d %H:%M:%S %Y',
-        '%a %b %d %H:%M:%S %Y',
-        '%a, %d %b %Y %H:%M:%S',
-        '%a %d %b %Y %H:%M:%S',
-    ])
+    @pytest.mark.parametrize(
+        'datetime_format', [
+            '%a, %b %d %H:%M:%S %Y',
+            '%a %b %d %H:%M:%S %Y',
+            '%a, %d %b %Y %H:%M:%S',
+            '%a %d %b %Y %H:%M:%S',
+        ],
+    )
     @pytest.mark.parametrize('include_tz', [True, False])
     def test_date_formats(
         self,
