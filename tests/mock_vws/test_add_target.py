@@ -779,9 +779,10 @@ class TestApplicationMetadata:
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        # 500000 not too large
-        # 5000000 is too large
-        metadata = b'a' * 5000000
+        # 1000000 not too large
+        # (1024 * 1024 - 1) is not too large
+        # (1024 * 1024) is too large
+        metadata = b'a' * (1024 * 1024)
         metadata_encoded = base64.b64encode(metadata).decode('ascii')
 
         data = {
