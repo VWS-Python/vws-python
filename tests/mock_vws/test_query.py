@@ -1621,16 +1621,24 @@ class TestDateFormats:
     """
 
     @pytest.mark.parametrize('datetime_format', [
+        '%a, %b %d %H:%M:%S %Y',
         '%a %b %d %H:%M:%S %Y',
+        '%a, %d %b %Y %H:%M:%S',
+        '%a %d %b %Y %H:%M:%S',
     ])
+    @pytest.mark.parametrize('include_tz', [True, False])
     def test_date_formats(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
         datetime_format: str,
+        include_tz: bool,
     ) -> None:
         image_content = high_quality_image.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        if include_tz:
+            datetime_format += ' GMT'
 
         gmt = pytz.timezone('GMT')
         now = datetime.datetime.now(tz=gmt)
