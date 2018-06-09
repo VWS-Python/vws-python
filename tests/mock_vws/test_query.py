@@ -1654,7 +1654,6 @@ class TestDateFormats:
             secret_key=secret_key,
             method=method,
             content=content,
-            # Note that this is not the actual Content-Type header value sent.
             content_type='multipart/form-data',
             date=date,
             request_path=request_path,
