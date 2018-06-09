@@ -1621,7 +1621,8 @@ class TestDateFormats:
     """
 
     @pytest.mark.parametrize(
-        'datetime_format', [
+        'datetime_format',
+        [
             '%a, %b %d %H:%M:%S %Y',
             '%a %b %d %H:%M:%S %Y',
             '%a, %d %b %Y %H:%M:%S',
