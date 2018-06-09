@@ -1636,6 +1636,12 @@ class TestDateFormats:
         datetime_format: str,
         include_tz: bool,
     ) -> None:
+        """
+        Test various date formats which are known to be accepted.
+
+        We expect that more formats than this will be accepted.
+        These are the accepted ones we know of at the time of writing.
+        """
         image_content = high_quality_image.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
