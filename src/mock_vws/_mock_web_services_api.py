@@ -39,6 +39,7 @@ from ._validators import (
     validate_image_size,
     validate_keys,
     validate_metadata_encoding,
+    validate_metadata_size,
     validate_metadata_type,
     validate_name,
     validate_not_invalid_json,
@@ -155,6 +156,7 @@ def route(
             decorators = [
                 parse_target_id,
                 validate_authorization,
+                validate_metadata_size,
                 validate_metadata_encoding,
                 validate_metadata_type,
                 validate_active_flag,

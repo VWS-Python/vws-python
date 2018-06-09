@@ -645,18 +645,25 @@ class TestApplicationMetadata:
     Tests for the application metadata parameter.
     """
 
+    @pytest.mark.parametrize(
+        'metadata',
+        [
+            b'a',
+            b'a' * (1024 * 1024),
+        ],
+        ids=['Short', 'Max length'],
+    )
     def test_base64_encoded(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         png_rgb: io.BytesIO,
+        metadata: bytes,
     ) -> None:
         """
         A base64 encoded string is valid application metadata.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
-        metadata = b'Some data'
         metadata_encoded = base64.b64encode(metadata).decode('ascii')
 
         data = {
@@ -766,4 +773,36 @@ class TestApplicationMetadata:
             response=response,
             status_code=codes.UNPROCESSABLE_ENTITY,
             result_code=ResultCodes.FAIL,
+        )
+
+    def test_metadata_too_large(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        A base64 encoded string of up to 1024 * 1024 bytes is valid application
+        metadata.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        metadata = b'a' * (1024 * 1024 + 1)
+        metadata_encoded = base64.b64encode(metadata).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+            'application_metadata': metadata_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.METADATA_TOO_LARGE,
         )
