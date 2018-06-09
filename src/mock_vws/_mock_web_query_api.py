@@ -277,15 +277,36 @@ def validate_include_target_data(
     return unexpected_target_data_message
 
 
+def _accepted_date_formats() -> Set[str]:
+    """
+    Return all known accepted date formats.
+
+    We expect that more formats than this will be accepted.
+    These are the accepted ones we know of at the time of writing.
+    """
+    known_accepted_formats = {
+        '%a, %b %d %H:%M:%S %Y',
+        '%a %b %d %H:%M:%S %Y',
+        '%a, %d %b %Y %H:%M:%S',
+        '%a %d %b %Y %H:%M:%S',
+    }
+
+    known_accepted_formats = known_accepted_formats.union(
+        set(date_format + ' GMT' for date_format in known_accepted_formats),
+    )
+
+    return known_accepted_formats
+
+
 @wrapt.decorator
-def validate_date(
+def validate_date_format(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
     """
-    Validate the date header given to the query endpoint.
+    Validate the format of the date header given to the query endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -296,26 +317,60 @@ def validate_date(
     Returns:
         The result of calling the endpoint.
         An `UNAUTHORIZED` response if the date is in the wrong format.
+    """
+    request, context = args
+    date_header = request.headers['Date']
+
+    for date_format in _accepted_date_formats():
+        try:
+            datetime.datetime.strptime(date_header, date_format)
+        except ValueError:
+            pass
+        else:
+            return wrapped(*args, **kwargs)
+
+    context.status_code = codes.UNAUTHORIZED
+    context.headers['WWW-Authenticate'] = 'VWS'
+    text = 'Malformed date header.'
+    content_type = 'text/plain; charset=ISO-8859-1'
+    context.headers['Content-Type'] = content_type
+    return text
+
+
+@wrapt.decorator
+def validate_date(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate date in the date header given to the query endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
         A `FORBIDDEN` response if the date is out of range.
     """
     request, context = args
+    date_header = request.headers['Date']
 
-    try:
-        date_from_header = datetime.datetime.strptime(
-            request.headers['Date'],
-            '%a, %d %b %Y %H:%M:%S GMT',
-        )
-    except ValueError:
-        context.status_code = codes.UNAUTHORIZED
-        context.headers['WWW-Authenticate'] = 'VWS'
-        text = 'Malformed date header.'
-        content_type = 'text/plain; charset=ISO-8859-1'
-        context.headers['Content-Type'] = content_type
-        return text
+    for date_format in _accepted_date_formats():
+        try:
+            date = datetime.datetime.strptime(date_header, date_format)
+        except ValueError:
+            pass
+        else:
+            break
 
     gmt = pytz.timezone('GMT')
     now = datetime.datetime.now(tz=gmt)
-    date_from_header = date_from_header.replace(tzinfo=gmt)
+    date_from_header = date.replace(tzinfo=gmt)
     time_difference = now - date_from_header
 
     maximum_time_difference = datetime.timedelta(minutes=65)
@@ -527,6 +582,7 @@ def route(
         decorators = [
             validate_authorization,
             validate_date,
+            validate_date_format,
             validate_date_header_given,
             validate_include_target_data,
             validate_max_num_results,

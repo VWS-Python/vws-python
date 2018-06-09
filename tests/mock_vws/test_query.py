@@ -6,12 +6,14 @@ https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognitio
 
 import base64
 import calendar
+import datetime
 import io
 import time
 from typing import Dict, Union
 from urllib.parse import urljoin
 
 import pytest
+import pytz
 import requests
 from PIL import Image
 from requests import codes
@@ -525,7 +527,7 @@ class TestMaxNumResults:
         assert len(response.json()['results']) == 1
 
     @pytest.mark.parametrize('num_results', [1, b'1', 50])
-    def test_valid_foo(
+    def test_valid_accepted(
         self,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -1596,6 +1598,87 @@ class TestTargetStatusFailed:
         response = query(
             vuforia_database_keys=vuforia_database_keys,
             body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestDateFormats:
+    """
+    Tests for various date formats.
+
+    The date format for the VWS API as per
+    https://library.vuforia.com/articles/Training/Using-the-VWS-API.html must
+    be in the rfc1123-date format.
+
+    However, for the query endpoint, the documentation does not mention the
+    format. It says:
+
+    > The data format must exactly match the Date that is sent in the ‘Date’
+    > header.
+    """
+
+    @pytest.mark.parametrize(
+        'datetime_format',
+        [
+            '%a, %b %d %H:%M:%S %Y',
+            '%a %b %d %H:%M:%S %Y',
+            '%a, %d %b %Y %H:%M:%S',
+            '%a %d %b %Y %H:%M:%S',
+        ],
+    )
+    @pytest.mark.parametrize('include_tz', [True, False])
+    def test_date_formats(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        datetime_format: str,
+        include_tz: bool,
+    ) -> None:
+        """
+        Test various date formats which are known to be accepted.
+
+        We expect that more formats than this will be accepted.
+        These are the accepted ones we know of at the time of writing.
+        """
+        image_content = high_quality_image.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        if include_tz:
+            datetime_format += ' GMT'
+
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        date = now.strftime(datetime_format)
+        request_path = '/v1/query'
+        content, content_type_header = encode_multipart_formdata(body)
+        method = POST
+
+        access_key = vuforia_database_keys.client_access_key
+        secret_key = vuforia_database_keys.client_secret_key
+        authorization_string = authorization_header(
+            access_key=access_key,
+            secret_key=secret_key,
+            method=method,
+            content=content,
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=VWQ_HOST, url=request_path),
+            headers=headers,
+            data=content,
         )
 
         assert_query_success(response=response)
