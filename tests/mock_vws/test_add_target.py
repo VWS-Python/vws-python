@@ -645,11 +645,13 @@ class TestApplicationMetadata:
     Tests for the application metadata parameter.
     """
 
+    _MAX_METADATA_BYTES = 1024 * 1024 - 1
+
     @pytest.mark.parametrize(
         'metadata',
         [
             b'a',
-            b'a' * (1024 * 1024),
+            b'a' * _MAX_METADATA_BYTES,
         ],
         ids=['Short', 'Max length'],
     )
@@ -781,12 +783,12 @@ class TestApplicationMetadata:
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        A base64 encoded string of up to 1024 * 1024 bytes is valid application
-        metadata.
+        A base64 encoded string of greater than 1024 * 1024 bytes is too large
+        for application metadata.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
-        metadata = b'a' * (1024 * 1024 + 1)
+        metadata = b'a' * (self._MAX_METADATA_BYTES + 1)
         metadata_encoded = base64.b64encode(metadata).decode('ascii')
 
         data = {

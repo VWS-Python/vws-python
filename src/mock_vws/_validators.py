@@ -906,7 +906,8 @@ def validate_metadata_size(
         return wrapped(*args, **kwargs)
     decoded = base64.b64decode(application_metadata)
 
-    if len(decoded) <= 1024 * 1024:
+    max_metadata_bytes = 1024 * 1024 - 1
+    if len(decoded) <= max_metadata_bytes:
         return wrapped(*args, **kwargs)
 
     context.status_code = codes.UNPROCESSABLE_ENTITY
