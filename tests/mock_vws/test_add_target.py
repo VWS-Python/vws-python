@@ -249,7 +249,9 @@ class TestTargetName:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        A target's name must be a string of length 0 < N < 65.
+        A target's name must be a UTF-8 encoded string of length 0 < N < 65.
+
+        We test bad encoding in another test as it has a different error.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -268,6 +270,33 @@ class TestTargetName:
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+    # TODO also on update
+    def test_not_utf8_encoded(
+        self,
+        png_rgb: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        name = '\U0001f604'
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.INTERNAL_SERVER_ERROR,
             result_code=ResultCodes.FAIL,
         )
 
