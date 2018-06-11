@@ -443,6 +443,7 @@ def validate_name(
     name_is_string = isinstance(name, str)
     name_valid_length = name_is_string and 0 < len(name) < 65
 
+    # TODO Test length and encoding
     if not name_valid_length:
         context.status_code = codes.BAD_REQUEST
         body = {
@@ -450,6 +451,7 @@ def validate_name(
             'result_code': ResultCodes.FAIL.value,
         }
         return json_dump(body)
+
 
     return wrapped(*args, **kwargs)
 
