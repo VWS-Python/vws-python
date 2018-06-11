@@ -452,6 +452,16 @@ def validate_name(
         }
         return json_dump(body)
 
+    try:
+        name.encode('ascii')
+    except UnicodeEncodeError:
+        context.status_code = codes.INTERNAL_SERVER_ERROR
+        body = {
+            'transaction_id': uuid.uuid4().hex,
+            'result_code': ResultCodes.FAIL.value,
+        }
+        return json_dump(body)
+
 
     return wrapped(*args, **kwargs)
 
