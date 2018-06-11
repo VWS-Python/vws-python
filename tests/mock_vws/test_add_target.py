@@ -203,13 +203,16 @@ class TestTargetName:
     Tests for the target name field.
     """
 
+    _MAX_CHAR_VALUE = 65535
+
     @pytest.mark.parametrize(
         'name',
         [
             'á',
+            chr(_MAX_CHAR_VALUE),
             'a' * 64,
         ],
-        ids=['Short name', 'Long name'],
+        ids=['Short name', 'Max char value', 'Long name'],
     )
     def test_name_valid(
         self,
@@ -249,9 +252,10 @@ class TestTargetName:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        A target's name must be a UTF-8 encoded string of length 0 < N < 65.
+        A target's name must be a string of length 0 < N < 65.
 
-        We test bad encoding in another test as it has a different error.
+        We test characters out of range in another test as that gives a
+        different error.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -273,13 +277,12 @@ class TestTargetName:
             result_code=ResultCodes.FAIL,
         )
 
-    # TODO also on update
-    def test_not_utf8_encoded(
+    def test_character_out_of_range(
         self,
         png_rgb: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
-        name = '\U0001f604'
+        name = chr(self._MAX_CHAR_VALUE + 1)
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
