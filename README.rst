@@ -193,6 +193,13 @@ The mock is strict.
 That is, it accepts only a few date formats, and rejects all others.
 If you find a date format which is accepted by the real Query API but rejected by the mock, please create a GitHub issue.
 
+Targets stuck in processing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On the real Vuforia Web Services, targets sometimes get stuck in the processing state.
+For example, targets with the name ``\uffff`` get stuck in the processing state.
+On the mock, no targets get stuck in the processing state.
+
 .. |Build Status| image:: https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master
    :target: https://travis-ci.org/adamtheturtle/vws-python
 .. |codecov| image:: https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg

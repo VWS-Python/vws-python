@@ -203,13 +203,19 @@ class TestTargetName:
     Tests for the target name field.
     """
 
+    _MAX_CHAR_VALUE = 65535
+
     @pytest.mark.parametrize(
         'name',
         [
             'á',
+            # We test just below the max character value.
+            # This is because targets with the max character value in their
+            # names get stuck in the processing stage.
+            chr(_MAX_CHAR_VALUE - 2),
             'a' * 64,
         ],
-        ids=['Short name', 'Long name'],
+        ids=['Short name', 'Max char value', 'Long name'],
     )
     def test_name_valid(
         self,
@@ -250,6 +256,9 @@ class TestTargetName:
     ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.
+
+        We test characters out of range in another test as that gives a
+        different error.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -268,6 +277,32 @@ class TestTargetName:
         assert_vws_failure(
             response=response,
             status_code=codes.BAD_REQUEST,
+            result_code=ResultCodes.FAIL,
+        )
+
+    def test_character_out_of_range(
+        self,
+        png_rgb: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        name = chr(self._MAX_CHAR_VALUE + 1)
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': name,
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.INTERNAL_SERVER_ERROR,
             result_code=ResultCodes.FAIL,
         )
 

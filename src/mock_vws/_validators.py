@@ -495,6 +495,48 @@ def validate_name_length(
 
 
 @wrapt.decorator
+def validate_name_characters_in_range(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the characters in the name argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An ``INTERNAL_SERVER_ERROR`` response if the name is given includes
+        characters outside of the accepted range.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'name' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    name = request.json()['name']
+
+    if all(ord(character) <= 65535 for character in name):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.INTERNAL_SERVER_ERROR
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
+
+@wrapt.decorator
 def validate_image_format(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument

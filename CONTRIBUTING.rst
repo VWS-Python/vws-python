@@ -178,6 +178,8 @@ A response to an invalid query may have an ``application/json`` content type but
 
 After deleting a target, for up to approximately 30 seconds, matching it with a query returns a 500 response.
 
+A target with the name ``\uffff`` gets stuck in processing.
+
 Performing a release
 --------------------
 
