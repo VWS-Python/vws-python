@@ -479,6 +479,7 @@ class TestTargetName:
     """
 
     _MAX_CHAR_VALUE = 65535
+    _MAX_NAME_LENGTH = 64
 
     @pytest.mark.parametrize(
         'name',
@@ -488,7 +489,7 @@ class TestTargetName:
             # This is because targets with the max character value in their
             # names get stuck in the processing stage.
             chr(_MAX_CHAR_VALUE - 2),
-            'a' * 64,
+            'a' * _MAX_NAME_LENGTH,
         ],
         ids=['Short name', 'Max char value', 'Long name'],
     )
@@ -529,15 +530,33 @@ class TestTargetName:
         assert response.json()['target_record']['name'] == name
 
     @pytest.mark.parametrize(
-        'name',
-        [1, '', 'a' * 65, None],
-        ids=['Wrong Type', 'Empty', 'Too Long', 'None'],
+        'name,status_code',
+        [
+            (1, codes.BAD_REQUEST),
+            ('', codes.BAD_REQUEST),
+            ('a' * (_MAX_NAME_LENGTH + 1), codes.BAD_REQUEST),
+            (None, codes.BAD_REQUEST),
+            (chr(_MAX_CHAR_VALUE + 1), codes.INTERNAL_SERVER_ERROR),
+            (
+                chr(_MAX_CHAR_VALUE + 1) *
+                (_MAX_NAME_LENGTH + 1), codes.BAD_REQUEST,
+            ),
+        ],
+        ids=[
+            'Wrong Type',
+            'Empty',
+            'Too Long',
+            'None',
+            'Bad char',
+            'Bad char too long',
+        ],
     )
     def test_name_invalid(
         self,
         name: str,
         target_id: str,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        status_code: int,
     ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.
@@ -555,33 +574,7 @@ class TestTargetName:
 
         assert_vws_failure(
             response=response,
-            status_code=codes.BAD_REQUEST,
-            result_code=ResultCodes.FAIL,
-        )
-
-    def test_character_out_of_range(
-        self,
-        png_rgb: io.BytesIO,
-        vuforia_database_keys: VuforiaDatabaseKeys,
-    ) -> None:
-        name = chr(self._MAX_CHAR_VALUE + 1)
-        image_data = png_rgb.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
-        data = {
-            'name': name,
-            'width': 1,
-            'image': image_data_encoded,
-        }
-
-        response = add_target_to_vws(
-            vuforia_database_keys=vuforia_database_keys,
-            data=data,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.INTERNAL_SERVER_ERROR,
+            status_code=status_code,
             result_code=ResultCodes.FAIL,
         )
 
