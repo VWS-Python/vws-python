@@ -410,14 +410,14 @@ def validate_width(
 
 
 @wrapt.decorator
-def validate_name(
+def validate_name_type(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
     """
-    Validate the name argument given to a VWS endpoint.
+    Validate the type of the name argument given to a VWS endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -427,7 +427,8 @@ def validate_name(
 
     Returns:
         The result of calling the endpoint.
-        A `BAD_REQUEST` response if the name is given and is not between 1 and
+        A `BAD_REQUEST` response if the name is given and not a string.
+        is not between 1 and
         64 characters in length.
     """
     request, context = args
@@ -438,20 +439,59 @@ def validate_name(
     if 'name' not in request.json():
         return wrapped(*args, **kwargs)
 
-    name = request.json().get('name')
+    name = request.json()['name']
 
-    name_is_string = isinstance(name, str)
-    name_valid_length = name_is_string and 0 < len(name) < 65
+    if isinstance(name, str):
+        return wrapped(*args, **kwargs)
 
-    if not name_valid_length:
-        context.status_code = codes.BAD_REQUEST
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
 
-    return wrapped(*args, **kwargs)
+
+@wrapt.decorator
+def validate_name_length(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the length of the name argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the name is given is not between 1 and 64
+        characters in length.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'name' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    name = request.json()['name']
+
+    if name and len(name) < 65:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
 
 
 @wrapt.decorator
