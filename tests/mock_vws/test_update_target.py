@@ -538,8 +538,8 @@ class TestTargetName:
             (None, codes.BAD_REQUEST),
             (chr(_MAX_CHAR_VALUE + 1), codes.INTERNAL_SERVER_ERROR),
             (
-                chr(_MAX_CHAR_VALUE + 1) *
-                (_MAX_NAME_LENGTH + 1), codes.BAD_REQUEST,
+                chr(_MAX_CHAR_VALUE + 1) * (_MAX_NAME_LENGTH + 1),
+                codes.BAD_REQUEST,
             ),
         ],
         ids=[
