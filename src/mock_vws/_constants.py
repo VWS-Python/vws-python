@@ -17,7 +17,7 @@ class States(Enum):
 
     def __repr__(self) -> str:
         """
-        The representation should not include the generated number.
+        Return a representation which does not include the generated number.
         """
         return '<{class_name}.{state_name}>'.format(
             class_name=self.__class__.__name__,
