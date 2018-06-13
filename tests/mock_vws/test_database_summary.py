@@ -391,7 +391,7 @@ class TestUsageMetrics:
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        TODO
+        The ``request_usage`` count increases with each request.
         """
         response = database_summary(
             vuforia_database_keys=vuforia_database_keys,

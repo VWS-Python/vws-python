@@ -151,8 +151,6 @@ def route(
                 validate_not_invalid_json,
                 validate_date,
                 validate_date_header_given,
-                validate_auth_header_exists,
-                set_content_length_header,
             ]
         else:
             decorators = [
@@ -176,11 +174,15 @@ def route(
                 validate_date,
                 validate_date_header_given,
                 validate_not_invalid_json,
-                validate_auth_header_exists,
-                set_content_length_header,
             ]
 
-        for decorator in decorators:
+        common_decorators = [
+            validate_auth_header_exists,
+            set_content_length_header,
+            update_request_count,
+        ]
+
+        for decorator in decorators + common_decorators:
             method = decorator(method)
 
         return method
