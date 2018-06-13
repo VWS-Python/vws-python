@@ -509,13 +509,13 @@ class MockVuforiaWebServicesAPI:
             'active_images': active_images,
             'inactive_images': inactive_images,
             'failed_images': failed_images,
-            'target_quota': '',
+            'target_quota': 1000,
             'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',
             'processing_images': processing_images,
-            'reco_threshold': '',
-            'request_quota': '',
+            'reco_threshold': 1000,
+            'request_quota': 100000,
             'request_usage': '',
         }
         return json_dump(body)

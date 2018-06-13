@@ -359,6 +359,26 @@ class TestProcessingImages:
             )
 
 
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestQuotas:
+    """
+    Tests for the mock of the database summary endpoint at `GET /summary`.
+    """
+
+    def test_quotas(self, vuforia_database_keys: VuforiaDatabaseKeys) -> None:
+        """
+        Quotas are included in the database summary.
+        These match the quotas given for a free license.
+        """
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        assert response.json()['target_quota'] == 1000
+        assert response.json()['request_quota'] == 100000
+        assert response.json()['reco_threshold'] == 1000
+
+
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
 class TestInactiveProject:
     """
