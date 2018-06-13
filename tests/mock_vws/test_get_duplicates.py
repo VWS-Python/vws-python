@@ -364,4 +364,10 @@ class TestProcessing:
             target_id=processed_target_id,
         )
 
-        assert response.json()['similar_targets'] == [similar_target_id]
+        assert response.json()['similar_targets'] == []
+
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=processing_target_id,
+        )
+        assert response.json()['similar_targets'] == []
