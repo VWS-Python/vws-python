@@ -362,7 +362,7 @@ class TestProcessingImages:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestQuotas:
     """
-    Tests for the mock of the database summary endpoint at `GET /summary`.
+    Tests for quotas and thresholds.
     """
 
     def test_quotas(self, vuforia_database_keys: VuforiaDatabaseKeys) -> None:
@@ -377,6 +377,45 @@ class TestQuotas:
         assert response.json()['target_quota'] == 1000
         assert response.json()['request_quota'] == 100000
         assert response.json()['reco_threshold'] == 1000
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestUsageMetrics:
+    """
+    Tests for usage metrics.
+    """
+
+    def test_request_usage(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        TODO
+        """
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        previous_request_usage = response.json()['request_usage']
+
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        new_request_usage = response.json()['request_usage']
+        assert new_request_usage == previous_request_usage + 1
+
+    def test_reco_counts(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
