@@ -174,6 +174,13 @@ class TestDuplicates:
 
         assert response.json()['similar_targets'] == []
 
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestActiveFlag:
+    """
+    Tests for the effects of the active flag on duplicate matching.
+    """
+
     def test_active_flag_duplicate(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
