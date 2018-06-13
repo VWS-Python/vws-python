@@ -7,7 +7,7 @@ import io
 import uuid
 
 import pytest
-from requests import codes
+from requests import Response, codes
 from requests_mock import GET
 
 from mock_vws._constants import ResultCodes
@@ -19,6 +19,32 @@ from tests.mock_vws.utils import (
 )
 from tests.mock_vws.utils.assertions import assert_vws_response
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
+
+
+def target_duplicates(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
+) -> Response:
+    """
+    Get duplicates of a target.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        target_id: The ID of the target to get duplicates for.
+
+    Returns:
+        The response returned by the API.
+    """
+    response = target_api_request(
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
+        method=GET,
+        content=b'',
+        request_path='/duplicates/' + target_id,
+    )
+
+    return response
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -91,12 +117,9 @@ class TestDuplicates:
                 target_id=target_id,
             )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/duplicates/' + original_target_id,
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=original_target_id,
         )
 
         assert_vws_response(
@@ -164,12 +187,9 @@ class TestDuplicates:
 
         assert response.json()['status'] == 'failed'
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/duplicates/' + original_target_id,
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=original_target_id,
         )
 
         assert response.json()['similar_targets'] == []
@@ -232,12 +252,9 @@ class TestActiveFlag:
                 target_id=target_id,
             )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/duplicates/' + original_target_id,
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=original_target_id,
         )
 
         assert response.json()['similar_targets'] == []
@@ -286,12 +303,9 @@ class TestActiveFlag:
                 target_id=target_id,
             )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/duplicates/' + original_target_id,
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=original_target_id,
         )
 
         assert response.json()['similar_targets'] == [similar_target_id]
