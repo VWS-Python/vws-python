@@ -11,6 +11,7 @@ import pytz
 import requests
 from freezegun import freeze_time
 from requests import codes
+from requests.structures import CaseInsensitiveDict
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import Endpoint
@@ -62,7 +63,7 @@ class TestMissing:
             'Authorization': authorization_string,
         }
         headers.pop('Date', None)
-        endpoint.prepared_request.headers = headers
+        endpoint.prepared_request.headers = CaseInsensitiveDict(data=headers)
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -132,7 +133,7 @@ class TestFormat:
             'Date': date_incorrect_format,
         }
 
-        endpoint.prepared_request.headers = headers
+        endpoint.prepared_request.headers = CaseInsensitiveDict(data=headers)
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -213,7 +214,7 @@ class TestSkewedTime:
             'Date': date,
         }
 
-        endpoint.prepared_request.headers = headers
+        endpoint.prepared_request.headers = CaseInsensitiveDict(data=headers)
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -275,7 +276,7 @@ class TestSkewedTime:
             'Date': date,
         }
 
-        endpoint.prepared_request.headers = headers
+        endpoint.prepared_request.headers = CaseInsensitiveDict(data=headers)
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
