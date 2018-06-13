@@ -10,6 +10,7 @@ import pytz
 import requests
 from freezegun import freeze_time
 from requests import codes
+from requests.structures import CaseInsensitiveDict
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import Endpoint
@@ -66,14 +67,8 @@ class TestInvalidJSON:
             'Date': date,
         }
 
-        endpoint.prepared_request.prepare_body(  # type: ignore
-            data=content,
-            files=None,
-        )
-
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.body = content
+        endpoint.prepared_request.headers = CaseInsensitiveDict(data=headers)
         endpoint.prepared_request.prepare_content_length(  # type: ignore
             body=content,
         )

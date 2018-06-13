@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 import pytest
 import requests
 from requests import codes
+from requests.structures import CaseInsensitiveDict
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import Endpoint
@@ -39,9 +40,7 @@ class TestAuthorizationHeader:
 
         headers.pop('Authorization', None)
 
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = CaseInsensitiveDict(data=headers)
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
@@ -77,9 +76,7 @@ class TestAuthorizationHeader:
             'Date': date,
         }
 
-        endpoint.prepared_request.prepare_headers(  # type: ignore
-            headers=headers,
-        )
+        endpoint.prepared_request.headers = CaseInsensitiveDict(data=headers)
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
