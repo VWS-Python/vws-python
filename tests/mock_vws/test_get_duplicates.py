@@ -317,13 +317,14 @@ class TestProcessing:
     Tests for targets in the processing stage.
     """
 
-    def test_original_processing(
+    def test_processing(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        Checking for duplicates on a target which is processing, ...
+        If a target is in the processing state, it can have duplicates.
+        Targets can have duplicates in the processing state.
         """
         image_data = high_quality_image.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -370,4 +371,11 @@ class TestProcessing:
             vuforia_database_keys=vuforia_database_keys,
             target_id=processing_target_id,
         )
-        assert response.json()['similar_targets'] == []
+
+        status_response = get_vws_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=processing_target_id,
+        )
+
+        assert status_response.json()['status'] == 'processing'
+        assert response.json()['similar_targets'] == [processed_target_id]
