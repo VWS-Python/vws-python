@@ -11,7 +11,7 @@ import io
 import random
 import statistics
 import uuid
-from typing import Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 import pytz
 import wrapt
@@ -47,6 +47,29 @@ from ._validators import (
     validate_not_invalid_json,
     validate_width,
 )
+
+
+@wrapt.decorator
+def update_request_count(
+    wrapped: Callable[..., str],
+    instance: Any,
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Add to the request count.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+    """
+    instance.request_count += 1
+    return wrapped(*args, **kwargs)
 
 
 @wrapt.decorator
