@@ -17,6 +17,7 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     database_summary,
     delete_target,
+    query,
     wait_for_target_processed,
 )
 from tests.mock_vws.utils.assertions import assert_vws_response
@@ -396,26 +397,25 @@ class TestUsageMetrics:
             vuforia_database_keys=vuforia_database_keys,
         )
 
-        previous_request_usage = response.json()['request_usage']
+        original_request_usage = response.json()['request_usage']
 
         response = database_summary(
             vuforia_database_keys=vuforia_database_keys,
         )
 
         new_request_usage = response.json()['request_usage']
-        assert new_request_usage == previous_request_usage + 1
+        assert new_request_usage == original_request_usage + 1
 
-    def test_reco_counts(
-        self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
-    ) -> None:
+        query(
+            vuforia_database_keys=vuforia_database_keys,
+            body={},
+        )
+
         response = database_summary(
             vuforia_database_keys=vuforia_database_keys,
         )
-
-        assert response.json()['total_recos'] == 0
-        assert response.json()['current_month_recos'] == 0
-        assert response.json()['previous_month_recos'] == 0
+        new_request_usage = response.json()['request_usage']
+        assert new_request_usage == original_request_usage + 2
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')

@@ -510,7 +510,7 @@ class MockVuforiaWebServicesAPI:
             'inactive_images': inactive_images,
             'failed_images': failed_images,
             'target_quota': 1000,
-            'total_recos': '',
+            'total_recos': self.num_requests,
             'current_month_recos': '',
             'previous_month_recos': '',
             'processing_images': processing_images,
