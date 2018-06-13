@@ -303,15 +303,68 @@ class TestProcessing:
     Tests for targets in the processing stage.
     """
 
-    def test_original_processing(self) -> None:
+    def test_original_processing(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+    ) -> None:
         """
         Checking for duplicates on a target which is processing, ...
         """
-        pass
+        image_data = high_quality_image.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-    def test_duplicate_processing(self) -> None:
-        """
-        Checking for duplicates on a target which is processed, when another
-        target which is a duplicate is processing, ...
-        """
-        pass
+        data_1 = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        data_2 = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        resp_1 = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data_1,
+        )
+
+        target_id_1 = resp_1.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=resp_1,
+        )
+
+        resp_2 = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data_2,
+        )
+
+        target_id_2 = original_add_resp.json()['target_id']
+
+        response = target_api_request(
+            server_access_key=vuforia_database_keys.server_access_key,
+            server_secret_key=vuforia_database_keys.server_secret_key,
+            method=GET,
+            content=b'',
+            request_path='/duplicates/' + original_target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        expected_keys = {
+            'result_code',
+            'transaction_id',
+            'similar_targets',
+        }
+
+        assert response.json().keys() == expected_keys
+
+        assert response.json()['similar_targets'] == [similar_target_id]
