@@ -17,7 +17,7 @@ from hypothesis.strategies import text
 from requests import codes
 from requests_mock.exceptions import NoMockAddress
 
-from mock_vws import MockVWS
+from mock_vws import MockVWS, States
 from mock_vws._constants import TargetStatuses
 from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
@@ -541,3 +541,15 @@ class TestCustomQueryRecognizesDeletionSeconds:
 
         expected = query_recognizes_deletion
         assert abs(expected - recognize_deletion_seconds) < 0.2
+
+
+class TestStates:
+    """
+    Tests for different mock states.
+    """
+
+    def test_repr(self) -> None:
+        """
+        Test for the representation of a ``State``.
+        """
+        assert repr(States.WORKING) == '<States.WORKING>'
