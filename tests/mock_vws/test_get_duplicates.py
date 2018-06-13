@@ -194,6 +194,13 @@ class TestDuplicates:
 
         assert response.json()['similar_targets'] == []
 
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestActiveFlag:
+    """
+    Tests for the effects of the active flag on duplicate matching.
+    """
+
     def test_active_flag_duplicate(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -302,3 +309,73 @@ class TestDuplicates:
         )
 
         assert response.json()['similar_targets'] == [similar_target_id]
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestProcessing:
+    """
+    Tests for targets in the processing stage.
+    """
+
+    def test_processing(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        If a target is in the processing state, it can have duplicates.
+        Targets can have duplicates in the processing state.
+        """
+        image_data = high_quality_image.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data_1 = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        data_2 = {
+            'name': str(uuid.uuid4()),
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        resp_1 = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data_1,
+        )
+
+        processed_target_id = resp_1.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=processed_target_id,
+        )
+
+        resp_2 = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data_2,
+        )
+
+        processing_target_id = resp_2.json()['target_id']
+
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=processed_target_id,
+        )
+
+        assert response.json()['similar_targets'] == []
+
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=processing_target_id,
+        )
+
+        status_response = get_vws_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=processing_target_id,
+        )
+
+        assert status_response.json()['status'] == 'processing'
+        assert response.json()['similar_targets'] == [processed_target_id]
