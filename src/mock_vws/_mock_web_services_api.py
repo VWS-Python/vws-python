@@ -368,6 +368,7 @@ class MockVuforiaWebServicesAPI:
         self.state = state
 
         self._processing_time_seconds = processing_time_seconds
+        self.request_count = 0
 
     @route(
         path_pattern='/targets',
@@ -510,13 +511,13 @@ class MockVuforiaWebServicesAPI:
             'inactive_images': inactive_images,
             'failed_images': failed_images,
             'target_quota': 1000,
-            'total_recos': self.num_requests,
+            'total_recos': '',
             'current_month_recos': '',
             'previous_month_recos': '',
             'processing_images': processing_images,
             'reco_threshold': 1000,
             'request_quota': 100000,
-            'request_usage': '',
+            'request_usage': self.request_count,
         }
         return json_dump(body)
 
