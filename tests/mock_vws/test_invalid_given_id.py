@@ -8,11 +8,12 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
-    assert_vws_failure,
+    Endpoint,
     delete_target,
+    wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_vws_failure
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -25,7 +26,7 @@ class TestInvalidGivenID:
     def test_not_real_id(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
         target_id: str,
     ) -> None:
         """
@@ -34,6 +35,11 @@ class TestInvalidGivenID:
         """
         if not endpoint.prepared_request.path_url.endswith(target_id):
             return
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
 
         delete_target(
             vuforia_database_keys=vuforia_database_keys,

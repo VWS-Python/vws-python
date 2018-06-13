@@ -14,12 +14,13 @@ from requests import codes
 from mock_vws import MockVWS
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    VuforiaDatabaseKeys,
     add_target_to_vws,
-    assert_vws_response,
     database_summary,
+    delete_target,
     wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
 @timeout_decorator.timeout(seconds=300)
@@ -262,6 +263,48 @@ class TestDatabaseSummary:
             active_images=0,
             inactive_images=0,
             failed_images=1,
+            processing_images=0,
+        )
+
+    def test_deleted(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_rgb: io.BytesIO,
+    ) -> None:
+        """
+        Deleted targets are not shown in the summary.
+        """
+        image_data = png_rgb.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        wait_for_image_numbers(
+            vuforia_database_keys=vuforia_database_keys,
+            active_images=0,
+            inactive_images=0,
+            failed_images=0,
             processing_images=0,
         )
 

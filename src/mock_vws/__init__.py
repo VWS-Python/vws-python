@@ -27,12 +27,17 @@ class MockVWS(ContextDecorator):
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
+        base_vws_url: str = 'https://vws.vuforia.com',
+        base_vwq_url: str = 'https://cloudreco.vuforia.com',
         real_http: bool=False,
         state: States=States.WORKING,
         server_access_key: Optional[str]=None,
         server_secret_key: Optional[str]=None,
+        client_access_key: Optional[str]=None,
+        client_secret_key: Optional[str]=None,
         database_name: Optional[str]=None,
         processing_time_seconds: Union[int, float]=0.5,
+        query_recognizes_deletion_seconds: Union[int, float]=3,
     ) -> None:
         """
         Args:
@@ -45,9 +50,17 @@ class MockVWS(ContextDecorator):
                 By default this is a random string.
             server_access_key: A VWS server access key for the mock.
             server_secret_key: A VWS server secret key for the mock.
+            client_access_key: A VWS client access key for the mock.
+            client_secret_key: A VWS client secret key for the mock.
             processing_time_seconds: The number of seconds to process each
                 image for. In the real Vuforia Web Services, this is not
                 deterministic.
+            base_vwq_url: The base URL for the VWQ API.
+            base_vws_url: The base URL for the VWS API.
+            query_recognizes_deletion_seconds: The number of seconds after a
+                target has been deleted that the query endpoint will return a
+                500 response for on a match.
+
 
         Attributes:
             server_access_key (str): A VWS server access key for the mock.
@@ -66,6 +79,12 @@ class MockVWS(ContextDecorator):
         if server_secret_key is None:
             server_secret_key = uuid.uuid4().hex
 
+        if client_access_key is None:
+            client_access_key = uuid.uuid4().hex
+
+        if client_secret_key is None:
+            client_secret_key = uuid.uuid4().hex
+
         self._real_http = real_http
         self._mock = Mocker()
         self._state = state
@@ -73,7 +92,16 @@ class MockVWS(ContextDecorator):
 
         self.server_access_key = server_access_key
         self.server_secret_key = server_secret_key
+        self.client_access_key = client_access_key
+        self.client_secret_key = client_secret_key
         self.database_name = database_name
+
+        self._base_vws_url = base_vws_url
+        self._base_vwq_url = base_vwq_url
+
+        self._query_recognizes_deletion_seconds = (
+            query_recognizes_deletion_seconds
+        )
 
     def __enter__(self) -> 'MockVWS':
         """
@@ -91,7 +119,14 @@ class MockVWS(ContextDecorator):
             processing_time_seconds=self._processing_time_seconds,
         )
 
-        mock_vwq_api = MockVuforiaWebQueryAPI()
+        mock_vwq_api = MockVuforiaWebQueryAPI(
+            client_access_key=self.client_access_key,
+            client_secret_key=self.client_secret_key,
+            mock_web_services_api=mock_vws_api,
+            query_recognizes_deletion_seconds=(
+                self._query_recognizes_deletion_seconds
+            ),
+        )
 
         date = email.utils.formatdate(None, localtime=False, usegmt=True)
 
@@ -105,7 +140,7 @@ class MockVWS(ContextDecorator):
         with Mocker(real_http=self._real_http) as mock:
             for route in mock_vws_api.routes:
                 url_pattern = urljoin(
-                    base='https://vws.vuforia.com',
+                    base=self._base_vws_url,
                     url=route.path_pattern + '$',
                 )
 
@@ -119,7 +154,7 @@ class MockVWS(ContextDecorator):
 
             for route in mock_vwq_api.routes:
                 url_pattern = urljoin(
-                    base='https://cloudreco.vuforia.com',
+                    base=self._base_vwq_url,
                     url=route.path_pattern + '$',
                 )
 

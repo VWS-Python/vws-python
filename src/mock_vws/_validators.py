@@ -146,6 +146,7 @@ def validate_not_invalid_json(
         The result of calling the endpoint.
         An `UNAUTHORIZED` response if there is data given to the database
         summary endpoint.
+        endpoint.
         A `BAD_REQUEST` response with a FAIL result code if there is invalid
         JSON given to a POST or PUT request.
         A `BAD_REQUEST` with empty text if there is data given to another
@@ -153,7 +154,7 @@ def validate_not_invalid_json(
     """
     request, context = args
 
-    if request.text is None:
+    if not request.body:
         return wrapped(*args, **kwargs)
 
     if request.path == '/summary':
@@ -203,15 +204,22 @@ def validate_auth_header_exists(
         An `UNAUTHORIZED` response if there is no "Authorization" header.
     """
     request, context = args
-    if 'Authorization' not in request.headers:
-        context.status_code = codes.UNAUTHORIZED
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
-        }
-        return json_dump(body)
+    if 'Authorization' in request.headers:
+        return wrapped(*args, **kwargs)
 
-    return wrapped(*args, **kwargs)
+    context.status_code = codes.UNAUTHORIZED
+    if request.path == '/v1/query':
+        text = 'Authorization header missing.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        context.headers['WWW-Authenticate'] = 'VWS'
+        return text
+
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.AUTHENTICATION_FAILURE.value,
+    }
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -237,30 +245,67 @@ def validate_authorization(
     """
     request, context = args
 
-    if request.text is None:
-        content = b''
-    else:
-        content = bytes(request.text, encoding='utf-8')
-
+    content_type = request.headers.get('Content-Type', '').split(';')[0]
     expected_authorization_header = authorization_header(
-        access_key=bytes(instance.server_access_key, encoding='utf-8'),
-        secret_key=bytes(instance.server_secret_key, encoding='utf-8'),
+        access_key=bytes(instance.access_key, encoding='utf-8'),
+        secret_key=bytes(instance.secret_key, encoding='utf-8'),
         method=request.method,
-        content=content,
-        content_type=request.headers.get('Content-Type', ''),
+        content=request.body or b'',
+        content_type=content_type,
         date=request.headers.get('Date', ''),
         request_path=request.path,
     )
 
-    if request.headers['Authorization'] != expected_authorization_header:
-        context.status_code = codes.BAD_REQUEST
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
+    if request.headers['Authorization'] == expected_authorization_header:
+        return wrapped(*args, **kwargs)
 
-    return wrapped(*args, **kwargs)
+    if request.path == '/v1/query':
+        context.status_code = codes.UNAUTHORIZED
+        text = 'Malformed authorization header.'
+        content_type = 'text/plain; charset=ISO-8859-1'
+        context.headers['Content-Type'] = content_type
+        context.headers['WWW-Authenticate'] = 'VWS'
+        return text
+
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
+
+@wrapt.decorator
+def validate_date_header_given(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the date header is given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the date is not given.
+    """
+    request, context = args
+
+    if 'Date' in request.headers:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -292,7 +337,7 @@ def validate_date(
             request.headers['Date'],
             '%a, %d %b %Y %H:%M:%S GMT',
         )
-    except (KeyError, ValueError):
+    except ValueError:
         context.status_code = codes.BAD_REQUEST
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -304,6 +349,7 @@ def validate_date(
     now = datetime.datetime.now(tz=gmt)
     date_from_header = date_from_header.replace(tzinfo=gmt)
     time_difference = now - date_from_header
+
     maximum_time_difference = datetime.timedelta(minutes=5)
 
     if abs(time_difference) >= maximum_time_difference:
@@ -364,14 +410,14 @@ def validate_width(
 
 
 @wrapt.decorator
-def validate_name(
+def validate_name_type(
     wrapped: Callable[..., str],
     instance: Any,  # pylint: disable=unused-argument
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
     """
-    Validate the name argument given to a VWS endpoint.
+    Validate the type of the name argument given to a VWS endpoint.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -381,7 +427,8 @@ def validate_name(
 
     Returns:
         The result of calling the endpoint.
-        A `BAD_REQUEST` response if the name is given and is not between 1 and
+        A `BAD_REQUEST` response if the name is given and not a string.
+        is not between 1 and
         64 characters in length.
     """
     request, context = args
@@ -392,20 +439,101 @@ def validate_name(
     if 'name' not in request.json():
         return wrapped(*args, **kwargs)
 
-    name = request.json().get('name')
+    name = request.json()['name']
 
-    name_is_string = isinstance(name, str)
-    name_valid_length = name_is_string and 0 < len(name) < 65
+    if isinstance(name, str):
+        return wrapped(*args, **kwargs)
 
-    if not name_valid_length:
-        context.status_code = codes.BAD_REQUEST
-        body = {
-            'transaction_id': uuid.uuid4().hex,
-            'result_code': ResultCodes.FAIL.value,
-        }
-        return json_dump(body)
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
 
-    return wrapped(*args, **kwargs)
+
+@wrapt.decorator
+def validate_name_length(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the length of the name argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `BAD_REQUEST` response if the name is given is not between 1 and 64
+        characters in length.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'name' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    name = request.json()['name']
+
+    if name and len(name) < 65:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.BAD_REQUEST
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
+
+@wrapt.decorator
+def validate_name_characters_in_range(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the characters in the name argument given to a VWS endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An ``INTERNAL_SERVER_ERROR`` response if the name is given includes
+        characters outside of the accepted range.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    if 'name' not in request.json():
+        return wrapped(*args, **kwargs)
+
+    name = request.json()['name']
+
+    if all(ord(character) <= 65535 for character in name):
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.INTERNAL_SERVER_ERROR
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
 
 
 @wrapt.decorator
@@ -824,5 +952,49 @@ def validate_metadata_type(
     body = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
+
+@wrapt.decorator
+def validate_metadata_size(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate that the given application metadata is a string or 1024 * 1024
+    bytes or fewer.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        An `UNPROCESSABLE_ENTITY` response if application metadata is given and
+        it is too large.
+    """
+    request, context = args
+
+    if not request.text:
+        return wrapped(*args, **kwargs)
+
+    application_metadata = request.json().get('application_metadata')
+    if application_metadata is None:
+        return wrapped(*args, **kwargs)
+    decoded = base64.b64decode(application_metadata)
+
+    max_metadata_bytes = 1024 * 1024 - 1
+    if len(decoded) <= max_metadata_bytes:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.UNPROCESSABLE_ENTITY
+    body = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.METADATA_TOO_LARGE.value,
     }
     return json_dump(body)

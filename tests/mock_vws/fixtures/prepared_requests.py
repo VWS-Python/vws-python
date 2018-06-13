@@ -12,10 +12,11 @@ import pytest
 import requests
 from requests import codes
 from requests_mock import DELETE, GET, POST, PUT
+from urllib3.filepost import encode_multipart_formdata
 
 from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+    Endpoint,
     VuforiaDatabaseKeys,
     authorization_header,
     rfc_1123_date,
@@ -23,13 +24,14 @@ from tests.mock_vws.utils import (
 )
 
 VWS_HOST = 'https://vws.vuforia.com'
+VWQ_HOST = 'https://cloudreco.vuforia.com'
 
 
 @pytest.fixture()
 def _add_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     png_rgb: io.BytesIO,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for adding a target.
     """
@@ -74,7 +76,7 @@ def _add_target(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.CREATED,
         successful_headers_result_code=ResultCodes.TARGET_CREATED,
         prepared_request=prepared_request,
@@ -87,7 +89,7 @@ def _add_target(
 def _delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for deleting a target.
     """
@@ -125,7 +127,7 @@ def _delete_target(
     )
 
     prepared_request = request.prepare()  # type: ignore
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -137,7 +139,7 @@ def _delete_target(
 @pytest.fixture()
 def _database_summary(
     vuforia_database_keys: VuforiaDatabaseKeys,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting details about the database.
     """
@@ -173,7 +175,7 @@ def _database_summary(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -186,7 +188,7 @@ def _database_summary(
 def _get_duplicates(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting potential duplicates of a
     target.
@@ -227,7 +229,7 @@ def _get_duplicates(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -240,7 +242,7 @@ def _get_duplicates(
 def _get_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting details of a target.
     """
@@ -280,7 +282,7 @@ def _get_target(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -290,9 +292,7 @@ def _get_target(
 
 
 @pytest.fixture()
-def _target_list(
-    vuforia_database_keys: VuforiaDatabaseKeys,
-) -> TargetAPIEndpoint:
+def _target_list(vuforia_database_keys: VuforiaDatabaseKeys) -> Endpoint:
     """
     Return details of the endpoint for getting a list of targets.
     """
@@ -328,7 +328,7 @@ def _target_list(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -341,7 +341,7 @@ def _target_list(
 def _target_summary(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for getting a summary report of a target.
     """
@@ -381,7 +381,7 @@ def _target_summary(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,
@@ -394,7 +394,7 @@ def _target_summary(
 def _update_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> TargetAPIEndpoint:
+) -> Endpoint:
     """
     Return details of the endpoint for updating a target.
     """
@@ -437,7 +437,60 @@ def _update_target(
 
     prepared_request = request.prepare()  # type: ignore
 
-    return TargetAPIEndpoint(
+    return Endpoint(
+        successful_headers_status_code=codes.OK,
+        successful_headers_result_code=ResultCodes.SUCCESS,
+        prepared_request=prepared_request,
+        access_key=access_key,
+        secret_key=secret_key,
+    )
+
+
+@pytest.fixture()
+def _query(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    high_quality_image: io.BytesIO,
+) -> Endpoint:
+    """
+    Return details of the endpoint for making an image recognition query.
+    """
+    image_content = high_quality_image.read()
+    date = rfc_1123_date()
+    request_path = '/v1/query'
+    files = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+    method = POST
+
+    content, content_type_header = encode_multipart_formdata(files)
+
+    access_key = vuforia_database_keys.client_access_key
+    secret_key = vuforia_database_keys.client_secret_key
+    authorization_string = authorization_header(
+        access_key=access_key,
+        secret_key=secret_key,
+        method=method,
+        content=content,
+        # Note that this is not the actual Content-Type header value sent.
+        content_type='multipart/form-data',
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type_header,
+    }
+
+    request = requests.Request(
+        method=method,
+        url=urljoin(base=VWQ_HOST, url=request_path),
+        headers=headers,
+        data=content,
+    )
+
+    prepared_request = request.prepare()  # type: ignore
+
+    return Endpoint(
         successful_headers_status_code=codes.OK,
         successful_headers_result_code=ResultCodes.SUCCESS,
         prepared_request=prepared_request,

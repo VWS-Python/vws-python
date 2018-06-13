@@ -4,27 +4,35 @@ Configuration, plugins and fixtures for `pytest`.
 
 import base64
 import io
+import logging
 import os
 from typing import Generator
 
 import pytest
 from _pytest.fixtures import SubRequest
-from requests_mock import GET
+from requests import codes
 
 from mock_vws import MockVWS, States
+from mock_vws._constants import ResultCodes
 from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
-    VuforiaDatabaseKeys,
+    Endpoint,
     add_target_to_vws,
     delete_target,
-    target_api_request,
+    list_targets,
+    update_target,
+    wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 pytest_plugins = [  # pylint: disable=invalid-name
     'tests.mock_vws.fixtures.prepared_requests',
     'tests.mock_vws.fixtures.images',
     'tests.mock_vws.fixtures.credentials',
 ]
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
 
 
 def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
@@ -35,23 +43,40 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
         database_keys: The credentials to the Vuforia target database to delete
             all targets in.
     """
-    response = target_api_request(
-        server_access_key=database_keys.server_access_key,
-        server_secret_key=database_keys.server_secret_key,
-        method=GET,
-        content=b'',
-        request_path='/targets',
-    )
+    response = list_targets(vuforia_database_keys=database_keys)
 
     if 'results' not in response.json():  # pragma: no cover
-        print('Results not found.')
-        print('Response is:')
-        print(response.json())
+        message = f'Results not found.\nResponse is: {response.json()}'
+        LOGGER.debug(message)
 
     targets = response.json()['results']
 
     for target in targets:
-        delete_target(vuforia_database_keys=database_keys, target_id=target)
+        wait_for_target_processed(
+            vuforia_database_keys=database_keys,
+            target_id=target,
+        )
+
+        # Even deleted targets can be matched by a query for a few seconds so
+        # we change the target to inactive before deleting it.
+        update_target(
+            vuforia_database_keys=database_keys,
+            data={'active_flag': False},
+            target_id=target,
+        )
+        wait_for_target_processed(
+            vuforia_database_keys=database_keys,
+            target_id=target,
+        )
+        response = delete_target(
+            vuforia_database_keys=database_keys,
+            target_id=target,
+        )
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
 
 
 @pytest.fixture()
@@ -114,6 +139,10 @@ def verify_mock_vuforia(
             decode('ascii'),
             server_secret_key=vuforia_database_keys.server_secret_key.
             decode('ascii'),
+            client_access_key=vuforia_database_keys.client_access_key.
+            decode('ascii'),
+            client_secret_key=vuforia_database_keys.client_secret_key.
+            decode('ascii'),
             processing_time_seconds=0.1,
         ):
             yield
@@ -168,13 +197,12 @@ def verify_mock_vuforia_inactive(
         '_target_list',
         '_target_summary',
         '_update_target',
+        '_query',
     ],
 )
-def endpoint(request: SubRequest) -> TargetAPIEndpoint:
+def endpoint(request: SubRequest) -> Endpoint:
     """
-    Return details of an endpoint.
+    Return details of an endpoint for the Target API or the Query API.
     """
-    endpoint_fixture: TargetAPIEndpoint = request.getfixturevalue(
-        request.param,
-    )
+    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture

@@ -1,0 +1,78 @@
+'<html>\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>\n<title>Error 500 Server Error</
+title>\n</head>\n<body><h2>HTTP ERROR 500</h2>\n<p>Problem accessing /v1/query. Reason:\n<pre>    Server Error</pre></
+p><h3>Caused by:</h3><pre>org.jboss.resteasy.spi.UnhandledException: com.fasterxml.jackson.databind.exc.MismatchedInpu
+tException: No content to map due to end-of-input\n at [Source: (byte[])""; line: 1, column: 0]\n\tat org.jboss.restea
+sy.core.ExceptionHandler.handleApplicationException(ExceptionHandler.java:76)\n\tat org.jboss.resteasy.core.ExceptionH
+andler.handleException(ExceptionHandler.java:212)\n\tat org.jboss.resteasy.core.SynchronousDispatcher.writeException(S
+ynchronousDispatcher.java:168)\n\tat org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:4
+11)\n\tat org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:202)\n\tat org.jboss.resteas
+y.plugins.server.servlet.ServletContainerDispatcher.service(ServletContainerDispatcher.java:221)\n\tat org.jboss.reste
+asy.plugins.server.servlet.HttpServletDispatcher.service(HttpServletDispatcher.java:56)\n\tat org.jboss.resteasy.plugi
+ns.server.servlet.HttpServletDispatcher.service(HttpServletDispatcher.java:51)\n\tat javax.servlet.http.HttpServlet.se
+rvice(HttpServlet.java:790)\n\tat org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:808)\n\tat org.ecl
+ipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1669)\n\tat com.kooaba.queryservice.auth.KW
+SAuthFilter.doFilter(KWSAuthFilter.java:171)\n\tat org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(Servl
+etHandler.java:1652)\n\tat org.eclipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:585)\n\tat org.eclips
+e.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:143)\n\tat org.eclipse.jetty.security.SecurityHandler.h
+andle(SecurityHandler.java:577)\n\tat org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:223
+)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doHandle(ContextHandler.java:1127)\n\tat org.eclipse.jetty.ser
+vlet.ServletHandler.doScope(ServletHandler.java:515)\n\tat org.eclipse.jetty.server.session.SessionHandler.doScope(Ses
+sionHandler.java:185)\n\tat org.eclipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1061)\n\tat or
+g.eclipse.jetty.server.handler.ScopedHandler.handle(ScopedHandler.java:141)\n\tat org.eclipse.jetty.server.handler.Con
+textHandlerCollection.handle(ContextHandlerCollection.java:215)\n\tat org.eclipse.jetty.server.handler.HandlerCollecti
+on.handle(HandlerCollection.java:110)\n\tat org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java
+:97)\n\tat org.eclipse.jetty.server.Server.handle(Server.java:497)\n\tat org.eclipse.jetty.server.HttpChannel.handle(H
+ttpChannel.java:310)\n\tat org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:257)\n\tat org.eclip
+se.jetty.io.AbstractConnection$2.run(AbstractConnection.java:540)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool
+.runJob(QueuedThreadPool.java:635)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:55
+5)\n\tat java.lang.Thread.run(Thread.java:748)\nCaused by: com.fasterxml.jackson.databind.exc.MismatchedInputException
+: No content to map due to end-of-input\n at [Source: (byte[])""; line: 1, column: 0]\n\tat com.fasterxml.jackson.data
+bind.exc.MismatchedInputException.from(MismatchedInputException.java:59)\n\tat com.fasterxml.jackson.databind.ObjectMa
+pper._initForReading(ObjectMapper.java:4133)\n\tat com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(Object
+Mapper.java:3988)\n\tat com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3094)\n\tat com.kooaba
+.queryservice.domain.WebResult.setTargetData(WebResult.java:44)\n\tat com.kooaba.queryservice.domain.WebQueryResultPro
+cessor.formatResult(WebQueryResultProcessor.java:81)\n\tat com.kooaba.queryservice.services.QueryResourceVuforia.query
+Common(QueryResourceVuforia.java:230)\n\tat com.kooaba.queryservice.services.QueryResourceVuforia.limitedConcurrencyQu
+ery(QueryResourceVuforia.java:77)\n\tat com.kooaba.queryservice.services.QueryResourceCloudRecoWebAPI.query(QueryResou
+rceCloudRecoWebAPI.java:55)\n\tat sun.reflect.GeneratedMethodAccessor99.invoke(Unknown Source)\n\tat sun.reflect.Deleg
+atingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java
+:606)\n\tat org.jboss.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:139)\n\tat org.jboss.resteasy.co
+re.ResourceMethodInvoker.invokeOnTarget(ResourceMethodInvoker.java:295)\n\tat org.jboss.resteasy.core.ResourceMethodIn
+voker.invoke(ResourceMethodInvoker.java:249)\n\tat org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethod
+Invoker.java:236)\n\tat org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:395)\n\t... 28
+ more\n</pre>\n<h3>Caused by:</h3><pre>com.fasterxml.jackson.databind.exc.MismatchedInputException: No content to map
+due to end-of-input\n at [Source: (byte[])""; line: 1, column: 0]\n\tat com.fasterxml.jackson.databind.exc.MismatchedI
+nputException.from(MismatchedInputException.java:59)\n\tat com.fasterxml.jackson.databind.ObjectMapper._initForReading
+(ObjectMapper.java:4133)\n\tat com.fasterxml.jackson.databind.ObjectMapper._readMapAndClose(ObjectMapper.java:3988)\n\
+tat com.fasterxml.jackson.databind.ObjectMapper.readValue(ObjectMapper.java:3094)\n\tat com.kooaba.queryservice.domain
+.WebResult.setTargetData(WebResult.java:44)\n\tat com.kooaba.queryservice.domain.WebQueryResultProcessor.formatResult(
+WebQueryResultProcessor.java:81)\n\tat com.kooaba.queryservice.services.QueryResourceVuforia.queryCommon(QueryResource
+Vuforia.java:230)\n\tat com.kooaba.queryservice.services.QueryResourceVuforia.limitedConcurrencyQuery(QueryResourceVuf
+oria.java:77)\n\tat com.kooaba.queryservice.services.QueryResourceCloudRecoWebAPI.query(QueryResourceCloudRecoWebAPI.j
+ava:55)\n\tat sun.reflect.GeneratedMethodAccessor99.invoke(Unknown Source)\n\tat sun.reflect.DelegatingMethodAccessorI
+mpl.invoke(DelegatingMethodAccessorImpl.java:43)\n\tat java.lang.reflect.Method.invoke(Method.java:606)\n\tat org.jbos
+s.resteasy.core.MethodInjectorImpl.invoke(MethodInjectorImpl.java:139)\n\tat org.jboss.resteasy.core.ResourceMethodInv
+oker.invokeOnTarget(ResourceMethodInvoker.java:295)\n\tat org.jboss.resteasy.core.ResourceMethodInvoker.invoke(Resourc
+eMethodInvoker.java:249)\n\tat org.jboss.resteasy.core.ResourceMethodInvoker.invoke(ResourceMethodInvoker.java:236)\n\
+tat org.jboss.resteasy.core.SynchronousDispatcher.invoke(SynchronousDispatcher.java:395)\n\tat org.jboss.resteasy.core
+.SynchronousDispatcher.invoke(SynchronousDispatcher.java:202)\n\tat org.jboss.resteasy.plugins.server.servlet.ServletC
+ontainerDispatcher.service(ServletContainerDispatcher.java:221)\n\tat org.jboss.resteasy.plugins.server.servlet.HttpSe
+rvletDispatcher.service(HttpServletDispatcher.java:56)\n\tat org.jboss.resteasy.plugins.server.servlet.HttpServletDisp
+atcher.service(HttpServletDispatcher.java:51)\n\tat javax.servlet.http.HttpServlet.service(HttpServlet.java:790)\n\tat
+ org.eclipse.jetty.servlet.ServletHolder.handle(ServletHolder.java:808)\n\tat org.eclipse.jetty.servlet.ServletHandler
+$CachedChain.doFilter(ServletHandler.java:1669)\n\tat com.kooaba.queryservice.auth.KWSAuthFilter.doFilter(KWSAuthFilte
+r.java:171)\n\tat org.eclipse.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1652)\n\tat org.ec
+lipse.jetty.servlet.ServletHandler.doHandle(ServletHandler.java:585)\n\tat org.eclipse.jetty.server.handler.ScopedHand
+ler.handle(ScopedHandler.java:143)\n\tat org.eclipse.jetty.security.SecurityHandler.handle(SecurityHandler.java:577)\n
+\tat org.eclipse.jetty.server.session.SessionHandler.doHandle(SessionHandler.java:223)\n\tat org.eclipse.jetty.server.
+handler.ContextHandler.doHandle(ContextHandler.java:1127)\n\tat org.eclipse.jetty.servlet.ServletHandler.doScope(Servl
+etHandler.java:515)\n\tat org.eclipse.jetty.server.session.SessionHandler.doScope(SessionHandler.java:185)\n\tat org.e
+clipse.jetty.server.handler.ContextHandler.doScope(ContextHandler.java:1061)\n\tat org.eclipse.jetty.server.handler.Sc
+opedHandler.handle(ScopedHandler.java:141)\n\tat org.eclipse.jetty.server.handler.ContextHandlerCollection.handle(Cont
+extHandlerCollection.java:215)\n\tat org.eclipse.jetty.server.handler.HandlerCollection.handle(HandlerCollection.java:
+110)\n\tat org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:97)\n\tat org.eclipse.jetty.serv
+er.Server.handle(Server.java:497)\n\tat org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:310)\n\tat org.ec
+lipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:257)\n\tat org.eclipse.jetty.io.AbstractConnection$2.
+run(AbstractConnection.java:540)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:635
+)\n\tat org.eclipse.jetty.util.thread.QueuedThreadPool$3.run(QueuedThreadPool.java:555)\n\tat java.lang.Thread.run(Thr
+ead.java:748)\n</pre>\n<hr><i><small>Powered by Jetty://</small></i><hr/>\n\n</body>\n</html>\n'

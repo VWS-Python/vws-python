@@ -112,14 +112,22 @@ To change the state, use the ``state`` parameter when calling the mock.
 
 The states available in ``States`` are:
 
--  ``WORKING``.
-This is the default state of the mock.
--  ``PROJECT_INACTIVE``.
-This happens when the license key has been deleted.
+- ``WORKING``.
+  This is the default state of the mock.
+- ``PROJECT_INACTIVE``.
+  This happens when the license key has been deleted.
 
 The mock is tested against the real Vuforia Web Services.
 This ensures that the implemented features of the mock behave, at least to some extent, like the real Vuforia Web Services.
 However, the mocks of these error states are based on observations as they cannot be reliably reproduced.
+
+Custom base URLs
+~~~~~~~~~~~~~~~~
+
+``MockVWS`` mocks the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
+These APIs have base URLs ``https://vws.vuforia.com`` and ``https://cloudreco.vuforia.com`` respectively.
+
+``MockVWS`` takes the optional parameters ``base_vws_url`` and ``base_vwq_url`` to modify the base URLs of the mocked endpoints.
 
 Processing time
 ~~~~~~~~~~~~~~~
@@ -161,6 +169,36 @@ Therefore, an image given a ‘success’ status by the mock may not be given a 
 
 When updating an image for a target on the real Vuforia Web Services, the rating may stay the same.
 The mock changes the rating for a target to a different random number when the image is changed.
+
+Matching targets in the processing state
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Matching a target which is in the processing state sometimes returns a successful response with no results.
+Sometimes a 500 (INTERNAL SERVER ERROR) response is given.
+The mock always gives a 500 response.
+
+Matching deleted targets
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Matching a target which has been deleted returns a 500 (INTERNAL SERVER ERROR) response within the first few seconds.
+This timeframe is not consistent on the real Vuforia Web Services.
+On the mock, this timeframe is three seconds by default.
+``MockVWS`` takes a parameter ``query_recognizes_deletion_seconds`` to change this.
+
+Accepted date formats for the Query API
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Query API documentation is not clear on which date formats are expected exactly in the ``Date`` header.
+The mock is strict.
+That is, it accepts only a few date formats, and rejects all others.
+If you find a date format which is accepted by the real Query API but rejected by the mock, please create a GitHub issue.
+
+Targets stuck in processing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On the real Vuforia Web Services, targets sometimes get stuck in the processing state.
+For example, targets with the name ``\uffff`` get stuck in the processing state.
+On the mock, no targets get stuck in the processing state.
 
 .. |Build Status| image:: https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master
    :target: https://travis-ci.org/adamtheturtle/vws-python

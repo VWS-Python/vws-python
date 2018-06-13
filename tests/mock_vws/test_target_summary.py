@@ -7,17 +7,19 @@ import datetime
 import io
 
 import pytest
+import pytz
 from requests import codes
-from requests_mock import GET
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
-    VuforiaDatabaseKeys,
     add_target_to_vws,
-    assert_vws_response,
-    target_api_request,
+    get_vws_target,
+    query,
+    target_summary,
     wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -39,7 +41,9 @@ class TestTargetSummary:
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        date_before_add_target = datetime.datetime.now().date()
+        gmt = pytz.timezone('GMT')
+
+        date_before_add_target = datetime.datetime.now(tz=gmt).date()
 
         target_response = add_target_to_vws(
             vuforia_database_keys=vuforia_database_keys,
@@ -52,14 +56,11 @@ class TestTargetSummary:
 
         target_id = target_response.json()['target_id']
 
-        date_after_add_target = datetime.datetime.now().date()
+        date_after_add_target = datetime.datetime.now(tz=gmt).date()
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_id,
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
         assert_vws_response(
@@ -98,6 +99,10 @@ class TestTargetSummary:
         # While processing the tracking rating is -1.
         assert response.json()['tracking_rating'] == -1
 
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
+
     def test_after_processing(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -128,20 +133,14 @@ class TestTargetSummary:
             target_id=target_id,
         )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_id,
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
-        get_target_response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/targets/' + target_id,
+        get_target_response = get_vws_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
         target_record = get_target_response.json()['target_record']
@@ -149,6 +148,16 @@ class TestTargetSummary:
         assert response.json()['tracking_rating'] == tracking_rating
         assert response.json()['tracking_rating'] in range(6)
         assert response.json()['status'] == TargetStatuses.FAILED.value
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestActiveFlag:
+    """
+    Tests for the active flag related parts of the summary.
+    """
 
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag(
@@ -173,12 +182,63 @@ class TestTargetSummary:
             },
         )
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/summary/' + target_response.json()['target_id'],
+        target_id = target_response.json()['target_id']
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+        assert response.json()['active_flag'] == active_flag
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestRecognitionCounts:
+    """
+    Tests for the recognition counts in the summary.
+    """
+
+    def test_recognition(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        The recognition counts stay at 0 even after recognitions.
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+
+        target_response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data={
+                'name': 'example',
+                'width': 1,
+                'image': image_data_encoded,
+            },
         )
 
-        assert response.json()['active_flag'] == active_flag
+        target_id = target_response.json()['target_id']
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        query_response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        [result] = query_response.json()['results']
+        assert result['target_id'] == target_id
+
+        response = target_summary(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        assert response.json()['status'] == TargetStatuses.SUCCESS.value
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0

@@ -3,6 +3,7 @@ Tests for giving invalid JSON to endpoints.
 """
 
 from datetime import datetime, timedelta
+from urllib.parse import urlparse
 
 import pytest
 import pytz
@@ -11,9 +12,12 @@ from freezegun import freeze_time
 from requests import codes
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+from tests.mock_vws.utils import Endpoint
+from tests.mock_vws.utils.assertions import (
+    assert_vwq_failure,
     assert_vws_failure,
+)
+from tests.mock_vws.utils.authorization import (
     authorization_header,
     rfc_1123_date,
 )
@@ -28,7 +32,7 @@ class TestInvalidJSON:
     @pytest.mark.parametrize('date_skew_minutes', [0, 10])
     def test_invalid_json(
         self,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
         date_skew_minutes: int,
     ) -> None:
         """
@@ -46,11 +50,6 @@ class TestInvalidJSON:
             date = rfc_1123_date()
 
         endpoint_headers = dict(endpoint.prepared_request.headers)
-        takes_json_data = (
-            endpoint.auth_header_content_type == 'application/json'
-        )
-        endpoint_headers = dict(endpoint.prepared_request.headers)
-
         authorization_string = authorization_header(
             access_key=endpoint.access_key,
             secret_key=endpoint.secret_key,
@@ -75,6 +74,10 @@ class TestInvalidJSON:
         session = requests.Session()
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
+        )
+
+        takes_json_data = (
+            endpoint.auth_header_content_type == 'application/json'
         )
 
         if date_is_skewed and takes_json_data:
@@ -109,5 +112,20 @@ class TestInvalidJSON:
             return
 
         assert response.status_code == codes.BAD_REQUEST
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.BAD_REQUEST,
+                content_type='text/html',
+            )
+            expected_text = (
+                'java.lang.RuntimeException: RESTEASY007500: '
+                'Could find no Content-Disposition header within part'
+            )
+            assert response.text == expected_text
+            return
+
         assert response.text == ''
         assert 'Content-Type' not in response.headers

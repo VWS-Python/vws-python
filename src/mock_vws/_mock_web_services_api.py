@@ -13,6 +13,7 @@ import statistics
 import uuid
 from typing import Callable, Dict, List, Optional, Set, Tuple, Union
 
+import pytz
 import wrapt
 from PIL import Image, ImageStat
 from requests import codes
@@ -21,7 +22,7 @@ from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes, TargetStatuses
-from mock_vws._mock_common import Route, json_dump
+from mock_vws._mock_common import Route, json_dump, set_content_length_header
 
 from ._constants import States
 from ._validators import (
@@ -29,6 +30,7 @@ from ._validators import (
     validate_auth_header_exists,
     validate_authorization,
     validate_date,
+    validate_date_header_given,
     validate_image_color_space,
     validate_image_data_type,
     validate_image_encoding,
@@ -37,8 +39,11 @@ from ._validators import (
     validate_image_size,
     validate_keys,
     validate_metadata_encoding,
+    validate_metadata_size,
     validate_metadata_type,
-    validate_name,
+    validate_name_characters_in_range,
+    validate_name_length,
+    validate_name_type,
     validate_not_invalid_json,
     validate_width,
 )
@@ -78,7 +83,7 @@ def parse_target_id(
     try:
         [matching_target] = [
             target for target in instance.targets
-            if target.target_id == target_id
+            if target.target_id == target_id and not target.delete_date
         ]
     except ValueError:
         body: Dict[str, str] = {
@@ -90,32 +95,6 @@ def parse_target_id(
 
     new_args = args + (matching_target, )
     return wrapped(*new_args, **kwargs)
-
-
-@wrapt.decorator
-def set_content_length_header(
-    wrapped: Callable[..., str],
-    instance: 'MockVuforiaWebServicesAPI',  # pylint: disable=unused-argument
-    args: Tuple[_RequestObjectProxy, _Context],
-    kwargs: Dict,
-) -> str:
-    """
-    Set the `Content-Length` header.
-
-    Args:
-        wrapped: An endpoint function for `requests_mock`.
-        instance: The class that the endpoint function is in.
-        args: The arguments given to the endpoint function.
-        kwargs: The keyword arguments given to the endpoint function.
-
-    Returns:
-        The result of calling the endpoint.
-    """
-    _, context = args
-
-    result = wrapped(*args, **kwargs)
-    context.headers['Content-Length'] = str(len(result))
-    return result
 
 
 ROUTES = set([])
@@ -171,6 +150,7 @@ def route(
                 key_validator,
                 validate_not_invalid_json,
                 validate_date,
+                validate_date_header_given,
                 validate_auth_header_exists,
                 set_content_length_header,
             ]
@@ -178,6 +158,7 @@ def route(
             decorators = [
                 parse_target_id,
                 validate_authorization,
+                validate_metadata_size,
                 validate_metadata_encoding,
                 validate_metadata_type,
                 validate_active_flag,
@@ -187,10 +168,13 @@ def route(
                 validate_image_is_image,
                 validate_image_encoding,
                 validate_image_data_type,
-                validate_name,
+                validate_name_characters_in_range,
+                validate_name_length,
+                validate_name_type,
                 validate_width,
                 key_validator,
                 validate_date,
+                validate_date_header_given,
                 validate_not_invalid_json,
                 validate_auth_header_exists,
                 set_content_length_header,
@@ -217,6 +201,7 @@ class Target:  # pylint: disable=too-many-instance-attributes
         width: float,
         image: io.BytesIO,
         processing_time_seconds: Union[int, float],
+        application_metadata: str,
     ) -> None:
         """
         Args:
@@ -227,6 +212,8 @@ class Target:  # pylint: disable=too-many-instance-attributes
             processing_time_seconds: The number of seconds to process each
                 image for. In the real Vuforia Web Services, this is not
                 deterministic.
+            application_metadata: The base64 encoded application metadata
+                associated with the target.
 
         Attributes:
             name (str): The name of the target.
@@ -242,17 +229,25 @@ class Target:  # pylint: disable=too-many-instance-attributes
             image (io.BytesIO): The image data associated with the target.
             reco_rating (str): An empty string ("for now" according to
                 Vuforia's documentation).
+            application_metadata (str): The base64 encoded application metadata
+                associated with the target.
+            delete_date (Optional[datetime.datetime]): The time that the target
+                was deleted.
         """
         self.name = name
         self.target_id = uuid.uuid4().hex
         self.active_flag = active_flag
         self.width = width
-        self.upload_date: datetime.datetime = datetime.datetime.now()
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        self.upload_date: datetime.datetime = now
         self.last_modified_date = self.upload_date
         self.processed_tracking_rating = random.randint(0, 5)
         self.image = image
         self.reco_rating = ''
         self._processing_time_seconds = processing_time_seconds
+        self.application_metadata = application_metadata
+        self.delete_date: Optional[datetime.datetime] = None
 
     @property
     def _post_processing_status(self) -> TargetStatuses:
@@ -290,7 +285,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
             seconds=self._processing_time_seconds,
         )
 
-        time_since_change = datetime.datetime.now() - self.last_modified_date
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        time_since_change = now - self.last_modified_date
 
         if time_since_change <= processing_time:
             return str(TargetStatuses.PROCESSING.value)
@@ -315,7 +312,9 @@ class Target:  # pylint: disable=too-many-instance-attributes
             seconds=self._processing_time_seconds / 2,
         )
 
-        time_since_upload = datetime.datetime.now() - self.upload_date
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        time_since_upload = now - self.upload_date
 
         if time_since_upload <= pre_rating_time:
             return -1
@@ -353,16 +352,16 @@ class MockVuforiaWebServicesAPI:
 
         Attributes:
             database_name: The name of a VWS target manager database name.
-            server_access_key (str): A VWS server access key.
-            server_secret_key (str): A VWS server secret key.
+            access_key (str): A VWS server access key.
+            secret_key (str): A VWS server secret key.
             targets: The ``Target``s in the database.
             routes: The `Route`s to be used in the mock.
             state: The state of the services being mocked.
         """
         self.database_name = database_name
 
-        self.server_access_key: str = server_access_key
-        self.server_secret_key: str = server_secret_key
+        self.access_key: str = server_access_key
+        self.secret_key: str = server_secret_key
 
         self.targets: List[Target] = []
         self.routes: Set[Route] = ROUTES
@@ -389,7 +388,8 @@ class MockVuforiaWebServicesAPI:
         """
         name = request.json()['name']
 
-        if any(target.name == name for target in self.targets):
+        targets = (target for target in self.targets if not target.delete_date)
+        if any(target.name == name for target in targets):
             context.status_code = codes.FORBIDDEN
             body = {
                 'transaction_id': uuid.uuid4().hex,
@@ -411,6 +411,7 @@ class MockVuforiaWebServicesAPI:
             image=image_file,
             active_flag=active_flag,
             processing_time_seconds=self._processing_time_seconds,
+            application_metadata=request.json().get('application_metadata'),
         )
         self.targets.append(new_target)
 
@@ -445,9 +446,9 @@ class MockVuforiaWebServicesAPI:
             }
             return json_dump(body)
 
-        self.targets = [
-            item for item in self.targets if item.target_id != target.target_id
-        ]
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        target.delete_date = now
 
         body = {
             'transaction_id': uuid.uuid4().hex,
@@ -473,7 +474,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
-                and target.active_flag
+                and target.active_flag and not target.delete_date
             ],
         )
 
@@ -481,6 +482,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.FAILED.value
+                and not target.delete_date
             ],
         )
 
@@ -488,7 +490,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.SUCCESS.value
-                and not target.active_flag
+                and not target.active_flag and not target.delete_date
             ],
         )
 
@@ -496,6 +498,7 @@ class MockVuforiaWebServicesAPI:
             [
                 target for target in self.targets
                 if target.status == TargetStatuses.PROCESSING.value
+                and not target.delete_date
             ],
         )
 
@@ -529,7 +532,10 @@ class MockVuforiaWebServicesAPI:
         Fake implementation of
         https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Get-a-Target-List-for-a-Cloud-Database
         """
-        results = [target.target_id for target in self.targets]
+        results = [
+            target.target_id for target in self.targets
+            if not target.delete_date
+        ]
 
         body: Dict[str, Union[str, List[str]]] = {
             'transaction_id': uuid.uuid4().hex,
@@ -654,11 +660,16 @@ class MockVuforiaWebServicesAPI:
                 }
                 context.status_code = codes.BAD_REQUEST
                 return json_dump(body)
+            application_metadata = request.json()['application_metadata']
+            target.application_metadata = application_metadata
 
         if 'name' in request.json():
             name = request.json()['name']
             other_targets = set(self.targets) - set([target])
-            if any(other.name == name for other in other_targets):
+            if any(
+                other.name == name for other in other_targets
+                if not other.delete_date
+            ):
                 context.status_code = codes.FORBIDDEN
                 body = {
                     'transaction_id': uuid.uuid4().hex,
@@ -667,13 +678,21 @@ class MockVuforiaWebServicesAPI:
                 return json_dump(body)
             target.name = name
 
+        if 'image' in request.json():
+            image = request.json()['image']
+            decoded = base64.b64decode(image)
+            image_file = io.BytesIO(decoded)
+            target.image = image_file
+
         # In the real implementation, the tracking rating can stay the same.
         # However, for demonstration purposes, the tracking rating changes but
         # when the target is updated.
         available_values = list(set(range(6)) - set([target.tracking_rating]))
         target.processed_tracking_rating = random.choice(available_values)
 
-        target.last_modified_date = datetime.datetime.now()
+        gmt = pytz.timezone('GMT')
+        now = datetime.datetime.now(tz=gmt)
+        target.last_modified_date = now
 
         body = {
             'result_code': ResultCodes.SUCCESS.value,
@@ -703,8 +722,8 @@ class MockVuforiaWebServicesAPI:
             'upload_date': target.upload_date.strftime('%Y-%m-%d'),
             'active_flag': target.active_flag,
             'tracking_rating': target.tracking_rating,
-            'total_recos': '',
-            'current_month_recos': '',
-            'previous_month_recos': '',
+            'total_recos': 0,
+            'current_month_recos': 0,
+            'previous_month_recos': 0,
         }
         return json_dump(body)

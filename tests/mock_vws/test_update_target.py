@@ -12,14 +12,16 @@ from requests import codes
 
 from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
-    VuforiaDatabaseKeys,
     add_target_to_vws,
-    assert_vws_failure,
-    assert_vws_response,
     get_vws_target,
     update_target,
     wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import (
+    assert_vws_failure,
+    assert_vws_response,
+)
+from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
@@ -345,15 +347,25 @@ class TestApplicationMetadata:
     Tests for the application metadata parameter.
     """
 
+    _MAX_METADATA_BYTES = 1024 * 1024 - 1
+
+    @pytest.mark.parametrize(
+        'metadata',
+        [
+            b'a',
+            b'a' * _MAX_METADATA_BYTES,
+        ],
+        ids=['Short', 'Max length'],
+    )
     def test_base64_encoded(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         target_id: str,
+        metadata: bytes,
     ) -> None:
         """
         A base64 encoded string is valid application metadata.
         """
-        metadata = b'Some data'
         metadata_encoded = base64.b64encode(metadata).decode('ascii')
 
         wait_for_target_processed(
@@ -430,6 +442,35 @@ class TestApplicationMetadata:
             result_code=ResultCodes.FAIL,
         )
 
+    def test_metadata_too_large(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        target_id: str,
+    ) -> None:
+        """
+        A base64 encoded string of greater than 1024 * 1024 bytes is too large
+        for application metadata.
+        """
+        metadata = b'a' * (self._MAX_METADATA_BYTES + 1)
+        metadata_encoded = base64.b64encode(metadata).decode('ascii')
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_database_keys=vuforia_database_keys,
+            data={'application_metadata': metadata_encoded},
+            target_id=target_id,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.METADATA_TOO_LARGE,
+        )
+
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestTargetName:
@@ -437,13 +478,20 @@ class TestTargetName:
     Tests for the target name field.
     """
 
+    _MAX_CHAR_VALUE = 65535
+    _MAX_NAME_LENGTH = 64
+
     @pytest.mark.parametrize(
         'name',
         [
-            'a',
-            'a' * 64,
+            'á',
+            # We test just below the max character value.
+            # This is because targets with the max character value in their
+            # names get stuck in the processing stage.
+            chr(_MAX_CHAR_VALUE - 2),
+            'a' * _MAX_NAME_LENGTH,
         ],
-        ids=['Short name', 'Long name'],
+        ids=['Short name', 'Max char value', 'Long name'],
     )
     def test_name_valid(
         self,
@@ -452,7 +500,10 @@ class TestTargetName:
         target_id: str,
     ) -> None:
         """
-        Names between 1 and 64 characters in length are valid.
+        A target's name must be a string of length 0 < N < 65.
+
+        We test characters out of range in another test as that gives a
+        different error.
         """
         wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
@@ -479,15 +530,33 @@ class TestTargetName:
         assert response.json()['target_record']['name'] == name
 
     @pytest.mark.parametrize(
-        'name',
-        [1, '', 'a' * 65, None],
-        ids=['Wrong Type', 'Empty', 'Too Long', 'None'],
+        'name,status_code',
+        [
+            (1, codes.BAD_REQUEST),
+            ('', codes.BAD_REQUEST),
+            ('a' * (_MAX_NAME_LENGTH + 1), codes.BAD_REQUEST),
+            (None, codes.BAD_REQUEST),
+            (chr(_MAX_CHAR_VALUE + 1), codes.INTERNAL_SERVER_ERROR),
+            (
+                chr(_MAX_CHAR_VALUE + 1) *
+                (_MAX_NAME_LENGTH + 1), codes.BAD_REQUEST,
+            ),
+        ],
+        ids=[
+            'Wrong Type',
+            'Empty',
+            'Too Long',
+            'None',
+            'Bad char',
+            'Bad char too long',
+        ],
     )
     def test_name_invalid(
         self,
         name: str,
         target_id: str,
         vuforia_database_keys: VuforiaDatabaseKeys,
+        status_code: int,
     ) -> None:
         """
         A target's name must be a string of length 0 < N < 65.
@@ -505,7 +574,7 @@ class TestTargetName:
 
         assert_vws_failure(
             response=response,
-            status_code=codes.BAD_REQUEST,
+            status_code=status_code,
             result_code=ResultCodes.FAIL,
         )
 

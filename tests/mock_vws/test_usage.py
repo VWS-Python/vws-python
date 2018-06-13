@@ -7,6 +7,7 @@ import datetime
 import io
 import socket
 import string
+import time
 import uuid
 
 import pytest
@@ -22,9 +23,13 @@ from tests.mock_vws.utils import (
     VuforiaDatabaseKeys,
     add_target_to_vws,
     database_summary,
+    delete_target,
     get_vws_target,
+    query,
     rfc_1123_date,
+    wait_for_target_processed,
 )
+from tests.mock_vws.utils.assertions import assert_query_success
 
 
 def request_unmocked_address() -> None:
@@ -167,6 +172,8 @@ class TestProcessingTime:
                 status = response.json()['status']
                 if status != TargetStatuses.PROCESSING.value:
                     elapsed_time = datetime.datetime.now() - start_time
+                    # There is a race condition in this test - if it starts to
+                    # fail, maybe extend the acceptable range.
                     assert elapsed_time < datetime.timedelta(seconds=0.55)
                     assert elapsed_time > datetime.timedelta(seconds=0.49)
                     return
@@ -384,3 +391,153 @@ class TestCredentials:
                 server_access_key=server_access_key,
                 server_secret_key=server_secret_key,
             )
+
+
+class TestCustomBaseURLs:
+    """
+    Tests for using custom base URLs.
+    """
+
+    def test_custom_base_vws_url(self) -> None:
+        """
+        It is possible to use a custom base VWS URL.
+        """
+        with MockVWS(
+            base_vws_url='https://vuforia.vws.example.com',
+            real_http=False,
+        ):
+            with pytest.raises(NoMockAddress):
+                requests.get('https://vws.vuforia.com/summary')
+
+            requests.get(url='https://vuforia.vws.example.com/summary')
+            requests.post('https://cloudreco.vuforia.com/v1/query')
+
+    def test_custom_base_vwq_url(self) -> None:
+        """
+        It is possible to use a custom base cloud recognition URL.
+        """
+        with MockVWS(
+            base_vwq_url='https://vuforia.vwq.example.com',
+            real_http=False,
+        ):
+            with pytest.raises(NoMockAddress):
+                requests.post('https://cloudreco.vuforia.com/v1/query')
+
+            requests.post(url='https://vuforia.vwq.example.com/v1/query')
+            requests.get('https://vws.vuforia.com/summary')
+
+
+class TestCustomQueryRecognizesDeletionSeconds:
+    """
+    Tests for setting the amount of time after a target has been deleted
+    until it is not recognized by the query endpoint.
+    """
+
+    def _recognize_deletion_seconds(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> float:
+        """
+        XXX
+        """
+        image_content = high_quality_image.getvalue()
+        image_data_encoded = base64.b64encode(image_content).decode('ascii')
+        add_target_data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=add_target_data,
+        )
+
+        target_id = response.json()['target_id']
+
+        wait_for_target_processed(
+            target_id=target_id,
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        response = delete_target(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        time_after_delete = datetime.datetime.now()
+
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        while True:
+            response = query(
+                vuforia_database_keys=vuforia_database_keys,
+                body=body,
+            )
+
+            try:
+                assert_query_success(response=response)
+            except AssertionError:
+                # The response text for a 500 response is not consistent.
+                # Therefore we only test for consistent features.
+                assert 'Error 500 Server Error' in response.text
+                assert 'HTTP ERROR 500' in response.text
+                assert 'Problem accessing /v1/query' in response.text
+                time.sleep(0.05)
+                continue
+
+            assert response.json()['results'] == []
+            time_difference = datetime.datetime.now() - time_after_delete
+            return time_difference.total_seconds()
+
+    def test_default(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        By default it takes three seconds for the Query API on the mock to
+        recognize that a target has been deleted.
+
+        The real Query API takes between seven and thirty seconds.
+        See ``test_query`` for more information.
+        """
+        with MockVWS(
+            client_access_key=vuforia_database_keys.client_access_key.decode(),
+            client_secret_key=vuforia_database_keys.client_secret_key.decode(),
+            server_access_key=vuforia_database_keys.server_access_key.decode(),
+            server_secret_key=vuforia_database_keys.server_secret_key.decode(),
+        ):
+            recognize_deletion_seconds = self._recognize_deletion_seconds(
+                high_quality_image=high_quality_image,
+                vuforia_database_keys=vuforia_database_keys,
+            )
+
+        expected = 3
+        assert abs(expected - recognize_deletion_seconds) < 0.2
+
+    def test_custom(
+        self,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        It is possible to use set a custom amount of time that it takes for the
+        Query API on the mock to recognize that a target has been deleted.
+        """
+        # We choose a low time for a quick test.
+        query_recognizes_deletion = 0.1
+        with MockVWS(
+            client_access_key=vuforia_database_keys.client_access_key.decode(),
+            client_secret_key=vuforia_database_keys.client_secret_key.decode(),
+            server_access_key=vuforia_database_keys.server_access_key.decode(),
+            server_secret_key=vuforia_database_keys.server_secret_key.decode(),
+            query_recognizes_deletion_seconds=query_recognizes_deletion,
+        ):
+            recognize_deletion_seconds = self._recognize_deletion_seconds(
+                high_quality_image=high_quality_image,
+                vuforia_database_keys=vuforia_database_keys,
+            )
+
+        expected = query_recognizes_deletion
+        assert abs(expected - recognize_deletion_seconds) < 0.2

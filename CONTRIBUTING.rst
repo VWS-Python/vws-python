@@ -171,6 +171,15 @@ However, it must be set to ``multipart/form-data; boundary=<BOUNDARY>`` where ``
 The documentation page `How To Perform an Image Recognition Query <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ states that ``Content-Type`` with be the only response header.
 This is not the case.
 
+The documentation page `How To Perform an Image Recognition Query <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ states that 10 is the maximum allowed value of ``max_num_results``.
+However, the maximum allowed value is 50.
+
+A response to an invalid query may have an ``application/json`` content type but include text (not JSON) data.
+
+After deleting a target, for up to approximately 30 seconds, matching it with a query returns a 500 response.
+
+A target with the name ``\uffff`` gets stuck in processing.
+
 Performing a release
 --------------------
 

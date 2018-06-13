@@ -13,6 +13,7 @@ dev
 dict
 filename
 foo
+formdata
 github
 greyscale
 hexdigits
@@ -20,6 +21,7 @@ hmac
 html
 http
 https
+iff
 io
 issuecomment
 jpeg
@@ -37,12 +39,14 @@ pragma
 pytest
 readme
 readthedocs
+recognitions
 refactoring
 regex
 reimplementation
 rfc
 rgb
 str
+timestamp
 todo
 txt
 unmocked
@@ -51,5 +55,6 @@ usefixtures
 validators
 vuforia
 vuforia's
+vwq
 vws
 xxx

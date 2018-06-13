@@ -1,76 +1,27 @@
 """
-Utilities for tests for the VWS mock.
+Utilities for tests.
 """
 
-import base64
-import datetime
-import email.utils
-import hashlib
-import hmac
 import json
-from string import hexdigits
 from time import sleep
 from typing import Any, Dict
 from urllib.parse import urljoin
 
-import pytz
 import requests
 import timeout_decorator
 from requests import Response
 from requests_mock import DELETE, GET, POST, PUT
+from urllib3.filepost import encode_multipart_formdata
 
 from mock_vws._constants import ResultCodes, TargetStatuses
+from tests.mock_vws.utils.authorization import (
+    VuforiaDatabaseKeys,
+    rfc_1123_date,
+    authorization_header,
+)
 
 
-class VuforiaDatabaseKeys:
-    """
-    Credentials for VWS APIs.
-    """
-
-    def __init__(
-        self,
-        server_access_key: str,
-        server_secret_key: str,
-        client_access_key: str,
-        client_secret_key: str,
-        database_name: str,
-    ) -> None:
-        """
-        Args:
-            database_name: The name of a VWS target manager database name.
-            server_access_key: A VWS server access key.
-            server_secret_key: A VWS server secret key.
-            client_access_key: A VWS client access key.
-            client_secret_key: A VWS client secret key.
-
-        Attributes:
-            database_name (str): The name of a VWS target manager database
-                name.
-            server_access_key (bytes): A VWS server access key.
-            server_secret_key (bytes): A VWS server secret key.
-            client_access_key (bytes): A VWS client access key.
-            client_secret_key (bytes): A VWS client secret key.
-        """
-        self.server_access_key: bytes = bytes(
-            server_access_key,
-            encoding='utf-8',
-        )
-        self.server_secret_key: bytes = bytes(
-            server_secret_key,
-            encoding='utf-8',
-        )
-        self.client_access_key: bytes = bytes(
-            client_access_key,
-            encoding='utf-8',
-        )
-        self.client_secret_key: bytes = bytes(
-            client_secret_key,
-            encoding='utf-8',
-        )
-        self.database_name = database_name
-
-
-class TargetAPIEndpoint:
+class Endpoint:
     """
     Details of endpoints to be called in tests.
     """
@@ -109,141 +60,11 @@ class TargetAPIEndpoint:
         self.successful_headers_result_code = successful_headers_result_code
         headers = prepared_request.headers
         content_type = headers.get('Content-Type', '')
+        content_type = content_type.split(';')[0]
         assert isinstance(content_type, str)
         self.auth_header_content_type: str = content_type
         self.access_key = access_key
         self.secret_key = secret_key
-
-
-def assert_vws_failure(
-    response: Response,
-    status_code: int,
-    result_code: ResultCodes,
-) -> None:
-    """
-    Assert that a VWS failure response is as expected.
-
-    Args:
-        response: The response returned by a request to VWS.
-        status_code: The expected status code of the response.
-        result_code: The expected result code of the response.
-
-    Raises:
-        AssertionError: The response is not in the expected VWS error format
-            for the given codes.
-    """
-    assert response.json().keys() == {'transaction_id', 'result_code'}
-    assert_vws_response(
-        response=response,
-        status_code=status_code,
-        result_code=result_code,
-    )
-
-
-def assert_valid_date_header(response: Response) -> None:
-    """
-    Assert that a response includes a `Date` header which is within one minute
-    of "now".
-
-    Args:
-        response: The response returned by a request to a Vuforia service.
-
-    Raises:
-        AssertionError: The response does not include a `Date` header which is
-            within one minute of "now".
-    """
-    date_response = response.headers['Date']
-    date_from_response = email.utils.parsedate(date_response)
-    assert date_from_response is not None
-    year, month, day, hour, minute, second, _, _, _ = date_from_response
-    gmt = pytz.timezone('GMT')
-    datetime_from_response = datetime.datetime(
-        year=year,
-        month=month,
-        day=day,
-        hour=hour,
-        minute=minute,
-        second=second,
-        tzinfo=gmt,
-    )
-    current_date = datetime.datetime.now(tz=gmt)
-    time_difference = abs(current_date - datetime_from_response)
-    assert time_difference < datetime.timedelta(minutes=1)
-
-
-def assert_valid_transaction_id(response: Response) -> None:
-    """
-    Assert that a response includes a valid transaction ID.
-
-    Args:
-        response: The response returned by a request to a Vuforia service.
-
-    Raises:
-        AssertionError: The response does not include a valid transaction ID.
-    """
-    transaction_id = response.json()['transaction_id']
-    assert len(transaction_id) == 32
-    assert all(char in hexdigits for char in transaction_id)
-
-
-def assert_json_separators(response: Response) -> None:
-    """
-    Assert that a JSON response is formatted correctly.
-
-    Args:
-        response: The response returned by a request to a Vuforia service.
-
-    Raises:
-        AssertionError: The response JSON is not formatted correctly.
-    """
-    assert response.text == json.dumps(
-        obj=response.json(),
-        separators=(',', ':'),
-    )
-
-
-def assert_vws_response(
-    response: Response,
-    status_code: int,
-    result_code: ResultCodes,
-) -> None:
-    """
-    Assert that a VWS response is as expected, at least in part.
-
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
-    implies that the expected status code can be worked out from the result
-    code. However, this is not the case as the real results differ from the
-    documentation.
-
-    For example, it is possible to get a "Fail" result code and a 400 error.
-
-    Args:
-        response: The response returned by a request to VWS.
-        status_code: The expected status code of the response.
-        result_code: The expected result code of the response.
-
-    Raises:
-        AssertionError: The response is not in the expected VWS format for the
-            given codes.
-    """
-    assert response.status_code == status_code
-    response_result_code = response.json()['result_code']
-    assert response_result_code == result_code.value
-    response_header_keys = {
-        'Connection',
-        'Content-Length',
-        'Content-Type',
-        'Date',
-        'Server',
-    }
-    assert response.headers.keys() == response_header_keys
-    assert response.headers['Connection'] == 'keep-alive'
-    assert response.headers['Content-Length'] == str(len(response.text))
-    assert response.headers['Content-Type'] == 'application/json'
-    assert response.headers['Server'] == 'nginx'
-    assert_json_separators(response=response)
-    assert_valid_transaction_id(response=response)
-    assert_valid_date_header(response=response)
 
 
 def add_target_to_vws(
@@ -313,7 +134,7 @@ def get_vws_target(
         method=GET,
         content=b'',
         request_path='/targets/' + target_id,
-    )  # type: Response
+    )
     return response
 
 
@@ -333,7 +154,7 @@ def database_summary(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
         method=GET,
         content=b'',
         request_path='/summary',
-    )  # type: Response
+    )
     return response
 
 
@@ -369,89 +190,13 @@ def wait_for_target_processed(
         sleep(0.2)
 
 
-def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
-    """
-    Return the Base64 encoded HMAC-SHA1 hash of the given `data` using the
-    provided `key`.
-    """
-    hashed = hmac.new(key=key, msg=None, digestmod=hashlib.sha1)
-    hashed.update(msg=data)
-    return base64.b64encode(s=hashed.digest())
-
-
-def rfc_1123_date() -> str:
-    """
-    Return the date formatted as per RFC 2616, section 3.3.1, rfc1123-date, as
-    described in
-    https://library.vuforia.com/articles/Training/Using-the-VWS-API.
-    """
-    return email.utils.formatdate(None, localtime=False, usegmt=True)
-
-
-def authorization_header(  # pylint: disable=too-many-arguments
-    access_key: bytes,
-    secret_key: bytes,
-    method: str,
-    content: bytes,
-    content_type: str,
-    date: str,
-    request_path: str,
-) -> bytes:
-    """
-    Return an `Authorization` header which can be used for a request made to
-    the VWS API with the given attributes.
-
-    See https://library.vuforia.com/articles/Training/Using-the-VWS-API.
-
-    Args:
-        access_key: A VWS server or client access key.
-        secret_key: A VWS server or client secret key.
-        method: The HTTP method which will be used in the request.
-        content: The request body which will be used in the request.
-        content_type: The `Content-Type` header which is expected by
-            endpoint. This does not necessarily have to match the
-            `Content-Type` sent in the headers. In particular, for the query
-            API, this must be set to `multipart/form-data` but the header must
-            include the boundary.
-        date: The current date which must exactly match the date sent in the
-            `Date` header.
-        request_path: The path to the endpoint which will be used in the
-            request.
-
-    Returns:
-        Return an `Authorization` header which can be used for a request made
-        to the VWS API with the given attributes.
-    """
-    hashed = hashlib.md5()
-    hashed.update(content)
-    content_md5_hex = hashed.hexdigest()
-
-    components_to_sign = [
-        method,
-        content_md5_hex,
-        content_type,
-        date,
-        request_path,
-    ]
-    string_to_sign = '\n'.join(components_to_sign)
-    signature = compute_hmac_base64(
-        key=secret_key,
-        data=bytes(
-            string_to_sign,
-            encoding='utf-8',
-        ),
-    )
-    auth_header = b'VWS %s:%s' % (access_key, signature)
-    return auth_header
-
-
 def target_api_request(
     server_access_key: bytes,
     server_secret_key: bytes,
     method: str,
     content: bytes,
     request_path: str,
-) -> requests.Response:
+) -> Response:
     """
     Make a request to the Vuforia Target API.
 
@@ -503,7 +248,7 @@ def target_api_request(
 def delete_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
     target_id: str,
-) -> None:
+) -> Response:
     """
     Delete a given target.
 
@@ -512,14 +257,9 @@ def delete_target(
             to delete the target in.
         target_id: The ID of the target to delete.
 
-    Raises:
-        AssertionError: The deletion was not a success.
+    Returns:
+        The response returned by the API.
     """
-    wait_for_target_processed(
-        vuforia_database_keys=vuforia_database_keys,
-        target_id=target_id,
-    )
-
     response = target_api_request(
         server_access_key=vuforia_database_keys.server_access_key,
         server_secret_key=vuforia_database_keys.server_secret_key,
@@ -528,8 +268,7 @@ def delete_target(
         request_path=f'/targets/{target_id}',
     )
 
-    result_code = response.json()['result_code']
-    assert result_code == ResultCodes.SUCCESS.value
+    return response
 
 
 def update_target(
@@ -575,6 +314,104 @@ def update_target(
     response = requests.request(
         method=PUT,
         url=urljoin('https://vws.vuforia.com/', request_path),
+        headers=headers,
+        data=content,
+    )
+
+    return response
+
+
+def list_targets(vuforia_database_keys: VuforiaDatabaseKeys) -> Response:
+    """
+    Get a list of targets.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+
+    Returns:
+        The response returned by the API.
+    """
+    response = target_api_request(
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
+        method=GET,
+        content=b'',
+        request_path='/targets',
+    )
+
+    return response
+
+
+def target_summary(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    target_id: str,
+) -> Response:
+    """
+    Get a summary of a target.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        target_id: The ID of the target to get a summary for.
+
+    Returns:
+        The response returned by the API.
+    """
+    response = target_api_request(
+        server_access_key=vuforia_database_keys.server_access_key,
+        server_secret_key=vuforia_database_keys.server_secret_key,
+        method=GET,
+        content=b'',
+        request_path='/summary/' + target_id,
+    )
+
+    return response
+
+
+def query(
+    vuforia_database_keys: VuforiaDatabaseKeys,
+    body: Dict[str, Any],
+) -> Response:
+    """
+    Make a request to the endpoint to make an image recognition query.
+
+    Args:
+        vuforia_database_keys: The credentials to use to connect to
+            Vuforia.
+        body: The request body to send in ``multipart/formdata`` format.
+
+    Returns:
+        The response returned by the API.
+    """
+    date = rfc_1123_date()
+    request_path = '/v1/query'
+    content, content_type_header = encode_multipart_formdata(body)
+    method = POST
+
+    access_key = vuforia_database_keys.client_access_key
+    secret_key = vuforia_database_keys.client_secret_key
+    authorization_string = authorization_header(
+        access_key=access_key,
+        secret_key=secret_key,
+        method=method,
+        content=content,
+        # Note that this is not the actual Content-Type header value sent.
+        content_type='multipart/form-data',
+        date=date,
+        request_path=request_path,
+    )
+
+    headers = {
+        'Authorization': authorization_string,
+        'Date': date,
+        'Content-Type': content_type_header,
+    }
+
+    vwq_host = 'https://cloudreco.vuforia.com'
+    response = requests.request(
+        method=method,
+        url=urljoin(base=vwq_host, url=request_path),
         headers=headers,
         data=content,
     )

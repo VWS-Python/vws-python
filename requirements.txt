@@ -1,6 +1,6 @@
 constantly==15.1.0  # Symbolic constants.
 pillow==5.1.0  # Image library.
 pytz==2018.4
-requests-mock==1.4.0  # Mock `requests`.
-requests==2.18.4
+requests-mock==1.5.0  # Mock `requests`.
+requests==2.19.0
 wrapt==1.10.11  # Make better decorators.

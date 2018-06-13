@@ -3,6 +3,7 @@ Tests for giving JSON data to endpoints which do not expect it.
 """
 
 import json
+from urllib.parse import urlparse
 
 import pytest
 import requests
@@ -10,9 +11,12 @@ from requests import codes
 from requests.structures import CaseInsensitiveDict
 
 from mock_vws._constants import ResultCodes
-from tests.mock_vws.utils import (
-    TargetAPIEndpoint,
+from tests.mock_vws.utils import Endpoint
+from tests.mock_vws.utils.assertions import (
+    assert_vwq_failure,
     assert_vws_failure,
+)
+from tests.mock_vws.utils.authorization import (
     authorization_header,
     rfc_1123_date,
 )
@@ -26,13 +30,15 @@ class TestUnexpectedJSON:
 
     def test_does_not_take_data(
         self,
-        endpoint: TargetAPIEndpoint,
+        endpoint: Endpoint,
     ) -> None:
         """
-        Giving JSON to endpoints which do not take any JSON data returns
-        error responses.
+        Giving JSON to endpoints which do not take any JSON data returns error
+        responses.
         """
-        if endpoint.prepared_request.headers.get('Content-Type'):
+        if endpoint.prepared_request.headers.get(
+            'Content-Type',
+        ) == 'application/json':
             return
         content = bytes(json.dumps({'key': 'value'}), encoding='utf-8')
         content_type = 'application/json'
@@ -66,6 +72,19 @@ class TestUnexpectedJSON:
         response = session.send(  # type: ignore
             request=endpoint.prepared_request,
         )
+
+        url = str(endpoint.prepared_request.url)
+        netloc = urlparse(url).netloc
+        if netloc == 'cloudreco.vuforia.com':
+            # The multipart/formdata boundary is no longer in the given
+            # content.
+            assert response.text == ''
+            assert_vwq_failure(
+                response=response,
+                status_code=codes.UNSUPPORTED_MEDIA_TYPE,
+                content_type=None,
+            )
+            return
 
         # This is an undocumented difference between `/summary` and other
         # endpoints.
