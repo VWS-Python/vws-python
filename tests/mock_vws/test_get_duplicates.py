@@ -288,3 +288,23 @@ class TestDuplicates:
         )
 
         assert response.json()['similar_targets'] == [similar_target_id]
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestProcessing:
+    """
+    Tests for targets in the processing stage.
+    """
+
+    def test_original_processing(self) -> None:
+        """
+        Checking for duplicates on a target which is processing, ...
+        """
+        pass
+
+    def test_duplicate_processing(self) -> None:
+        """
+        Checking for duplicates on a target which is processed, when another
+        target which is a duplicate is processing, ...
+        """
+        pass
