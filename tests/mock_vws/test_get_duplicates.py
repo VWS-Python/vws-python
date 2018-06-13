@@ -345,7 +345,6 @@ class TestProcessing:
             data=data_1,
         )
 
-        target_id_1 = resp_1.json()['target_id']
 
         wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
@@ -357,28 +356,12 @@ class TestProcessing:
             data=data_2,
         )
 
-        target_id_2 = original_add_resp.json()['target_id']
+        processed_target_id = resp_1.json()['target_id']
+        processing_target_id = resp_2.json()['target_id']
 
-        response = target_api_request(
-            server_access_key=vuforia_database_keys.server_access_key,
-            server_secret_key=vuforia_database_keys.server_secret_key,
-            method=GET,
-            content=b'',
-            request_path='/duplicates/' + original_target_id,
+        response = target_duplicates(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=processed_target_id,
         )
-
-        assert_vws_response(
-            response=response,
-            status_code=codes.OK,
-            result_code=ResultCodes.SUCCESS,
-        )
-
-        expected_keys = {
-            'result_code',
-            'transaction_id',
-            'similar_targets',
-        }
-
-        assert response.json().keys() == expected_keys
 
         assert response.json()['similar_targets'] == [similar_target_id]
