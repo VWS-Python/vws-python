@@ -345,10 +345,11 @@ class TestProcessing:
             data=data_1,
         )
 
+        processed_target_id = resp_1.json()['target_id']
 
         wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
-            target_id=resp_1,
+            target_id=processed_target_id,
         )
 
         resp_2 = add_target_to_vws(
@@ -356,7 +357,6 @@ class TestProcessing:
             data=data_2,
         )
 
-        processed_target_id = resp_1.json()['target_id']
         processing_target_id = resp_2.json()['target_id']
 
         response = target_duplicates(
