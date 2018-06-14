@@ -1123,7 +1123,10 @@ class TestMaximumImageSize:
         import math
         import random
         width = height = int(math.sqrt(max_size))
-        # At 1 x max_size - 10 we get 422
+
+        # # This gives 422 on real, 200 on mock
+        width = 1
+        height = int(max_size / 2)
 
         image_buffer = io.BytesIO()
         image = Image.new(color_space, (width, height))
