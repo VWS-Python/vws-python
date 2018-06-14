@@ -381,6 +381,37 @@ class TestQuotas:
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
+class TestRecos:
+    """
+    Tests for the recognition count fields.
+    """
+
+    def test_query_request(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        The ``*_recos`` counts are always 0.
+        """
+        image_content = high_quality_image.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        query_resp = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert query_resp.status_code == codes.OK
+
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+        assert response.json()['total_recos'] == 0
+        assert response.json()['current_month_recos'] == 0
+        assert response.json()['previous_month_recos'] == 0
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
 class TestRequestUsage:
     """
     Tests for the ``request_usage`` field.
