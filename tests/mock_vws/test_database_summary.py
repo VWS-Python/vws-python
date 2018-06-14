@@ -17,6 +17,7 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     database_summary,
     delete_target,
+    query,
     wait_for_target_processed,
 )
 from tests.mock_vws.utils.assertions import assert_vws_response
@@ -362,7 +363,7 @@ class TestProcessingImages:
 @pytest.mark.usefixtures('verify_mock_vuforia')
 class TestQuotas:
     """
-    Tests for the mock of the database summary endpoint at `GET /summary`.
+    Tests for quotas and thresholds.
     """
 
     def test_quotas(self, vuforia_database_keys: VuforiaDatabaseKeys) -> None:
@@ -377,6 +378,93 @@ class TestQuotas:
         assert response.json()['target_quota'] == 1000
         assert response.json()['request_quota'] == 100000
         assert response.json()['reco_threshold'] == 1000
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia')
+class TestRequestUsage:
+    """
+    Tests for the ``request_usage`` field.
+    """
+
+    def test_target_request(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        The ``request_usage`` count increases with each request to the target
+        API.
+        """
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        original_request_usage = response.json()['request_usage']
+
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        new_request_usage = response.json()['request_usage']
+        assert new_request_usage == original_request_usage + 1
+
+    def test_bad_target_request(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        The ``request_usage`` count increases with each request to the target
+        API, even if it is a bad request.
+        """
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        original_request_usage = response.json()['request_usage']
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            # Missing data.
+            data={},
+        )
+
+        assert response.status_code == codes.BAD_REQUEST
+
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+        new_request_usage = response.json()['request_usage']
+        assert new_request_usage == original_request_usage + 2
+
+    def test_query_request(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        The ``request_usage`` count does not increase with each query.
+        """
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+
+        original_request_usage = response.json()['request_usage']
+
+        image_content = high_quality_image.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        query_resp = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert query_resp.status_code == codes.OK
+
+        response = database_summary(
+            vuforia_database_keys=vuforia_database_keys,
+        )
+        new_request_usage = response.json()['request_usage']
+        # The request usage goes up for the database summary request, not the
+        # query.
+        assert new_request_usage == original_request_usage + 1
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia_inactive')
