@@ -820,8 +820,8 @@ class TestIncludeTargetData:
 
         assert_query_success(response=response)
         result_1, result_2 = response.json()['results']
-        assert 'target_data' not in result_1
-        assert 'target_data' not in result_2
+        assert 'target_data' in result_1
+        assert 'target_data' in result_2
 
     def test_invalid_value(
         self,
