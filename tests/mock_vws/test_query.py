@@ -8,6 +8,8 @@ import base64
 import calendar
 import datetime
 import io
+import math
+import random
 import time
 from typing import Dict, Union
 from urllib.parse import urljoin
@@ -1120,8 +1122,6 @@ class TestMaximumImageSize:
         # max_size = 698895 no error
         # max_size = 698896 connection error
         max_size = 698895
-        import math
-        import random
         width = height = int(math.sqrt(max_size))
 
         # # This gives 422 on real, 200 on mock
