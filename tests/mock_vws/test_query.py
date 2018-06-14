@@ -689,6 +689,7 @@ def add_targets(
     """
     image_content = high_quality_image.getvalue()
     image_data_encoded = base64.b64encode(image_content).decode('ascii')
+    target_ids = set([])
     for name in ('example_1', 'example_2'):
         add_target_data = {
             'name': name,
@@ -701,8 +702,9 @@ def add_targets(
             data=add_target_data,
         )
 
-        target_id = response.json()['target_id']
+        target_ids.add(response.json()['target_id'])
 
+    for target_id in target_ids:
         wait_for_target_processed(
             target_id=target_id,
             vuforia_database_keys=vuforia_database_keys,
