@@ -1123,6 +1123,7 @@ class TestMaximumImageSize:
         import math
         import random
         width = height = int(math.sqrt(max_size))
+        # At 1 x max_size - 10 we get 422
 
         image_buffer = io.BytesIO()
         image = Image.new(color_space, (width, height))
@@ -1133,7 +1134,7 @@ class TestMaximumImageSize:
                 green = random.randint(0, 255)
                 blue = random.randint(0, 255)
                 if color_space != 'L':
-                    pixels[i, j] = (red, green, blue)
+                    pixels[j, i] = (red, green, blue)
         image.save(image_buffer, file_format)
         image_buffer.seek(0)
 
