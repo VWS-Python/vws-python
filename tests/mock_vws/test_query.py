@@ -1067,6 +1067,10 @@ class TestMaximumImageSize:
     Tests for maximum image sizes.
     """
 
+    def _png(width: int, height: int):
+        """
+        XXX
+        """
     def test_png(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -1077,14 +1081,13 @@ class TestMaximumImageSize:
         """
         file_format = 'PNG'
         color_space = 'RGB'
-        # max_size = 698895 no error
-        # max_size = 698896 connection error
-        max_size = 698895
-        width = height = int(math.sqrt(max_size))
+        # 835 no error, 836 error
+        width = height = 836
+        width = height = 835
 
         # # This gives 422 on real, 200 on mock
-        width = 1
-        height = int(max_size / 2)
+        # width = 1
+        # height = int(max_size / 2)
 
         image_buffer = io.BytesIO()
         image = Image.new(color_space, (width, height))
@@ -1094,8 +1097,7 @@ class TestMaximumImageSize:
                 red = random.randint(0, 255)
                 green = random.randint(0, 255)
                 blue = random.randint(0, 255)
-                if color_space != 'L':
-                    pixels[j, i] = (red, green, blue)
+                pixels[j, i] = (red, green, blue)
         image.save(image_buffer, file_format)
         image_buffer.seek(0)
 
