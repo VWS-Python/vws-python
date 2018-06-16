@@ -36,19 +36,27 @@ class TestInactiveProject:
     def test_inactive_project(
         self,
         inactive_database_keys: VuforiaDatabaseKeys,
-        endpoint: Endpoint,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        endpoint_success_no_target_id: Endpoint,
     ) -> None:
         """
         The project's active state does not affect the database summary.
         """
+        endpoint = endpoint_success_no_target_id
         endpoint_headers = dict(endpoint.prepared_request.headers)
         content = endpoint.prepared_request.body or b''
+        if 'query' in endpoint.prepared_request.url:
+            # TODO fix this up for query
+            return
         assert isinstance(content, bytes)
         date = rfc_1123_date()
 
+        keys = inactive_database_keys
+        # keys = vuforia_database_keys
+
         authorization_string = authorization_header(
-            access_key=endpoint.access_key,
-            secret_key=endpoint.secret_key,
+            access_key=keys.server_access_key,
+            secret_key=keys.server_secret_key,
             method=str(endpoint.prepared_request.method),
             content=content,
             content_type=endpoint.auth_header_content_type,
