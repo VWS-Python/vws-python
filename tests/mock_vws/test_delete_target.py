@@ -83,3 +83,29 @@ class TestDelete:
             status_code=codes.NOT_FOUND,
             result_code=ResultCodes.UNKNOWN_TARGET,
         )
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        inactive_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        If the project is inactive, a FORBIDDEN response is returned.
+        """
+        target_id = 'does_not_exist'
+        response = delete_target(
+            vuforia_database_keys=inactive_database_keys,
+            target_id=target_id,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.PROJECT_INACTIVE,
+        )
