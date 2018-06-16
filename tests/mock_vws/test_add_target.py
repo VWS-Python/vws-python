@@ -867,6 +867,6 @@ class TestInactiveProject:
 
         assert_vws_failure(
             response=response,
-            status_code=codes.UNPROCESSABLE_ENTITY,
-            result_code=ResultCodes.METADATA_TOO_LARGE,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.PROJECT_INACTIVE,
         )
