@@ -23,6 +23,7 @@ from requests_mock.response import _Context
 
 from mock_vws._constants import ResultCodes
 from mock_vws._mock_common import json_dump
+from ._constants import States
 
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
@@ -127,14 +128,14 @@ def validate_active_flag(
 
 
 @wrapt.decorator
-def validate_project_status(
+def validate_project_state(
     wrapped: Callable[..., str],
-    instance: Any,  # pylint: disable=unused-argument
+    instance: Any,
     args: Tuple[_RequestObjectProxy, _Context],
     kwargs: Dict,
 ) -> str:
     """
-    Validate the active flag data given to the endpoint.
+    Validate the state of the project.
 
     Args:
         wrapped: An endpoint function for `requests_mock`.
@@ -144,29 +145,25 @@ def validate_project_status(
 
     Returns:
         The result of calling the endpoint.
-        A `BAD_REQUEST` response with a FAIL result code if there is
-        active flag data given to the endpoint which is not either a Boolean or
-        NULL.
-    """
+        A `FORBIDDEN` response with a PROJECT_INACTIVE result code if the
+        project is inactive.
+        """
     request, context = args
 
-    if not request.text:
+    if instance.state != States.PROJECT_INACTIVE:
         return wrapped(*args, **kwargs)
 
-    if 'active_flag' not in request.json():
+    if request.method == 'GET' and 'duplicates' not in request.path:
         return wrapped(*args, **kwargs)
 
-    active_flag = request.json().get('active_flag')
+    context.status_code = codes.FORBIDDEN
 
-    if active_flag is None or isinstance(active_flag, bool):
-        return wrapped(*args, **kwargs)
-
-    context.status_code = codes.BAD_REQUEST
     body: Dict[str, str] = {
         'transaction_id': uuid.uuid4().hex,
-        'result_code': ResultCodes.FAIL.value,
+        'result_code': ResultCodes.PROJECT_INACTIVE.value,
     }
     return json_dump(body)
+
 
 @wrapt.decorator
 def validate_not_invalid_json(
