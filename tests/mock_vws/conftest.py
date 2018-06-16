@@ -206,20 +206,3 @@ def endpoint(request: SubRequest) -> Endpoint:
     """
     endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
     return endpoint_fixture
-
-
-@pytest.fixture(
-    params=[
-        '_add_target',
-        '_database_summary',
-        '_target_list',
-        '_query',
-    ],
-)
-def endpoint_success_no_target_id(request: SubRequest) -> Endpoint:
-    """
-    Return details of an endpoint for the Target API or the Query API which
-    does not require a target ID for success.
-    """
-    endpoint_fixture: Endpoint = request.getfixturevalue(request.param)
-    return endpoint_fixture
