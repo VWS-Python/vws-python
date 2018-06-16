@@ -5,6 +5,7 @@ Tests for the mock of the update target endpoint.
 import base64
 import binascii
 import io
+import uuid
 from typing import Any, Union
 
 import pytest
@@ -960,3 +961,33 @@ class TestImage:
         assert new_tracking_rating in range(6)
 
         assert original_tracking_rating != new_tracking_rating
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        inactive_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        If the project is inactive, a FORBIDDEN response is returned.
+        """
+        image = high_quality_image.read()
+        image_data_encoded = base64.b64encode(image).decode('ascii')
+
+        response = update_target(
+            vuforia_database_keys=inactive_database_keys,
+            data={'image': image_data_encoded},
+            target_id=uuid.uuid4().hex,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.PROJECT_INACTIVE,
+        )
