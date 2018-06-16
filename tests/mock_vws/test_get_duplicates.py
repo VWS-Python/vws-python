@@ -17,7 +17,10 @@ from tests.mock_vws.utils import (
     target_api_request,
     wait_for_target_processed,
 )
-from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.assertions import (
+    assert_vws_failure,
+    assert_vws_response,
+)
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
@@ -379,3 +382,28 @@ class TestProcessing:
 
         assert status_response.json()['status'] == 'processing'
         assert response.json()['similar_targets'] == [processed_target_id]
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        inactive_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        If the project is inactive, a FORBIDDEN response is returned.
+        """
+        response = target_duplicates(
+            target_id=uuid.uuid4().hex,
+            vuforia_database_keys=inactive_database_keys,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.FORBIDDEN,
+            result_code=ResultCodes.PROJECT_INACTIVE,
+        )
