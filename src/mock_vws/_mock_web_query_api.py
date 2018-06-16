@@ -20,13 +20,53 @@ from requests_mock import POST
 from requests_mock.request import _RequestObjectProxy
 from requests_mock.response import _Context
 
-from mock_vws._constants import ResultCodes, TargetStatuses
+from mock_vws._constants import ResultCodes, States, TargetStatuses
 from mock_vws._mock_common import Route, json_dump, set_content_length_header
 from mock_vws._mock_web_services_api import MockVuforiaWebServicesAPI, Target
 
 from ._validators import validate_auth_header_exists, validate_authorization
 
 ROUTES = set([])
+
+
+@wrapt.decorator
+def validate_project_state(
+    wrapped: Callable[..., str],
+    instance: Any,
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the state of the project.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `FORBIDDEN` response with an InactiveProject result code if the
+        project is inactive.
+    """
+    _, context = args
+
+    if instance.mock_web_services_api.state != States.PROJECT_INACTIVE:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.FORBIDDEN
+    transaction_id = uuid.uuid4().hex
+    result_code = ResultCodes.INACTIVE_PROJECT.value
+
+    # The response has an unusual format of separators, so we construct it
+    # manually.
+    return (
+        '{"transaction_id": '
+        f'"{transaction_id}",'
+        f'"result_code":"{result_code}"'
+        '}'
+    )
 
 
 @wrapt.decorator
@@ -363,10 +403,10 @@ def validate_date(
     for date_format in _accepted_date_formats():
         try:
             date = datetime.datetime.strptime(date_header, date_format)
+            # We could break here but that would give a coverage report that is
+            # not 100%.
         except ValueError:
             pass
-        else:
-            break
 
     gmt = pytz.timezone('GMT')
     now = datetime.datetime.now(tz=gmt)
@@ -593,6 +633,7 @@ def route(
             validate_content_type_header,
             validate_accept_header,
             validate_auth_header_exists,
+            validate_project_state,
             set_content_length_header,
         ]
 

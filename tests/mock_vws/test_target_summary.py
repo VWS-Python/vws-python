@@ -5,6 +5,7 @@ Tests for the mock of the target summary endpoint.
 import base64
 import datetime
 import io
+import uuid
 
 import pytest
 import pytz
@@ -18,7 +19,10 @@ from tests.mock_vws.utils import (
     target_summary,
     wait_for_target_processed,
 )
-from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.assertions import (
+    assert_vws_failure,
+    assert_vws_response,
+)
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
@@ -242,3 +246,28 @@ class TestRecognitionCounts:
         assert response.json()['total_recos'] == 0
         assert response.json()['current_month_recos'] == 0
         assert response.json()['previous_month_recos'] == 0
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        inactive_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        The project's active state does not affect getting a target.
+        """
+        response = target_summary(
+            target_id=uuid.uuid4().hex,
+            vuforia_database_keys=inactive_database_keys,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.NOT_FOUND,
+            result_code=ResultCodes.UNKNOWN_TARGET,
+        )
