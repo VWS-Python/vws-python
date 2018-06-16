@@ -50,6 +50,7 @@ class ResultCodes(Enum):
     REQUEST_QUOTA_REACHED = 'RequestQuotaReached'
     TARGET_STATUS_NOT_SUCCESS = 'TargetStatusNotSuccess'
     PROJECT_INACTIVE = 'ProjectInactive'
+    INACTIVE_PROJECT = 'InactiveProject'
 
 
 class TargetStatuses(Enum):

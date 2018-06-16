@@ -24,6 +24,8 @@ from requests_mock.response import _Context
 from mock_vws._constants import ResultCodes
 from mock_vws._mock_common import json_dump
 
+from ._constants import States
+
 
 def compute_hmac_base64(key: bytes, data: bytes) -> bytes:
     """
@@ -122,6 +124,44 @@ def validate_active_flag(
     body: Dict[str, str] = {
         'transaction_id': uuid.uuid4().hex,
         'result_code': ResultCodes.FAIL.value,
+    }
+    return json_dump(body)
+
+
+@wrapt.decorator
+def validate_project_state(
+    wrapped: Callable[..., str],
+    instance: Any,
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the state of the project.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+        A `FORBIDDEN` response with a PROJECT_INACTIVE result code if the
+        project is inactive.
+    """
+    request, context = args
+
+    if instance.state != States.PROJECT_INACTIVE:
+        return wrapped(*args, **kwargs)
+
+    if request.method == 'GET' and 'duplicates' not in request.path:
+        return wrapped(*args, **kwargs)
+
+    context.status_code = codes.FORBIDDEN
+
+    body: Dict[str, str] = {
+        'transaction_id': uuid.uuid4().hex,
+        'result_code': ResultCodes.PROJECT_INACTIVE.value,
     }
     return json_dump(body)
 

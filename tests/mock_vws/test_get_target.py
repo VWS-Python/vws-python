@@ -6,6 +6,7 @@ https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Service
 
 import base64
 import io
+import uuid
 
 import pytest
 from requests import codes
@@ -16,7 +17,10 @@ from tests.mock_vws.utils import (
     get_vws_target,
     wait_for_target_processed,
 )
-from tests.mock_vws.utils.assertions import assert_vws_response
+from tests.mock_vws.utils.assertions import (
+    assert_vws_failure,
+    assert_vws_response,
+)
 from tests.mock_vws.utils.authorization import VuforiaDatabaseKeys
 
 
@@ -249,3 +253,28 @@ class TestGetRecord:
         new_target_record = response.json()['target_record']
         new_tracking_rating = new_target_record['tracking_rating']
         assert new_tracking_rating == tracking_rating
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        inactive_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        The project's active state does not affect getting a target.
+        """
+        response = get_vws_target(
+            target_id=uuid.uuid4().hex,
+            vuforia_database_keys=inactive_database_keys,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.NOT_FOUND,
+            result_code=ResultCodes.UNKNOWN_TARGET,
+        )
