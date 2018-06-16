@@ -1661,7 +1661,6 @@ class TestInactiveProject:
         image_content = high_quality_image.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
-        import pdb; pdb.set_trace()
         response = query(
             vuforia_database_keys=inactive_database_keys,
             body=body,
@@ -1669,6 +1668,20 @@ class TestInactiveProject:
 
         assert_vwq_failure(
             response=response,
-            status_code=codes.UNSUPPORTED_MEDIA_TYPE,
-            content_type=None,
+            status_code=codes.FORBIDDEN,
+            content_type='application/json',
         )
+        assert response.json().keys() == {'transaction_id', 'result_code'}
+        assert_valid_transaction_id(response=response)
+        assert_valid_date_header(response=response)
+        result_code = response.json()['result_code']
+        transaction_id = response.json()['transaction_id']
+        assert result_code == ResultCodes.INACTIVE_PROJECT.value
+        # The separators are inconsistent and we test this.
+        expected_text = (
+            '{"transaction_id": '
+            f'"{transaction_id}",'
+            f'"result_code":"{result_code}"'
+            '}'
+        )
+        assert response.text == expected_text
