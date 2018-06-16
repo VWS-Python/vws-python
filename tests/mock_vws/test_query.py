@@ -1641,3 +1641,34 @@ class TestDateFormats:
 
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+
+@pytest.mark.usefixtures('verify_mock_vuforia_inactive')
+class TestInactiveProject:
+    """
+    Tests for inactive projects.
+    """
+
+    def test_inactive_project(
+        self,
+        inactive_database_keys: VuforiaDatabaseKeys,
+        high_quality_image: io.BytesIO,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
+        """
+        If the project is inactive, a FORBIDDEN response is returned.
+        """
+        image_content = high_quality_image.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        import pdb; pdb.set_trace()
+        response = query(
+            vuforia_database_keys=inactive_database_keys,
+            body=body,
+        )
+
+        assert_vwq_failure(
+            response=response,
+            status_code=codes.UNSUPPORTED_MEDIA_TYPE,
+            content_type=None,
+        )
