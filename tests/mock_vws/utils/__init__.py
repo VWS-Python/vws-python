@@ -3,7 +3,6 @@ Utilities for tests.
 """
 
 import io
-from PIL import Image
 import random
 import json
 from time import sleep
@@ -12,6 +11,7 @@ from urllib.parse import urljoin
 
 import requests
 import timeout_decorator
+from PIL import Image
 from requests import Response
 from requests_mock import DELETE, GET, POST, PUT
 from urllib3.filepost import encode_multipart_formdata
