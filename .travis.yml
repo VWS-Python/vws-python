@@ -7,6 +7,7 @@ matrix:
 env:
   matrix:
   - TEST_FILENAME=''
+  - TEST_FILENAME=test_query.py
   - TEST_FILENAME=test_add_target.py
   - TEST_FILENAME=test_authorization_header.py
   - TEST_FILENAME=test_database_summary.py
@@ -18,7 +19,6 @@ env:
   - TEST_FILENAME=test_get_target.py
   - TEST_FILENAME=test_invalid_given_id.py
   - TEST_FILENAME=test_invalid_json.py
-  - TEST_FILENAME=test_query.py
   - TEST_FILENAME=test_target_list.py
   - TEST_FILENAME=test_target_summary.py
   - TEST_FILENAME=test_unexpected_json.py

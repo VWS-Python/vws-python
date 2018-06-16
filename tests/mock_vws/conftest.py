@@ -143,7 +143,7 @@ def verify_mock_vuforia(
             decode('ascii'),
             client_secret_key=vuforia_database_keys.client_secret_key.
             decode('ascii'),
-            processing_time_seconds=0.1,
+            processing_time_seconds=0.2,
         ):
             yield
 
