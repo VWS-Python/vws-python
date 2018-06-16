@@ -848,7 +848,7 @@ class TestInactiveProject:
         png_rgb: io.BytesIO,
     ) -> None:
         """
-        The project's active state does not affect the database summary.
+        If the project is inactive, a FORBIDDEN response is returned.
         """
         image_data = png_rgb.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
