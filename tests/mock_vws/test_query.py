@@ -8,8 +8,6 @@ import base64
 import calendar
 import datetime
 import io
-import math
-import random
 import time
 from typing import Dict, Union
 from urllib.parse import urljoin
@@ -1067,10 +1065,6 @@ class TestMaximumImageSize:
     Tests for maximum image sizes.
     """
 
-    def _png(width: int, height: int):
-        """
-        XXX
-        """
     def test_png(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -1079,27 +1073,13 @@ class TestMaximumImageSize:
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
-        file_format = 'PNG'
-        color_space = 'RGB'
         # 835 no error, 836 error
         width = height = 836
-        width = height = 835
+        # width = height = 835
 
         # # This gives 422 on real, 200 on mock
         # width = 1
         # height = int(max_size / 2)
-
-        image_buffer = io.BytesIO()
-        image = Image.new(color_space, (width, height))
-        pixels = image.load()
-        for i in range(height):
-            for j in range(width):
-                red = random.randint(0, 255)
-                green = random.randint(0, 255)
-                blue = random.randint(0, 255)
-                pixels[j, i] = (red, green, blue)
-        image.save(image_buffer, file_format)
-        image_buffer.seek(0)
 
         image_content = image_buffer.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
