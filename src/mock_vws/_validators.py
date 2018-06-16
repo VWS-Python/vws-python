@@ -148,7 +148,7 @@ def validate_project_state(
         The result of calling the endpoint.
         A `FORBIDDEN` response with a PROJECT_INACTIVE result code if the
         project is inactive.
-        """
+    """
     request, context = args
 
     if instance.state != States.PROJECT_INACTIVE:
