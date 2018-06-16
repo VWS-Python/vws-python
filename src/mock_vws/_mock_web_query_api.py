@@ -363,10 +363,10 @@ def validate_date(
     for date_format in _accepted_date_formats():
         try:
             date = datetime.datetime.strptime(date_header, date_format)
+            # We could break here but that would give a coverage report that is
+            # not 100%.
         except ValueError:
             pass
-        else:
-            break
 
     gmt = pytz.timezone('GMT')
     now = datetime.datetime.now(tz=gmt)
