@@ -1653,7 +1653,6 @@ class TestInactiveProject:
         self,
         inactive_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
-        vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         If the project is inactive, a FORBIDDEN response is returned.
