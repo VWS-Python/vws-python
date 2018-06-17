@@ -542,7 +542,7 @@ class TestImage:
             result_code=ResultCodes.IMAGE_TOO_LARGE,
         )
 
-    def test_corrupted_and_too_large(
+    def test_too_large_and_corrupted(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         png_large: io.BytesIO,
@@ -550,7 +550,7 @@ class TestImage:
         """
         foobar todo update docstring
         An `ImageTooLarge` result is returned if the image is above a certain
-        threshold.
+        threshold and is corrupted.
 
         This threshold is documented as being 2 MB but it is actually
         slightly larger. See the `png_large` fixture for more details.
