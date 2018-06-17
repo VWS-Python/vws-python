@@ -1144,7 +1144,7 @@ class TestMaximumImageSize:
         We do not test exactly at this limit, but that may be beneficial in the
         future.
         """
-        documented_max_bytes = 2 * 512
+        documented_max_bytes = 512 * 1024
         width = height = 835
         png_not_too_large = make_image_file(
             file_format='JPEG',
