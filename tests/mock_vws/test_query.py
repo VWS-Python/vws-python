@@ -1024,13 +1024,12 @@ class TestBadImage:
     def test_corrupted(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        corrupted_image_file: io.BytesIO,
     ) -> None:
         """
         A "BadImage" result is returned when a corrupted image is given.
         """
-        original_data = png_rgb.getvalue()
-        corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+        corrupted_data = corrupted_image_file.getvalue()
 
         body = {'image': ('image.jpeg', corrupted_data, 'image/jpeg')}
 

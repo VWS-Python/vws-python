@@ -38,6 +38,22 @@ def png_rgb() -> io.BytesIO:
 
 
 @pytest.fixture
+def corrupted_image_file() -> io.BytesIO:
+    """
+    Return an image file which is corrupted.
+    """
+    original_image = make_image_file(
+        file_format='PNG',
+        color_space='RGB',
+        width=1,
+        height=1,
+    )
+    original_data = original_image.getvalue()
+    corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+    return io.BytesIO(corrupted_data)
+
+
+@pytest.fixture
 def image_file_failed_state() -> io.BytesIO:
     """
     Return an image file which is expected to be accepted by the add and
