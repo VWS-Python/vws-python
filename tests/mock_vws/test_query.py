@@ -1101,7 +1101,7 @@ class TestMaximumImageSize:
         #
         # This is just because of the implementation details of ``image_file``.
         assert image_content_size < documented_max_bytes
-        assert (image_content_size * 1.1) > documented_max_bytes
+        assert (image_content_size * 1.05) > documented_max_bytes
 
         response = query(
             vuforia_database_keys=vuforia_database_keys,
@@ -1127,7 +1127,7 @@ class TestMaximumImageSize:
         #
         # This is just because of the implementation details of ``image_file``.
         assert image_content_size > documented_max_bytes
-        assert (image_content_size * 0.9) < documented_max_bytes
+        assert (image_content_size * 0.95) < documented_max_bytes
 
         with pytest.raises(requests.exceptions.ConnectionError):
             query(
