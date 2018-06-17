@@ -1071,6 +1071,8 @@ class TestMaximumImageSize:
     # width = 1
     # height = int(max_size / 2)
 
+    # Also test max megapixels
+
     def test_png(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -1090,6 +1092,9 @@ class TestMaximumImageSize:
         image_content = png_not_too_large.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
+        image_content_size = len(image_content)
+        assert image_content
+
         response = query(
             vuforia_database_keys=vuforia_database_keys,
             body=body,
@@ -1108,6 +1113,8 @@ class TestMaximumImageSize:
 
         image_content = png_not_too_large.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        image_content_size = len(image_content)
 
         with pytest.raises(requests.exceptions.ConnectionError):
             query(
