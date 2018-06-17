@@ -1079,7 +1079,7 @@ class TestMaximumImageSize:
         We do not test exactly at this limit, but that may be beneficial in the
         future.
         """
-        documented_max_bytes = 2 * 1024 * 1024
+        max_bytes = 2 * 1024 * 1024
         width = height = 835
         png_not_too_large = make_image_file(
             file_format='PNG',
@@ -1096,8 +1096,8 @@ class TestMaximumImageSize:
         # maximum file size.
         #
         # This is just because of the implementation details of ``image_file``.
-        assert image_content_size < documented_max_bytes
-        assert (image_content_size * 1.05) > documented_max_bytes
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
 
         response = query(
             vuforia_database_keys=vuforia_database_keys,
@@ -1122,8 +1122,8 @@ class TestMaximumImageSize:
         # maximum file size.
         #
         # This is just because of the implementation details of ``image_file``.
-        assert image_content_size > documented_max_bytes
-        assert (image_content_size * 0.95) < documented_max_bytes
+        assert image_content_size > max_bytes
+        assert (image_content_size * 0.95) < max_bytes
 
         with pytest.raises(requests.exceptions.ConnectionError):
             query(
@@ -1131,11 +1131,71 @@ class TestMaximumImageSize:
                 body=body,
             )
 
-    def test_jpeg(self) -> None:
+    def test_jpeg(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        According to
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
+        the maximum file size is "512 KiB for JPEG".
+        However, this test shows that the maximum size for JPEG is 2 MiB.
+
+        Above this limit, a ``ConnectionError`` is raised.
+        We do not test exactly at this limit, but that may be beneficial in the
+        future.
         """
+        max_bytes = 2 * 1024 * 1024
+        width = height = 1864
+        png_not_too_large = make_image_file(
+            file_format='JPEG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_content = png_not_too_large.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        image_content_size = len(image_content)
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of ``image_file``.
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+        width = height = 1865
+        png_not_too_large = make_image_file(
+            file_format='JPEG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_content = png_not_too_large.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        image_content_size = len(image_content)
+        # We check that the image we created is just slightly larger than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of ``image_file``.
+        assert image_content_size > max_bytes
+        assert (image_content_size * 0.95) < max_bytes
+
+        with pytest.raises(requests.exceptions.ConnectionError):
+            query(
+                vuforia_database_keys=vuforia_database_keys,
+                body=body,
+            )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')

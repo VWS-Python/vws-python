@@ -26,10 +26,12 @@ io
 issuecomment
 jpeg
 json
+kib
 kwargs
 linters
 mb
 metadata
+mib
 mockvws
 multipart
 noqa
