@@ -11,6 +11,7 @@ datetime
 decodable
 dev
 dict
+docstring
 filename
 foo
 formdata
