@@ -766,16 +766,14 @@ class TestImage:
     def test_corrupted(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        corrupted_image_file: io.BytesIO,
         target_id: str,
     ) -> None:
         """
         No error is returned when the given image is corrupted.
         """
-        original_data = png_rgb.getvalue()
-        corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
-
-        image_data_encoded = base64.b64encode(corrupted_data).decode('ascii')
+        image_data = corrupted_image_file.getvalue()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
