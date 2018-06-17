@@ -410,7 +410,7 @@ class TestImage:
 
         assert_success(response=response)
 
-    def test_bad_image(
+    def test_bad_image_format_or_color_space(
         self,
         bad_image_file: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -440,12 +440,123 @@ class TestImage:
             result_code=ResultCodes.BAD_IMAGE,
         )
 
-    def test_too_large(
+    def test_corrupted(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         png_large: io.BytesIO,
     ) -> None:
         """
+        An `ImageTooLarge` result is returned if the image is above a certain
+        threshold.
+
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
+        """
+        original_data = png_large.getvalue()
+        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+        too_large_file = io.BytesIO(longer_data)
+
+        image_data = too_large_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.IMAGE_TOO_LARGE,
+        )
+
+    def test_jpeg_too_large(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_large: io.BytesIO,
+    ) -> None:
+        """
+        foobar todo update docstring
+        An `ImageTooLarge` result is returned if the image is above a certain
+        threshold.
+
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
+        """
+        original_data = png_large.getvalue()
+        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+        too_large_file = io.BytesIO(longer_data)
+
+        image_data = too_large_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.IMAGE_TOO_LARGE,
+        )
+
+    def test_png_too_large(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_large: io.BytesIO,
+    ) -> None:
+        """
+        foobar todo update docstring
+        An `ImageTooLarge` result is returned if the image is above a certain
+        threshold.
+
+        This threshold is documented as being 2 MB but it is actually
+        slightly larger. See the `png_large` fixture for more details.
+        """
+        original_data = png_large.getvalue()
+        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+        too_large_file = io.BytesIO(longer_data)
+
+        image_data = too_large_file.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.IMAGE_TOO_LARGE,
+        )
+
+    def test_corrupted_and_too_large(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_large: io.BytesIO,
+    ) -> None:
+        """
+        foobar todo update docstring
         An `ImageTooLarge` result is returned if the image is above a certain
         threshold.
 

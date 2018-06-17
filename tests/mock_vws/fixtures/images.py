@@ -50,28 +50,6 @@ def png_greyscale() -> io.BytesIO:
     )
 
 
-@pytest.fixture()
-def png_large(
-    png_rgb: io.BytesIO,  # pylint: disable=redefined-outer-name
-) -> io.BytesIO:
-    """
-    Return a PNG file of the maximum allowed file size.
-
-    https://library.vuforia.com/articles/Training/Cloud-Recognition-Guide
-    describes that the maximum allowed file size of an image is 2 MB.
-    However, tests using this fixture demonstrate that the maximum allowed
-    size is actually slightly greater than that.
-    """
-    png_size = len(png_rgb.getbuffer())
-    max_size = 2359293
-    filler_length = max_size - png_size
-    filler_data = b'\x00' * int(filler_length)
-    original_data = png_rgb.getvalue()
-    longer_data = original_data.replace(b'IEND', filler_data + b'IEND')
-    png = io.BytesIO(longer_data)
-    return png
-
-
 @pytest.fixture
 def jpeg_cmyk() -> io.BytesIO:
     """
@@ -114,7 +92,7 @@ def tiff_rgb() -> io.BytesIO:
     )
 
 
-@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale', 'png_large'])
+@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale'])
 def image_file(request: SubRequest) -> io.BytesIO:
     """
     Return an image file which is expected to work on Vuforia.
