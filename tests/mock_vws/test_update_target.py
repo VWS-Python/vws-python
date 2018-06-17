@@ -796,43 +796,6 @@ class TestImage:
             result_code=ResultCodes.SUCCESS,
         )
 
-    def test_too_large_and_corrupted(
-        self,
-        vuforia_database_keys: VuforiaDatabaseKeys,
-        png_large: io.BytesIO,
-        target_id: str,
-    ) -> None:
-        """
-        An `ImageTooLarge` result is returned if the image is above a certain
-        threshold and is corrupted.
-
-        This threshold is documented as being 2 MB but it is actually
-        slightly larger. See the `png_large` fixture for more details.
-        """
-        original_data = png_large.getvalue()
-        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
-        too_large_file = io.BytesIO(longer_data)
-
-        image_data = too_large_file.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
-        wait_for_target_processed(
-            vuforia_database_keys=vuforia_database_keys,
-            target_id=target_id,
-        )
-
-        response = update_target(
-            vuforia_database_keys=vuforia_database_keys,
-            data={'image': image_data_encoded},
-            target_id=target_id,
-        )
-
-        assert_vws_failure(
-            response=response,
-            status_code=codes.UNPROCESSABLE_ENTITY,
-            result_code=ResultCodes.IMAGE_TOO_LARGE,
-        )
-
     def test_not_base64_encoded(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
