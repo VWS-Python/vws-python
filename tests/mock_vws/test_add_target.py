@@ -478,7 +478,7 @@ class TestImage:
         threshold.
         """
         max_bytes = 2 * 1024 * 1024
-        width = height = 835
+        width = height = 886
         png_not_too_large = make_image_file(
             file_format='PNG',
             color_space='RGB',
@@ -488,17 +488,48 @@ class TestImage:
 
         image_data = png_not_too_large.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
-
         image_content_size = len(image_data)
         # We check that the image we created is just slightly smaller than the
         # maximum file size.
         #
         # This is just because of the implementation details of ``image_file``.
-        assert image_content_size < max_bytes
-        assert (image_content_size * 1.05) > max_bytes
+        # assert image_content_size < max_bytes
+        # assert (image_content_size * 1.05) > max_bytes
 
         data = {
             'name': 'example_name',
+            'width': 1,
+            'image': image_data_encoded,
+        }
+
+        response = add_target_to_vws(
+            vuforia_database_keys=vuforia_database_keys,
+            data=data,
+        )
+
+        assert_success(response=response)
+
+        width = width + 1
+        height = height + 1
+        png_not_too_large = make_image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_data = png_not_too_large.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        image_content_size = len(image_data)
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of ``image_file``.
+        # assert image_content_size < max_bytes
+        # assert (image_content_size * 1.05) > max_bytes
+
+        data = {
+            'name': 'example_name_2',
             'width': 1,
             'image': image_data_encoded,
         }
