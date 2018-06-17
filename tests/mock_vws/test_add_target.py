@@ -410,7 +410,7 @@ class TestImage:
 
         assert_success(response=response)
 
-    def test_bad_image(
+    def test_bad_image_format_or_color_space(
         self,
         bad_image_file: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
