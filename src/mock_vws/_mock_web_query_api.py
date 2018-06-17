@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Set, Tuple, Union
 
 import pytz
+import requests
 import wrapt
 from PIL import Image
 from requests import codes
@@ -67,6 +68,53 @@ def validate_project_state(
         f'"result_code":"{result_code}"'
         '}'
     )
+
+
+@wrapt.decorator
+def validate_image_file_size(
+    wrapped: Callable[..., str],
+    instance: Any,  # pylint: disable=unused-argument
+    args: Tuple[_RequestObjectProxy, _Context],
+    kwargs: Dict,
+) -> str:
+    """
+    Validate the file size of the image given to the query endpoint.
+
+    Args:
+        wrapped: An endpoint function for `requests_mock`.
+        instance: The class that the endpoint function is in.
+        args: The arguments given to the endpoint function.
+        kwargs: The keyword arguments given to the endpoint function.
+
+    Returns:
+        The result of calling the endpoint.
+
+    Raises:
+        requests.exceptions.ConnectionError: The image file size is too large.
+    """
+    request, _ = args
+    body_file = io.BytesIO(request.body)
+
+    _, pdict = cgi.parse_header(request.headers['Content-Type'])
+    parsed = cgi.parse_multipart(
+        fp=body_file,
+        pdict={
+            'boundary': pdict['boundary'].encode(),
+        },
+    )
+
+    [image] = parsed['image']
+
+    image_file = io.BytesIO(image)
+    pil_image = Image.open(image_file)
+
+    if pil_image.format != 'PNG':
+        return wrapped(*args, **kwargs)
+
+    documented_max_png_bytes = 2 * 1024 * 1024
+    if len(image) > documented_max_png_bytes:
+        raise requests.exceptions.ConnectionError
+    return wrapped(*args, **kwargs)
 
 
 @wrapt.decorator
@@ -626,6 +674,7 @@ def route(
             validate_date_header_given,
             validate_include_target_data,
             validate_max_num_results,
+            validate_image_file_size,
             validate_image_file_contents,
             validate_image_format,
             validate_image_field_given,
