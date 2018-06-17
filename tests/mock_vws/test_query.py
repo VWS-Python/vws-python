@@ -1144,6 +1144,57 @@ class TestMaximumImageSize:
         We do not test exactly at this limit, but that may be beneficial in the
         future.
         """
+        documented_max_bytes = 2 * 512
+        width = height = 835
+        png_not_too_large = make_image_file(
+            file_format='JPEG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_content = png_not_too_large.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        image_content_size = len(image_content)
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of ``image_file``.
+        assert image_content_size < documented_max_bytes
+        assert (image_content_size * 1.05) > documented_max_bytes
+
+        response = query(
+            vuforia_database_keys=vuforia_database_keys,
+            body=body,
+        )
+
+        assert_query_success(response=response)
+        assert response.json()['results'] == []
+
+        width = height = 836
+        png_not_too_large = make_image_file(
+            file_format='JPEG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_content = png_not_too_large.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        image_content_size = len(image_content)
+        # We check that the image we created is just slightly larger than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of ``image_file``.
+        assert image_content_size > documented_max_bytes
+        assert (image_content_size * 0.95) < documented_max_bytes
+
+        with pytest.raises(requests.exceptions.ConnectionError):
+            query(
+                vuforia_database_keys=vuforia_database_keys,
+                body=body,
+            )
 
 
 @pytest.mark.usefixtures('verify_mock_vuforia')
