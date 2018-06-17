@@ -443,20 +443,16 @@ class TestImage:
     def test_corrupted(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_large: io.BytesIO,
+        png_rgb: io.BytesIO,
     ) -> None:
         """
-        An `ImageTooLarge` result is returned if the image is above a certain
-        threshold.
-
-        This threshold is documented as being 2 MB but it is actually
-        slightly larger. See the `png_large` fixture for more details.
+        No error is returned when the given image is corrupted.
         """
-        original_data = png_large.getvalue()
-        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
-        too_large_file = io.BytesIO(longer_data)
+        original_data = png_rgb.getvalue()
+        corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+        corrupted_file = io.BytesIO(corrupted_data)
 
-        image_data = too_large_file.read()
+        image_data = corrupted_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -470,11 +466,7 @@ class TestImage:
             data=data,
         )
 
-        assert_vws_failure(
-            response=response,
-            status_code=codes.UNPROCESSABLE_ENTITY,
-            result_code=ResultCodes.IMAGE_TOO_LARGE,
-        )
+        assert_success(response=response)
 
     def test_jpeg_too_large(
         self,
