@@ -180,13 +180,13 @@ After deleting a target, for up to approximately 30 seconds, matching it with a 
 
 A target with the name ``\uffff`` gets stuck in processing.
 
-The documentation page `How To Perform an Image Recognition Query <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ states that "The API accepts requests with unknown data fields, and ignore the unknown fields.".
+The documentation page `How To Perform an Image Recognition Query`_ states that "The API accepts requests with unknown data fields, and ignore the unknown fields.".
 This is not the case.
 
 The documentation page `How To Perform an Image Recognition Query <query-article>`__ states "Maximum image size: 2.1 MPixel. 512 KiB for JPEG, 2MiB for PNG".
 However, JPEG images up to 2MiB are accepted.
 
-.. _query-article: https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
+.. _How To Perform an Image Recognition Query: https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 
 Performing a release
 --------------------
