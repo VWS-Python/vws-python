@@ -1065,6 +1065,11 @@ class TestMaximumImageSize:
     """
     Tests for maximum image sizes.
     """
+    # # Look at history to find what max size was, I think it was
+    # 835^2 or 836^2
+    # # This gives 422 on real, 200 on mock
+    # width = 1
+    # height = int(max_size / 2)
 
     def test_png(
         self,
@@ -1074,16 +1079,15 @@ class TestMaximumImageSize:
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
-        png_not_too_large = 1
-        # 835 no error, 836 error
-        width = height = 836
-        # width = height = 835
+        width = height = 835
+        png_not_too_large = image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
 
-        # # This gives 422 on real, 200 on mock
-        # width = 1
-        # height = int(max_size / 2)
-
-        image_content = image_buffer.getvalue()
+        image_content = png_not_too_large.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
         response = query(
@@ -1093,6 +1097,23 @@ class TestMaximumImageSize:
 
         assert_query_success(response=response)
         assert response.json()['results'] == []
+
+        width = height = 836
+        png_not_too_large = image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_content = png_not_too_large.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+
+        with pytest.raises(requests.exceptions.ConnectionError):
+            query(
+                vuforia_database_keys=vuforia_database_keys,
+                body=body,
+            )
 
     def test_jpeg(self) -> None:
         """
