@@ -105,14 +105,12 @@ def validate_image_file_size(
 
     [image] = parsed['image']
 
-    image_file = io.BytesIO(image)
-    pil_image = Image.open(image_file)
-
-    if pil_image.format != 'PNG':
-        return wrapped(*args, **kwargs)
-
-    documented_max_png_bytes = 2 * 1024 * 1024
-    if len(image) > documented_max_png_bytes:
+    # This is the documented maximum size of a PNG as per.
+    # https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
+    # However, the tests show that this maximum size also applies to JPEG
+    # files.
+    max_bytes = 2 * 1024 * 1024
+    if len(image) > max_bytes:
         raise requests.exceptions.ConnectionError
     return wrapped(*args, **kwargs)
 
