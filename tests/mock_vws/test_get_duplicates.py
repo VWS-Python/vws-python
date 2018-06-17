@@ -144,12 +144,12 @@ class TestDuplicates:
     def test_status(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_greyscale: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         Targets are not duplicates if the status is not 'success'.
         """
-        image_data = png_greyscale.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         original_data = {
