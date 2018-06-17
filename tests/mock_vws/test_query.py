@@ -1065,11 +1065,6 @@ class TestMaximumImageSize:
     """
     Tests for maximum image sizes.
     """
-    # # Look at history to find what max size was, I think it was
-    # 835^2 or 836^2
-    # # This gives 422 on real, 200 on mock
-    # width = 1
-    # height = int(max_size / 2)
 
     def test_png(
         self,

@@ -88,8 +88,9 @@ def validate_image_file_size(
 
     Returns:
         The result of calling the endpoint.
-        An `UNPROCESSABLE_ENTITY` response if the image is given and is not
-        either a PNG or a JPEG.
+
+    Raises:
+        requests.exceptions.ConnectionError: The image file size is too large.
     """
     request, _ = args
     body_file = io.BytesIO(request.body)
