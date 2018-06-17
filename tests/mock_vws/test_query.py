@@ -25,6 +25,7 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     delete_target,
     get_vws_target,
+    image_file,
     query,
     update_target,
     wait_for_target_processed,
@@ -1073,6 +1074,7 @@ class TestMaximumImageSize:
         See https://github.com/adamtheturtle/vws-python/issues/357 for
         implementing this test.
         """
+        png_not_too_large = 1
         # 835 no error, 836 error
         width = height = 836
         # width = height = 835
