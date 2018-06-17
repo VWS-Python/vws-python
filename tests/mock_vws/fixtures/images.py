@@ -50,29 +50,20 @@ def png_greyscale() -> io.BytesIO:
     )
 
 
-@pytest.fixture
-def jpeg_rgb() -> io.BytesIO:
+@pytest.fixture(params=[('PNG', 'RGB'), ('JPEG', 'RGB'), ('PNG', 'L')])
+def image_files_failed_state(request: SubRequest) -> io.BytesIO:
     """
-    Return a 1x1 JPEG file in the RGB color space.
+    Return an image file which is expected to be accepted by the add and
+    update target endpoints, but get a "failed" status.
     """
+    # These images get a "failed" status because they are so small.
+    file_format, color_space = request.param
     return make_image_file(
-        file_format='JPEG',
-        color_space='RGB',
+        file_format=file_format,
+        color_space=color_space,
         width=1,
         height=1,
     )
-
-
-@pytest.fixture(params=['png_rgb', 'jpeg_rgb', 'png_greyscale'])
-def image_file(request: SubRequest) -> io.BytesIO:
-    """
-    Return an image file which is expected to work on Vuforia.
-
-    "work" means that this will be added as a target. However, this may or may
-    not result in target with a 'success' status.
-    """
-    file_bytes_io: io.BytesIO = request.getfixturevalue(request.param)
-    return file_bytes_io
 
 
 @pytest.fixture(

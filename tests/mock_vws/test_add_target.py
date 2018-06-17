@@ -385,12 +385,12 @@ class TestImage:
     def test_image_valid(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        image_file: io.BytesIO,
+        image_files_failed_state: io.BytesIO,
     ) -> None:
         """
-        JPEG and PNG files in the RGB and greyscale color spaces are
-        allowed.
+        JPEG and PNG files in the RGB and greyscale color spaces are allowed.
         """
+        image_file = image_files_failed_state
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
