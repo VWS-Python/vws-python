@@ -106,13 +106,12 @@ def validate_image_file_size(
 
     image_file = io.BytesIO(image)
     pil_image = Image.open(image_file)
-    file_size_bytes = len(pil_image.tobytes())
 
     if pil_image.format != 'PNG':
         return wrapped(*args, **kwargs)
 
     documented_max_png_bytes = 2 * 1024 * 1024
-    if file_size_bytes > documented_max_png_bytes:
+    if len(image) > documented_max_png_bytes:
         raise requests.exceptions.ConnectionError
     return wrapped(*args, **kwargs)
 
