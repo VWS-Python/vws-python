@@ -1080,6 +1080,9 @@ class TestMaximumImageSize:
         https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
         the maximum file size is "2MiB for PNG".
 
+        Above this limit, a ``ConnectionError`` is raised.
+        We do not test exactly at this limit, but that may be beneficial in the
+        future.
         """
         documented_max_bytes = 2 * 1024 * 1024
         width = height = 835
