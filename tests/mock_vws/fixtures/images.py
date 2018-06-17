@@ -11,10 +11,10 @@ from tests.mock_vws.utils import make_image_file
 
 
 @pytest.fixture
-def png_rgb_success() -> io.BytesIO:
+def image_file_success_state_low_rating() -> io.BytesIO:
     """
-    Return a PNG file in the RGB color space which is expected to have a
-    'success' status when added to a target.
+    Return an image file which is expected to have a 'success' status when
+    added to a target and a low rating after processing.
     """
     return make_image_file(
         file_format='PNG',

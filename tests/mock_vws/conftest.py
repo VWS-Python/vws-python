@@ -81,7 +81,7 @@ def _delete_all_targets(database_keys: VuforiaDatabaseKeys) -> None:
 
 @pytest.fixture()
 def target_id(
-    png_rgb_success: io.BytesIO,
+    image_file_success_state_low_rating: io.BytesIO,
     vuforia_database_keys: VuforiaDatabaseKeys,
 ) -> str:
     """
@@ -89,7 +89,7 @@ def target_id(
 
     The target is one which will have a 'success' status when processed.
     """
-    image_data = png_rgb_success.read()
+    image_data = image_file_success_state_low_rating.read()
     image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
     data = {

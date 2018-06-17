@@ -60,7 +60,7 @@ class TestDuplicates:
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
         high_quality_image: io.BytesIO,
-        png_rgb_success: io.BytesIO,
+        image_file_success_state_low_rating: io.BytesIO,
     ) -> None:
         """
         Target IDs of similar targets are returned.
@@ -70,7 +70,7 @@ class TestDuplicates:
         image_data = high_quality_image.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
-        different = png_rgb_success.read()
+        different = image_file_success_state_low_rating.read()
         different_data_encoded = base64.b64encode(different).decode('ascii')
 
         original_data = {
