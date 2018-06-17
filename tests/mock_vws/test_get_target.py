@@ -204,7 +204,7 @@ class TestGetRecord:
     def test_success_status(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb_success: io.BytesIO,
+        image_file_success_state_low_rating: io.BytesIO,
     ) -> None:
         """
         When a random, large enough image is given, the status changes from
@@ -214,7 +214,7 @@ class TestGetRecord:
         The test image does not prove that what is counted as a success in the
         mock will be counted as a success in the real implementation.
         """
-        image_data = png_rgb_success.read()
+        image_data = image_file_success_state_low_rating.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {

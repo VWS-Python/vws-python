@@ -266,14 +266,14 @@ class TestActiveFlag:
     def test_active_flag(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb_success: io.BytesIO,
+        image_file_success_state_low_rating: io.BytesIO,
         initial_active_flag: bool,
         desired_active_flag: bool,
     ) -> None:
         """
         Setting the active flag to a Boolean value changes it.
         """
-        image_data = png_rgb_success.read()
+        image_data = image_file_success_state_low_rating.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -582,13 +582,13 @@ class TestTargetName:
 
     def test_existing_target_name(
         self,
-        png_rgb_success: io.BytesIO,
+        image_file_success_state_low_rating: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Only one target can have a given name.
         """
-        image_data = png_rgb_success.read()
+        image_data = image_file_success_state_low_rating.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         first_target_name = 'example_name'
@@ -644,13 +644,13 @@ class TestTargetName:
 
     def test_same_name_given(
         self,
-        png_rgb_success: io.BytesIO,
+        image_file_success_state_low_rating: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Updating a target with its own name does not give an error.
         """
-        image_data = png_rgb_success.read()
+        image_data = image_file_success_state_low_rating.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         name = 'example'
@@ -964,7 +964,7 @@ class TestImage:
 
     def test_rating_can_change(
         self,
-        png_rgb_success: io.BytesIO,
+        image_file_success_state_low_rating: io.BytesIO,
         high_quality_image: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
@@ -976,7 +976,7 @@ class TestImage:
         The mock randomly assigns a quality and makes sure that the new quality
         is different to the old quality.
         """
-        poor_image = png_rgb_success.read()
+        poor_image = image_file_success_state_low_rating.read()
         poor_image_data_encoded = base64.b64encode(poor_image).decode('ascii')
 
         good_image = high_quality_image.read()
