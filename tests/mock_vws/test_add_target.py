@@ -477,7 +477,7 @@ class TestImage:
         An `ImageTooLarge` result is returned if the image is above a certain
         threshold.
         """
-        max_bytes = 2 * 1024 * 1024
+        max_bytes = 2.3 * 1024 * 1024
         width = height = 886
         png_not_too_large = make_image_file(
             file_format='PNG',
@@ -493,8 +493,8 @@ class TestImage:
         # maximum file size.
         #
         # This is just because of the implementation details of ``image_file``.
-        # assert image_content_size < max_bytes
-        # assert (image_content_size * 1.05) > max_bytes
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
 
         data = {
             'name': 'example_name',
@@ -525,8 +525,8 @@ class TestImage:
         # maximum file size.
         #
         # This is just because of the implementation details of ``image_file``.
-        # assert image_content_size < max_bytes
-        # assert (image_content_size * 1.05) > max_bytes
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
 
         data = {
             'name': 'example_name_2',
