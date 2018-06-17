@@ -1071,16 +1071,19 @@ class TestMaximumImageSize:
     # width = 1
     # height = int(max_size / 2)
 
-    # Also test max megapixels
+    # Also test the maximum size in megapixels
 
     def test_png(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        According to
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
+        the maximum file size is "2MiB for PNG".
+
         """
+        documented_max_bytes = 2 * 1024 * 1024
         width = height = 835
         png_not_too_large = image_file(
             file_format='PNG',
@@ -1093,7 +1096,12 @@ class TestMaximumImageSize:
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
 
         image_content_size = len(image_content)
-        assert image_content
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of ``image_file``.
+        assert image_content_size < documented_max_bytes
+        assert (image_content_size * 1.1) > documented_max_bytes
 
         response = query(
             vuforia_database_keys=vuforia_database_keys,
@@ -1113,6 +1121,12 @@ class TestMaximumImageSize:
 
         image_content = png_not_too_large.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of ``image_file``.
+        # assert image_content_size > documented_max_bytes
+        # assert (image_content_size * 0.9) < documented_max_bytes
 
         image_content_size = len(image_content)
 
