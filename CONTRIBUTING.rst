@@ -165,13 +165,13 @@ Some of the `Vuforia Web Services documentation <https://library.vuforia.com/art
 However, other `Vuforia Web Services documentation <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ is more accurate: “Maximum image size: 2.1 MPixel.
 512 KiB for JPEG, 2MiB for PNG”.
 
-The documentation page `How To Perform an Image Recognition Query <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ states that the ``Content-Type`` header must be set to ``multipart/form-data``.
+The documentation page `How To Perform an Image Recognition Query`_ states that the ``Content-Type`` header must be set to ``multipart/form-data``.
 However, it must be set to ``multipart/form-data; boundary=<BOUNDARY>`` where ``<BOUNDARY>`` is the boundary used when encoding the form data.
 
-The documentation page `How To Perform an Image Recognition Query <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ states that ``Content-Type`` with be the only response header.
+The documentation page `How To Perform an Image Recognition Query`_ states that ``Content-Type`` will be the only response header.
 This is not the case.
 
-The documentation page `How To Perform an Image Recognition Query <https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query>`__ states that 10 is the maximum allowed value of ``max_num_results``.
+The documentation page `How To Perform an Image Recognition Query`_ states that 10 is the maximum allowed value of ``max_num_results``.
 However, the maximum allowed value is 50.
 
 A response to an invalid query may have an ``application/json`` content type but include text (not JSON) data.
@@ -179,6 +179,14 @@ A response to an invalid query may have an ``application/json`` content type but
 After deleting a target, for up to approximately 30 seconds, matching it with a query returns a 500 response.
 
 A target with the name ``\uffff`` gets stuck in processing.
+
+The documentation page `How To Perform an Image Recognition Query`_ states that "The API accepts requests with unknown data fields, and ignore the unknown fields.".
+This is not the case.
+
+The documentation page `How To Perform an Image Recognition Query`_ states "Maximum image size: 2.1 MPixel. 512 KiB for JPEG, 2MiB for PNG".
+However, JPEG images up to 2MiB are accepted.
+
+.. _How To Perform an Image Recognition Query: https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
 
 Performing a release
 --------------------
