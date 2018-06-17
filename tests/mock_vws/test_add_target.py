@@ -492,7 +492,8 @@ class TestImage:
         # We check that the image we created is just slightly smaller than the
         # maximum file size.
         #
-        # This is just because of the implementation details of ``image_file``.
+        # This is just because of the implementation details of
+        # ``max_image_file``.
         assert image_content_size < max_bytes
         assert (image_content_size * 1.05) > max_bytes
 
@@ -524,7 +525,8 @@ class TestImage:
         # We check that the image we created is just slightly smaller than the
         # maximum file size.
         #
-        # This is just because of the implementation details of ``image_file``.
+        # This is just because of the implementation details of
+        # ``max_image_file``.
         assert image_content_size < max_bytes
         assert (image_content_size * 1.05) > max_bytes
 

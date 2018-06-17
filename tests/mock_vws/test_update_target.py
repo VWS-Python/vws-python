@@ -804,12 +804,29 @@ class TestImage:
         """
         No error is returned when the given image is corrupted.
         """
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        max_bytes = 2.3 * 1024 * 1024
+        width = height = 886
+        png_not_too_large = make_image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+        width = width + 1
+        height = height + 1
+        png_too_large = make_image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
 
         wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
+
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         response = update_target(
             vuforia_database_keys=vuforia_database_keys,
@@ -821,6 +838,11 @@ class TestImage:
             response=response,
             status_code=codes.OK,
             result_code=ResultCodes.SUCCESS,
+        )
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
         )
 
     def test_not_base64_encoded(
