@@ -26,6 +26,7 @@ io
 issuecomment
 jpeg
 json
+kib
 kwargs
 linters
 mb
