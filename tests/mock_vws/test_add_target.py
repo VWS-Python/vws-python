@@ -511,14 +511,14 @@ class TestImage:
 
         width = width + 1
         height = height + 1
-        png_not_too_large = make_image_file(
+        png_too_large = make_image_file(
             file_format='PNG',
             color_space='RGB',
             width=width,
             height=height,
         )
 
-        image_data = png_not_too_large.read()
+        image_data = png_too_large.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         image_content_size = len(image_data)
         # We check that the image we created is just slightly smaller than the
