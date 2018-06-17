@@ -422,7 +422,7 @@ def query(
     return response
 
 
-def image_file(
+def make_image_file(
     file_format: str,
     color_space: str,
     width: int,
