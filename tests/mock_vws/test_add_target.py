@@ -548,7 +548,6 @@ class TestImage:
         png_large: io.BytesIO,
     ) -> None:
         """
-        foobar todo update docstring
         An `ImageTooLarge` result is returned if the image is above a certain
         threshold and is corrupted.
 
