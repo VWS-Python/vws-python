@@ -15,6 +15,7 @@ from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     get_vws_target,
+    make_image_file,
     update_target,
     wait_for_target_processed,
 )
@@ -710,9 +711,6 @@ class TestImage:
         """
         JPEG and PNG files in the RGB and greyscale color spaces are
         allowed. The image must be under a threshold.
-
-        This threshold is documented as being 2 MB but it is actually
-        slightly larger. See the `png_large` fixture for more details.
         """
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -796,30 +794,76 @@ class TestImage:
             result_code=ResultCodes.SUCCESS,
         )
 
-    def test_too_large_and_corrupted(
+    def test_image_too_large(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_large: io.BytesIO,
         target_id: str,
     ) -> None:
         """
         An `ImageTooLarge` result is returned if the image is above a certain
-        threshold and is corrupted.
-
-        This threshold is documented as being 2 MB but it is actually
-        slightly larger. See the `png_large` fixture for more details.
+        threshold.
         """
-        original_data = png_large.getvalue()
-        longer_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
-        too_large_file = io.BytesIO(longer_data)
-
-        image_data = too_large_file.read()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        max_bytes = 2.3 * 1024 * 1024
+        width = height = 886
+        png_not_too_large = make_image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
 
         wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
         )
+
+        image_data = png_not_too_large.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        image_content_size = len(image_data)
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of
+        # ``max_image_file``.
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
+
+        response = update_target(
+            vuforia_database_keys=vuforia_database_keys,
+            data={'image': image_data_encoded},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        width = width + 1
+        height = height + 1
+        png_too_large = make_image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_data = png_too_large.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        image_content_size = len(image_data)
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of
+        # ``max_image_file``.
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
 
         response = update_target(
             vuforia_database_keys=vuforia_database_keys,

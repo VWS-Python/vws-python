@@ -688,8 +688,6 @@ def validate_image_size(
         The result of calling the endpoint.
         An `UNPROCESSABLE_ENTITY` response if the image is given and is not
         under a certain file size threshold.
-        This threshold is documented as being 2 MB but it is actually
-        slightly larger. See the `png_large` fixture for more details.
     """
     request, context = args
 
