@@ -765,6 +765,37 @@ class TestImage:
             result_code=ResultCodes.BAD_IMAGE,
         )
 
+    def test_corrupted(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        png_rgb: io.BytesIO,
+        target_id: str,
+    ) -> None:
+        """
+        No error is returned when the given image is corrupted.
+        """
+        original_data = png_rgb.getvalue()
+        corrupted_data = original_data.replace(b'IEND', b'\x00' + b'IEND')
+
+        image_data_encoded = base64.b64encode(corrupted_data).decode('ascii')
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_database_keys=vuforia_database_keys,
+            data={'image': image_data_encoded},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
     def test_too_large_and_corrupted(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
