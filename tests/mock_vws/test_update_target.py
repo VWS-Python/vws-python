@@ -711,9 +711,6 @@ class TestImage:
         """
         JPEG and PNG files in the RGB and greyscale color spaces are
         allowed. The image must be under a threshold.
-
-        This threshold is documented as being 2 MB but it is actually
-        slightly larger. See the `png_large` fixture for more details.
         """
         image_data = image_file.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
