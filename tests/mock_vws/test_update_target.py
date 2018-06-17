@@ -15,6 +15,7 @@ from mock_vws._constants import ResultCodes, TargetStatuses
 from tests.mock_vws.utils import (
     add_target_to_vws,
     get_vws_target,
+    make_image_file,
     update_target,
     wait_for_target_processed,
 )
@@ -802,19 +803,12 @@ class TestImage:
         target_id: str,
     ) -> None:
         """
-        No error is returned when the given image is corrupted.
+        An `ImageTooLarge` result is returned if the image is above a certain
+        threshold.
         """
         max_bytes = 2.3 * 1024 * 1024
         width = height = 886
         png_not_too_large = make_image_file(
-            file_format='PNG',
-            color_space='RGB',
-            width=width,
-            height=height,
-        )
-        width = width + 1
-        height = height + 1
-        png_too_large = make_image_file(
             file_format='PNG',
             color_space='RGB',
             width=width,
@@ -826,7 +820,16 @@ class TestImage:
             target_id=target_id,
         )
 
+        image_data = png_not_too_large.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        image_content_size = len(image_data)
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of
+        # ``max_image_file``.
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
 
         response = update_target(
             vuforia_database_keys=vuforia_database_keys,
@@ -843,6 +846,38 @@ class TestImage:
         wait_for_target_processed(
             vuforia_database_keys=vuforia_database_keys,
             target_id=target_id,
+        )
+
+        width = width + 1
+        height = height + 1
+        png_too_large = make_image_file(
+            file_format='PNG',
+            color_space='RGB',
+            width=width,
+            height=height,
+        )
+
+        image_data = png_too_large.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        image_content_size = len(image_data)
+        # We check that the image we created is just slightly smaller than the
+        # maximum file size.
+        #
+        # This is just because of the implementation details of
+        # ``max_image_file``.
+        assert image_content_size < max_bytes
+        assert (image_content_size * 1.05) > max_bytes
+
+        response = update_target(
+            vuforia_database_keys=vuforia_database_keys,
+            data={'image': image_data_encoded},
+            target_id=target_id,
+        )
+
+        assert_vws_failure(
+            response=response,
+            status_code=codes.UNPROCESSABLE_ENTITY,
+            result_code=ResultCodes.IMAGE_TOO_LARGE,
         )
 
     def test_not_base64_encoded(
