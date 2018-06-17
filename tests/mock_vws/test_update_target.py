@@ -796,6 +796,33 @@ class TestImage:
             result_code=ResultCodes.SUCCESS,
         )
 
+    def test_image_too_large(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        target_id: str,
+    ) -> None:
+        """
+        No error is returned when the given image is corrupted.
+        """
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        wait_for_target_processed(
+            vuforia_database_keys=vuforia_database_keys,
+            target_id=target_id,
+        )
+
+        response = update_target(
+            vuforia_database_keys=vuforia_database_keys,
+            data={'image': image_data_encoded},
+            target_id=target_id,
+        )
+
+        assert_vws_response(
+            response=response,
+            status_code=codes.OK,
+            result_code=ResultCodes.SUCCESS,
+        )
+
     def test_not_base64_encoded(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
