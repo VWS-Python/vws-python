@@ -51,41 +51,12 @@ def png_greyscale() -> io.BytesIO:
 
 
 @pytest.fixture
-def jpeg_cmyk() -> io.BytesIO:
-    """
-    Return a 1x1 JPEG file in the CMYK color space.
-    """
-    return make_image_file(
-        file_format='JPEG',
-        color_space='CMYK',
-        width=1,
-        height=1,
-    )
-
-
-@pytest.fixture
 def jpeg_rgb() -> io.BytesIO:
     """
     Return a 1x1 JPEG file in the RGB color space.
     """
     return make_image_file(
         file_format='JPEG',
-        color_space='RGB',
-        width=1,
-        height=1,
-    )
-
-
-@pytest.fixture
-def tiff_rgb() -> io.BytesIO:
-    """
-    Return a 1x1 TIFF file in the RGB color space.
-
-    This is given as an option which is not supported by Vuforia as Vuforia
-    supports only JPEG and PNG files.
-    """
-    return make_image_file(
-        file_format='TIFF',
         color_space='RGB',
         width=1,
         height=1,
@@ -104,15 +75,22 @@ def image_file(request: SubRequest) -> io.BytesIO:
     return file_bytes_io
 
 
-@pytest.fixture(params=['tiff_rgb', 'jpeg_cmyk'])
+@pytest.fixture(
+    params=[('TIFF', 'RGB'), ('JPEG', 'CMYK')],
+    ids=['Not accepted format', 'Not accepted color space'],
+)
 def bad_image_file(request: SubRequest) -> io.BytesIO:
     """
-    Return an image file which is expected to work on Vuforia which is
-    expected to cause a `BadImage` result when an attempt is made to add it to
-    the target database.
+    Return an image file which is expected to cause a `BadImage` result when an
+    attempt is made to add it to the target database.
     """
-    file_bytes_io: io.BytesIO = request.getfixturevalue(request.param)
-    return file_bytes_io
+    file_format, color_space = request.param
+    return make_image_file(
+        file_format=file_format,
+        color_space=color_space,
+        width=1,
+        height=1,
+    )
 
 
 @pytest.fixture()
