@@ -1131,10 +1131,18 @@ class TestMaximumImageSize:
                 body=body,
             )
 
-    def test_jpeg(self) -> None:
+    def test_jpeg(
+        self,
+        vuforia_database_keys: VuforiaDatabaseKeys,
+    ) -> None:
         """
-        See https://github.com/adamtheturtle/vws-python/issues/357 for
-        implementing this test.
+        According to
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
+        the maximum file size is "512 KiB for JPEG".
+
+        Above this limit, a ``ConnectionError`` is raised.
+        We do not test exactly at this limit, but that may be beneficial in the
+        future.
         """
 
 
