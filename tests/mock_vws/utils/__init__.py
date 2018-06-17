@@ -2,6 +2,8 @@
 Utilities for tests.
 """
 
+import io
+import random
 import json
 from time import sleep
 from typing import Any, Dict
@@ -9,6 +11,7 @@ from urllib.parse import urljoin
 
 import requests
 import timeout_decorator
+from PIL import Image
 from requests import Response
 from requests_mock import DELETE, GET, POST, PUT
 from urllib3.filepost import encode_multipart_formdata
@@ -417,3 +420,39 @@ def query(
     )
 
     return response
+
+
+def make_image_file(
+    file_format: str,
+    color_space: str,
+    width: int,
+    height: int,
+) -> io.BytesIO:
+    """
+    Return an image file in the given format and color space.
+
+    The image file is filled with randomly colored pixels.
+
+    Args:
+        file_format: See
+            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
+        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
+        width: The width, in pixels of the image.
+        height: The width, in pixels of the image.
+
+    Returns:
+        An image file in the given format and color space.
+    """
+    image_buffer = io.BytesIO()
+    image = Image.new(color_space, (width, height))
+    pixels = image.load()
+    for i in range(height):
+        for j in range(width):
+            red = random.randint(0, 255)
+            green = random.randint(0, 255)
+            blue = random.randint(0, 255)
+            if color_space != 'L':
+                pixels[j, i] = (red, green, blue)
+    image.save(image_buffer, file_format)
+    image_buffer.seek(0)
+    return image_buffer

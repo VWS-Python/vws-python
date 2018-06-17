@@ -3,47 +3,11 @@ Fixtures for images.
 """
 
 import io
-import random
 
 import pytest
 from _pytest.fixtures import SubRequest
-from PIL import Image
 
-
-def _image_file(
-    file_format: str,
-    color_space: str,
-    width: int,
-    height: int,
-) -> io.BytesIO:
-    """
-    Return an image file in the given format and color space.
-
-    The image file is filled with randomly colored pixels.
-
-    Args:
-        file_format: See
-            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
-        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
-        width: The width, in pixels of the image.
-        height: The width, in pixels of the image.
-
-    Returns:
-        An image file in the given format and color space.
-    """
-    image_buffer = io.BytesIO()
-    image = Image.new(color_space, (width, height))
-    pixels = image.load()
-    for i in range(height):
-        for j in range(width):
-            red = random.randint(0, 255)
-            green = random.randint(0, 255)
-            blue = random.randint(0, 255)
-            if color_space != 'L':
-                pixels[j, i] = (red, green, blue)
-    image.save(image_buffer, file_format)
-    image_buffer.seek(0)
-    return image_buffer
+from tests.mock_vws.utils import make_image_file
 
 
 @pytest.fixture
@@ -52,7 +16,12 @@ def png_rgb_success() -> io.BytesIO:
     Return a PNG file in the RGB color space which is expected to have a
     'success' status when added to a target.
     """
-    return _image_file(file_format='PNG', color_space='RGB', width=5, height=5)
+    return make_image_file(
+        file_format='PNG',
+        color_space='RGB',
+        width=5,
+        height=5,
+    )
 
 
 @pytest.fixture
@@ -60,7 +29,12 @@ def png_rgb() -> io.BytesIO:
     """
     Return a 1x1 PNG file in the RGB color space.
     """
-    return _image_file(file_format='PNG', color_space='RGB', width=1, height=1)
+    return make_image_file(
+        file_format='PNG',
+        color_space='RGB',
+        width=1,
+        height=1,
+    )
 
 
 @pytest.fixture
@@ -68,7 +42,12 @@ def png_greyscale() -> io.BytesIO:
     """
     Return a 1x1 PNG file in the greyscale color space.
     """
-    return _image_file(file_format='PNG', color_space='L', width=1, height=1)
+    return make_image_file(
+        file_format='PNG',
+        color_space='L',
+        width=1,
+        height=1,
+    )
 
 
 @pytest.fixture()
@@ -98,7 +77,7 @@ def jpeg_cmyk() -> io.BytesIO:
     """
     Return a 1x1 JPEG file in the CMYK color space.
     """
-    return _image_file(
+    return make_image_file(
         file_format='JPEG',
         color_space='CMYK',
         width=1,
@@ -111,7 +90,7 @@ def jpeg_rgb() -> io.BytesIO:
     """
     Return a 1x1 JPEG file in the RGB color space.
     """
-    return _image_file(
+    return make_image_file(
         file_format='JPEG',
         color_space='RGB',
         width=1,
@@ -127,7 +106,7 @@ def tiff_rgb() -> io.BytesIO:
     This is given as an option which is not supported by Vuforia as Vuforia
     supports only JPEG and PNG files.
     """
-    return _image_file(
+    return make_image_file(
         file_format='TIFF',
         color_space='RGB',
         width=1,
