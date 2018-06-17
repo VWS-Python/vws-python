@@ -35,14 +35,14 @@ class TestTargetSummary:
     def test_target_summary(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         A target summary is returned.
         """
         name = 'example target name 1234'
 
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         gmt = pytz.timezone('GMT')
@@ -110,13 +110,13 @@ class TestTargetSummary:
     def test_after_processing(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         After processing is completed, the tracking rating is in the range of
         0 to 5.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         target_response = add_target_to_vws(
@@ -167,13 +167,13 @@ class TestActiveFlag:
     def test_active_flag(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         active_flag: bool,
     ) -> None:
         """
         The active flag of the target is returned.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         target_response = add_target_to_vws(

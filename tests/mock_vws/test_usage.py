@@ -132,11 +132,11 @@ class TestProcessingTime:
     Tests for the time taken to process targets in the mock.
     """
 
-    def test_default(self, png_rgb: io.BytesIO) -> None:
+    def test_default(self, image_file_failed_state: io.BytesIO) -> None:
         """
         By default, targets in the mock take 0.5 seconds to be processed.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -178,11 +178,11 @@ class TestProcessingTime:
                     assert elapsed_time > datetime.timedelta(seconds=0.49)
                     return
 
-    def test_custom(self, png_rgb: io.BytesIO) -> None:
+    def test_custom(self, image_file_failed_state: io.BytesIO) -> None:
         """
         It is possible to set a custom processing time.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -290,13 +290,13 @@ class TestPersistence:
 
     def test_context_manager(
         self,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         When the context manager is used, targets are not persisted between
         invocations.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {

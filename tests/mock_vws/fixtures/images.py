@@ -25,19 +25,6 @@ def image_file_success_state_low_rating() -> io.BytesIO:
 
 
 @pytest.fixture
-def png_rgb() -> io.BytesIO:
-    """
-    Return a 1x1 PNG file in the RGB color space.
-    """
-    return make_image_file(
-        file_format='PNG',
-        color_space='RGB',
-        width=1,
-        height=1,
-    )
-
-
-@pytest.fixture
 def corrupted_image_file() -> io.BytesIO:
     """
     Return an image file which is corrupted.

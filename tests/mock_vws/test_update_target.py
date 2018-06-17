@@ -50,13 +50,13 @@ class TestUpdate:
     def test_content_types(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         content_type: str,
     ) -> None:
         """
         The `Content-Type` header does not change the response.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {

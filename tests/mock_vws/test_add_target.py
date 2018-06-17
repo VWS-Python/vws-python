@@ -70,13 +70,13 @@ class TestContentTypes:
     def test_content_types(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         content_type: str,
     ) -> None:
         """
         Any `Content-Type` header is allowed.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -104,13 +104,13 @@ class TestMissingData:
     def test_missing_data(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         data_to_remove: str,
     ) -> None:
         """
         `name`, `width` and `image` are all required.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -146,13 +146,13 @@ class TestWidth:
     def test_width_invalid(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         width: Any,
     ) -> None:
         """
         The width must be a number greater than zero.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -175,12 +175,12 @@ class TestWidth:
     def test_width_valid(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         Positive numbers are valid widths.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -222,13 +222,13 @@ class TestTargetName:
     def test_name_valid(
         self,
         name: str,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Names between 1 and 64 characters in length are valid.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -270,7 +270,7 @@ class TestTargetName:
     def test_name_invalid(
         self,
         name: str,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
         status_code: int,
     ) -> None:
@@ -278,7 +278,7 @@ class TestTargetName:
         A target's name must be a string of length 0 < N < 65, with characters
         in a particular range.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -300,13 +300,13 @@ class TestTargetName:
 
     def test_existing_target_name(
         self,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Only one target can have a given name.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -333,13 +333,13 @@ class TestTargetName:
 
     def test_deleted_existing_target_name(
         self,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         A target can be added with the name of a deleted target.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -635,13 +635,13 @@ class TestActiveFlag:
     def test_valid(
         self,
         active_flag: Union[bool, None],
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Boolean values and NULL are valid active flags.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         content_type = 'application/json'
 
@@ -662,14 +662,14 @@ class TestActiveFlag:
 
     def test_invalid(
         self,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Values which are not Boolean values or NULL are not valid active flags.
         """
         active_flag = 'string'
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         content_type = 'application/json'
 
@@ -702,12 +702,12 @@ class TestUnexpectedData:
     def test_invalid_extra_data(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         A `BAD_REQUEST` response is returned when unexpected data is given.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -748,13 +748,13 @@ class TestApplicationMetadata:
     def test_base64_encoded(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         metadata: bytes,
     ) -> None:
         """
         A base64 encoded string is valid application metadata.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         metadata_encoded = base64.b64encode(metadata).decode('ascii')
 
@@ -775,12 +775,12 @@ class TestApplicationMetadata:
     def test_null(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         NULL is valid application metadata.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -800,13 +800,13 @@ class TestApplicationMetadata:
     def test_invalid_type(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         Values which are not a string or NULL are not valid application
         metadata.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -836,12 +836,12 @@ class TestApplicationMetadata:
     def test_not_base64_encoded(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         A string which is not base64 encoded is not valid application metadata.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         not_base64_encoded = b'a'
@@ -870,13 +870,13 @@ class TestApplicationMetadata:
     def test_metadata_too_large(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         A base64 encoded string of greater than 1024 * 1024 bytes is too large
         for application metadata.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         metadata = b'a' * (self._MAX_METADATA_BYTES + 1)
         metadata_encoded = base64.b64encode(metadata).decode('ascii')
@@ -909,12 +909,12 @@ class TestInactiveProject:
     def test_inactive_project(
         self,
         inactive_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         If the project is inactive, a FORBIDDEN response is returned.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {

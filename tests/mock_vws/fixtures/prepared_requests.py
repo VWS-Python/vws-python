@@ -30,12 +30,12 @@ VWQ_HOST = 'https://cloudreco.vuforia.com'
 @pytest.fixture()
 def _add_target(
     vuforia_database_keys: VuforiaDatabaseKeys,
-    png_rgb: io.BytesIO,
+    image_file_failed_state: io.BytesIO,
 ) -> Endpoint:
     """
     Return details of the endpoint for adding a target.
     """
-    image_data = png_rgb.read()
+    image_data = image_file_failed_state.read()
     image_data_encoded = base64.b64encode(image_data).decode('ascii')
     date = rfc_1123_date()
     data: Dict[str, Any] = {

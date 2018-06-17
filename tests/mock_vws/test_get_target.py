@@ -33,12 +33,12 @@ class TestGetRecord:
     def test_get_vws_target(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         Details of a target are returned.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         name = 'my_example_name'
@@ -102,12 +102,12 @@ class TestGetRecord:
     def test_active_flag_not_set(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         The active flag defaults to True if it is not set.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -133,12 +133,12 @@ class TestGetRecord:
     def test_active_flag_set_to_none(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         The active flag defaults to True if it is set to NULL.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
@@ -165,13 +165,13 @@ class TestGetRecord:
     def test_fail_status(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         When a 1x1 image is given, the status changes from 'processing' to
         'failed' after some time.
         """
-        image_data = png_rgb.read()
+        image_data = image_file_failed_state.read()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {

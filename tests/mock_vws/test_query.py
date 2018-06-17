@@ -1647,13 +1647,13 @@ class TestTargetStatusFailed:
 
     def test_status_failed(
         self,
-        png_rgb: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
         vuforia_database_keys: VuforiaDatabaseKeys,
     ) -> None:
         """
         Targets with the status "failed" are not found in query results.
         """
-        image_content = png_rgb.getvalue()
+        image_content = image_file_failed_state.getvalue()
         image_data_encoded = base64.b64encode(image_content).decode('ascii')
         add_target_data = {
             'name': 'example_name',
