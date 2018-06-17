@@ -25,7 +25,7 @@ from tests.mock_vws.utils import (
     add_target_to_vws,
     delete_target,
     get_vws_target,
-    image_file,
+    make_image_file,
     query,
     update_target,
     wait_for_target_processed,
@@ -1083,7 +1083,7 @@ class TestMaximumImageSize:
         """
         documented_max_bytes = 2 * 1024 * 1024
         width = height = 835
-        png_not_too_large = image_file(
+        png_not_too_large = make_image_file(
             file_format='PNG',
             color_space='RGB',
             width=width,
@@ -1110,7 +1110,7 @@ class TestMaximumImageSize:
         assert response.json()['results'] == []
 
         width = height = 836
-        png_not_too_large = image_file(
+        png_not_too_large = make_image_file(
             file_format='PNG',
             color_space='RGB',
             width=width,
