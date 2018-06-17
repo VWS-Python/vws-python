@@ -1071,8 +1071,6 @@ class TestMaximumImageSize:
     # width = 1
     # height = int(max_size / 2)
 
-    # Also test the maximum size in megapixels
-
     def test_png(
         self,
         vuforia_database_keys: VuforiaDatabaseKeys,
@@ -1122,7 +1120,7 @@ class TestMaximumImageSize:
         image_content = png_not_too_large.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
         image_content_size = len(image_content)
-        # We check that the image we created is just slightly smaller than the
+        # We check that the image we created is just slightly larger than the
         # maximum file size.
         #
         # This is just because of the implementation details of ``image_file``.
