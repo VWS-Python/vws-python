@@ -1121,14 +1121,13 @@ class TestMaximumImageSize:
 
         image_content = png_not_too_large.getvalue()
         body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        image_content_size = len(image_content)
         # We check that the image we created is just slightly smaller than the
         # maximum file size.
         #
         # This is just because of the implementation details of ``image_file``.
-        # assert image_content_size > documented_max_bytes
-        # assert (image_content_size * 0.9) < documented_max_bytes
-
-        image_content_size = len(image_content)
+        assert image_content_size > documented_max_bytes
+        assert (image_content_size * 0.9) < documented_max_bytes
 
         with pytest.raises(requests.exceptions.ConnectionError):
             query(
