@@ -38,13 +38,18 @@ def png_rgb() -> io.BytesIO:
 
 
 @pytest.fixture
-def png_greyscale() -> io.BytesIO:
+def image_file_failed_state() -> io.BytesIO:
     """
-    Return a 1x1 PNG file in the greyscale color space.
+    Return an image file which is expected to be accepted by the add and
+    update target endpoints, but get a "failed" status.
+
+    This returns only one image, unlike ``image_files_failed_state`` in the
+    interest of fast tests.
     """
+    # This image gets a "failed" status because it is so small.
     return make_image_file(
         file_format='PNG',
-        color_space='L',
+        color_space='RGB',
         width=1,
         height=1,
     )
