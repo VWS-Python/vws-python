@@ -41,7 +41,7 @@ def assert_vws_failure(
 
 def assert_valid_date_header(response: Response) -> None:
     """
-    Assert that a response includes a `Date` header which is within one minute
+    Assert that a response includes a `Date` header which is within two minutes
     of "now".
 
     Args:
@@ -67,7 +67,7 @@ def assert_valid_date_header(response: Response) -> None:
     )
     current_date = datetime.datetime.now(tz=gmt)
     time_difference = abs(current_date - datetime_from_response)
-    assert time_difference < datetime.timedelta(minutes=1)
+    assert time_difference < datetime.timedelta(minutes=2)
 
 
 def assert_valid_transaction_id(response: Response) -> None:
