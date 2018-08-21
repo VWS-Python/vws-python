@@ -11,7 +11,7 @@ lint:
 	pip-missing-reqs src/
 	pydocstyle
 	pylint *.py src tests ci
-	pyroma .
+	pyroma --min 10 .
 	vulture . --min-confidence 100
 	yapf --diff --recursive src/ tests/ ci/
 
