@@ -10,11 +10,11 @@ from pathlib import Path
 import pytest
 
 
-def run_test(test_filename: str) -> None:
+def run_test(ci_pattern: str) -> None:
     """
     Run pytest with a given filename.
     """
-    path = Path('tests') / 'mock_vws' / test_filename
+    path = Path('tests') / 'mock_vws' / ci_pattern
     result = pytest.main(
         [
             '-vvv',
@@ -28,8 +28,8 @@ def run_test(test_filename: str) -> None:
 
 
 if __name__ == '__main__':
-    TEST_FILENAME = os.environ.get('TEST_FILENAME')
-    if TEST_FILENAME:
-        run_test(test_filename=TEST_FILENAME)
+    CI_PATTERN = os.environ.get('CI_PATTERN')
+    if CI_PATTERN:
+        run_test(ci_pattern=CI_PATTERN)
     else:
         subprocess.check_call(['make', 'lint'])

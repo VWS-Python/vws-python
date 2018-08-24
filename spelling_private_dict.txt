@@ -51,6 +51,7 @@ rgb
 str
 timestamp
 todo
+travis
 txt
 unmocked
 url
@@ -61,3 +62,4 @@ vuforia's
 vwq
 vws
 xxx
+yml
