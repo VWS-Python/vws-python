@@ -20,5 +20,5 @@ pytest-envfiles==0.1.0  # Use files for environment variables for tests
 pytest==3.8.0  # Test runners
 timeout-decorator==0.4.0  # Decorate functions to time out.
 vulture==0.29
-yapf==0.23.0  # Automatic formatting for Python
+yapf==0.24.0  # Automatic formatting for Python
 PyYAML==3.13
