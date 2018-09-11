@@ -11,9 +11,9 @@ def test_add_target() -> None:
         )
 
         target_id = client.add_target(
-            name='x',
+            name=b'x',
             width='x',
-            image='x',
+            image=b'x',
         )
 
 def test_authentication_error() -> None:

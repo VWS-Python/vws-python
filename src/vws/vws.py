@@ -1,4 +1,47 @@
+from typing import Union
+import json
+import requests
+from urllib.parse import urljoin
+
+from ._authorization import rfc_1123_date, authorization_header
+
+
 class VWS:
 
     def __init__(self, server_access_key: str, server_secret_key: str) -> None:
-        pass
+        self.server_access_key = server_access_key.encode()
+        self.server_secret_key = server_secret_key.encode()
+
+    def add_target(self, name: str, width: Union[int, float], image) -> str:
+        data = {}
+        date = rfc_1123_date()
+        request_path = '/targets'
+        content_type = 'application/json'
+        method = 'POST'
+
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        authorization_string = authorization_header(
+            access_key=self.server_access_key,
+            secret_key=self.server_secret_key,
+            method=method,
+            content=content,
+            content_type=content_type,
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base='https://vws.vuforia.com/', url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        return response
