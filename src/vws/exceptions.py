@@ -1,0 +1,3 @@
+
+class VWSException(Exception):
+    pass

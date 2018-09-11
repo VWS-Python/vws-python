@@ -6,6 +6,7 @@ import base64
 from urllib.parse import urljoin
 
 from ._authorization import rfc_1123_date, authorization_header
+from .exceptions import VWSException
 
 
 class VWS:
@@ -58,5 +59,7 @@ class VWS:
             data=content,
         )
 
-        response.raise_for_status()
-        return response
+        if response.status_code == requests.codes.CREATED:
+            return 'a'
+
+        raise VWSException()
