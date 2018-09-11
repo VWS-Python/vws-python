@@ -1,0 +1,16 @@
+check-manifest==0.37
+dodgy==0.1.9  # Look for uploaded secrets
+flake8-commas==2.0.0  # Require silicon valley commas
+flake8-quotes==1.0.0  # Require single quotes
+flake8==3.5.0  # Lint
+isort==4.3.4  # Lint imports
+mypy==0.620  # Type checking
+pip_check_reqs==2.0.3
+pydocstyle==2.1.1  # Lint docstrings
+pyenchant==2.0.0  # Bindings for a spellchecking sytem
+pylint==2.1.1  # Lint
+pyroma==2.4  # Packaging best practices checker
+pytest==3.8.0  # Test runners
+PyYAML==3.13
+vulture==0.29
+yapf==0.24.0  # Automatic formatting for Python
