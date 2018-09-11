@@ -26,7 +26,7 @@ setup(
     packages=find_packages(where='src'),
     zip_safe=False,
     url='http://vws-python.readthedocs.io',
-    keywords='vuforia mock fake client',
+    keywords='vuforia fake client',
     package_dir={'': 'src'},
     install_requires=INSTALL_REQUIRES,
     extras_require={

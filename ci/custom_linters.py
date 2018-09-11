@@ -54,7 +54,7 @@ def test_ci_patterns_valid() -> None:
     ci_patterns = _travis_ci_patterns()
 
     for ci_pattern in ci_patterns:
-        pattern = 'tests/mock_vws/' + ci_pattern
+        pattern = 'tests/vws/' + ci_pattern
         collect_only_result = pytest.main(['--collect-only', pattern])
 
         message = '"{ci_pattern}" does not match any tests.'.format(
@@ -72,7 +72,7 @@ def test_tests_collected_once() -> None:
     ci_patterns = _travis_ci_patterns()
     tests_to_patterns: Dict[str, Set[str]] = {}
     for pattern in ci_patterns:
-        pattern = 'tests/mock_vws/' + pattern
+        pattern = 'tests/vws/' + pattern
         tests = _tests_from_pattern(ci_pattern=pattern)
         for test in tests:
             if test in tests_to_patterns:

@@ -14,7 +14,7 @@ def run_test(ci_pattern: str) -> None:
     """
     Run pytest with a given filename.
     """
-    path = Path('tests') / 'mock_vws' / ci_pattern
+    path = Path('tests') / 'vws' / ci_pattern
     result = pytest.main(
         [
             '-vvv',
