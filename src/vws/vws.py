@@ -1,3 +1,4 @@
+import io
 from typing import Union
 import json
 import requests
@@ -7,13 +8,26 @@ from ._authorization import rfc_1123_date, authorization_header
 
 
 class VWS:
-
     def __init__(self, server_access_key: str, server_secret_key: str) -> None:
         self.server_access_key = server_access_key.encode()
         self.server_secret_key = server_secret_key.encode()
 
-    def add_target(self, name: str, width: Union[int, float], image) -> str:
-        data = {}
+    def add_target(
+        self,
+        name: str,
+        width: Union[int, float],
+        image: io.BytesIO,
+    ) -> str:
+
+        image_data = image.read()
+        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+
+        data = {
+            'name': name,
+            'width': width,
+            'image': image_data_encoded,
+        }
+
         date = rfc_1123_date()
         request_path = '/targets'
         content_type = 'application/json'
@@ -44,4 +58,5 @@ class VWS:
             data=content,
         )
 
+        response.raise_for_status()
         return response
