@@ -13,11 +13,11 @@ def test_add_target(high_quality_image: io.BytesIO) -> None:
 
         target_id = client.add_target(
             name='x',
-            width='x',
+            width=1,
             image=high_quality_image,
         )
 
-def test_authentication_error() -> None:
+def test_authentication_error(high_quality_image: io.BytesIO) -> None:
     with MockVWS() as mock:
         client = VWS(
             server_access_key='a',
@@ -26,8 +26,8 @@ def test_authentication_error() -> None:
 
         target_id = client.add_target(
             name='x',
-            width='x',
-            image='x',
+            width=1,
+            image=high_quality_image,
         )
 
 def test_clock_skew() -> None:
