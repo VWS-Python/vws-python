@@ -1,9 +1,10 @@
 from mock_vws import MockVWS
 
 from vws import VWS
+import io
 
 # @hypothesis?
-def test_add_target() -> None:
+def test_add_target(high_quality_image: io.BytesIO) -> None:
     with MockVWS() as mock:
         client = VWS(
             server_access_key=mock.server_access_key,
@@ -13,7 +14,7 @@ def test_add_target() -> None:
         target_id = client.add_target(
             name='x',
             width='x',
-            image='x',
+            image=high_quality_image,
         )
 
 def test_authentication_error() -> None:

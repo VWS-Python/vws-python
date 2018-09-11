@@ -2,6 +2,7 @@ import io
 from typing import Union
 import json
 import requests
+import base64
 from urllib.parse import urljoin
 
 from ._authorization import rfc_1123_date, authorization_header
