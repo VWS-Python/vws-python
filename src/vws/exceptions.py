@@ -1,3 +1,4 @@
 
 class VWSException(Exception):
-    pass
+    def __init__(self, response) -> None:
+        self.response = response

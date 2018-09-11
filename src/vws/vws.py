@@ -62,4 +62,4 @@ class VWS:
         if response.status_code == requests.codes.CREATED:
             return 'a'
 
-        raise VWSException()
+        raise VWSException(response=response)
