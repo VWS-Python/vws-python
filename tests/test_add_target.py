@@ -1,6 +1,8 @@
 from mock_vws import MockVWS
 
-@hypothesis?
+from vws import VWS
+
+# @hypothesis?
 def test_add_target() -> None:
     with MockVWS() as mock:
         client = VWS(
