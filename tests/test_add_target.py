@@ -17,7 +17,17 @@ def test_add_target() -> None:
         )
 
 def test_authentication_error() -> None:
-    pass
+    with MockVWS() as mock:
+        client = VWS(
+            server_access_key='a',
+            server_secret_key=mock.server_secret_key,
+        )
+
+        target_id = client.add_target(
+            name='x',
+            width='x',
+            image='x',
+        )
 
 def test_clock_skew() -> None:
     pass
