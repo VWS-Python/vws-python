@@ -34,7 +34,8 @@ def test_authentication_error(high_quality_image: io.BytesIO) -> None:
                 image=high_quality_image,
             )
 
-        assert exc.value.response.status_code == codes.BAD_REQUEST
+        exception = exc.value
+        assert exception.response.status_code == codes.BAD_REQUEST
 
 
 def test_clock_skew() -> None:
