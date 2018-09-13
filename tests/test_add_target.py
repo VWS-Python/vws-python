@@ -1,11 +1,11 @@
 import io
 
 import pytest
-from mock_vws import MockVWS
+from mock_vws import MockVWS, States
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import Fail, MetadataTooLarge, TargetNameExist
+from vws.exceptions import Fail, MetadataTooLarge, ProjectInactive, TargetNameExist
 
 
 # @hypothesis?
@@ -86,3 +86,18 @@ class TestapplicationMetadata:
                 image=high_quality_image,
                 application_metadata=b'a' * 1024 * 1024,
             )
+
+class TestInactiveProject:
+    def test_inactive_project(self, high_quality_image: io.BytesIO):
+        with MockVWS(real_http=False, state=States.PROJECT_INACTIVE) as mock:
+            client = VWS(
+                server_access_key=mock.server_access_key,
+                server_secret_key=mock.server_secret_key,
+            )
+
+            with pytest.raises(ProjectInactive):
+                client.add_target(
+                    name='x',
+                    width=1,
+                    image=high_quality_image,
+                )
