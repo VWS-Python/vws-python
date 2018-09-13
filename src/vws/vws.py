@@ -99,6 +99,7 @@ class VWS:
             'name': name,
             'width': width,
             'image': image_data_encoded,
+            'application_metadata': metadata_encoded,
         }
 
         date = rfc_1123_date()
