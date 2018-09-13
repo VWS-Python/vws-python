@@ -2,7 +2,7 @@ import base64
 import io
 import json
 from enum import Enum
-from typing import Union
+from typing import Optional, Union
 from urllib.parse import urljoin
 
 import requests
@@ -84,9 +84,16 @@ class VWS:
         name: str,
         width: Union[int, float],
         image: io.BytesIO,
+        application_metadata: Optional[bytes] = None,
     ) -> str:
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        if application_metadata is None:
+            metadata_encoded = None
+        else:
+            metadata_encoded = base64.b64encode(application_metadata)
+            metadata_encoded = metadata_encoded.decode('ascii')
+
 
         data = {
             'name': name,

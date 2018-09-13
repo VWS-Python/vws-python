@@ -75,7 +75,7 @@ class TestapplicationMetadata:
             name='x',
             width=1,
             image=high_quality_image,
-            application_metadata='a',
+            application_metadata=b'a',
         )
 
     def test_too_large(self, client: VWS, high_quality_image: io.BytesIO):
@@ -83,5 +83,5 @@ class TestapplicationMetadata:
             name='x',
             width=1,
             image=high_quality_image,
-            application_metadata='a' * 1024 * 1024,
+            application_metadata=b'a' * 1024 * 1024,
         )
