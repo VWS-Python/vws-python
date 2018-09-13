@@ -81,3 +81,21 @@ class TestAuthentication:
 
             exception = exc.value
             assert exception.response.status_code == codes.BAD_REQUEST
+
+class TestImage:
+    def test_image_too_large(self):
+        pass
+
+    def test_not_an_image(self):
+        pass
+
+class TestapplicationMetadata:
+
+    def test_none(self):
+        pass
+
+    def test_given(self):
+        pass
+
+    def test_too_large(self):
+        pass
