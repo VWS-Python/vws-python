@@ -85,7 +85,7 @@ class VWS:
         width: Union[int, float],
         image: io.BytesIO,
     ) -> str:
-        image_data = image.read()
+        image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
 
         data = {
