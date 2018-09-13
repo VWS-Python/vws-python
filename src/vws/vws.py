@@ -1,14 +1,34 @@
-import io
-from typing import Union
-import json
-import requests
 import base64
+import io
+import json
+from enum import Enum
+from typing import Union
 from urllib.parse import urljoin
 
-from ._authorization import rfc_1123_date, authorization_header
-from .exceptions import VWSException
+import requests
 
-class ResultCodes(Enum):
+from ._authorization import authorization_header, rfc_1123_date
+from .exceptions import (
+    AuthenticationFailure,
+    BadImage,
+    DateRangeError,
+    Fail,
+    ImageTooLarge,
+    InactiveProject,
+    MetadataTooLarge,
+    ProjectInactive,
+    RequestQuotaReached,
+    RequestTimeTooSkewed,
+    Success,
+    TargetCreated,
+    TargetNameExist,
+    TargetStatusNotSuccess,
+    TargetStatusProcessing,
+    UnknownTarget,
+)
+
+
+class _ResultCodes(Enum):
     """
     Constants representing various VWS result codes.
 
@@ -35,6 +55,23 @@ class ResultCodes(Enum):
     PROJECT_INACTIVE = 'ProjectInactive'
     INACTIVE_PROJECT = 'InactiveProject'
 
+
+_exceptions = {
+    _ResultCodes.AUTHENTICATION_FAILURE: AuthenticationFailure,
+    _ResultCodes.REQUEST_TIME_TOO_SKEWED: RequestTimeTooSkewed,
+    _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
+    _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
+    _ResultCodes.BAD_IMAGE: BadImage,
+    _ResultCodes.IMAGE_TOO_LARGE: ImageTooLarge,
+    _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
+    _ResultCodes.DATE_RANGE_ERROR: DateRangeError,
+    _ResultCodes.FAIL: Fail,
+    _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
+    _ResultCodes.REQUEST_QUOTA_REACHED: RequestQuotaReached,
+    _ResultCodes.TARGET_STATUS_NOT_SUCCESS: TargetStatusNotSuccess,
+    _ResultCodes.PROJECT_INACTIVE: ProjectInactive,
+    _ResultCodes.INACTIVE_PROJECT: InactiveProject,
+}
 
 
 class VWS:
@@ -91,21 +128,5 @@ class VWS:
             return 'a'
 
         result_code = response.json()['result_code']
-        exceptions = {
-            AUTHENTICATION_FAILURE: AuthenticationFailure,
-            REQUEST_TIME_TOO_SKEWED: RequestTimeTooSkewed,
-            TARGET_NAME_EXIST: TargetNameExist,
-            UNKNOWN_TARGET: UnknownTarget,
-            BAD_IMAGE: BadImage,
-            IMAGE_TOO_LARGE: ImageTooLarge,
-            METADATA_TOO_LARGE: MetadataTooLarge,
-            DATE_RANGE_ERROR: DateRangeError,
-            FAIL: Fail,
-            TARGET_STATUS_PROCESSING: TargetStatusProcessing,
-            REQUEST_QUOTA_REACHED: RequestQuotaReached,
-            TARGET_STATUS_NOT_SUCCESS: TargetStatusNotSuccess,
-            PROJECT_INACTIVE: ProjectInactive,
-            INACTIVE_PROJECT: InactiveProject,
-        }
-
-        raise VWSException(response=response)
+        exception = _exceptions[_ResultCodes(result_code)]
+        raise exception(response=response)

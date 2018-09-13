@@ -82,4 +82,3 @@ def authorization_header(  # pylint: disable=too-many-arguments
     )
     auth_header = b'VWS %s:%s' % (access_key, signature)
     return auth_header
-
