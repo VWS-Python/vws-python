@@ -16,7 +16,7 @@ def test_add_target(high_quality_image: io.BytesIO) -> None:
             server_secret_key=mock.server_secret_key,
         )
 
-        target_id = client.add_target(
+        client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
@@ -38,13 +38,3 @@ def test_authentication_error(high_quality_image: io.BytesIO) -> None:
 
         exception = exc.value
         assert exception.response.status_code == codes.BAD_REQUEST
-
-
-def test_clock_skew() -> None:
-    pass
-
-def test_width_invalid() -> None:
-    pass
-
-class TestTargetName:
-    pass
