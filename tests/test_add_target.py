@@ -12,7 +12,7 @@ from vws.exceptions import Fail, MetadataTooLarge, ProjectInactive, TargetNameEx
 
 @pytest.fixture()
 def client() -> VWS:
-    with MockVWS(real_http=False) as mock:
+    with MockVWS() as mock:
         client = VWS(
             server_access_key=mock.server_access_key,
             server_secret_key=mock.server_secret_key,
