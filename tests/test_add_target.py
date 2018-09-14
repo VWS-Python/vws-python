@@ -171,6 +171,23 @@ class TestApplicationMetadata:
             )
 
 
+class TestCustomBaseURL:
+    def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
+        base_vws_url = 'x'
+        with MockVWS(base_vws_url=base_vws_url) as mock:
+            client = VWS(
+                server_access_key=mock.server_access_key,
+                server_secret_key=mock.server_secret_key,
+            )
+
+            with pytest.raises(ProjectInactive):
+                client.add_target(
+                    name='x',
+                    width=1,
+                    image=high_quality_image,
+                )
+
+
 class TestInactiveProject:
     def test_inactive_project(self, high_quality_image: io.BytesIO) -> None:
         with MockVWS(state=States.PROJECT_INACTIVE) as mock:
