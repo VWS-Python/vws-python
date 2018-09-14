@@ -95,28 +95,14 @@ class TestImage:
         pass
 
     def test_image_too_large(self, client: VWS):
-        max_bytes = 2.3 * 1024 * 1024
-        width = height = 886
+        width = height = 900
 
-        width = width + 1
-        height = height + 1
         png_too_large = make_image_file(
             file_format='PNG',
             color_space='RGB',
             width=width,
             height=height,
         )
-
-        image_data = png_too_large.getvalue()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
-        image_content_size = len(image_data)
-        # We check that the image we created is just slightly smaller than the
-        # maximum file size.
-        #
-        # This is just because of the implementation details of
-        # ``max_image_file``.
-        assert image_content_size < max_bytes
-        assert (image_content_size * 1.05) > max_bytes
 
         with pytest.raises(ImageTooLarge) as exc:
             client.add_target(name='x', width=1, image=png_too_large)
