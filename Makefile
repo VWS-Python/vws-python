@@ -3,7 +3,6 @@ SHELL := /bin/bash -euxo pipefail
 .PHONY: lint
 lint:
 	check-manifest .
-	pytest -vvv -x ci/custom_linters.py
 	dodgy
 	flake8 .
 	isort --recursive --check-only
