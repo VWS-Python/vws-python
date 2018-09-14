@@ -1,3 +1,7 @@
+"""
+Tests for helper function for adding a target to a Vuforia database.
+"""
+
 import io
 import random
 from typing import Iterator
@@ -56,6 +60,9 @@ def make_image_file(
 
 @pytest.fixture()
 def client() -> Iterator[VWS]:
+    """
+    Yield a VWS client which connects to a mock.
+    """
     with MockVWS() as mock:
         client = VWS(
             server_access_key=mock.server_access_key,
@@ -66,11 +73,18 @@ def client() -> Iterator[VWS]:
 
 
 class TestSuccess:
+    """
+    Test for successfully adding a target.
+    """
+
     def test_add_target(
         self,
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        No exception is raised when adding one target.
+        """
         client.add_target(name='x', width=1, image=high_quality_image)
 
     def test_add_two_targets(
@@ -78,11 +92,18 @@ class TestSuccess:
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        No exception is raised when adding two targets with different names.
+        """
         client.add_target(name='x', width=1, image=high_quality_image)
         client.add_target(name='a', width=1, image=high_quality_image)
 
 
 class TestName:
+    """
+    Tests for the ``name`` parameter to ``add_target``.
+    """
+
     def test_add_two_targets_same_name(
         self,
         client: VWS,
@@ -95,10 +116,17 @@ class TestName:
 
 
 class TestAuthentication:
+    """
+    Tests for authentication issues.
+    """
+
     def test_authentication_error(
         self,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        A ``Fail`` exception is raised when there are authentication issues.
+        """
         with MockVWS() as mock:
             client = VWS(
                 server_access_key='a',
@@ -117,13 +145,24 @@ class TestAuthentication:
 
 
 class TestImage:
+    """
+    Tests for the ``image`` parameter to ``add_target``.
+    """
+
     def test_not_an_image(self, client: VWS) -> None:
+        """
+        A ``BadImage`` exception is raised when a non-image is given.
+        """
         not_an_image = io.BytesIO(b'Not an image')
         with pytest.raises(BadImage):
             client.add_target(name='x', width=1, image=not_an_image)
 
     def test_image_too_large(self, client: VWS) -> None:
-        width = height = 900
+        """
+        An ``ImageTooLarge`` exception is raised when the given image is too
+        large.
+        """
+        width = height = 890
 
         png_too_large = make_image_file(
             file_format='PNG',
@@ -137,6 +176,10 @@ class TestImage:
 
 
 class TestApplicationMetadata:
+    """
+    Tests for the ``application_metadata`` parameter to ``add_target``.
+    """
+
     def test_none(self, client: VWS, high_quality_image: io.BytesIO) -> None:
         client.add_target(
             name='x',
@@ -172,23 +215,24 @@ class TestApplicationMetadata:
 
 
 class TestCustomBaseURL:
+    """
+    Tests for adding images to databases under custom VWS URLs.
+    """
+
     def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
         base_vws_url = 'http://example.com'
-        # TODO: Why does this work?
-        base_vws_url = 'x'
         with MockVWS(base_vws_url=base_vws_url) as mock:
             client = VWS(
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
+                base_vws_url=base_vws_url,
             )
 
-            foo = client.add_target(
+            client.add_target(
                 name='x',
                 width=1,
                 image=high_quality_image,
             )
-
-            assert foo == 'a'
 
 
 class TestInactiveProject:

@@ -81,14 +81,21 @@ class VWS:
     An interface to Vuforia Web Services APIs.
     """
 
-    def __init__(self, server_access_key: str, server_secret_key: str) -> None:
+    def __init__(
+        self,
+        server_access_key: str,
+        server_secret_key: str,
+        base_vws_url: str = 'https://vws.vuforia.com',
+    ) -> None:
         """
         Args:
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
+            base_vws_url: The base URL for the VWS API.
         """
-        self.server_access_key = server_access_key.encode()
-        self.server_secret_key = server_secret_key.encode()
+        self._server_access_key = server_access_key.encode()
+        self._server_secret_key = server_secret_key.encode()
+        self._base_vws_url = base_vws_url
 
     def add_target(
         self,
@@ -129,8 +136,8 @@ class VWS:
         content = bytes(json.dumps(data), encoding='utf-8')
 
         authorization_string = authorization_header(
-            access_key=self.server_access_key,
-            secret_key=self.server_secret_key,
+            access_key=self._server_access_key,
+            secret_key=self._server_secret_key,
             method=method,
             content=content,
             content_type=content_type,
@@ -146,7 +153,7 @@ class VWS:
 
         response = requests.request(
             method=method,
-            url=urljoin(base='https://vws.vuforia.com/', url=request_path),
+            url=urljoin(base=self._base_vws_url, url=request_path),
             headers=headers,
             data=content,
         )
