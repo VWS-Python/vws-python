@@ -1,5 +1,6 @@
 """
-Tests for helper function for adding a target to a Vuforia database.
+Tests for helper function for getting details of a target from a Vuforia
+database.
 """
 
 import io
@@ -22,18 +23,18 @@ from vws.exceptions import (
 )
 
 
-class TestSuccess:
+class TestGetTarget:
     """
-    Test for successfully adding a target.
+    Test for getting details of a target.
     """
 
-    def test_add_target(
+    def test_get_target(
         self,
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        No exception is raised when adding one target.
+        Details of a target are returned by ``get_target``.
         """
         target_id = client.add_target(
             name='x',
@@ -58,7 +59,8 @@ class TestSuccess:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        No exception is raised when adding two targets with different names.
+        An ``UnknownTarget`` exception is raised when getting a target which
+        does not exist.
         """
         with pytest.raises(UnknownTarget):
             client.get_target(target_id='a')
