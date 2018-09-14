@@ -37,10 +37,15 @@ class _ResultCodes(Enum):
 template = dedent(
     """
     class {name}(Exception):
+        \"\"\"
+        Exception raised when Vuforia returns a response with a result code
+        '{name}'.
+        \"\"\"
+
         def __init__(self, response: Response) -> None:
             \"\"\"
-            Exception raised when Vuforia returns a response with a result code
-            '{name}'.
+            Args:
+                response: The response to a request to Vuforia.
             \"\"\"
             self.response = response
     """,
