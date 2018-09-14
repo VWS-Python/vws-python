@@ -208,6 +208,29 @@ class VWS:
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
 
+    def get_target(self, target_id: str) -> None:
+        """
+        Get details of a given target.
+
+        Args:
+            target_id: The ID of the target to get details of.
+        """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='GET',
+            content=b'',
+            request_path=f'/targets/{target_id}',
+            base_vws_url=self._base_vws_url,
+        )
+
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return response.json()['target_record']
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
+
     def delete_target(self, target_id: str) -> None:
         """
         Delete a given target.
