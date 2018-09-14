@@ -17,6 +17,6 @@ lint:
 
 .PHONY: fix-lint
 fix-lint:
-	# autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables .
+	autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables .
 	yapf --in-place --recursive .
 	isort --recursive --apply
