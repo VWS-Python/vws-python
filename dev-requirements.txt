@@ -16,3 +16,5 @@ PyYAML==3.13
 vulture==0.29
 VWS-Python-Mock==2018.9.10.6
 yapf==0.24.0  # Automatic formatting for Python
+pytest-cov==2.6.0  # Measure code coverage
+codecov==2.0.15 # Upload coverage data

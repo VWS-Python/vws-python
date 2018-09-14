@@ -1,13 +1,7 @@
-
 sudo: false
 language: python
 python:
 - '3.6'
-matrix:
-  fast_finish: true
-env:
-  matrix:
-  - CI_PATTERN=''
 addons:
   apt:
     packages:
@@ -18,6 +12,7 @@ install:
 - travis_retry pip install --upgrade --editable .[dev]
 cache: pip
 script:
-- python ci/run_script.py
+- make lint
+- pytest -vvv --exitfirst tests/vws --cov src --cov tests
 after_success:
 - codecov
