@@ -2,13 +2,7 @@ import base64
 import io
 import json
 from enum import Enum
-from typing import Optional, Union
-from urllib.parse import urljoin
-
-import requests
-
-from ._authorization import authorization_header, rfc_1123_date
-from .exceptions import (
+from exceptions import (
     AuthenticationFailure,
     BadImage,
     DateRangeError,
@@ -24,6 +18,12 @@ from .exceptions import (
     TargetStatusProcessing,
     UnknownTarget,
 )
+from typing import Optional, Union
+from urllib.parse import urljoin
+
+import requests
+
+from _authorization import authorization_header, rfc_1123_date
 
 
 class _ResultCodes(Enum):

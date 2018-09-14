@@ -1,3 +1,9 @@
+"""
+Custom exceptions for Vuforia errors.
+
+Generated with the script ``_generate_exceptions.py``.
+"""
+
 from requests import Response
 
 
