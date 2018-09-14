@@ -1,3 +1,7 @@
+"""
+Fixtures for images.
+"""
+
 import io
 
 import pytest
