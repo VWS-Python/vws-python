@@ -34,7 +34,7 @@ class _ResultCodes(Enum):
     INACTIVE_PROJECT = 'InactiveProject'
 
 
-template = dedent(
+TEMPLATE = dedent(
     """
     class {name}(Exception):
         \"\"\"
@@ -51,6 +51,6 @@ template = dedent(
     """,
 )
 
-success_codes = {_ResultCodes.SUCCESS, _ResultCodes.TARGET_CREATED}
-for result_code in set(_ResultCodes) - success_codes:
-    print(template.format(name=result_code.value))
+SUCCESS_CODES = {_ResultCodes.SUCCESS, _ResultCodes.TARGET_CREATED}
+for RESULT_CODE in set(_ResultCodes) - SUCCESS_CODES:
+    print(TEMPLATE.format(name=RESULT_CODE.value))

@@ -58,7 +58,7 @@ class _ResultCodes(Enum):
     INACTIVE_PROJECT = 'InactiveProject'
 
 
-_exceptions = {
+_EXCEPTIONS = {
     _ResultCodes.AUTHENTICATION_FAILURE: AuthenticationFailure,
     _ResultCodes.REQUEST_TIME_TOO_SKEWED: RequestTimeTooSkewed,
     _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
@@ -162,5 +162,5 @@ class VWS:
             return 'a'
 
         result_code = response.json()['result_code']
-        exception = _exceptions[_ResultCodes(result_code)]
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)

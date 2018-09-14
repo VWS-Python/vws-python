@@ -4,7 +4,6 @@ Tests for helper function for adding a target to a Vuforia database.
 
 import io
 import random
-from typing import Iterator
 
 import pytest
 from mock_vws import MockVWS, States
@@ -58,20 +57,6 @@ def make_image_file(
     return image_buffer
 
 
-@pytest.fixture()
-def client() -> Iterator[VWS]:
-    """
-    Yield a VWS client which connects to a mock.
-    """
-    with MockVWS() as mock:
-        client = VWS(
-            server_access_key=mock.server_access_key,
-            server_secret_key=mock.server_secret_key,
-        )
-
-        yield client
-
-
 class TestSuccess:
     """
     Test for successfully adding a target.
@@ -109,6 +94,10 @@ class TestName:
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        A ``TargetNameExist`` exception is raised after adding two targets with
+        the same name.
+        """
         client.add_target(name='x', width=1, image=high_quality_image)
 
         with pytest.raises(TargetNameExist):
