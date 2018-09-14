@@ -201,10 +201,10 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        if response.status_code == requests.codes.CREATED:
-            return 'a'
-
         result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.TARGET_CREATED:
+            return response.json()['target_id']
+
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
 
@@ -215,7 +215,7 @@ class VWS:
         Args:
             target_id: The ID of the target to delete.
         """
-        _target_api_request(
+        response = _target_api_request(
             server_access_key=self._server_access_key,
             server_secret_key=self._server_secret_key,
             method='DELETE',
@@ -223,3 +223,10 @@ class VWS:
             request_path=f'/targets/{target_id}',
             base_vws_url=self._base_vws_url,
         )
+
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
