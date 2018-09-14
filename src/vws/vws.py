@@ -1,3 +1,7 @@
+"""
+Tools for interacting with Vuforia APIs.
+"""
+
 import base64
 import io
 import json
@@ -73,7 +77,16 @@ _exceptions = {
 
 
 class VWS:
+    """
+    An interface to Vuforia Web Services APIs.
+    """
+
     def __init__(self, server_access_key: str, server_secret_key: str) -> None:
+        """
+        Args:
+            server_access_key: A VWS server access key.
+            server_secret_key: A VWS server secret key.
+        """
         self.server_access_key = server_access_key.encode()
         self.server_secret_key = server_secret_key.encode()
 
@@ -84,6 +97,15 @@ class VWS:
         image: io.BytesIO,
         application_metadata: Optional[bytes] = None,
     ) -> str:
+        """
+        Add a target to a Vuforia Web Services database.
+
+        Args:
+            name: The name of the target.
+            width: The width of the target.
+            image: The image of the target.
+            application_metadata: The application metadata of the target.
+        """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         if application_metadata is None:
