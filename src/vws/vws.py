@@ -94,7 +94,6 @@ class VWS:
             metadata_encoded = base64.b64encode(application_metadata)
             metadata_encoded = metadata_encoded.decode('ascii')
 
-
         data = {
             'name': name,
             'width': width,

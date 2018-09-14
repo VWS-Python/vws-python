@@ -1,14 +1,21 @@
+import base64
 import io
+import random
 
 import pytest
 from mock_vws import MockVWS, States
+from PIL import Image
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import Fail, MetadataTooLarge, ProjectInactive, TargetNameExist, ImageTooLarge, BadImage
-from PIL import Image
-import random
-import base64
+from vws.exceptions import (
+    BadImage,
+    Fail,
+    ImageTooLarge,
+    MetadataTooLarge,
+    ProjectInactive,
+    TargetNameExist,
+)
 
 
 def make_image_file(
@@ -57,23 +64,34 @@ def client() -> VWS:
 
         yield client
 
+
 class TestSuccess:
-    def test_add_target(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+    def test_add_target(
+        self, client: VWS, high_quality_image: io.BytesIO
+    ) -> None:
         client.add_target(name='x', width=1, image=high_quality_image)
 
-    def test_add_two_targets(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+    def test_add_two_targets(
+        self, client: VWS, high_quality_image: io.BytesIO
+    ) -> None:
         client.add_target(name='x', width=1, image=high_quality_image)
         client.add_target(name='a', width=1, image=high_quality_image)
 
+
 class TestName:
-    def test_add_two_targets_same_name(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+    def test_add_two_targets_same_name(
+        self, client: VWS, high_quality_image: io.BytesIO
+    ) -> None:
         client.add_target(name='x', width=1, image=high_quality_image)
 
         with pytest.raises(TargetNameExist) as exc:
             client.add_target(name='x', width=1, image=high_quality_image)
 
+
 class TestAuthentication:
-    def test_authentication_error(self, high_quality_image: io.BytesIO) -> None:
+    def test_authentication_error(
+        self, high_quality_image: io.BytesIO
+    ) -> None:
         with MockVWS() as mock:
             client = VWS(
                 server_access_key='a',
@@ -89,6 +107,7 @@ class TestAuthentication:
 
             exception = exc.value
             assert exception.response.status_code == codes.BAD_REQUEST
+
 
 class TestImage:
     def test_not_an_image(self, client: VWS):
@@ -111,7 +130,6 @@ class TestImage:
 
 
 class TestApplicationMetadata:
-
     def test_none(self, client: VWS, high_quality_image: io.BytesIO):
         client.add_target(
             name='x',
@@ -136,6 +154,7 @@ class TestApplicationMetadata:
                 image=high_quality_image,
                 application_metadata=b'a' * 1024 * 1024,
             )
+
 
 class TestInactiveProject:
     def test_inactive_project(self, high_quality_image: io.BytesIO):
