@@ -1,3 +1,4 @@
+autoflake==1.2
 check-manifest==0.37
 dodgy==0.1.9  # Look for uploaded secrets
 flake8-commas==2.0.0  # Require silicon valley commas
