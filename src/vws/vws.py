@@ -19,8 +19,6 @@ from .exceptions import (
     ProjectInactive,
     RequestQuotaReached,
     RequestTimeTooSkewed,
-    Success,
-    TargetCreated,
     TargetNameExist,
     TargetStatusNotSuccess,
     TargetStatusProcessing,

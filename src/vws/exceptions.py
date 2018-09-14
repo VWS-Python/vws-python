@@ -1,13 +1,3 @@
-class Success(Exception):
-    def __init__(self, response) -> None:
-        self.response = response
-
-
-class TargetCreated(Exception):
-    def __init__(self, response) -> None:
-        self.response = response
-
-
 class AuthenticationFailure(Exception):
     def __init__(self, response) -> None:
         self.response = response

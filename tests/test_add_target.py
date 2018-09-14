@@ -1,4 +1,3 @@
-import base64
 import io
 import random
 
@@ -67,12 +66,16 @@ def client() -> VWS:
 
 class TestSuccess:
     def test_add_target(
-        self, client: VWS, high_quality_image: io.BytesIO
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
     ) -> None:
         client.add_target(name='x', width=1, image=high_quality_image)
 
     def test_add_two_targets(
-        self, client: VWS, high_quality_image: io.BytesIO
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
     ) -> None:
         client.add_target(name='x', width=1, image=high_quality_image)
         client.add_target(name='a', width=1, image=high_quality_image)
@@ -80,17 +83,20 @@ class TestSuccess:
 
 class TestName:
     def test_add_two_targets_same_name(
-        self, client: VWS, high_quality_image: io.BytesIO
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
     ) -> None:
         client.add_target(name='x', width=1, image=high_quality_image)
 
-        with pytest.raises(TargetNameExist) as exc:
+        with pytest.raises(TargetNameExist):
             client.add_target(name='x', width=1, image=high_quality_image)
 
 
 class TestAuthentication:
     def test_authentication_error(
-        self, high_quality_image: io.BytesIO
+        self,
+        high_quality_image: io.BytesIO,
     ) -> None:
         with MockVWS() as mock:
             client = VWS(
@@ -99,7 +105,7 @@ class TestAuthentication:
             )
 
             with pytest.raises(Fail) as exc:
-                target_id = client.add_target(
+                client.add_target(
                     name='x',
                     width=1,
                     image=high_quality_image,
@@ -125,7 +131,7 @@ class TestImage:
             height=height,
         )
 
-        with pytest.raises(ImageTooLarge) as exc:
+        with pytest.raises(ImageTooLarge):
             client.add_target(name='x', width=1, image=png_too_large)
 
 
