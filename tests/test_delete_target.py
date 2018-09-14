@@ -7,7 +7,7 @@ import io
 import pytest
 
 from vws import VWS
-from vws.exceptions import UnknownTarget
+from vws.exceptions import TargetStatusProcessing, UnknownTarget
 
 
 class TestDelete:
@@ -36,7 +36,8 @@ class TestDelete:
             image=high_quality_image,
         )
 
-        client.delete_target(target_id=target_id)
+        with pytest.raises(TargetStatusProcessing):
+            client.delete_target(target_id=target_id)
 
     def test_delete_target(
         self,
