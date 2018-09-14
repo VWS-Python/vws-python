@@ -173,6 +173,8 @@ class TestApplicationMetadata:
 
 class TestCustomBaseURL:
     def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
+        base_vws_url = 'http://example.com'
+        # TODO: Why does this work?
         base_vws_url = 'x'
         with MockVWS(base_vws_url=base_vws_url) as mock:
             client = VWS(
@@ -180,12 +182,13 @@ class TestCustomBaseURL:
                 server_secret_key=mock.server_secret_key,
             )
 
-            with pytest.raises(ProjectInactive):
-                client.add_target(
-                    name='x',
-                    width=1,
-                    image=high_quality_image,
-                )
+            foo = client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+            assert foo == 'a'
 
 
 class TestInactiveProject:
