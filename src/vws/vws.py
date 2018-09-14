@@ -89,8 +89,8 @@ class VWS:
         if application_metadata is None:
             metadata_encoded = None
         else:
-            metadata_encoded = base64.b64encode(application_metadata)
-            metadata_encoded = metadata_encoded.decode('ascii')
+            metadata_encoded_str = base64.b64encode(application_metadata)
+            metadata_encoded = metadata_encoded_str.decode('ascii')
 
         data = {
             'name': name,

@@ -1,5 +1,6 @@
 import io
 import random
+from typing import Iterator
 
 import pytest
 from mock_vws import MockVWS, States
@@ -54,7 +55,7 @@ def make_image_file(
 
 
 @pytest.fixture()
-def client() -> VWS:
+def client() -> Iterator[VWS]:
     with MockVWS() as mock:
         client = VWS(
             server_access_key=mock.server_access_key,
@@ -116,12 +117,12 @@ class TestAuthentication:
 
 
 class TestImage:
-    def test_not_an_image(self, client: VWS):
+    def test_not_an_image(self, client: VWS) -> None:
         not_an_image = io.BytesIO(b'Not an image')
         with pytest.raises(BadImage):
             client.add_target(name='x', width=1, image=not_an_image)
 
-    def test_image_too_large(self, client: VWS):
+    def test_image_too_large(self, client: VWS) -> None:
         width = height = 900
 
         png_too_large = make_image_file(
@@ -136,7 +137,7 @@ class TestImage:
 
 
 class TestApplicationMetadata:
-    def test_none(self, client: VWS, high_quality_image: io.BytesIO):
+    def test_none(self, client: VWS, high_quality_image: io.BytesIO) -> None:
         client.add_target(
             name='x',
             width=1,
@@ -144,7 +145,11 @@ class TestApplicationMetadata:
             application_metadata=None,
         )
 
-    def test_given(self, client: VWS, high_quality_image: io.BytesIO):
+    def test_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
         client.add_target(
             name='x',
             width=1,
@@ -152,7 +157,11 @@ class TestApplicationMetadata:
             application_metadata=b'a',
         )
 
-    def test_too_large(self, client: VWS, high_quality_image: io.BytesIO):
+    def test_too_large(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
         with pytest.raises(MetadataTooLarge):
             client.add_target(
                 name='x',
@@ -163,7 +172,7 @@ class TestApplicationMetadata:
 
 
 class TestInactiveProject:
-    def test_inactive_project(self, high_quality_image: io.BytesIO):
+    def test_inactive_project(self, high_quality_image: io.BytesIO) -> None:
         with MockVWS(state=States.PROJECT_INACTIVE) as mock:
             client = VWS(
                 server_access_key=mock.server_access_key,
