@@ -107,7 +107,7 @@ class TestImage:
             height=height,
         )
 
-        image_data = png_too_large.read()
+        image_data = png_too_large.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
         image_content_size = len(image_data)
         # We check that the image we created is just slightly smaller than the
