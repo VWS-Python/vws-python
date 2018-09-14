@@ -181,6 +181,9 @@ class TestApplicationMetadata:
     """
 
     def test_none(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+        """
+        No exception is raised when ``None`` is given.
+        """
         client.add_target(
             name='x',
             width=1,
@@ -193,6 +196,9 @@ class TestApplicationMetadata:
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        No exception is raised when bytes are given.
+        """
         client.add_target(
             name='x',
             width=1,
@@ -205,6 +211,10 @@ class TestApplicationMetadata:
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        A ``MetadataTooLarge`` exception is raised if the metadata given is too
+        large.
+        """
         with pytest.raises(MetadataTooLarge):
             client.add_target(
                 name='x',
@@ -220,6 +230,10 @@ class TestCustomBaseURL:
     """
 
     def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
+        """
+        It is possible to use add a target to a database under a custom VWS
+        URL.
+        """
         base_vws_url = 'http://example.com'
         with MockVWS(base_vws_url=base_vws_url) as mock:
             client = VWS(
@@ -236,7 +250,15 @@ class TestCustomBaseURL:
 
 
 class TestInactiveProject:
+    """
+    Tests for using an inactive project.
+    """
+
     def test_inactive_project(self, high_quality_image: io.BytesIO) -> None:
+        """
+        A ``ProjectInactive`` exception is raised if adding a target to an
+        inactive database.
+        """
         with MockVWS(state=States.PROJECT_INACTIVE) as mock:
             client = VWS(
                 server_access_key=mock.server_access_key,
