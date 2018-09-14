@@ -1,3 +1,4 @@
+autoflake==1.2
 check-manifest==0.37
 autoflake==TODO
 dodgy==0.1.9  # Look for uploaded secrets
