@@ -47,6 +47,7 @@ TEMPLATE = dedent(
             Args:
                 response: The response to a request to Vuforia.
             \"\"\"
+            super().__init__()
             self.response = response
     """,
 )
