@@ -171,6 +171,9 @@ class VWS:
             width: The width of the target.
             image: The image of the target.
             application_metadata: The application metadata of the target.
+
+        Returns:
+            The target ID of the new target.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -204,3 +207,19 @@ class VWS:
         result_code = response.json()['result_code']
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
+
+    def delete_target(self, target_id: str) -> None:
+        """
+        Delete a given target.
+
+        Args:
+            target_id: The ID of the target to delete.
+        """
+        _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='DELETE',
+            content=b'',
+            request_path=f'/targets/{target_id}',
+            base_vws_url=self._base_vws_url,
+        )
