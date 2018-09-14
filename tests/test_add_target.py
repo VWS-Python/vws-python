@@ -5,7 +5,7 @@ from mock_vws import MockVWS, States
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import Fail, MetadataTooLarge, ProjectInactive, TargetNameExist, ImageTooLarge
+from vws.exceptions import Fail, MetadataTooLarge, ProjectInactive, TargetNameExist, ImageTooLarge, BadImage
 from PIL import Image
 import random
 import base64
@@ -91,8 +91,10 @@ class TestAuthentication:
             assert exception.response.status_code == codes.BAD_REQUEST
 
 class TestImage:
-    def test_not_an_image(self):
-        pass
+    def test_not_an_image(self, client: VWS):
+        not_an_image = io.BytesIO(b'Not an image')
+        with pytest.raises(BadImage):
+            client.add_target(name='x', width=1, image=not_an_image)
 
     def test_image_too_large(self, client: VWS):
         width = height = 900
@@ -137,7 +139,7 @@ class TestApplicationMetadata:
 
 class TestInactiveProject:
     def test_inactive_project(self, high_quality_image: io.BytesIO):
-        with MockVWS(real_http=False, state=States.PROJECT_INACTIVE) as mock:
+        with MockVWS(state=States.PROJECT_INACTIVE) as mock:
             client = VWS(
                 server_access_key=mock.server_access_key,
                 server_secret_key=mock.server_secret_key,
