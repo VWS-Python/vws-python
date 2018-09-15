@@ -3,36 +3,22 @@ Tests for helper function for waiting for a target to be processed.
 """
 
 import io
-import random
-
-import pytest
-from mock_vws import MockVWS, States
-from PIL import Image
-from requests import codes
 
 from vws import VWS
-from vws.exceptions import (
-    BadImage,
-    Fail,
-    ImageTooLarge,
-    MetadataTooLarge,
-    ProjectInactive,
-    TargetNameExist,
-)
 
 
 class TestWaitForTargetProcessed:
     """
-    Test for successfully adding a target.
+    Test for waiting for a target to be processed.
     """
 
-    def test_add_target(
+    def test_wait_for_target_processed(
         self,
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        No exception is raised when adding one target.
+        It is possible to wait until a target is processed.
         """
         target_id = client.add_target(
             name='x',
