@@ -208,6 +208,39 @@ class VWS:
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
 
+    @timeout_decorator.timeout(seconds=60 * 5)
+    def wait_for_target_processed(
+        vuforia_database_keys: VuforiaDatabaseKeys,
+        target_id: str,
+    ) -> None:
+        """
+        Wait up to five minutes (arbitrary) for a target to get past the processing
+        stage.
+
+        Args:
+            vuforia_database_keys: The credentials to use to connect to Vuforia.
+            target_id: The ID of the target to wait for.
+
+        Raises:
+            TimeoutError: The target remained in the processing stage for more
+                than five minutes.
+        """
+        while True:
+            response = get_vws_target(
+                target_id=target_id,
+                vuforia_database_keys=vuforia_database_keys,
+            )
+
+            if response.json()['status'] != TargetStatuses.PROCESSING.value:
+                return
+
+            # We wait 0.2 seconds rather than less than that to decrease the number
+            # of calls made to the API, to decrease the likelihood of hitting the
+            # request quota.
+            sleep(0.2)
+
+
+
     def get_target(self, target_id: str) -> None:
         """
         Get details of a given target.
@@ -226,7 +259,7 @@ class VWS:
 
         result_code = response.json()['result_code']
         if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return response.json()['target_record']
+            return response.json()
 
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)

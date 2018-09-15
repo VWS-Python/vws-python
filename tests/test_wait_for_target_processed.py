@@ -34,9 +34,13 @@ class TestWaitForTargetProcessed:
         """
         No exception is raised when adding one target.
         """
-        client.add_target(name='x', width=1, image=high_quality_image)
-        target_record = client.get_target(target_id=target_id)
-        assert target_record['status'] == 'processing'
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        target_details = client.get_target(target_id=target_id)
+        assert target_details['status'] == 'processing'
         client.wait_for_target_processed(target_id=target_id)
-        target_record = client.get_target(target_id=target_id)
-        assert target_record['status'] != 'processing'
+        target_details = client.get_target(target_id=target_id)
+        assert target_details['status'] != 'processing'
