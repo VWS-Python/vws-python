@@ -5,14 +5,6 @@ Tests for helper function for adding a target to a Vuforia database.
 import io
 
 from vws import VWS
-from vws.exceptions import (
-    BadImage,
-    Fail,
-    ImageTooLarge,
-    MetadataTooLarge,
-    ProjectInactive,
-    TargetNameExist,
-)
 
 
 class TestSuccess:
