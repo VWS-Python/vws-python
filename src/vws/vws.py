@@ -283,4 +283,3 @@ class VWS:
             # number of calls made to the API, to decrease the likelihood of
             # hitting the request quota.
             sleep(0.2)
->>>>>>> origin/master
