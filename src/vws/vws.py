@@ -6,7 +6,7 @@ import base64
 import io
 import json
 from time import sleep
-from typing import Any, Dict, Union
+from typing import Any, Dict, List, Union
 from urllib.parse import urljoin
 
 import requests
@@ -179,3 +179,21 @@ class VWS:
             # number of calls made to the API, to decrease the likelihood of
             # hitting the request quota.
             sleep(0.2)
+
+    def list_targets(self) -> List[str]:
+        """
+        Get a list of targets.
+
+        Returns:
+            The IDs of all targets in the database.
+        """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='GET',
+            content=b'',
+            request_path='/targets',
+            base_vws_url=self._base_vws_url,
+        )
+
+        return list(response.json()['results'])
