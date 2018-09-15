@@ -59,7 +59,7 @@ def make_image_file(
 
 class TestSuccess:
     """
-    Test for successfully adding a target.
+    Tests for successfully adding a target.
     """
 
     def test_add_target(

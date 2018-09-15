@@ -10,6 +10,7 @@ from typing import Optional, Union
 from urllib.parse import urljoin
 
 import requests
+import timeout_decorator
 from requests import Response
 
 from vws._authorization import authorization_header, rfc_1123_date
@@ -209,16 +210,12 @@ class VWS:
         raise exception(response=response)
 
     @timeout_decorator.timeout(seconds=60 * 5)
-    def wait_for_target_processed(
-        vuforia_database_keys: VuforiaDatabaseKeys,
-        target_id: str,
-    ) -> None:
+    def wait_for_target_processed(target_id: str) -> None:
         """
         Wait up to five minutes (arbitrary) for a target to get past the processing
         stage.
 
         Args:
-            vuforia_database_keys: The credentials to use to connect to Vuforia.
             target_id: The ID of the target to wait for.
 
         Raises:
@@ -226,12 +223,8 @@ class VWS:
                 than five minutes.
         """
         while True:
-            response = get_vws_target(
-                target_id=target_id,
-                vuforia_database_keys=vuforia_database_keys,
-            )
-
-            if response.json()['status'] != TargetStatuses.PROCESSING.value:
+            response = self.get_target(target_id=target_id)
+            if response.json()['status'] != 'processing':
                 return
 
             # We wait 0.2 seconds rather than less than that to decrease the number
