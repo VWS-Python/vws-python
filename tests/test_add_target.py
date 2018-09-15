@@ -10,6 +10,8 @@ from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
 
+from mock_vws import MockVWS
+
 from vws import VWS
 from vws.exceptions import (
     BadImage,
@@ -84,6 +86,7 @@ class TestSuccess:
         client.add_target(name='a', width=1, image=high_quality_image)
 
 
+<<<<<<< HEAD
 class TestName:
     """
     Tests for the ``name`` parameter to ``add_target``.
