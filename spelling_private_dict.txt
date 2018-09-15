@@ -39,6 +39,7 @@ noqa
 plugins
 png
 pragma
+py
 pytest
 readme
 readthedocs
