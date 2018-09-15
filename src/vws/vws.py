@@ -5,7 +5,7 @@ Tools for interacting with Vuforia APIs.
 import base64
 import io
 import json
-from typing import Union
+from typing import Any, Dict, Union
 from urllib.parse import urljoin
 
 import requests
@@ -133,3 +133,24 @@ class VWS:
         )
 
         return str(response.json()['target_id'])
+
+    def get_target(self, target_id: str) -> Dict[str, Any]:
+        """
+        Get details of a given target.
+
+        Args:
+            target_id: The ID of the target to get details of.
+
+        Returns:
+            Response details of a target from Vuforia.
+        """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='GET',
+            content=b'',
+            request_path=f'/targets/{target_id}',
+            base_vws_url=self._base_vws_url,
+        )
+
+        return dict(response.json())
