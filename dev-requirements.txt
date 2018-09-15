@@ -1,5 +1,8 @@
+PyYAML==3.13
+VWS-Python-Mock==2018.9.10.6
 autoflake==1.2
 check-manifest==0.37
+codecov==2.0.15 # Upload coverage data
 dodgy==0.1.9  # Look for uploaded secrets
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==1.0.0  # Require single quotes
@@ -11,10 +14,7 @@ pydocstyle==2.1.1  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
 pylint==2.1.1  # Lint
 pyroma==2.4  # Packaging best practices checker
-pytest==3.8.0  # Test runners
-PyYAML==3.13
-vulture==0.29
-VWS-Python-Mock==2018.9.10.6
-yapf==0.24.0  # Automatic formatting for Python
 pytest-cov==2.6.0  # Measure code coverage
-codecov==2.0.15 # Upload coverage data
+pytest==3.8.0  # Test runners
+vulture==0.29
+yapf==0.24.0  # Automatic formatting for Python
