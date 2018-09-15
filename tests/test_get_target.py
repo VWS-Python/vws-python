@@ -44,6 +44,14 @@ class TestGetTarget:
 
         result = client.get_target(target_id=target_id)
         expected_keys = {
+            'result_code',
+            'transaction_id',
+            'target_record',
+            'status',
+        }
+        assert result.keys() == expected_keys
+
+        expected_keys = {
             'target_id',
             'active_flag',
             'name',
@@ -51,7 +59,7 @@ class TestGetTarget:
             'tracking_rating',
             'reco_rating',
         }
-        assert result.keys() == expected_keys
+        assert result['target_record'].keys() == expected_keys
 
     def test_no_such_target(
         self,

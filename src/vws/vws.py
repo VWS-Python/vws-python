@@ -7,6 +7,7 @@ import io
 import json
 from enum import Enum
 from typing import Optional, Union
+from typing import Any, Dict, Union
 from urllib.parse import urljoin
 
 import requests
@@ -204,7 +205,7 @@ class VWS:
 
         result_code = response.json()['result_code']
         if _ResultCodes(result_code) == _ResultCodes.TARGET_CREATED:
-            return response.json()['target_id']
+            return str(response.json()['target_id'])
 
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
@@ -233,13 +234,15 @@ class VWS:
             sleep(0.2)
 
 
-
-    def get_target(self, target_id: str) -> None:
+    def get_target(self, target_id: str) -> Dict[str, Any]:
         """
         Get details of a given target.
 
         Args:
             target_id: The ID of the target to get details of.
+
+        Returns:
+            Response details of a target from Vuforia.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
@@ -252,7 +255,7 @@ class VWS:
 
         result_code = response.json()['result_code']
         if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return response.json()
+            return dict(response.json())
 
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
