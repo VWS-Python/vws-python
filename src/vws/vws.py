@@ -164,6 +164,7 @@ class VWS:
         width: Union[int, float],
         image: io.BytesIO,
         application_metadata: Optional[bytes] = None,
+        active_flag: bool = True,
     ) -> str:
         """
         Add a target to a Vuforia Web Services database.
@@ -173,6 +174,7 @@ class VWS:
             width: The width of the target.
             image: The image of the target.
             application_metadata: The application metadata of the target.
+            active_flag: Whether or not the target is active for query.
 
         Returns:
             The target ID of the new target.
@@ -189,7 +191,7 @@ class VWS:
             'name': name,
             'width': width,
             'image': image_data_encoded,
-            'application_metadata': metadata_encoded,
+            'active_flag': active_flag,
         }
 
         content = bytes(json.dumps(data), encoding='utf-8')

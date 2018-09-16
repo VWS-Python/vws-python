@@ -6,9 +6,13 @@ import io
 import random
 
 import pytest
+<<<<<<< HEAD
 from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
+=======
+from mock_vws import MockVWS
+>>>>>>> active-flag
 
 from vws import VWS
 from vws.exceptions import (
@@ -175,58 +179,6 @@ class TestImage:
             client.add_target(name='x', width=1, image=png_too_large)
 
 
-class TestActiveFlag:
-    """
-    Tests for the ``active_flag`` parameter to ``add_target``.
-    """
-
-    def test_default(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        By default, the active flag is set to ``True``.
-        """
-        client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            application_metadata=None,
-        )
-
-    def test_given(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        No exception is raised when bytes are given.
-        """
-        client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            application_metadata=b'a',
-        )
-
-    def test_too_large(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``MetadataTooLarge`` exception is raised if the metadata given is too
-        large.
-        """
-        with pytest.raises(MetadataTooLarge):
-            client.add_target(
-                name='x',
-                width=1,
-                image=high_quality_image,
-                application_metadata=b'a' * 1024 * 1024,
-            )
-
 
 class TestApplicationMetadata:
     """
@@ -324,3 +276,48 @@ class TestInactiveProject:
                     width=1,
                     image=high_quality_image,
                 )
+
+
+class TestActiveFlag:
+    """
+    Tests for the ``active_flag`` parameter to ``add_target``.
+    """
+
+    def test_default(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        By default, the active flag is set to ``True``.
+        """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        get_result = client.get_target(target_id=target_id)
+        target_record = get_result['target_record']
+        assert target_record['active_flag'] is True
+
+    @pytest.mark.parametrize('active_flag', [True, False])
+    def test_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+        active_flag: bool,
+    ) -> None:
+        """
+        It is possible to set the active flag to a boolean value.
+        """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            active_flag=active_flag,
+        )
+
+        get_result = client.get_target(target_id=target_id)
+        target_record = get_result['target_record']
+        assert target_record['active_flag'] is active_flag
+>>>>>>> active-flag
