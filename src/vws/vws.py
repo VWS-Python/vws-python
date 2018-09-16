@@ -6,7 +6,7 @@ import base64
 import io
 import json
 from time import sleep
-from typing import Any, Dict, List, Union
+from typing import Dict, List, Union
 from urllib.parse import urljoin
 
 import requests
