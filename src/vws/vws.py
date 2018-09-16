@@ -189,7 +189,7 @@ class VWS:
 
     def list_targets(self) -> List[str]:
         """
-        Get a list of targets.
+        List target IDs.
 
         Returns:
             The IDs of all targets in the database.
@@ -204,3 +204,27 @@ class VWS:
         )
 
         return list(response.json()['results'])
+
+    def get_target_summary_report(
+        self,
+        target_id: str,
+    ) -> Dict[str, Union[str, int]]:
+        """
+        Get a summary report for a target.
+
+        Args:
+            target_id: The ID of the target to get a summary report for.
+
+        Returns:
+            Details of the target.
+        """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='GET',
+            content=b'',
+            request_path=f'/summary/{target_id}',
+            base_vws_url=self._base_vws_url,
+        )
+
+        return dict(response.json())

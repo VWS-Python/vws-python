@@ -10,7 +10,7 @@ from vws import VWS
 
 class TestGetTargetRecord:
     """
-    Test for getting a record of a target.
+    Tests for getting a record of a target.
     """
 
     def test_get_target_record(
