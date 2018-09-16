@@ -251,3 +251,11 @@ class VWS:
         )
 
         return dict(response.json())
+
+    def delete_target(self, target_id: str) -> None:
+        """
+        Delete a given target.
+
+        Args:
+            target_id: The ID of the target to delete.
+        """
