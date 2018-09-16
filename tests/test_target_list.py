@@ -9,7 +9,7 @@ from vws import VWS
 
 class TestListTargets:
     """
-    Test for listing targets.
+    Tests for listing targets.
     """
 
     def test_list_targets(
