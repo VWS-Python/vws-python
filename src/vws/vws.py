@@ -116,7 +116,6 @@ class VWS:
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
-        metadata_encoded = None
 
         data = {
             'name': name,
