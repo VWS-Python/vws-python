@@ -276,8 +276,8 @@ class VWS:
                 than five minutes.
         """
         while True:
-            target_details = self.get_target_summary(target_id=target_id)
-            if target_details['status'] != 'processing':
+            report = self.get_target_summary_report(target_id=target_id)
+            if report['status'] != 'processing':
                 return
 
             # We wait 0.2 seconds rather than less than that to decrease the
@@ -287,7 +287,7 @@ class VWS:
 
     def list_targets(self) -> List[str]:
         """
-        Get a list of targets.
+        List target IDs.
 
         Returns:
             The IDs of all targets in the database.
@@ -303,15 +303,18 @@ class VWS:
 
         return list(response.json()['results'])
 
-    def get_target_summary(self, target_id: str) -> Dict[str, Union[str, int]]:
+    def get_target_summary_report(
+        self,
+        target_id: str,
+    ) -> Dict[str, Union[str, int]]:
         """
-        Get a summary of a target.
+        Get a summary report for a target.
 
         Args:
-            target_id: The ID of the target to wait for.
+            target_id: The ID of the target to get a summary report for.
 
         Returns:
-            The IDs of all targets in the database.
+            Details of the target.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
