@@ -10,8 +10,6 @@ from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
 
-from mock_vws import MockVWS
-
 from vws import VWS
 from vws.exceptions import (
     BadImage,
