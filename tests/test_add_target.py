@@ -180,7 +180,11 @@ class TestActiveFlag:
     Tests for the ``active_flag`` parameter to ``add_target``.
     """
 
-    def test_default(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+    def test_default(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
         """
         By default, the active flag is set to ``True``.
         """
@@ -222,6 +226,7 @@ class TestActiveFlag:
                 image=high_quality_image,
                 application_metadata=b'a' * 1024 * 1024,
             )
+
 
 class TestApplicationMetadata:
     """

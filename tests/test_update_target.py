@@ -37,7 +37,7 @@ class TestUpdateTarget:
             image=high_quality_image,
         )
 
-        client.update_target(name=)
+        client.update_target(target_id=target_id)
         result = client.get_target(target_id=target_id)
         expected_keys = {
             'target_id',
