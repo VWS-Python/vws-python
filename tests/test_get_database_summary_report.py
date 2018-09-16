@@ -2,21 +2,15 @@
 Tests for helper function for getting a summary report for a Vuforia database.
 """
 
-import io
-
 from vws import VWS
 
 
 class TestGetDatabaseSummaryReport:
     """
-    Test for getting a summary report for a database.
+    Tests for getting a summary report for a database.
     """
 
-    def test_get_target(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
+    def test_get_target(self, client: VWS) -> None:
         """
         Details of a database are returned by ``get_database_summary_report``.
         """
