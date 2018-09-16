@@ -7,15 +7,7 @@ import io
 import pytest
 
 from vws import VWS
-from vws.exceptions import (
-    BadImage,
-    Fail,
-    ImageTooLarge,
-    MetadataTooLarge,
-    ProjectInactive,
-    TargetNameExist,
-    UnknownTarget,
-)
+from vws.exceptions import UnknownTarget
 
 
 class TestUpdateTarget:
