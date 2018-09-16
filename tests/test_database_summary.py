@@ -38,3 +38,4 @@ class TestGetDatabaseSummary:
             'transaction_id',
         }
         assert result.keys() == expected_keys
+        import pdb; pdb.set_trace()
