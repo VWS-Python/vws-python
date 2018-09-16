@@ -12,11 +12,7 @@ class TestGetDatabaseSummaryReport:
     Test for getting a summary report for a database.
     """
 
-    def test_get_target(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
+    def test_get_target(self, client: VWS) -> None:
         """
         Details of a database are returned by ``get_database_summary_report``.
         """
