@@ -18,7 +18,7 @@ class TestGetDatabaseSummaryReport:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        Details of a target are returned by ``get_target_summary``.
+        Details of a database are returned by ``get_database_summary_report``.
         """
         report = client.get_database_summary_report()
         expected_keys = {
