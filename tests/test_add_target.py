@@ -6,13 +6,9 @@ import io
 import random
 
 import pytest
-<<<<<<< HEAD
 from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
-=======
-from mock_vws import MockVWS
->>>>>>> active-flag
 
 from vws import VWS
 from vws.exceptions import (
@@ -179,7 +175,6 @@ class TestImage:
             client.add_target(name='x', width=1, image=png_too_large)
 
 
-
 class TestApplicationMetadata:
     """
     Tests for the ``application_metadata`` parameter to ``add_target``.
@@ -320,4 +315,3 @@ class TestActiveFlag:
         get_result = client.get_target(target_id=target_id)
         target_record = get_result['target_record']
         assert target_record['active_flag'] is active_flag
->>>>>>> active-flag
