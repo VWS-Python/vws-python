@@ -343,27 +343,6 @@ class VWS:
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
 
-    def get_database_summary(self) -> Dict[str, Union[str, int]]:
-        """
-        Get a summary of a database.
-
-        Args:
-            target_id: The ID of the target to wait for.
-
-        Returns:
-            The IDs of all targets in the database.
-        """
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
-            method='GET',
-            content=b'',
-            request_path='/summary',
-            base_vws_url=self._base_vws_url,
-        )
-
-        return dict(response.json())
-
     def get_database_summary_report(self) -> Dict[str, Union[str, int]]:
         """
         Get a summary report for the database.
