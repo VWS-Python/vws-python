@@ -17,6 +17,10 @@ lint:
 
 .PHONY: fix-lint
 fix-lint:
+	# Move imports to a single line so that autoflake can handle them.
+	# See https://github.com/myint/autoflake/issues/8.
+	# Then later we put them back.
+	isort --force-single-line --recursive --apply
 	autoflake --in-place --recursive --remove-all-unused-imports --remove-unused-variables .
 	yapf --in-place --recursive .
 	isort --recursive --apply
