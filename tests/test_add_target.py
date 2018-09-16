@@ -30,8 +30,7 @@ class TestSuccess:
             width=width,
             image=high_quality_image,
         )
-        get_result = client.get_target(target_id=target_id)
-        target_record = get_result['target_record']
+        target_record = client.get_target_record(target_id=target_id)
         assert target_record['name'] == name
         assert target_record['width'] == width
         assert target_record['active_flag'] is True
@@ -91,8 +90,7 @@ class TestActiveFlag:
             width=1,
             image=high_quality_image,
         )
-        get_result = client.get_target(target_id=target_id)
-        target_record = get_result['target_record']
+        target_record = client.get_target_record(target_id=target_id)
         assert target_record['active_flag'] is True
 
     @pytest.mark.parametrize('active_flag', [True, False])
@@ -111,7 +109,5 @@ class TestActiveFlag:
             image=high_quality_image,
             active_flag=active_flag,
         )
-
-        get_result = client.get_target(target_id=target_id)
-        target_record = get_result['target_record']
+        target_record = client.get_target_record(target_id=target_id)
         assert target_record['active_flag'] is active_flag

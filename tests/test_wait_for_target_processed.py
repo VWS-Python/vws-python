@@ -25,8 +25,8 @@ class TestWaitForTargetProcessed:
             width=1,
             image=high_quality_image,
         )
-        target_details = client.get_target(target_id=target_id)
-        assert target_details['status'] == 'processing'
+        report = client.get_target_summary_report(target_id=target_id)
+        assert report['status'] == 'processing'
         client.wait_for_target_processed(target_id=target_id)
-        target_details = client.get_target(target_id=target_id)
-        assert target_details['status'] != 'processing'
+        report = client.get_target_summary_report(target_id=target_id)
+        assert report['status'] != 'processing'

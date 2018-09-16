@@ -6,7 +6,7 @@ import base64
 import io
 import json
 from time import sleep
-from typing import Any, Dict, List, Union
+from typing import Dict, List, Union
 from urllib.parse import urljoin
 
 import requests
@@ -105,6 +105,9 @@ class VWS:
         """
         Add a target to a Vuforia Web Services database.
 
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
+
         Args:
             name: The name of the target.
             width: The width of the target.
@@ -137,9 +140,12 @@ class VWS:
 
         return str(response.json()['target_id'])
 
-    def get_target(self, target_id: str) -> Dict[str, Any]:
+    def get_target_record(self, target_id: str) -> Dict[str, Union[str, int]]:
         """
-        Get details of a given target.
+        Get a given target's target record from the Target Management System.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
 
         Args:
             target_id: The ID of the target to get details of.
@@ -156,7 +162,7 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        return dict(response.json())
+        return dict(response.json()['target_record'])
 
     @timeout_decorator.timeout(seconds=60 * 5)
     def wait_for_target_processed(self, target_id: str) -> None:
@@ -172,9 +178,14 @@ class VWS:
                 than five minutes.
         """
         while True:
-            target_details = self.get_target(target_id=target_id)
-            if target_details['status'] != 'processing':
+            report = self.get_target_summary_report(target_id=target_id)
+            if report['status'] != 'processing':
                 return
+
+            # We wait 0.2 seconds rather than less than that to decrease the
+            # number of calls made to the API, to decrease the likelihood of
+            # hitting the request quota.
+            sleep(0.2)
 
             # We wait 0.2 seconds rather than less than that to decrease the
             # number of calls made to the API, to decrease the likelihood of
