@@ -22,7 +22,19 @@ class TestSuccess:
         """
         No exception is raised when adding one target.
         """
-        client.add_target(name='x', width=1, image=high_quality_image)
+        name = 'x'
+        width = 1
+        target_id = client.add_target(
+            name=name,
+            width=width,
+            image=high_quality_image,
+        )
+        get_result = client.get_target(target_id=target_id)
+        target_record = get_result['target_record']
+        assert target_record['name'] == name
+        assert target_record['width'] == width
+        assert target_record['active_flag'] == True
+
 
     def test_add_two_targets(
         self,
