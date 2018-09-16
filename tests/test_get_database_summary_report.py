@@ -2,8 +2,6 @@
 Tests for helper function for getting a summary report for a Vuforia database.
 """
 
-import io
-
 from vws import VWS
 
 
