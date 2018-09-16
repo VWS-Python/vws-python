@@ -178,9 +178,14 @@ class VWS:
                 than five minutes.
         """
         while True:
-            target_details = self.get_target(target_id=target_id)
-            if target_details['status'] != 'processing':
+            report = self.get_target_summary_report(target_id=target_id)
+            if report['status'] != 'processing':
                 return
+
+            # We wait 0.2 seconds rather than less than that to decrease the
+            # number of calls made to the API, to decrease the likelihood of
+            # hitting the request quota.
+            sleep(0.2)
 
             # We wait 0.2 seconds rather than less than that to decrease the
             # number of calls made to the API, to decrease the likelihood of
