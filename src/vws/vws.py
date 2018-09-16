@@ -273,7 +273,7 @@ class VWS:
                 than five minutes.
         """
         while True:
-            target_details = self.get_target(target_id=target_id)
+            target_details = self.get_target_summary(target_id=target_id)
             if target_details['status'] != 'processing':
                 return
 

@@ -70,7 +70,18 @@ class TestSuccess:
         """
         No exception is raised when adding one target.
         """
-        client.add_target(name='x', width=1, image=high_quality_image)
+        name = 'x'
+        width = 1
+        target_id = client.add_target(
+            name=name,
+            width=width,
+            image=high_quality_image,
+        )
+        get_result = client.get_target(target_id=target_id)
+        target_record = get_result['target_record']
+        assert target_record['name'] == name
+        assert target_record['width'] == width
+        assert target_record['active_flag'] == True
 
     def test_add_two_targets(
         self,
@@ -163,6 +174,54 @@ class TestImage:
         with pytest.raises(ImageTooLarge):
             client.add_target(name='x', width=1, image=png_too_large)
 
+
+class TestActiveFlag:
+    """
+    Tests for the ``active_flag`` parameter to ``add_target``.
+    """
+
+    def test_default(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+        """
+        By default, the active flag is set to ``True``.
+        """
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=None,
+        )
+
+    def test_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        No exception is raised when bytes are given.
+        """
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=b'a',
+        )
+
+    def test_too_large(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        A ``MetadataTooLarge`` exception is raised if the metadata given is too
+        large.
+        """
+        with pytest.raises(MetadataTooLarge):
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+                application_metadata=b'a' * 1024 * 1024,
+            )
 
 class TestApplicationMetadata:
     """
