@@ -10,7 +10,7 @@ from vws import VWS
 
 class TestGetTarget:
     """
-    Test for getting details of a target.
+    Tests for getting details of a target.
     """
 
     def test_get_target(

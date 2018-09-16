@@ -9,7 +9,7 @@ from vws import VWS
 
 class TestWaitForTargetProcessed:
     """
-    Test for waiting for a target to be processed.
+    Tests for waiting for a target to be processed.
     """
 
     def test_wait_for_target_processed(
