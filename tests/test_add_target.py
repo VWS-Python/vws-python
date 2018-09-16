@@ -33,8 +33,7 @@ class TestSuccess:
         target_record = get_result['target_record']
         assert target_record['name'] == name
         assert target_record['width'] == width
-        assert target_record['active_flag'] == True
-
+        assert target_record['active_flag'] is True
 
     def test_add_two_targets(
         self,
