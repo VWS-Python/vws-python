@@ -9,7 +9,7 @@ from vws import VWS
 
 class TestGetDatabaseSummaryReport:
     """
-    Test for getting a summary report for a database.
+    Tests for getting a summary report for a database.
     """
 
     def test_get_target(self, client: VWS) -> None:
