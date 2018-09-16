@@ -1,5 +1,5 @@
 """
-Tests for helper function for getting details of a target from a Vuforia
+Tests for helper function for getting a record of a target from a Vuforia
 database.
 """
 
@@ -11,18 +11,18 @@ from vws import VWS
 from vws.exceptions import UnknownTarget
 
 
-class TestGetTarget:
+class TestGetTargetRecord:
     """
-    Tests for getting details of a target.
+    Tests for getting a record of a target.
     """
 
-    def test_get_target(
+    def test_get_target_record(
         self,
         client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        Details of a target are returned by ``get_target``.
+        Details of a target are returned by ``get_target_record``.
         """
         target_id = client.add_target(
             name='x',
@@ -30,14 +30,7 @@ class TestGetTarget:
             image=high_quality_image,
         )
 
-        result = client.get_target(target_id=target_id)
-        expected_keys = {
-            'result_code',
-            'transaction_id',
-            'target_record',
-            'status',
-        }
-        assert result.keys() == expected_keys
+        result = client.get_target_record(target_id=target_id)
 
         expected_keys = {
             'target_id',
@@ -47,7 +40,8 @@ class TestGetTarget:
             'tracking_rating',
             'reco_rating',
         }
-        assert result['target_record'].keys() == expected_keys
+
+        assert result.keys() == expected_keys
 
     def test_no_such_target(
         self,
@@ -59,4 +53,4 @@ class TestGetTarget:
         does not exist.
         """
         with pytest.raises(UnknownTarget):
-            client.get_target(target_id='a')
+            client.get_target_record(target_id='a')

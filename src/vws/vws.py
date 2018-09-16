@@ -7,7 +7,7 @@ import io
 import json
 from enum import Enum
 from time import sleep
-from typing import Any, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import requests
@@ -169,6 +169,9 @@ class VWS:
         """
         Add a target to a Vuforia Web Services database.
 
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
+
         Args:
             name: The name of the target.
             width: The width of the target.
@@ -213,9 +216,12 @@ class VWS:
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
 
-    def get_target(self, target_id: str) -> Dict[str, Any]:
+    def get_target_record(self, target_id: str) -> Dict[str, Union[str, int]]:
         """
-        Get details of a given target.
+        Get a given target's target record from the Target Management System.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
 
         Args:
             target_id: The ID of the target to get details of.
@@ -234,7 +240,7 @@ class VWS:
 
         result_code = response.json()['result_code']
         if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return dict(response.json())
+            return dict(response.json()['target_record'])
 
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
@@ -279,6 +285,11 @@ class VWS:
             report = self.get_target_summary_report(target_id=target_id)
             if report['status'] != 'processing':
                 return
+
+            # We wait 0.2 seconds rather than less than that to decrease the
+            # number of calls made to the API, to decrease the likelihood of
+            # hitting the request quota.
+            sleep(0.2)
 
             # We wait 0.2 seconds rather than less than that to decrease the
             # number of calls made to the API, to decrease the likelihood of
