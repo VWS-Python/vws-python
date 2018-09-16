@@ -245,29 +245,6 @@ class VWS:
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)
 
-    def delete_target(self, target_id: str) -> None:
-        """
-        Delete a given target.
-
-        Args:
-            target_id: The ID of the target to delete.
-        """
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
-            method='DELETE',
-            content=b'',
-            request_path=f'/targets/{target_id}',
-            base_vws_url=self._base_vws_url,
-        )
-
-        result_code = response.json()['result_code']
-        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return
-
-        exception = _EXCEPTIONS[_ResultCodes(result_code)]
-        raise exception(response=response)
-
     @timeout_decorator.timeout(seconds=60 * 5)
     def wait_for_target_processed(self, target_id: str) -> None:
         """
@@ -360,3 +337,26 @@ class VWS:
         )
 
         return dict(response.json())
+
+    def delete_target(self, target_id: str) -> None:
+        """
+        Delete a given target.
+
+        Args:
+            target_id: The ID of the target to delete.
+        """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='DELETE',
+            content=b'',
+            request_path=f'/targets/{target_id}',
+            base_vws_url=self._base_vws_url,
+        )
+
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)

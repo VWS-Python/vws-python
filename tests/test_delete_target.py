@@ -9,7 +9,6 @@ import pytest
 from vws import VWS
 from vws.exceptions import TargetStatusProcessing, UnknownTarget
 
-
 class TestDelete:
     """
     Test for deleting a target.
@@ -45,24 +44,7 @@ class TestDelete:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        No exception is raised when adding one target.
-        """
-        target_id = client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-        )
-
-        client.wait_for_target_processed(target_id=target_id)
-        client.delete_target(target_id=target_id)
-
-    def test_delete_target_twice(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        No exception is raised when adding one target.
+        It is possible to delete a target.
         """
         target_id = client.add_target(
             name='x',
@@ -73,4 +55,4 @@ class TestDelete:
         client.wait_for_target_processed(target_id=target_id)
         client.delete_target(target_id=target_id)
         with pytest.raises(UnknownTarget):
-            client.delete_target(target_id=target_id)
+            client.get_target_record(target_id=target_id)
