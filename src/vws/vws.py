@@ -5,6 +5,7 @@ Tools for interacting with Vuforia APIs.
 import base64
 import io
 import json
+from enum import Enum
 from time import sleep
 from typing import Dict, List, Union
 from urllib.parse import urljoin
@@ -14,6 +15,7 @@ import timeout_decorator
 from requests import Response
 
 from vws._authorization import authorization_header, rfc_1123_date
+from vws.exceptions import UnknownTarget
 
 
 def _target_api_request(
@@ -72,6 +74,39 @@ def _target_api_request(
     )
 
     return response
+
+
+class _ResultCodes(Enum):
+    """
+    Constants representing various VWS result codes.
+
+    See
+    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
+
+    Some codes here are not documented in the above link.
+    """
+
+    SUCCESS = 'Success'
+    TARGET_CREATED = 'TargetCreated'
+    AUTHENTICATION_FAILURE = 'AuthenticationFailure'
+    REQUEST_TIME_TOO_SKEWED = 'RequestTimeTooSkewed'
+    TARGET_NAME_EXIST = 'TargetNameExist'
+    UNKNOWN_TARGET = 'UnknownTarget'
+    BAD_IMAGE = 'BadImage'
+    IMAGE_TOO_LARGE = 'ImageTooLarge'
+    METADATA_TOO_LARGE = 'MetadataTooLarge'
+    DATE_RANGE_ERROR = 'DateRangeError'
+    FAIL = 'Fail'
+    TARGET_STATUS_PROCESSING = 'TargetStatusProcessing'
+    REQUEST_QUOTA_REACHED = 'RequestQuotaReached'
+    TARGET_STATUS_NOT_SUCCESS = 'TargetStatusNotSuccess'
+    PROJECT_INACTIVE = 'ProjectInactive'
+    INACTIVE_PROJECT = 'InactiveProject'
+
+
+_EXCEPTIONS = {
+    _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
+}
 
 
 class VWS:
@@ -162,7 +197,12 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        return dict(response.json()['target_record'])
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return dict(response.json()['target_record'])
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
 
     @timeout_decorator.timeout(seconds=60 * 5)
     def wait_for_target_processed(self, target_id: str) -> None:
