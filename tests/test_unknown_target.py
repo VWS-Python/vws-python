@@ -3,7 +3,10 @@ Tests for passing invalid target IDs to helpers which require a target ID to
 be given.
 """
 
+import pytest
+
 from vws import VWS
+from vws.exceptions import UnknownTarget
 
 
 class TestInvalidGivenID:
@@ -24,4 +27,5 @@ class TestInvalidGivenID:
         )
 
         for func in funcs:
-            func(target_id='x')
+            with pytest.raises(UnknownTarget):
+                func(target_id='x')
