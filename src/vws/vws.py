@@ -28,7 +28,6 @@ from vws.exceptions import (
     RequestTimeTooSkewed,
     TargetNameExist,
     TargetStatusNotSuccess,
-    MetadataTooLarge,
     TargetStatusProcessing,
     UnknownTarget,
 )
