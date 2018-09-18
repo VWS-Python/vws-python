@@ -7,6 +7,7 @@ from typing import Any, Callable, Dict, Union
 
 import pytest
 from _pytest.fixtures import SubRequest
+from requests import codes
 
 from vws import VWS
 from vws.exceptions import UnknownTarget
@@ -53,5 +54,6 @@ def test_invalid_given_id(
     causes an ``UnknownTarget`` exception to be raised.
     """
     func = request.getfixturevalue(fixture)
-    with pytest.raises(UnknownTarget):
+    with pytest.raises(UnknownTarget) as exc:
         func(target_id='x')
+    assert exc.value.response.status_code == codes.NOT_FOUND
