@@ -5,6 +5,7 @@ Tools for interacting with Vuforia APIs.
 import base64
 import io
 import json
+from enum import Enum
 from time import sleep
 from typing import Dict, List, Union
 from urllib.parse import urljoin
@@ -14,6 +15,7 @@ import timeout_decorator
 from requests import Response
 
 from vws._authorization import authorization_header, rfc_1123_date
+from vws.exceptions import UnknownTarget
 
 
 def _target_api_request(
@@ -72,6 +74,39 @@ def _target_api_request(
     )
 
     return response
+
+
+class _ResultCodes(Enum):
+    """
+    Constants representing various VWS result codes.
+
+    See
+    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
+
+    Some codes here are not documented in the above link.
+    """
+
+    SUCCESS = 'Success'
+    TARGET_CREATED = 'TargetCreated'
+    AUTHENTICATION_FAILURE = 'AuthenticationFailure'
+    REQUEST_TIME_TOO_SKEWED = 'RequestTimeTooSkewed'
+    TARGET_NAME_EXIST = 'TargetNameExist'
+    UNKNOWN_TARGET = 'UnknownTarget'
+    BAD_IMAGE = 'BadImage'
+    IMAGE_TOO_LARGE = 'ImageTooLarge'
+    METADATA_TOO_LARGE = 'MetadataTooLarge'
+    DATE_RANGE_ERROR = 'DateRangeError'
+    FAIL = 'Fail'
+    TARGET_STATUS_PROCESSING = 'TargetStatusProcessing'
+    REQUEST_QUOTA_REACHED = 'RequestQuotaReached'
+    TARGET_STATUS_NOT_SUCCESS = 'TargetStatusNotSuccess'
+    PROJECT_INACTIVE = 'ProjectInactive'
+    INACTIVE_PROJECT = 'InactiveProject'
+
+
+_EXCEPTIONS = {
+    _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
+}
 
 
 class VWS:
@@ -162,7 +197,12 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        return dict(response.json()['target_record'])
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return dict(response.json()['target_record'])
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
 
     @timeout_decorator.timeout(seconds=60 * 5)
     def wait_for_target_processed(self, target_id: str) -> None:
@@ -181,11 +221,6 @@ class VWS:
             report = self.get_target_summary_report(target_id=target_id)
             if report['status'] != 'processing':
                 return
-
-            # We wait 0.2 seconds rather than less than that to decrease the
-            # number of calls made to the API, to decrease the likelihood of
-            # hitting the request quota.
-            sleep(0.2)
 
             # We wait 0.2 seconds rather than less than that to decrease the
             # number of calls made to the API, to decrease the likelihood of
@@ -232,7 +267,12 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        return dict(response.json())
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return dict(response.json())
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
 
     def get_database_summary_report(self) -> Dict[str, Union[str, int]]:
         """
@@ -259,3 +299,18 @@ class VWS:
         Args:
             target_id: The ID of the target to delete.
         """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='GET',
+            content=b'',
+            request_path=f'/summary/{target_id}',
+            base_vws_url=self._base_vws_url,
+        )
+
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
