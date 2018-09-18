@@ -272,7 +272,12 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        return dict(response.json())
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return dict(response.json())
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
 
     def get_database_summary_report(self) -> Dict[str, Union[str, int]]:
         """
