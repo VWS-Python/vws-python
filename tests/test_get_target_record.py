@@ -37,5 +37,4 @@ class TestGetTargetRecord:
             'tracking_rating',
             'reco_rating',
         }
-
         assert result.keys() == expected_keys
