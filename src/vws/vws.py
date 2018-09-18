@@ -256,6 +256,9 @@ class VWS:
         """
         Get a summary report for a target.
 
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Summary-Report.
+
         Args:
             target_id: The ID of the target to get a summary report for.
 
@@ -282,6 +285,9 @@ class VWS:
         """
         Get a summary report for the database.
 
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Get-a-Database-Summary-Report.
+
         Returns:
             Details of the database.
         """
@@ -299,6 +305,9 @@ class VWS:
     def delete_target(self, target_id: str) -> None:
         """
         Delete a given target.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Delete-a-Target.
 
         Args:
             target_id: The ID of the target to delete.
