@@ -181,7 +181,7 @@ class VWS:
         Get a given target's target record from the Target Management System.
 
         See
-        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Record.
 
         Args:
             target_id: The ID of the target to get details of.
@@ -231,6 +231,9 @@ class VWS:
     def list_targets(self) -> List[str]:
         """
         List target IDs.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Get-a-Target-List-for-a-Cloud-Database.
 
         Returns:
             The IDs of all targets in the database.
