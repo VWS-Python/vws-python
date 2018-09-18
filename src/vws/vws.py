@@ -15,7 +15,7 @@ import timeout_decorator
 from requests import Response
 
 from vws._authorization import authorization_header, rfc_1123_date
-from vws.exceptions import UnknownTarget
+from vws.exceptions import TargetStatusProcessing, UnknownTarget
 
 
 def _target_api_request(
@@ -106,6 +106,7 @@ class _ResultCodes(Enum):
 
 _EXCEPTIONS = {
     _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
+    _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
 }
 
 
@@ -302,9 +303,9 @@ class VWS:
         response = _target_api_request(
             server_access_key=self._server_access_key,
             server_secret_key=self._server_secret_key,
-            method='GET',
+            method='DELETE',
             content=b'',
-            request_path=f'/summary/{target_id}',
+            request_path=f'/targets/{target_id}',
             base_vws_url=self._base_vws_url,
         )
 
