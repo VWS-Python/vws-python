@@ -111,9 +111,11 @@ class TestName:
         the same name.
         """
         client.add_target(name='x', width=1, image=high_quality_image)
-
-        with pytest.raises(TargetNameExist):
+        with pytest.raises(TargetNameExist) as exc:
             client.add_target(name='x', width=1, image=high_quality_image)
+
+        assert exc.value.response.status_code == codes.FORBIDDEN
+
 
 
 class TestAuthentication:

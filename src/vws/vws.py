@@ -23,11 +23,15 @@ from vws.exceptions import (
     ImageTooLarge,
     InactiveProject,
     MetadataTooLarge,
+<<<<<<< HEAD
     ProjectInactive,
     RequestQuotaReached,
     RequestTimeTooSkewed,
     TargetNameExist,
     TargetStatusNotSuccess,
+=======
+    TargetNameExist,
+>>>>>>> origin/master
     TargetStatusProcessing,
     UnknownTarget,
 )
@@ -120,6 +124,7 @@ class _ResultCodes(Enum):
 
 
 _EXCEPTIONS = {
+<<<<<<< HEAD
     _ResultCodes.AUTHENTICATION_FAILURE: AuthenticationFailure,
     _ResultCodes.REQUEST_TIME_TOO_SKEWED: RequestTimeTooSkewed,
     _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
@@ -134,6 +139,12 @@ _EXCEPTIONS = {
     _ResultCodes.TARGET_STATUS_NOT_SUCCESS: TargetStatusNotSuccess,
     _ResultCodes.PROJECT_INACTIVE: ProjectInactive,
     _ResultCodes.INACTIVE_PROJECT: InactiveProject,
+=======
+    _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
+    _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
+    _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
+    _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
+>>>>>>> origin/master
 }
 
 
