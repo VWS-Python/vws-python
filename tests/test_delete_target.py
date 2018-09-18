@@ -10,6 +10,7 @@ from requests import codes
 from vws import VWS
 from vws.exceptions import TargetStatusProcessing, UnknownTarget
 
+
 class TestDelete:
     """
     Test for deleting a target.
