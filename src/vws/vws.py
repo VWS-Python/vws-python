@@ -17,6 +17,7 @@ from requests import Response
 from vws._authorization import authorization_header, rfc_1123_date
 from vws.exceptions import (
     MetadataTooLarge,
+    TargetNameExist,
     TargetStatusProcessing,
     UnknownTarget,
 )
@@ -109,9 +110,10 @@ class _ResultCodes(Enum):
 
 
 _EXCEPTIONS = {
-    _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
-    _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
     _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
+    _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
+    _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
+    _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
 }
 
 
