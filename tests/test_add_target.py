@@ -143,8 +143,8 @@ class TestAuthentication:
                     image=high_quality_image,
                 )
 
-            exception = exc.value
-            assert exception.response.status_code == codes.BAD_REQUEST
+        exception = exc.value
+        assert exception.response.status_code == codes.BAD_REQUEST
 
 
 class TestImage:
