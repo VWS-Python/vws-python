@@ -304,3 +304,18 @@ class VWS:
         Args:
             target_id: The ID of the target to delete.
         """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method='GET',
+            content=b'',
+            request_path=f'/summary/{target_id}',
+            base_vws_url=self._base_vws_url,
+        )
+
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
+            return dict(response.json())
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
