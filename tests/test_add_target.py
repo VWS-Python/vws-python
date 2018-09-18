@@ -89,6 +89,8 @@ class TestSuccess:
     ) -> None:
         """
         No exception is raised when adding two targets with different names.
+
+        This demonstrates that the image seek position is not changed.
         """
         client.add_target(name='x', width=1, image=high_quality_image)
         client.add_target(name='a', width=1, image=high_quality_image)
@@ -174,55 +176,6 @@ class TestImage:
             client.add_target(name='x', width=1, image=png_too_large)
 
 
-class TestApplicationMetadata:
-    """
-    Tests for the ``application_metadata`` parameter to ``add_target``.
-    """
-
-    def test_none(self, client: VWS, high_quality_image: io.BytesIO) -> None:
-        """
-        No exception is raised when ``None`` is given.
-        """
-        client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            application_metadata=None,
-        )
-
-    def test_given(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        No exception is raised when bytes are given.
-        """
-        client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            application_metadata=b'a',
-        )
-
-    def test_too_large(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``MetadataTooLarge`` exception is raised if the metadata given is too
-        large.
-        """
-        with pytest.raises(MetadataTooLarge):
-            client.add_target(
-                name='x',
-                width=1,
-                image=high_quality_image,
-                application_metadata=b'a' * 1024 * 1024,
-            )
-
-
 class TestCustomBaseURL:
     """
     Tests for adding images to databases under custom VWS URLs.
@@ -270,6 +223,56 @@ class TestInactiveProject:
                     width=1,
                     image=high_quality_image,
                 )
+
+class TestApplicationMetadata:
+    """
+    Tests for the ``application_metadata`` parameter to ``add_target``.
+    """
+
+    def test_none(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+        """
+        No exception is raised when ``None`` is given.
+        """
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=None,
+        )
+
+    def test_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        No exception is raised when bytes are given.
+        """
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=b'a',
+        )
+
+    def test_too_large(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        A ``MetadataTooLarge`` exception is raised if the metadata given is too
+        large.
+        """
+        with pytest.raises(MetadataTooLarge) as exc:
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+                application_metadata=b'a' * 1024 * 1024,
+            )
+
+        assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
 
 class TestActiveFlag:

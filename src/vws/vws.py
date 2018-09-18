@@ -28,6 +28,7 @@ from vws.exceptions import (
     RequestTimeTooSkewed,
     TargetNameExist,
     TargetStatusNotSuccess,
+    MetadataTooLarge,
     TargetStatusProcessing,
     UnknownTarget,
 )
@@ -165,6 +166,7 @@ class VWS:
         image: io.BytesIO,
         application_metadata: Optional[bytes] = None,
         active_flag: bool = True,
+        application_metadata: Optional[bytes] = None,
     ) -> str:
         """
         Add a target to a Vuforia Web Services database.
@@ -178,6 +180,8 @@ class VWS:
             image: The image of the target.
             application_metadata: The application metadata of the target.
             active_flag: Whether or not the target is active for query.
+            application_metadata: The application metadata of the target.
+                This will be base64 encoded.
 
         Returns:
             The target ID of the new target.
