@@ -6,8 +6,10 @@ import io
 
 import pytest
 from mock_vws import MockVWS
+from requests import codes
 
 from vws import VWS
+from vws.exceptions import MetadataTooLarge
 
 
 class TestSuccess:
@@ -42,6 +44,8 @@ class TestSuccess:
     ) -> None:
         """
         No exception is raised when adding two targets with different names.
+
+        This demonstrates that the image seek position is not changed.
         """
         client.add_target(name='x', width=1, image=high_quality_image)
         client.add_target(name='a', width=1, image=high_quality_image)
@@ -70,6 +74,57 @@ class TestCustomBaseURL:
                 width=1,
                 image=high_quality_image,
             )
+
+
+class TestApplicationMetadata:
+    """
+    Tests for the ``application_metadata`` parameter to ``add_target``.
+    """
+
+    def test_none(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+        """
+        No exception is raised when ``None`` is given.
+        """
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=None,
+        )
+
+    def test_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        No exception is raised when bytes are given.
+        """
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=b'a',
+        )
+
+    def test_too_large(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        A ``MetadataTooLarge`` exception is raised if the metadata given is too
+        large.
+        """
+        with pytest.raises(MetadataTooLarge) as exc:
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+                application_metadata=b'a' * 1024 * 1024,
+            )
+
+        assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
 
 class TestActiveFlag:

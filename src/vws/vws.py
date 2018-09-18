@@ -7,7 +7,7 @@ import io
 import json
 from enum import Enum
 from time import sleep
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import requests
@@ -15,7 +15,11 @@ import timeout_decorator
 from requests import Response
 
 from vws._authorization import authorization_header, rfc_1123_date
-from vws.exceptions import TargetStatusProcessing, UnknownTarget
+from vws.exceptions import (
+    MetadataTooLarge,
+    TargetStatusProcessing,
+    UnknownTarget,
+)
 
 
 def _target_api_request(
@@ -107,6 +111,7 @@ class _ResultCodes(Enum):
 _EXCEPTIONS = {
     _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
     _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
+    _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
 }
 
 
@@ -137,6 +142,7 @@ class VWS:
         width: Union[int, float],
         image: io.BytesIO,
         active_flag: bool = True,
+        application_metadata: Optional[bytes] = None,
     ) -> str:
         """
         Add a target to a Vuforia Web Services database.
@@ -149,18 +155,26 @@ class VWS:
             width: The width of the target.
             image: The image of the target.
             active_flag: Whether or not the target is active for query.
+            application_metadata: The application metadata of the target.
+                This will be base64 encoded.
 
         Returns:
             The target ID of the new target.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        if application_metadata is None:
+            metadata_encoded = None
+        else:
+            metadata_encoded_str = base64.b64encode(application_metadata)
+            metadata_encoded = metadata_encoded_str.decode('ascii')
 
         data = {
             'name': name,
             'width': width,
             'image': image_data_encoded,
             'active_flag': active_flag,
+            'application_metadata': metadata_encoded,
         }
 
         content = bytes(json.dumps(data), encoding='utf-8')
@@ -174,7 +188,12 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        return str(response.json()['target_id'])
+        result_code = response.json()['result_code']
+        if _ResultCodes(result_code) == _ResultCodes.TARGET_CREATED:
+            return str(response.json()['target_id'])
+
+        exception = _EXCEPTIONS[_ResultCodes(result_code)]
+        raise exception(response=response)
 
     def get_target_record(self, target_id: str) -> Dict[str, Union[str, int]]:
         """
