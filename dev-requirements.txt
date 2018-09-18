@@ -9,7 +9,7 @@ flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==1.0.0  # Require single quotes
 flake8==3.5.0  # Lint
 isort==4.3.4  # Lint imports
-mypy==0.620  # Type checking
+mypy==0.630  # Type checking
 pip_check_reqs==2.0.3
 pydocstyle==2.1.1  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
