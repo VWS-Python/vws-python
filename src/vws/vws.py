@@ -164,7 +164,6 @@ class VWS:
         name: str,
         width: Union[int, float],
         image: io.BytesIO,
-        application_metadata: Optional[bytes] = None,
         active_flag: bool = True,
         application_metadata: Optional[bytes] = None,
     ) -> str:
