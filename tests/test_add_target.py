@@ -224,6 +224,7 @@ class TestInactiveProject:
                     image=high_quality_image,
                 )
 
+
 class TestApplicationMetadata:
     """
     Tests for the ``application_metadata`` parameter to ``add_target``.
