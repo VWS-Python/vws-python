@@ -5,9 +5,11 @@ Tests for helper function for deleting a target from a Vuforia database.
 import io
 
 import pytest
+from requests import codes
 
 from vws import VWS
 from vws.exceptions import TargetStatusProcessing, UnknownTarget
+
 
 class TestDelete:
     """
@@ -20,7 +22,8 @@ class TestDelete:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        XXX
+        A ``TargetStatusProcessing`` exception is raised if trying to delete a
+        target which is processing.
         """
         target_id = client.add_target(
             name='x',
@@ -28,8 +31,10 @@ class TestDelete:
             image=high_quality_image,
         )
 
-        with pytest.raises(TargetStatusProcessing):
+        with pytest.raises(TargetStatusProcessing) as exc:
             client.delete_target(target_id=target_id)
+
+        assert exc.value.response.status_code == codes.FORBIDDEN
 
     def test_delete_target(
         self,
