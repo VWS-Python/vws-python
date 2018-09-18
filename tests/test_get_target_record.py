@@ -5,10 +5,7 @@ database.
 
 import io
 
-import pytest
-
 from vws import VWS
-from vws.exceptions import UnknownTarget
 
 
 class TestGetTargetRecord:

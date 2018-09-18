@@ -4,10 +4,7 @@ Tests for helper function for updating a target from a Vuforia database.
 
 import io
 
-import pytest
-
 from vws import VWS
-from vws.exceptions import UnknownTarget
 
 
 class TestUpdateTarget:
