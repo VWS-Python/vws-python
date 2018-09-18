@@ -227,11 +227,6 @@ class VWS:
             # hitting the request quota.
             sleep(0.2)
 
-            # We wait 0.2 seconds rather than less than that to decrease the
-            # number of calls made to the API, to decrease the likelihood of
-            # hitting the request quota.
-            sleep(0.2)
-
     def list_targets(self) -> List[str]:
         """
         List target IDs.
@@ -315,7 +310,7 @@ class VWS:
 
         result_code = response.json()['result_code']
         if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return dict(response.json())
+            return
 
         exception = _EXCEPTIONS[_ResultCodes(result_code)]
         raise exception(response=response)

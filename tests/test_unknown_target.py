@@ -3,7 +3,7 @@ Tests for passing invalid target IDs to helpers which require a target ID to
 be given.
 """
 
-from typing import Callable
+from typing import Any, Callable, Dict, Union
 
 import pytest
 from _pytest.fixtures import SubRequest
@@ -18,17 +18,20 @@ def _delete_target(client: VWS) -> Callable[[str], None]:
 
 
 @pytest.fixture()
-def _get_target_record(client: VWS) -> Callable[[str], None]:
+def _get_target_record(client: VWS,
+                       ) -> Callable[[str], Dict[str, Union[str, int]]]:
     return client.get_target_record
 
 
 @pytest.fixture()
-def _wait_for_target_processed(client: VWS) -> Callable[[str], None]:
+def _wait_for_target_processed(client: VWS) -> Any:
     return client.wait_for_target_processed
 
 
 @pytest.fixture()
-def _get_target_summary_report(client: VWS) -> Callable[[str], None]:
+def _get_target_summary_report(
+    client: VWS,
+) -> Callable[[str], Dict[str, Union[str, int]]]:
     return client.get_target_summary_report
 
 
