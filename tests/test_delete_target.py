@@ -14,13 +14,6 @@ class TestDelete:
     Test for deleting a target.
     """
 
-    def test_no_such_target(self, client: VWS) -> None:
-        """
-        An ``UnknownTarget`` exception is raised if an unknown target is given.
-        """
-        with pytest.raises(UnknownTarget):
-            client.delete_target(target_id='a')
-
     def test_target_processing(
         self,
         client: VWS,

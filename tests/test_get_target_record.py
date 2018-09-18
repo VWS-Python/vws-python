@@ -42,15 +42,3 @@ class TestGetTargetRecord:
         }
 
         assert result.keys() == expected_keys
-
-    def test_no_such_target(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        An ``UnknownTarget`` exception is raised when getting a target which
-        does not exist.
-        """
-        with pytest.raises(UnknownTarget):
-            client.get_target_record(target_id='a')
