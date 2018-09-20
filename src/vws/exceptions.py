@@ -97,21 +97,6 @@ class TargetStatusProcessing(Exception):
         self.response = response
 
 
-class ImageTooLarge(Exception):
-    """
-    Exception raised when Vuforia returns a response with a result code
-    'ImageTooLarge'.
-    """
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self.response = response
-
-
 class ProjectInactive(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -161,6 +146,21 @@ class TargetNameExist(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetNameExist'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self.response = response
+
+
+class ImageTooLarge(Exception):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'ImageTooLarge'.
     """
 
     def __init__(self, response: Response) -> None:
