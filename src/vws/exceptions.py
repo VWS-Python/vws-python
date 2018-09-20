@@ -4,6 +4,7 @@ Custom exceptions for Vuforia errors.
 
 from requests import Response
 
+
 _NAMES = [
     'Success',
     'TargetCreated',
@@ -28,8 +29,10 @@ _DOC_TEMPLATE = (
     "'{name}'."
 )
 
-def _INIT(self, response):
+
+def _INIT(self, response: Response):
     self.response = response
+
 
 for _NAME in _NAMES:
     _ATTRIBUTE_DICT = {
