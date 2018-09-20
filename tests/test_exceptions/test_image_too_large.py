@@ -7,7 +7,11 @@ import random
 from pathlib import Path
 
 import pytest
+from requests import codes
 from PIL import Image
+
+from vws import VWS
+from vws.exceptions import ImageTooLarge
 
 
 def make_image_file(
@@ -43,7 +47,7 @@ def make_image_file(
     return image_buffer
 
 
-def test_foo():
+def test_foo(client: VWS):
     width = height = 890
 
     png_too_large = make_image_file(
@@ -52,6 +56,8 @@ def test_foo():
         width=width,
         height=height,
     )
-    #
-    # with pytest.raises(ImageTooLarge):
-    #     client.add_target(name='x', width=1, image=png_too_large)
+
+    with pytest.raises(ImageTooLarge) as exc:
+        client.add_target(name='x', width=1, image=png_too_large)
+
+    assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY

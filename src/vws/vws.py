@@ -16,6 +16,7 @@ from requests import Response
 
 from vws._authorization import authorization_header, rfc_1123_date
 from vws.exceptions import (
+    ImageTooLarge,
     MetadataTooLarge,
     TargetNameExist,
     TargetStatusProcessing,
@@ -110,6 +111,7 @@ class _ResultCodes(Enum):
 
 
 _EXCEPTIONS = {
+    _ResultCodes.IMAGE_TOO_LARGE: ImageTooLarge,
     _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
     _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
     _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
