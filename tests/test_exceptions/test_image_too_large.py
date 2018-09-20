@@ -4,11 +4,10 @@ Tests for giving an image which is too large.
 
 import io
 import random
-from pathlib import Path
 
 import pytest
-from requests import codes
 from PIL import Image
+from requests import codes
 
 from vws import VWS
 from vws.exceptions import ImageTooLarge
@@ -47,7 +46,11 @@ def make_image_file(
     return image_buffer
 
 
-def test_foo(client: VWS):
+def test_image_too_large(client: VWS) -> None:
+    """
+    When giving an image which is too large, an ``ImageTooLarge`` exception is
+    raised.
+    """
     width = height = 890
 
     png_too_large = make_image_file(
