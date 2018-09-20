@@ -24,7 +24,7 @@ def make_image_file(
     Args:
         file_format: See
             http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
-        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
+        color_space: One of "L", "RGB", or "CMYK".
         width: The width, in pixels of the image.
         height: The width, in pixels of the image.
 
