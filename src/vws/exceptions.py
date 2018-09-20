@@ -4,7 +4,7 @@ Custom exceptions for Vuforia errors.
 
 from requests import Response
 
-names = [
+_NAMES = [
     'Success',
     'TargetCreated',
     'AuthenticationFailure',
@@ -23,5 +23,17 @@ names = [
     'InactiveProject',
 ]
 
-for name in names:
-    globals()[name] = type(name, (Exception, ), {})
+_DOC_TEMPLATE = (
+    "Exception raised when Vuforia returns a response with a result code"
+    "'{name}'."
+)
+
+def _INIT(self, response):
+    self.response = response
+
+for _NAME in _NAMES:
+    _ATTRIBUTE_DICT = {
+        '__doc__': _DOC_TEMPLATE.format(name=_NAME),
+        '__init__': _INIT,
+    }
+    globals()[_NAME] = type(_NAME, (Exception, ), _ATTRIBUTE_DICT)
