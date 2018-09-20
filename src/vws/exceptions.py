@@ -4,7 +4,6 @@ Custom exceptions for Vuforia errors.
 
 from requests import Response
 
-
 _NAMES = [
     'Success',
     'TargetCreated',
@@ -25,7 +24,7 @@ _NAMES = [
 ]
 
 _DOC_TEMPLATE = (
-    "Exception raised when Vuforia returns a response with a result code"
+    'Exception raised when Vuforia returns a response with a result code'
     "'{name}'."
 )
 
