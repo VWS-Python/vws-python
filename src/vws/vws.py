@@ -82,51 +82,24 @@ def _target_api_request(
     return response
 
 
-class _ResultCodes(Enum):
-    """
-    Constants representing various VWS result codes.
-
-    See
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
-
-    Some codes here are not documented in the above link.
-    """
-
-    SUCCESS = 'Success'
-    TARGET_CREATED = 'TargetCreated'
-    AUTHENTICATION_FAILURE = 'AuthenticationFailure'
-    REQUEST_TIME_TOO_SKEWED = 'RequestTimeTooSkewed'
-    TARGET_NAME_EXIST = 'TargetNameExist'
-    UNKNOWN_TARGET = 'UnknownTarget'
-    BAD_IMAGE = 'BadImage'
-    IMAGE_TOO_LARGE = 'ImageTooLarge'
-    METADATA_TOO_LARGE = 'MetadataTooLarge'
-    DATE_RANGE_ERROR = 'DateRangeError'
-    FAIL = 'Fail'
-    TARGET_STATUS_PROCESSING = 'TargetStatusProcessing'
-    REQUEST_QUOTA_REACHED = 'RequestQuotaReached'
-    TARGET_STATUS_NOT_SUCCESS = 'TargetStatusNotSuccess'
-    PROJECT_INACTIVE = 'ProjectInactive'
-    INACTIVE_PROJECT = 'InactiveProject'
-
-
 def _raise_for_result_code(
     response: Response,
-    expected_result_code: _ResultCodes,
+    expected_result_code: str,
 ) -> None:
     """
-    Raise an appropriate exception if
+    Raise an appropriate exception if the expected result code for a successful
+    request is not returned.
     """
-    result_code = _ResultCodes(response.json()['result_code'])
+    result_code = response.json()['result_code']
     if result_code == expected_result_code:
         return
 
     exception = {
-        _ResultCodes.IMAGE_TOO_LARGE: ImageTooLarge,
-        _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
-        _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
-        _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
-        _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
+        'ImageTooLarge': ImageTooLarge,
+        'MetadataTooLarge': MetadataTooLarge,
+        'TargetNameExist': TargetNameExist,
+        'TargetStatusProcessing': TargetStatusProcessing,
+        'UnknownTarget': UnknownTarget,
     }[result_code]
 
     raise exception(response=response)
@@ -207,7 +180,7 @@ class VWS:
 
         _raise_for_result_code(
             response=response,
-            expected_result_code=_ResultCodes.TARGET_CREATED,
+            expected_result_code='TargetCreated',
         )
 
         return str(response.json()['target_id'])
@@ -236,7 +209,7 @@ class VWS:
 
         _raise_for_result_code(
             response=response,
-            expected_result_code=_ResultCodes.SUCCESS,
+            expected_result_code='Success',
         )
         return dict(response.json()['target_record'])
 
@@ -284,7 +257,7 @@ class VWS:
 
         _raise_for_result_code(
             response=response,
-            expected_result_code=_ResultCodes.SUCCESS,
+            expected_result_code='Success',
         )
         return list(response.json()['results'])
 
@@ -315,7 +288,7 @@ class VWS:
 
         _raise_for_result_code(
             response=response,
-            expected_result_code=_ResultCodes.SUCCESS,
+            expected_result_code='Success',
         )
         return dict(response.json())
 
@@ -340,7 +313,7 @@ class VWS:
 
         _raise_for_result_code(
             response=response,
-            expected_result_code=_ResultCodes.SUCCESS,
+            expected_result_code='Success',
         )
 
         return dict(response.json())
@@ -366,5 +339,5 @@ class VWS:
 
         _raise_for_result_code(
             response=response,
-            expected_result_code=_ResultCodes.SUCCESS,
+            expected_result_code='Success',
         )
