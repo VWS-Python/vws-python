@@ -5,11 +5,9 @@ Tests for helper function for adding a target to a Vuforia database.
 import io
 
 import pytest
-from mock_vws import MockVWS, States
-from requests import codes
+from mock_vws import MockVWS
 
 from vws import VWS
-from vws.exceptions import MetadataTooLarge, ProjectInactive
 
 
 class TestSuccess:
@@ -81,9 +79,15 @@ class TestApplicationMetadata:
     Tests for the ``application_metadata`` parameter to ``add_target``.
     """
 
-    def test_none(self, client: VWS, high_quality_image: io.BytesIO) -> None:
+    @pytest.mark.parametrize('application_metadata', [None, b'a'])
+    def test_valid(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+        application_metadata: Optional[bytes],
+    ) -> None:
         """
-        No exception is raised when ``None`` is given.
+        No exception is raised when ``None`` or bytes is given.
         """
         client.add_target(
             name='x',
@@ -92,20 +96,6 @@ class TestApplicationMetadata:
             application_metadata=None,
         )
 
-    def test_given(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        No exception is raised when bytes are given.
-        """
-        client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            application_metadata=b'a',
-        )
 
 class TestActiveFlag:
     """

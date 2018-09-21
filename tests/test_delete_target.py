@@ -5,10 +5,9 @@ Tests for helper function for deleting a target from a Vuforia database.
 import io
 
 import pytest
-from requests import codes
 
 from vws import VWS
-from vws.exceptions import TargetStatusProcessing, UnknownTarget
+from vws.exceptions import UnknownTarget
 
 
 class TestDelete:

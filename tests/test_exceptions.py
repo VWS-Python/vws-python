@@ -15,10 +15,10 @@ from vws.exceptions import (
     BadImage,
     Fail,
     ImageTooLarge,
-    TargetNameExist,
-    TargetStatusProcessing,
     MetadataTooLarge,
     ProjectInactive,
+    TargetNameExist,
+    TargetStatusProcessing,
     UnknownTarget,
 )
 
@@ -136,6 +136,7 @@ def test_target_name_exist(
         client.add_target(name='x', width=1, image=high_quality_image)
 
     assert exc.value.response.status_code == codes.FORBIDDEN
+
 
 def test_project_inactive(client: VWS, high_quality_image: io.BytesIO) -> None:
     """
