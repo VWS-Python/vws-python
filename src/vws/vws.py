@@ -89,6 +89,11 @@ def _raise_for_result_code(
     """
     Raise an appropriate exception if the expected result code for a successful
     request is not returned.
+
+    Args:
+        response: A response from Vuforia.
+        expected_result_code: See
+            https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
     """
     result_code = response.json()['result_code']
     if result_code == expected_result_code:
