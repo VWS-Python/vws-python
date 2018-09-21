@@ -167,7 +167,6 @@ class VWS:
             name: The name of the target.
             width: The width of the target.
             image: The image of the target.
-            application_metadata: The application metadata of the target.
             active_flag: Whether or not the target is active for query.
             application_metadata: The application metadata of the target.
                 This will be base64 encoded.
