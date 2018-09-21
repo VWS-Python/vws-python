@@ -1,6 +1,5 @@
 """
-Tests for passing invalid target IDs to helpers which require a target ID to
-be given.
+Tests for various exceptions.
 """
 
 import pytest
@@ -18,3 +17,10 @@ def test_invalid_given_id(client: VWS) -> None:
     with pytest.raises(UnknownTarget) as exc:
         client.delete_target(target_id='x')
     assert exc.value.response.status_code == codes.NOT_FOUND
+
+
+def test_request_quota_reached() -> None:
+    """
+    See https://github.com/adamtheturtle/vws-python/issues/822 for writing
+    this test.
+    """
