@@ -3,58 +3,19 @@ Tests for helper function for adding a target to a Vuforia database.
 """
 
 import io
-import random
 
 import pytest
 from mock_vws import MockVWS, States
-from PIL import Image
 from requests import codes
 
 from vws import VWS
 from vws.exceptions import (
     BadImage,
     Fail,
-    ImageTooLarge,
     MetadataTooLarge,
     ProjectInactive,
     TargetNameExist,
 )
-
-
-def make_image_file(
-    file_format: str,
-    color_space: str,
-    width: int,
-    height: int,
-) -> io.BytesIO:
-    """
-    Return an image file in the given format and color space.
-
-    The image file is filled with randomly colored pixels.
-
-    Args:
-        file_format: See
-            http://pillow.readthedocs.io/en/3.1.x/handbook/image-file-formats.html
-        color_space: One of "L", "RGB", or "CMYK". "L" means greyscale.
-        width: The width, in pixels of the image.
-        height: The width, in pixels of the image.
-
-    Returns:
-        An image file in the given format and color space.
-    """
-    image_buffer = io.BytesIO()
-    image = Image.new(color_space, (width, height))
-    pixels = image.load()
-    for i in range(height):
-        for j in range(width):
-            red = random.randint(0, 255)
-            green = random.randint(0, 255)
-            blue = random.randint(0, 255)
-            if color_space != 'L':
-                pixels[j, i] = (red, green, blue)
-    image.save(image_buffer, file_format)
-    image_buffer.seek(0)
-    return image_buffer
 
 
 class TestSuccess:
@@ -117,7 +78,6 @@ class TestName:
         assert exc.value.response.status_code == codes.FORBIDDEN
 
 
-
 class TestAuthentication:
     """
     Tests for authentication issues.
@@ -159,23 +119,6 @@ class TestImage:
         not_an_image = io.BytesIO(b'Not an image')
         with pytest.raises(BadImage):
             client.add_target(name='x', width=1, image=not_an_image)
-
-    def test_image_too_large(self, client: VWS) -> None:
-        """
-        An ``ImageTooLarge`` exception is raised when the given image is too
-        large.
-        """
-        width = height = 890
-
-        png_too_large = make_image_file(
-            file_format='PNG',
-            color_space='RGB',
-            width=width,
-            height=height,
-        )
-
-        with pytest.raises(ImageTooLarge):
-            client.add_target(name='x', width=1, image=png_too_large)
 
 
 class TestCustomBaseURL:
