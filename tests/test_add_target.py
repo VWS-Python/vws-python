@@ -9,13 +9,7 @@ from mock_vws import MockVWS, States
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import (
-    BadImage,
-    Fail,
-    MetadataTooLarge,
-    ProjectInactive,
-    TargetNameExist,
-)
+from vws.exceptions import MetadataTooLarge, ProjectInactive
 
 
 class TestSuccess:
@@ -57,70 +51,6 @@ class TestSuccess:
         client.add_target(name='a', width=1, image=high_quality_image)
 
 
-class TestName:
-    """
-    Tests for the ``name`` parameter to ``add_target``.
-    """
-
-    def test_add_two_targets_same_name(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``TargetNameExist`` exception is raised after adding two targets with
-        the same name.
-        """
-        client.add_target(name='x', width=1, image=high_quality_image)
-        with pytest.raises(TargetNameExist) as exc:
-            client.add_target(name='x', width=1, image=high_quality_image)
-
-        assert exc.value.response.status_code == codes.FORBIDDEN
-
-
-class TestAuthentication:
-    """
-    Tests for authentication issues.
-    """
-
-    def test_authentication_error(
-        self,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``Fail`` exception is raised when there are authentication issues.
-        """
-        with MockVWS() as mock:
-            client = VWS(
-                server_access_key='a',
-                server_secret_key=mock.server_secret_key,
-            )
-
-            with pytest.raises(Fail) as exc:
-                client.add_target(
-                    name='x',
-                    width=1,
-                    image=high_quality_image,
-                )
-
-        exception = exc.value
-        assert exception.response.status_code == codes.BAD_REQUEST
-
-
-class TestImage:
-    """
-    Tests for the ``image`` parameter to ``add_target``.
-    """
-
-    def test_not_an_image(self, client: VWS) -> None:
-        """
-        A ``BadImage`` exception is raised when a non-image is given.
-        """
-        not_an_image = io.BytesIO(b'Not an image')
-        with pytest.raises(BadImage):
-            client.add_target(name='x', width=1, image=not_an_image)
-
-
 class TestCustomBaseURL:
     """
     Tests for adding images to databases under custom VWS URLs.
@@ -144,30 +74,6 @@ class TestCustomBaseURL:
                 width=1,
                 image=high_quality_image,
             )
-
-
-class TestInactiveProject:
-    """
-    Tests for using an inactive project.
-    """
-
-    def test_inactive_project(self, high_quality_image: io.BytesIO) -> None:
-        """
-        A ``ProjectInactive`` exception is raised if adding a target to an
-        inactive database.
-        """
-        with MockVWS(state=States.PROJECT_INACTIVE) as mock:
-            client = VWS(
-                server_access_key=mock.server_access_key,
-                server_secret_key=mock.server_secret_key,
-            )
-
-            with pytest.raises(ProjectInactive):
-                client.add_target(
-                    name='x',
-                    width=1,
-                    image=high_quality_image,
-                )
 
 
 class TestApplicationMetadata:

@@ -6,11 +6,19 @@ import io
 import random
 
 import pytest
+from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import ImageTooLarge, UnknownTarget
+from vws.exceptions import (
+    BadImage,
+    Fail,
+    ImageTooLarge,
+    TargetNameExist,
+    ProjectInactive,
+    UnknownTarget,
+)
 
 
 def _make_image_file(
@@ -65,6 +73,7 @@ def test_image_too_large(client: VWS) -> None:
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
+
 def test_invalid_given_id(client: VWS) -> None:
     """
     Giving an invalid ID to a helper which requires a target ID to be given
@@ -80,3 +89,66 @@ def test_request_quota_reached() -> None:
     See https://github.com/adamtheturtle/vws-python/issues/822 for writing
     this test.
     """
+
+
+def test_fail(high_quality_image: io.BytesIO) -> None:
+    """
+    A ``Fail`` exception is raised when there are authentication issues.
+    """
+    with MockVWS() as mock:
+        client = VWS(
+            server_access_key='a',
+            server_secret_key=mock.server_secret_key,
+        )
+
+        with pytest.raises(Fail) as exc:
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+        exception = exc.value
+        assert exception.response.status_code == codes.BAD_REQUEST
+
+
+def test_bad_image(client: VWS) -> None:
+    """
+    A ``BadImage`` exception is raised when a non-image is given.
+    """
+    not_an_image = io.BytesIO(b'Not an image')
+    with pytest.raises(BadImage):
+        client.add_target(name='x', width=1, image=not_an_image)
+
+
+def test_target_name_exist(
+    client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    A ``TargetNameExist`` exception is raised after adding two targets with
+    the same name.
+    """
+    client.add_target(name='x', width=1, image=high_quality_image)
+    with pytest.raises(TargetNameExist) as exc:
+        client.add_target(name='x', width=1, image=high_quality_image)
+
+    assert exc.value.response.status_code == codes.FORBIDDEN
+
+def test_project_inactive(client: VWS, high_quality_image: io.BytesIO) -> None:
+    """
+    A ``ProjectInactive`` exception is raised if adding a target to an
+    inactive database.
+    """
+    with MockVWS(state=States.PROJECT_INACTIVE) as mock:
+        client = VWS(
+            server_access_key=mock.server_access_key,
+            server_secret_key=mock.server_secret_key,
+        )
+
+        with pytest.raises(ProjectInactive):
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
