@@ -110,13 +110,26 @@ class _ResultCodes(Enum):
     INACTIVE_PROJECT = 'InactiveProject'
 
 
-_EXCEPTIONS = {
-    _ResultCodes.IMAGE_TOO_LARGE: ImageTooLarge,
-    _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
-    _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
-    _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
-    _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
-}
+def _raise_for_result_code(
+    response: Response,
+    expected_result_code: _ResultCodes,
+) -> None:
+    """
+    Raise an appropriate exception if
+    """
+    result_code = _ResultCodes(response.json()['result_code'])
+    if result_code == expected_result_code:
+        return
+
+    exception = {
+        _ResultCodes.IMAGE_TOO_LARGE: ImageTooLarge,
+        _ResultCodes.METADATA_TOO_LARGE: MetadataTooLarge,
+        _ResultCodes.TARGET_NAME_EXIST: TargetNameExist,
+        _ResultCodes.TARGET_STATUS_PROCESSING: TargetStatusProcessing,
+        _ResultCodes.UNKNOWN_TARGET: UnknownTarget,
+    }[result_code]
+
+    raise exception(response=response)
 
 
 class VWS:
@@ -192,12 +205,12 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        result_code = response.json()['result_code']
-        if _ResultCodes(result_code) == _ResultCodes.TARGET_CREATED:
-            return str(response.json()['target_id'])
+        _raise_for_result_code(
+            response=response,
+            expected_result_code=_ResultCodes.TARGET_CREATED,
+        )
 
-        exception = _EXCEPTIONS[_ResultCodes(result_code)]
-        raise exception(response=response)
+        return str(response.json()['target_id'])
 
     def get_target_record(self, target_id: str) -> Dict[str, Union[str, int]]:
         """
@@ -221,12 +234,11 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        result_code = response.json()['result_code']
-        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return dict(response.json()['target_record'])
-
-        exception = _EXCEPTIONS[_ResultCodes(result_code)]
-        raise exception(response=response)
+        _raise_for_result_code(
+            response=response,
+            expected_result_code=_ResultCodes.SUCCESS,
+        )
+        return dict(response.json()['target_record'])
 
     @timeout_decorator.timeout(seconds=60 * 5)
     def wait_for_target_processed(self, target_id: str) -> None:
@@ -270,6 +282,10 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
+        _raise_for_result_code(
+            response=response,
+            expected_result_code=_ResultCodes.SUCCESS,
+        )
         return list(response.json()['results'])
 
     def get_target_summary_report(
@@ -297,12 +313,11 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        result_code = response.json()['result_code']
-        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return dict(response.json())
-
-        exception = _EXCEPTIONS[_ResultCodes(result_code)]
-        raise exception(response=response)
+        _raise_for_result_code(
+            response=response,
+            expected_result_code=_ResultCodes.SUCCESS,
+        )
+        return dict(response.json())
 
     def get_database_summary_report(self) -> Dict[str, Union[str, int]]:
         """
@@ -321,6 +336,11 @@ class VWS:
             content=b'',
             request_path='/summary',
             base_vws_url=self._base_vws_url,
+        )
+
+        _raise_for_result_code(
+            response=response,
+            expected_result_code=_ResultCodes.SUCCESS,
         )
 
         return dict(response.json())
@@ -344,9 +364,7 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        result_code = response.json()['result_code']
-        if _ResultCodes(result_code) == _ResultCodes.SUCCESS:
-            return
-
-        exception = _EXCEPTIONS[_ResultCodes(result_code)]
-        raise exception(response=response)
+        _raise_for_result_code(
+            response=response,
+            expected_result_code=_ResultCodes.SUCCESS,
+        )
