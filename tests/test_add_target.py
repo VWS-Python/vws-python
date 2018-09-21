@@ -107,26 +107,6 @@ class TestApplicationMetadata:
             application_metadata=b'a',
         )
 
-    def test_too_large(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``MetadataTooLarge`` exception is raised if the metadata given is too
-        large.
-        """
-        with pytest.raises(MetadataTooLarge) as exc:
-            client.add_target(
-                name='x',
-                width=1,
-                image=high_quality_image,
-                application_metadata=b'a' * 1024 * 1024,
-            )
-
-        assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
-
-
 class TestActiveFlag:
     """
     Tests for the ``active_flag`` parameter to ``add_target``.

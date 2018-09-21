@@ -16,6 +16,8 @@ from vws.exceptions import (
     Fail,
     ImageTooLarge,
     TargetNameExist,
+    TargetStatusProcessing,
+    MetadataTooLarge,
     ProjectInactive,
     UnknownTarget,
 )
@@ -146,9 +148,50 @@ def test_project_inactive(client: VWS, high_quality_image: io.BytesIO) -> None:
             server_secret_key=mock.server_secret_key,
         )
 
-        with pytest.raises(ProjectInactive):
+        with pytest.raises(ProjectInactive) as exc:
             client.add_target(
                 name='x',
                 width=1,
                 image=high_quality_image,
             )
+
+    assert exc.value.response.status_code == codes.FORBIDDEN
+
+
+def test_target_status_processing(
+    client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    A ``TargetStatusProcessing`` exception is raised if trying to delete a
+    target which is processing.
+    """
+    target_id = client.add_target(
+        name='x',
+        width=1,
+        image=high_quality_image,
+    )
+
+    with pytest.raises(TargetStatusProcessing) as exc:
+        client.delete_target(target_id=target_id)
+
+    assert exc.value.response.status_code == codes.FORBIDDEN
+
+
+def test_metadata_too_large(
+    client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    A ``MetadataTooLarge`` exception is raised if the metadata given is too
+    large.
+    """
+    with pytest.raises(MetadataTooLarge) as exc:
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=b'a' * 1024 * 1024,
+        )
+
+    assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
