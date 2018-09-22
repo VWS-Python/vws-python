@@ -94,7 +94,7 @@ class TestApplicationMetadata:
             name='x',
             width=1,
             image=high_quality_image,
-            application_metadata=None,
+            application_metadata=application_metadata,
         )
 
 
