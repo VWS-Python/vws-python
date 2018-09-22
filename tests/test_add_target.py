@@ -10,9 +10,9 @@ from mock_vws import MockVWS
 from vws import VWS
 
 
-class TestSuccess:
+class TestAddTarget:
     """
-    Tests for successfully adding a target.
+    Tests for adding a target.
     """
 
     def test_add_target(
@@ -49,9 +49,9 @@ class TestSuccess:
         client.add_target(name='a', width=1, image=high_quality_image)
 
 
-class TestCustomBaseURL:
+class TestCustomBaseVWSURL:
     """
-    Tests for adding images to databases under custom VWS URLs.
+    Tests for using a custom base VWS URL.
     """
 
     def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
