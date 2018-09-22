@@ -9,7 +9,7 @@ from mock_vws import MockVWS
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import MetadataTooLarge, TargetNameExist
+from vws.exceptions import TargetNameExist
 
 
 class TestSuccess:
@@ -128,25 +128,6 @@ class TestApplicationMetadata:
             image=high_quality_image,
             application_metadata=b'a',
         )
-
-    def test_too_large(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``MetadataTooLarge`` exception is raised if the metadata given is too
-        large.
-        """
-        with pytest.raises(MetadataTooLarge) as exc:
-            client.add_target(
-                name='x',
-                width=1,
-                image=high_quality_image,
-                application_metadata=b'a' * 1024 * 1024,
-            )
-
-        assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
 
 class TestActiveFlag:
