@@ -119,8 +119,10 @@ def test_bad_image(client: VWS) -> None:
     A ``BadImage`` exception is raised when a non-image is given.
     """
     not_an_image = io.BytesIO(b'Not an image')
-    with pytest.raises(BadImage):
+    with pytest.raises(BadImage) as exc:
         client.add_target(name='x', width=1, image=not_an_image)
+
+    assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
 
 def test_target_name_exist(
