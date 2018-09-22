@@ -3,6 +3,7 @@ Tests for helper function for adding a target to a Vuforia database.
 """
 
 import io
+from typing import Optional
 
 import pytest
 from mock_vws import MockVWS
