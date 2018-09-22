@@ -6,7 +6,7 @@ import io
 import random
 
 import pytest
-from mock_vws import MockVWS
+from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
 
@@ -16,6 +16,7 @@ from vws.exceptions import (
     Fail,
     ImageTooLarge,
     MetadataTooLarge,
+    ProjectInactive,
     TargetNameExist,
     TargetStatusProcessing,
     UnknownTarget,
@@ -134,6 +135,27 @@ def test_target_name_exist(
     client.add_target(name='x', width=1, image=high_quality_image)
     with pytest.raises(TargetNameExist) as exc:
         client.add_target(name='x', width=1, image=high_quality_image)
+
+    assert exc.value.response.status_code == codes.FORBIDDEN
+
+
+def test_project_inactive(client: VWS, high_quality_image: io.BytesIO) -> None:
+    """
+    A ``ProjectInactive`` exception is raised if adding a target to an
+    inactive database.
+    """
+    with MockVWS(state=States.PROJECT_INACTIVE) as mock:
+        client = VWS(
+            server_access_key=mock.server_access_key,
+            server_secret_key=mock.server_secret_key,
+        )
+
+        with pytest.raises(ProjectInactive) as exc:
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
 
     assert exc.value.response.status_code == codes.FORBIDDEN
 
