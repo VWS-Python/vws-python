@@ -9,6 +9,7 @@ import pytest
 from mock_vws import MockVWS
 
 from vws import VWS
+from vws.exceptions import UnknownTarget
 
 
 class TestAddTarget:
@@ -109,3 +110,44 @@ class TestCustomBaseVWSURL:
                 width=1,
                 image=high_quality_image,
             )
+
+class TestListTargets:
+    """
+    Tests for listing targets.
+    """
+
+    def test_list_targets(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to get a list of target IDs.
+        """
+        id_1 = client.add_target(name='x', width=1, image=high_quality_image)
+        id_2 = client.add_target(name='a', width=1, image=high_quality_image)
+        assert sorted(client.list_targets()) == sorted([id_1, id_2])
+
+class TestDelete:
+    """
+    Test for deleting a target.
+    """
+
+    def test_delete_target(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to delete a target.
+        """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+
+        client.wait_for_target_processed(target_id=target_id)
+        client.delete_target(target_id=target_id)
+        with pytest.raises(UnknownTarget):
+            client.get_target_record(target_id=target_id)
