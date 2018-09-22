@@ -5,7 +5,6 @@ Tools for interacting with Vuforia APIs.
 import base64
 import io
 import json
-from enum import Enum
 from time import sleep
 from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
