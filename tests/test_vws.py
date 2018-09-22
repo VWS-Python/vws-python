@@ -111,6 +111,7 @@ class TestCustomBaseVWSURL:
                 image=high_quality_image,
             )
 
+
 class TestListTargets:
     """
     Tests for listing targets.
@@ -127,6 +128,7 @@ class TestListTargets:
         id_1 = client.add_target(name='x', width=1, image=high_quality_image)
         id_2 = client.add_target(name='a', width=1, image=high_quality_image)
         assert sorted(client.list_targets()) == sorted([id_1, id_2])
+
 
 class TestDelete:
     """
