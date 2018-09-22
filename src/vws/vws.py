@@ -16,6 +16,7 @@ from requests import Response
 from vws._authorization import authorization_header, rfc_1123_date
 from vws.exceptions import (
     BadImage,
+    Fail,
     ImageTooLarge,
     MetadataTooLarge,
     TargetNameExist,
@@ -101,6 +102,7 @@ def _raise_for_result_code(
 
     exception = {
         'BadImage': BadImage,
+        'Fail': Fail,
         'ImageTooLarge': ImageTooLarge,
         'MetadataTooLarge': MetadataTooLarge,
         'TargetNameExist': TargetNameExist,
