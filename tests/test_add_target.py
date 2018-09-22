@@ -64,7 +64,7 @@ class TestAddTarget:
             name='x',
             width=1,
             image=high_quality_image,
-            application_metadata=None,
+            application_metadata=application_metadata,
         )
 
     @pytest.mark.parametrize('active_flag', [True, False])
