@@ -1,19 +1,29 @@
 """
-Tests for giving an image which is too large.
+Tests for various exceptions.
 """
 
 import io
 import random
 
 import pytest
+from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import ImageTooLarge
+from vws.exceptions import (
+    BadImage,
+    Fail,
+    ImageTooLarge,
+    MetadataTooLarge,
+    ProjectInactive,
+    TargetNameExist,
+    TargetStatusProcessing,
+    UnknownTarget,
+)
 
 
-def make_image_file(
+def _make_image_file(
     file_format: str,
     color_space: str,
     width: int,
@@ -53,7 +63,7 @@ def test_image_too_large(client: VWS) -> None:
     """
     width = height = 890
 
-    png_too_large = make_image_file(
+    png_too_large = _make_image_file(
         file_format='PNG',
         color_space='RGB',
         width=width,
@@ -64,3 +74,20 @@ def test_image_too_large(client: VWS) -> None:
         client.add_target(name='x', width=1, image=png_too_large)
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+
+
+def test_invalid_given_id(client: VWS) -> None:
+    """
+    Giving an invalid ID to a helper which requires a target ID to be given
+    causes an ``UnknownTarget`` exception to be raised.
+    """
+    with pytest.raises(UnknownTarget) as exc:
+        client.delete_target(target_id='x')
+    assert exc.value.response.status_code == codes.NOT_FOUND
+
+
+def test_request_quota_reached() -> None:
+    """
+    See https://github.com/adamtheturtle/vws-python/issues/822 for writing
+    this test.
+    """
