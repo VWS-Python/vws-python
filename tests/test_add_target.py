@@ -111,22 +111,6 @@ class TestActiveFlag:
     Tests for the ``active_flag`` parameter to ``add_target``.
     """
 
-    def test_default(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        By default, the active flag is set to ``True``.
-        """
-        target_id = client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-        )
-        target_record = client.get_target_record(target_id=target_id)
-        assert target_record['active_flag'] is True
-
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_given(
         self,
