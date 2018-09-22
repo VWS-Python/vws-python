@@ -110,8 +110,7 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
                 image=high_quality_image,
             )
 
-        exception = exc.value
-        assert exception.response.status_code == codes.BAD_REQUEST
+        assert exc.value.response.status_code == codes.BAD_REQUEST
 
 
 def test_bad_image(client: VWS) -> None:
