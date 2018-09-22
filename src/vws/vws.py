@@ -130,6 +130,46 @@ class VWS:
         self._server_secret_key = server_secret_key.encode()
         self._base_vws_url = base_vws_url
 
+    def _make_request(
+        self,
+        method: str,
+        content: bytes,
+        request_path: str,
+        expected_result_code: str,
+    ) -> Response:
+        """
+        Make a request to the Vuforia Target API.
+
+        This uses `requests` to make a request against https://vws.vuforia.com.
+        The content type of the request will be `application/json`.
+
+        Args:
+            method: The HTTP method which will be used in the request.
+            content: The request body which will be used in the request.
+            request_path: The path to the endpoint which will be used in the
+                request.
+            expected_result_code: See
+                https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
+
+        Returns:
+            The response to the request made by `requests`.
+        """
+        response = _target_api_request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
+            method=method,
+            content=content,
+            request_path=request_path,
+            base_vws_url=self._base_vws_url,
+        )
+
+        _raise_for_result_code(
+            response=response,
+            expected_result_code=expected_result_code,
+        )
+
+        return response
+
     def add_target(
         self,
         name: str,
@@ -173,17 +213,10 @@ class VWS:
 
         content = bytes(json.dumps(data), encoding='utf-8')
 
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
+        response = self._make_request(
             method='POST',
             content=content,
             request_path='/targets',
-            base_vws_url=self._base_vws_url,
-        )
-
-        _raise_for_result_code(
-            response=response,
             expected_result_code='TargetCreated',
         )
 
@@ -202,19 +235,13 @@ class VWS:
         Returns:
             Response details of a target from Vuforia.
         """
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
+        response = self._make_request(
             method='GET',
             content=b'',
             request_path=f'/targets/{target_id}',
-            base_vws_url=self._base_vws_url,
-        )
-
-        _raise_for_result_code(
-            response=response,
             expected_result_code='Success',
         )
+
         return dict(response.json()['target_record'])
 
     @timeout_decorator.timeout(seconds=60 * 5)
@@ -250,19 +277,13 @@ class VWS:
         Returns:
             The IDs of all targets in the database.
         """
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
+        response = self._make_request(
             method='GET',
             content=b'',
             request_path='/targets',
-            base_vws_url=self._base_vws_url,
-        )
-
-        _raise_for_result_code(
-            response=response,
             expected_result_code='Success',
         )
+
         return list(response.json()['results'])
 
     def get_target_summary_report(
@@ -281,19 +302,13 @@ class VWS:
         Returns:
             Details of the target.
         """
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
+        response = self._make_request(
             method='GET',
             content=b'',
             request_path=f'/summary/{target_id}',
-            base_vws_url=self._base_vws_url,
-        )
-
-        _raise_for_result_code(
-            response=response,
             expected_result_code='Success',
         )
+
         return dict(response.json())
 
     def get_database_summary_report(self) -> Dict[str, Union[str, int]]:
@@ -306,17 +321,10 @@ class VWS:
         Returns:
             Details of the database.
         """
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
+        response = self._make_request(
             method='GET',
             content=b'',
             request_path='/summary',
-            base_vws_url=self._base_vws_url,
-        )
-
-        _raise_for_result_code(
-            response=response,
             expected_result_code='Success',
         )
 
@@ -332,16 +340,9 @@ class VWS:
         Args:
             target_id: The ID of the target to delete.
         """
-        response = _target_api_request(
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
+        self._make_request(
             method='DELETE',
             content=b'',
             request_path=f'/targets/{target_id}',
-            base_vws_url=self._base_vws_url,
-        )
-
-        _raise_for_result_code(
-            response=response,
             expected_result_code='Success',
         )
