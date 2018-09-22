@@ -49,6 +49,43 @@ class TestAddTarget:
         client.add_target(name='x', width=1, image=high_quality_image)
         client.add_target(name='a', width=1, image=high_quality_image)
 
+    @pytest.mark.parametrize('application_metadata', [None, b'a'])
+    def test_valid_metadata(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+        application_metadata: Optional[bytes],
+    ) -> None:
+        """
+        No exception is raised when ``None`` or bytes is given.
+        """
+        client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            application_metadata=application_metadata,
+        )
+
+
+    @pytest.mark.parametrize('active_flag', [True, False])
+    def test_active_flag_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+        active_flag: bool,
+    ) -> None:
+        """
+        It is possible to set the active flag to a boolean value.
+        """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            active_flag=active_flag,
+        )
+        target_record = client.get_target_record(target_id=target_id)
+        assert target_record['active_flag'] is active_flag
+
 
 class TestCustomBaseVWSURL:
     """
@@ -73,51 +110,3 @@ class TestCustomBaseVWSURL:
                 width=1,
                 image=high_quality_image,
             )
-
-
-class TestApplicationMetadata:
-    """
-    Tests for the ``application_metadata`` parameter to ``add_target``.
-    """
-
-    @pytest.mark.parametrize('application_metadata', [None, b'a'])
-    def test_valid_metadata(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-        application_metadata: Optional[bytes],
-    ) -> None:
-        """
-        No exception is raised when ``None`` or bytes is given.
-        """
-        client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            application_metadata=application_metadata,
-        )
-
-
-class TestActiveFlag:
-    """
-    Tests for the ``active_flag`` parameter to ``add_target``.
-    """
-
-    @pytest.mark.parametrize('active_flag', [True, False])
-    def test_active_flag_given(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-        active_flag: bool,
-    ) -> None:
-        """
-        It is possible to set the active flag to a boolean value.
-        """
-        target_id = client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            active_flag=active_flag,
-        )
-        target_record = client.get_target_record(target_id=target_id)
-        assert target_record['active_flag'] is active_flag
