@@ -138,7 +138,21 @@ class VWS:
         expected_result_code: str,
     ) -> Response:
         """
-        XXX
+        Make a request to the Vuforia Target API.
+
+        This uses `requests` to make a request against https://vws.vuforia.com.
+        The content type of the request will be `application/json`.
+
+        Args:
+            method: The HTTP method which will be used in the request.
+            content: The request body which will be used in the request.
+            request_path: The path to the endpoint which will be used in the
+                request.
+            expected_result_code: See
+                https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
+
+        Returns:
+            The response to the request made by `requests`.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
