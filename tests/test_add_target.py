@@ -66,7 +66,6 @@ class TestAddTarget:
             application_metadata=application_metadata,
         )
 
-
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag_given(
         self,
