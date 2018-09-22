@@ -6,21 +6,11 @@ import io
 import random
 
 import pytest
-from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
 
 from vws import VWS
-from vws.exceptions import (
-    BadImage,
-    Fail,
-    ImageTooLarge,
-    MetadataTooLarge,
-    ProjectInactive,
-    TargetNameExist,
-    TargetStatusProcessing,
-    UnknownTarget,
-)
+from vws.exceptions import ImageTooLarge, UnknownTarget
 
 
 def _make_image_file(
