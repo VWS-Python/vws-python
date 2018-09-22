@@ -11,8 +11,10 @@ from requests import codes
 
 from vws import VWS
 from vws.exceptions import (
+    BadImage,
     ImageTooLarge,
     MetadataTooLarge,
+    TargetNameExist,
     TargetStatusProcessing,
     UnknownTarget,
 )
@@ -86,6 +88,32 @@ def test_request_quota_reached() -> None:
     See https://github.com/adamtheturtle/vws-python/issues/822 for writing
     this test.
     """
+
+
+def test_bad_image(client: VWS) -> None:
+    """
+    A ``BadImage`` exception is raised when a non-image is given.
+    """
+    not_an_image = io.BytesIO(b'Not an image')
+    with pytest.raises(BadImage) as exc:
+        client.add_target(name='x', width=1, image=not_an_image)
+
+    assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+
+
+def test_target_name_exist(
+    client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    A ``TargetNameExist`` exception is raised after adding two targets with
+    the same name.
+    """
+    client.add_target(name='x', width=1, image=high_quality_image)
+    with pytest.raises(TargetNameExist) as exc:
+        client.add_target(name='x', width=1, image=high_quality_image)
+
+    assert exc.value.response.status_code == codes.FORBIDDEN
 
 
 def test_target_status_processing(
