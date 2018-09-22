@@ -340,7 +340,7 @@ class VWS:
         Args:
             target_id: The ID of the target to delete.
         """
-        response = self._make_request(
+        self._make_request(
             method='DELETE',
             content=b'',
             request_path=f'/targets/{target_id}',
