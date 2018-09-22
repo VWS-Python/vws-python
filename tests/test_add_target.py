@@ -6,10 +6,8 @@ import io
 
 import pytest
 from mock_vws import MockVWS
-from requests import codes
 
 from vws import VWS
-from vws.exceptions import TargetNameExist
 
 
 class TestSuccess:
@@ -49,28 +47,6 @@ class TestSuccess:
         """
         client.add_target(name='x', width=1, image=high_quality_image)
         client.add_target(name='a', width=1, image=high_quality_image)
-
-
-class TestName:
-    """
-    Tests for the ``name`` parameter to ``add_target``.
-    """
-
-    def test_add_two_targets_same_name(
-        self,
-        client: VWS,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``TargetNameExist`` exception is raised after adding two targets with
-        the same name.
-        """
-        client.add_target(name='x', width=1, image=high_quality_image)
-
-        with pytest.raises(TargetNameExist) as exc:
-            client.add_target(name='x', width=1, image=high_quality_image)
-
-        assert exc.value.response.status_code == codes.FORBIDDEN
 
 
 class TestCustomBaseURL:
