@@ -6,12 +6,14 @@ import io
 import random
 
 import pytest
+from mock_vws import MockVWS
 from PIL import Image
 from requests import codes
 
 from vws import VWS
 from vws.exceptions import (
     BadImage,
+    Fail,
     ImageTooLarge,
     MetadataTooLarge,
     TargetNameExist,
@@ -88,6 +90,26 @@ def test_request_quota_reached() -> None:
     See https://github.com/adamtheturtle/vws-python/issues/822 for writing
     this test.
     """
+
+
+def test_fail(high_quality_image: io.BytesIO) -> None:
+    """
+    A ``Fail`` exception is raised when there are authentication issues.
+    """
+    with MockVWS() as mock:
+        client = VWS(
+            server_access_key='a',
+            server_secret_key=mock.server_secret_key,
+        )
+
+        with pytest.raises(Fail) as exc:
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+        assert exc.value.response.status_code == codes.BAD_REQUEST
 
 
 def test_bad_image(client: VWS) -> None:

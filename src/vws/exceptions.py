@@ -20,6 +20,21 @@ class UnknownTarget(Exception):
         self.response = response
 
 
+class Fail(Exception):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'Fail'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self.response = response
+
+
 class BadImage(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
