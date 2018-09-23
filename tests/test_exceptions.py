@@ -4,12 +4,15 @@ Tests for various exceptions.
 
 import io
 import random
+from datetime import datetime, timedelta
 
 import pytest
+import pytz
 from mock_vws import MockVWS, States
 from PIL import Image
 from requests import codes
 
+from freezegun import freeze_time
 from vws import VWS
 from vws.exceptions import (
     BadImage,
@@ -197,3 +200,14 @@ def test_metadata_too_large(
         )
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+
+
+def test_request_time_too_skewed(client: VWS) -> None:
+    vws_max_time_skew = timedelta(minutes=5)
+    leeway = timedelta(seconds=10)
+    time_difference_from_now = vws_max_time_skew + leeway
+    gmt = pytz.timezone('GMT')
+    with freeze_time(datetime.now(tz=gmt) + time_difference_from_now):
+        client.list_targets()
+        # with pytest.raises(RequestTimeTooSkewed):
+        #     pass
