@@ -203,11 +203,13 @@ def test_metadata_too_large(
 
 
 def test_request_time_too_skewed(client: VWS) -> None:
+    # TODO Use a flask-based mock so it is not affected by the time freeze
+    # or :( monkeypatch the time getting thing
     vws_max_time_skew = timedelta(minutes=5)
     leeway = timedelta(seconds=10)
     time_difference_from_now = vws_max_time_skew + leeway
     gmt = pytz.timezone('GMT')
     with freeze_time(datetime.now(tz=gmt) + time_difference_from_now):
-        client.list_targets()
+        client.get_target_record(target_id='a')
         # with pytest.raises(RequestTimeTooSkewed):
         #     pass
