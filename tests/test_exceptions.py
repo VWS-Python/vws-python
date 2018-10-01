@@ -6,7 +6,9 @@ import io
 import random
 
 import pytest
-from mock_vws import MockVWS, States
+from mock_vws import MockVWS
+from mock_vws.database import VuforiaDatabase
+from mock_vws.states import States
 from PIL import Image
 from requests import codes
 
@@ -97,10 +99,10 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
     """
     A ``Fail`` exception is raised when there are authentication issues.
     """
-    with MockVWS() as mock:
+    with MockVWS():
         client = VWS(
             server_access_key='a',
-            server_secret_key=mock.server_secret_key,
+            server_secret_key='a',
         )
 
         with pytest.raises(Fail) as exc:
@@ -144,10 +146,12 @@ def test_project_inactive(client: VWS, high_quality_image: io.BytesIO) -> None:
     A ``ProjectInactive`` exception is raised if adding a target to an
     inactive database.
     """
-    with MockVWS(state=States.PROJECT_INACTIVE) as mock:
+    database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
+    with MockVWS() as mock:
+        mock.add_database(database=database)
         client = VWS(
-            server_access_key=mock.server_access_key,
-            server_secret_key=mock.server_secret_key,
+            server_access_key=database.server_access_key.decode(),
+            server_secret_key=database.server_secret_key.decode(),
         )
 
         with pytest.raises(ProjectInactive) as exc:
