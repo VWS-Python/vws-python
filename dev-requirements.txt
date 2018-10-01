@@ -1,6 +1,6 @@
 PyYAML==3.13
 Pygments==2.2.0
-VWS-Python-Mock==2018.9.23.1
+VWS-Python-Mock==2018.10.1.1
 autoflake==1.2
 check-manifest==0.37
 codecov==2.0.15 # Upload coverage data
