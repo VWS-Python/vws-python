@@ -6,6 +6,7 @@ from typing import Iterator
 
 import pytest
 from mock_vws import MockVWS
+from mock_vws.database import VuforiaDatabase
 
 from vws import VWS
 
@@ -20,9 +21,11 @@ def client() -> Iterator[VWS]:
     Yield a VWS client which connects to a mock.
     """
     with MockVWS() as mock:
+        database = VuforiaDatabase()
+        mock.add_database(database=database)
         vws_client = VWS(
-            server_access_key=mock.server_access_key,
-            server_secret_key=mock.server_secret_key,
+            server_access_key=database.server_access_key.decode(),
+            server_secret_key=database.server_secret_key.decode(),
         )
 
         yield vws_client

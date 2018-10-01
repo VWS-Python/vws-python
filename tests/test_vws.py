@@ -7,6 +7,7 @@ from typing import Optional
 
 import pytest
 from mock_vws import MockVWS
+from mock_vws.database import VuforiaDatabase
 
 from vws import VWS
 from vws.exceptions import UnknownTarget
@@ -99,9 +100,11 @@ class TestCustomBaseVWSURL:
         """
         base_vws_url = 'http://example.com'
         with MockVWS(base_vws_url=base_vws_url) as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
             client = VWS(
-                server_access_key=mock.server_access_key,
-                server_secret_key=mock.server_secret_key,
+                server_access_key=database.server_access_key.decode(),
+                server_secret_key=database.server_secret_key.decode(),
                 base_vws_url=base_vws_url,
             )
 
