@@ -16,6 +16,6 @@ pyenchant==2.0.0  # Bindings for a spellchecking sytem
 pylint==2.1.1  # Lint
 pyroma==2.4  # Packaging best practices checker
 pytest-cov==2.6.0  # Measure code coverage
-pytest==3.8.1  # Test runners
+pytest==3.8.2  # Test runners
 vulture==0.29
 yapf==0.24.0  # Automatic formatting for Python
