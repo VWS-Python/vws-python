@@ -1,4 +1,4 @@
-|Build Status| |codecov| |Updates|
+|Build Status| |codecov| |Updates| |Documentation Status|
 
 vws-python
 ==========
@@ -31,3 +31,6 @@ Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with a
    :target: https://codecov.io/gh/adamtheturtle/vws-python
 .. |Updates| image:: https://pyup.io/repos/github/adamtheturtle/vws-python/shield.svg
    :target: https://pyup.io/repos/github/adamtheturtle/vws-python/
+.. |Documentation Status| image:: https://readthedocs.org/projects/vws-python/badge/?version=latest
+   :target: https://vws-python.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
