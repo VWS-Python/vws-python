@@ -98,6 +98,8 @@ disable=
     bad-whitespace,
     # Too difficult to please
     duplicate-code,
+    # Let isort handle imports
+    wrong-import-order,
 
 [REPORTS]
 
