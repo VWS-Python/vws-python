@@ -1,5 +1,6 @@
 PyYAML==3.13
 Pygments==2.2.0
+Sphinx==1.8.1
 VWS-Python-Mock==2018.10.02.0
 autoflake==1.2
 check-manifest==0.37
