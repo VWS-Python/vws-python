@@ -17,6 +17,8 @@ lint:
 	yapf \
 	    --diff \
 	    --recursive \
+	    --exclude versioneer.py \
+	    --exclude src/vws/_version.py \
 	    .
 
 .PHONY: fix-lint
@@ -30,9 +32,12 @@ fix-lint:
 	    --recursive \
 	    --remove-all-unused-imports \
 	    --remove-unused-variables \
+	    --exclude src/vws/_version.py,versioneer.py \
 	    .
 	yapf \
 	    --in-place \
 	    --recursive \
+	    --exclude versioneer.py  \
+	    --exclude src/vws/_version.py \
 	    .
 	isort --recursive --apply

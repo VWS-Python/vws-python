@@ -1,5 +1,6 @@
 """Setup script for VWS Python, a wrapper for Vuforia's Web Services APIs."""
 
+import versioneer
 from setuptools import find_packages, setup
 
 # We use requirements.txt instead of just declaring the requirements here
@@ -17,7 +18,8 @@ with open('README.rst') as f:
 
 setup(
     name='VWS Python',
-    version='0.1',
+    version=versioneer.get_version(),  # type: ignore
+    cmdclass=versioneer.get_cmdclass(),  # type: ignore
     author='Adam Dangoor',
     author_email='adamdangoor@gmail.com',
     description='Interact with the Vuforia Web Services (VWS) API.',
