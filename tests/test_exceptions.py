@@ -14,6 +14,7 @@ from requests import codes
 
 from vws import VWS
 from vws.exceptions import (
+    AuthenticationFailure,
     BadImage,
     Fail,
     ImageTooLarge,
@@ -97,7 +98,7 @@ def test_request_quota_reached() -> None:
 
 def test_fail(high_quality_image: io.BytesIO) -> None:
     """
-    A ``Fail`` exception is raised when there are authentication issues.
+    A ``Fail`` exception is raised when the server access key does not exist.
     """
     with MockVWS():
         client = VWS(
@@ -201,3 +202,26 @@ def test_metadata_too_large(
         )
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+
+
+def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
+    """
+    An ``AuthenticationFailure`` exception is raised when the server access key
+    does not exist.
+    """
+    database = VuforiaDatabase()
+    with MockVWS() as mock:
+        mock.add_database(database=database)
+        client = VWS(
+            server_access_key=database.server_access_key.decode(),
+            server_secret_key='a',
+        )
+
+        with pytest.raises(AuthenticationFailure) as exc:
+            client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+        assert exc.value.response.status_code == codes.UNAUTHORIZED
