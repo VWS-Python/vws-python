@@ -15,6 +15,7 @@ from requests import Response
 
 from vws._authorization import authorization_header, rfc_1123_date
 from vws.exceptions import (
+    AuthenticationFailure,
     BadImage,
     Fail,
     ImageTooLarge,
@@ -102,6 +103,7 @@ def _raise_for_result_code(
         return
 
     exception = {
+        'AuthenticationFailure': AuthenticationFailure,
         'BadImage': BadImage,
         'Fail': Fail,
         'ImageTooLarge': ImageTooLarge,

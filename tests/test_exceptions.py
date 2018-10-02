@@ -14,6 +14,7 @@ from requests import codes
 
 from vws import VWS
 from vws.exceptions import (
+    AuthenticationFailure,
     BadImage,
     Fail,
     ImageTooLarge,
