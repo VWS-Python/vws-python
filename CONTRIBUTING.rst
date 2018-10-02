@@ -1,6 +1,8 @@
 Contributing to VWS Python
 ==========================
 
+.. contents::
+
 Contributions to this repository must pass tests and linting.
 
 Travis CI is the canonical source truth.
@@ -51,12 +53,23 @@ Run ``pytest``:
 
     pytest
 
+Documentation
+-------------
+
+Documentation is built on Read the Docs.
+
+Run the following commands to build and view documentation locally:
+
+.. code:: sh
+
+   make docs
+   make open-docs
+
 Travis CI
 ---------
 
 Tests are run on Travis CI.
 The configuration for this is in ``.travis.yml``.
-
 
 Performing a release
 --------------------
