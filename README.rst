@@ -21,9 +21,13 @@ For now it is possible to install the work in progress:
 
     pip install git+https://github.com/adamtheturtle/vws-python@master
 
-This requires Python 3.6+.
+This is tested on Python 3.7+.
 Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with another language.
 
+Full Documentation
+------------------
+
+See the `full documentation <https://vws-python.readthedocs.io/en/latest>`__.
 
 .. |Build Status| image:: https://travis-ci.org/adamtheturtle/vws-python.svg?branch=master
    :target: https://travis-ci.org/adamtheturtle/vws-python
