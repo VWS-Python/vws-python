@@ -17,7 +17,14 @@ class UnknownTarget(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class Fail(Exception):
@@ -32,7 +39,14 @@ class Fail(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class BadImage(Exception):
@@ -47,7 +61,14 @@ class BadImage(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class AuthenticationFailure(Exception):
@@ -62,8 +83,14 @@ class AuthenticationFailure(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
 
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 class TargetStatusProcessing(Exception):
     """
@@ -77,7 +104,14 @@ class TargetStatusProcessing(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class ProjectInactive(Exception):
@@ -92,7 +126,14 @@ class ProjectInactive(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class MetadataTooLarge(Exception):
@@ -107,7 +148,14 @@ class MetadataTooLarge(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class TargetNameExist(Exception):
@@ -122,7 +170,14 @@ class TargetNameExist(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class ImageTooLarge(Exception):
@@ -137,4 +192,11 @@ class ImageTooLarge(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
