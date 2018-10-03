@@ -74,5 +74,4 @@ The configuration for this is in ``.travis.yml``.
 Performing a release
 --------------------
 
-There is currently no release process.
-See `this issue <https://github.com/adamtheturtle/vws-python/issues/55>`__ for details.
+See release process in the full documentation.

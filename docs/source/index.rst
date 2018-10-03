@@ -5,3 +5,4 @@ VWS Python
    :maxdepth: 3
 
    exceptions
+   release-process
