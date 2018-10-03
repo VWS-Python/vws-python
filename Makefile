@@ -17,6 +17,8 @@ lint:
 	pylint *.py src tests
 	pyroma --min 10 .
 	vulture . --min-confidence 100
+	$(MAKE) -C docs spelling SPHINXOPTS=$(SPHINXOPTS)
+	$(MAKE) -C docs linkcheck SPHINXOPTS=$(SPHINXOPTS)
 	yapf \
 	    --diff \
 	    --recursive \
