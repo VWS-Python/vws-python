@@ -92,6 +92,7 @@ class AuthenticationFailure(Exception):
         """
         return self._response
 
+
 class TargetStatusProcessing(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
