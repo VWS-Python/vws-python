@@ -53,7 +53,7 @@ def create_github_release(
     Create a tag and release on GitHub.
     """
     changelog_url = (
-        'https://vws-python-mock.readthedocs.io/en/latest/changelog.html'
+        'https://vws-python.readthedocs.io/en/latest/changelog.html'
     )
     repository.create_git_tag_and_release(
         tag=version,
