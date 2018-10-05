@@ -1,5 +1,5 @@
 """
-Release the next version of VWS Python Mock.
+Release the next version of VWS Python.
 """
 
 import datetime
@@ -14,7 +14,7 @@ from github import Github, Repository, UnknownObjectException
 
 def get_version() -> str:
     """
-    Return the next version of VWS Python Mock.
+    Return the next version of VWS Python.
     This is today’s date in the format ``YYYY.MM.DD.MICRO``.
     ``MICRO`` refers to the number of releases created on this date,
     starting from ``0``.
@@ -93,7 +93,7 @@ def get_repo(github_token: str, github_owner: str) -> Repository:
     except UnknownObjectException:
         github_user_or_org = github_client.get_user(github_owner)
 
-    return github_user_or_org.get_repo('vws-python-mock')
+    return github_user_or_org.get_repo('vws-python')
 
 
 def build() -> None:
