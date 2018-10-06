@@ -1,9 +1,11 @@
+Ubuntu
 api
 args
 ascii
 bool
 boolean
 bytesio
+changelog
 chunked
 cmyk
 connectionerror
@@ -31,6 +33,9 @@ keyring
 kib
 kwargs
 linters
+linting
+linting
+macOS
 mb
 metadata
 mib

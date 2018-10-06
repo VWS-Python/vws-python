@@ -17,7 +17,7 @@ Install Python dependencies in a virtual environment.
     pip install --editable .[dev]
 
 Spell checking requires ``enchant``.
-This can be installed on macOS, for example, with `Homebrew <http://brew.sh>`__:
+This can be installed on macOS, for example, with `Homebrew <https://brew.sh>`__:
 
 .. code:: sh
 
@@ -69,9 +69,9 @@ Travis CI
 ---------
 
 Tests are run on Travis CI.
-The configuration for this is in ``.travis.yml``.
+The configuration for this is in :file:`.travis.yml`.
 
 Performing a release
 --------------------
 
-See release process in the full documentation.
+See :doc:`release-process`.
