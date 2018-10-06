@@ -69,9 +69,9 @@ Travis CI
 ---------
 
 Tests are run on Travis CI.
-The configuration for this is in ``.travis.yml``.
+The configuration for this is in :file:`.travis.yml`.
 
 Performing a release
 --------------------
 
-See release process in the full documentation.
+See :doc:`release-process`.

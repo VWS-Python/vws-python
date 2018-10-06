@@ -5,5 +5,6 @@ VWS Python
    :maxdepth: 3
 
    exceptions
+   contributing
    release-process
    changelog
