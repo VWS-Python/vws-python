@@ -27,6 +27,7 @@ io
 issuecomment
 jpeg
 json
+keyring
 kib
 kwargs
 linters
