@@ -5,11 +5,6 @@ vws-python
 
 Python library for the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
 
-Contributing
-------------
-
-See `CONTRIBUTING.rst <./CONTRIBUTING.rst>`_ for details on how to contribute to this project.
-
 Installation
 ------------
 
