@@ -13,13 +13,9 @@ See `CONTRIBUTING.rst <./CONTRIBUTING.rst>`_ for details on how to contribute to
 Installation
 ------------
 
-This package has not yet been uploaded to PyPI.
-
-For now it is possible to install the work in progress:
-
 .. code:: sh
 
-    pip install git+https://github.com/adamtheturtle/vws-python@master
+    pip install vws-python
 
 This is tested on Python 3.7+.
 Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with another language.
