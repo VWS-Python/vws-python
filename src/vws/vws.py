@@ -211,9 +211,12 @@ class VWS:
                 RGB color space.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
+            ~vws.exceptions.MetadataTooLarge: The given metadata is too large.
+                The maximum size is 1 MB of data when Base64 encoded.
             ~vws.exceptions.ImageTooLarge: The given image is too large.
             ~vws.exceptions.TargetNameExist: A target with the given ``name``
                 already exists.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')

@@ -1,3 +1,9 @@
+AuthenticationFailure
+BadImage
+ImageTooLarge
+MetadataTooLarge
+ProjectInactive
+TargetNameExist
 Ubuntu
 UnknownTarget
 api
@@ -19,6 +25,7 @@ filename
 foo
 formdata
 github
+grayscale
 greyscale
 hexdigits
 hmac
@@ -34,7 +41,6 @@ keyring
 kib
 kwargs
 linters
-linting
 linting
 macOS
 mb
