@@ -202,6 +202,10 @@ class VWS:
 
         Returns:
             The target ID of the new target.
+
+        Raises:
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -244,6 +248,8 @@ class VWS:
             Response details of a target from Vuforia.
 
         Raises:
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
@@ -266,6 +272,8 @@ class VWS:
             target_id: The ID of the target to wait for.
 
         Raises:
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
             TimeoutError: The target remained in the processing stage for more
                 than five minutes.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
@@ -290,6 +298,10 @@ class VWS:
 
         Returns:
             The IDs of all targets in the database.
+
+        Raises:
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
         """
         response = self._make_request(
             method='GET',
@@ -317,6 +329,8 @@ class VWS:
             Details of the target.
 
         Raises:
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
@@ -338,6 +352,10 @@ class VWS:
 
         Returns:
             Details of the database.
+
+        Raises:
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
         """
         response = self._make_request(
             method='GET',
@@ -359,6 +377,8 @@ class VWS:
             target_id: The ID of the target to delete.
 
         Raises:
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
