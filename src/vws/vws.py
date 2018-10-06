@@ -404,6 +404,8 @@ class VWS:
                 example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
+            ~vws.exceptions.TargetStatusProcessing: The given target is in the
+                processing state.
         """
         self._make_request(
             method='DELETE',
