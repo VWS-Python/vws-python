@@ -6,3 +6,4 @@ VWS Python
 
    exceptions
    release-process
+   changelog
