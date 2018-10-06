@@ -242,6 +242,10 @@ class VWS:
 
         Returns:
             Response details of a target from Vuforia.
+
+        Raises:
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         response = self._make_request(
             method='GET',
