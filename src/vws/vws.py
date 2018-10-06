@@ -242,6 +242,10 @@ class VWS:
 
         Returns:
             Response details of a target from Vuforia.
+
+        Raises:
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         response = self._make_request(
             method='GET',
@@ -264,6 +268,8 @@ class VWS:
         Raises:
             TimeoutError: The target remained in the processing stage for more
                 than five minutes.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         while True:
             report = self.get_target_summary_report(target_id=target_id)
@@ -309,6 +315,10 @@ class VWS:
 
         Returns:
             Details of the target.
+
+        Raises:
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         response = self._make_request(
             method='GET',
@@ -347,6 +357,10 @@ class VWS:
 
         Args:
             target_id: The ID of the target to delete.
+
+        Raises:
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         self._make_request(
             method='DELETE',
