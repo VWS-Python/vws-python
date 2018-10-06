@@ -17,6 +17,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
+    'sphinx_autodoc_typehints',
     'sphinxcontrib.spelling',
 ]
 
@@ -57,7 +58,6 @@ htmlhelp_basename = 'VWSPYTHONdoc'
 autoclass_content = 'init'
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3.7', None),
-    'docker': ('http://docker-py.readthedocs.io/en/stable', None),
 }
 nitpicky = True
 warning_is_error = True
@@ -68,6 +68,9 @@ nitpick_ignore = [
     ('py:class', 'typing.Optional'),
     ('py:class', '_io.BytesIO'),
     ('py:class', 'docker.types.services.Mount'),
+    # Requests documentation exposes ``requests.Response``, not
+    # ``requests.models.response``.
+    ('py:class', 'requests.models.Response'),
 ]
 
 html_show_copyright = False
