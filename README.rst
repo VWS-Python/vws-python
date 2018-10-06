@@ -1,4 +1,4 @@
-|Build Status| |codecov| |Updates| |Documentation Status|
+|Build Status| |codecov| |Updates| |PyPI| |Documentation Status|
 
 vws-python
 ==========
@@ -34,3 +34,5 @@ See the `full documentation <https://vws-python.readthedocs.io/en/latest>`__.
 .. |Documentation Status| image:: https://readthedocs.org/projects/vws-python/badge/?version=latest
    :target: https://vws-python.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
+.. |PyPI| image:: https://badge.fury.io/py/VWS-Python.svg
+   :target: https://badge.fury.io/py/VWS-Python
