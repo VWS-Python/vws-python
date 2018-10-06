@@ -204,6 +204,8 @@ class VWS:
             The target ID of the new target.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
         """
@@ -248,6 +250,8 @@ class VWS:
             Response details of a target from Vuforia.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
@@ -272,6 +276,8 @@ class VWS:
             target_id: The ID of the target to wait for.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
             TimeoutError: The target remained in the processing stage for more
@@ -300,6 +306,8 @@ class VWS:
             The IDs of all targets in the database.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
         """
@@ -329,6 +337,8 @@ class VWS:
             Details of the target.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
@@ -354,6 +364,8 @@ class VWS:
             Details of the database.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
         """
@@ -377,6 +389,8 @@ class VWS:
             target_id: The ID of the target to delete.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
