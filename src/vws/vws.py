@@ -211,6 +211,7 @@ class VWS:
                 RGB color space.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
+            ~vws.exceptions.ImageTooLarge: The given image is too large.
             ~vws.exceptions.TargetNameExist: A target with the given ``name``
                 already exists.
         """
