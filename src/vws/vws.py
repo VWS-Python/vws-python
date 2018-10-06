@@ -206,8 +206,13 @@ class VWS:
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
                 correct.
+            ~vws.exceptions.BadImage: There is a problem with the given image.
+                For example, it must be a JPEG or PNG file in the grayscale or
+                RGB color space.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
+            ~vws.exceptions.TargetNameExist: A target with the given ``name``
+                already exists.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
