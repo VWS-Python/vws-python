@@ -48,7 +48,6 @@ def _target_api_request(
         content: The request body which will be used in the request.
         request_path: The path to the endpoint which will be used in the
             request.
-
         base_vws_url: The base URL for the VWS API.
 
     Returns:
@@ -310,7 +309,7 @@ class VWS:
         self,
         target_id: str,
         seconds_between_requests: float = 0.2,
-        timeout_seconds: float = 60 * 5,
+        timeout_seconds: Optional[float] = 60 * 5,
     ) -> None:
         """
         Wait up to five minutes (arbitrary) for a target to get past the
@@ -324,7 +323,8 @@ class VWS:
                 decrease the number of calls made to the API, to decrease the
                 likelihood of hitting the request quota.
             timeout_seconds: The maximum number of seconds to wait for the
-                target to be processed.
+                target to be processed. If ``None`` is given, no maximum is
+                applied.
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
