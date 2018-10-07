@@ -336,7 +336,7 @@ class VWS:
         timeout_seconds = 60 * 5
 
         @timeout(seconds=timeout_seconds)
-        def decorated():
+        def decorated() -> None:
             self._wait_for_target_processed(
                 target_id=target_id,
                 seconds_between_requests=seconds_between_requests,
