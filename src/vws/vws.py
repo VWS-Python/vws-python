@@ -22,6 +22,7 @@ from vws.exceptions import (
     MetadataTooLarge,
     ProjectInactive,
     TargetNameExist,
+    TargetProcessingTimeout,
     TargetStatusProcessing,
     UnknownTarget,
 )
@@ -337,7 +338,10 @@ class VWS:
                 target in the database.
         """
 
-        @timeout(seconds=timeout_seconds)
+        @timeout(
+            seconds=timeout_seconds,
+            timeout_exception=TargetProcessingTimeout,
+        )
         def decorated() -> None:
             self._wait_for_target_processed(
                 target_id=target_id,
