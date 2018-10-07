@@ -1,5 +1,5 @@
 """
-Tests for helper function for adding a target to a Vuforia database.
+Tests for helper functions for managing a Vuforia database.
 """
 
 import io
