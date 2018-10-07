@@ -284,7 +284,7 @@ class TestWaitForTargetProcessed:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        By default XXX.
+        By default, 0.2 seconds are waited between polling requests.
         """
         with MockVWS(processing_time_seconds=0.5) as mock:
             database = VuforiaDatabase()
