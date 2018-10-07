@@ -10,7 +10,7 @@ from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS
-from vws.exceptions import TargetProcessingTimeout, UnknownTarget
+from vws.exceptions import TargetProcessingTimeout
 
 
 class TestAddTarget:
@@ -153,9 +153,9 @@ class TestDelete:
         )
 
         client.wait_for_target_processed(target_id=target_id)
+        assert target_id in client.list_targets()
         client.delete_target(target_id=target_id)
-        with pytest.raises(UnknownTarget):
-            client.get_target_record(target_id=target_id)
+        assert target_id not in client.list_targets()
 
 
 class TestGetTargetSummaryReport:
