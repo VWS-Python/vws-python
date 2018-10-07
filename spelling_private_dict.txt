@@ -4,6 +4,7 @@ ImageTooLarge
 MetadataTooLarge
 ProjectInactive
 TargetNameExist
+TargetStatusProcessing
 Ubuntu
 UnknownTarget
 api
