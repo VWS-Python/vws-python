@@ -190,7 +190,8 @@ class VWS:
         Add a target to a Vuforia Web Services database.
 
         See
-        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target
+        for parameter details.
 
         Args:
             name: The name of the target.
@@ -411,3 +412,34 @@ class VWS:
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
         )
+
+    def get_duplicate_targets(self, target_id: str) -> List[str]:
+        """
+        Get targets which may be considered duplicates of a given target.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Check-for-Duplicate-Targets.
+
+        Args:
+            target_id: The ID of the target to delete.
+
+        Returns:
+            The target IDs of duplicate targets.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
+        """
+        response = self._make_request(
+            method='GET',
+            content=b'',
+            request_path=f'/duplicates/{target_id}',
+            expected_result_code='Success',
+        )
+
+        return list(response.json()['similar_targets'])
