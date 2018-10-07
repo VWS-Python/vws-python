@@ -364,6 +364,42 @@ class TestWaitForTargetProcessed:
             )
             assert report['request_usage'] == expected_requests
 
+    def test_custom_timeout(
+        self,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to set a maximum timeout.
+        """
+        with MockVWS(processing_time_seconds=0.5) as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            client = VWS(
+                server_access_key=database.server_access_key.decode(),
+                server_secret_key=database.server_secret_key.decode(),
+            )
+
+            target_id = client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+            report = client.get_target_summary_report(target_id=target_id)
+            assert report['status'] == 'processing'
+            with pytest.raises(TimeoutError):
+                client.wait_for_target_processed(
+                    target_id=target_id,
+                    timeout_seconds=0.1,
+                )
+
+            client.wait_for_target_processed(
+                target_id=target_id,
+                timeout_seconds=0.4,
+            )
+            report = client.get_target_summary_report(target_id=target_id)
+            assert report['status'] != 'processing'
+
 
 class TestGetDuplicateTargets:
     """
