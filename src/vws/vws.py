@@ -411,3 +411,30 @@ class VWS:
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
         )
+
+    def get_duplicate_targets(self, target_id: str) -> None:
+        """
+        Get targets which may be considered duplicates of a given target.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Check-for-Duplicate-Targets.
+
+
+        Args:
+            target_id: The ID of the target to delete.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
+        """
+        self._make_request(
+            method='DELETE',
+            content=b'',
+            request_path=f'/targets/{target_id}',
+            expected_result_code='Success',
+        )
