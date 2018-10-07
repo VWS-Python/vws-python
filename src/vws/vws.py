@@ -48,7 +48,6 @@ def _target_api_request(
         content: The request body which will be used in the request.
         request_path: The path to the endpoint which will be used in the
             request.
-
         base_vws_url: The base URL for the VWS API.
 
     Returns:
