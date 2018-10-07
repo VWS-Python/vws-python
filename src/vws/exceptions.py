@@ -201,9 +201,3 @@ class ImageTooLarge(Exception):
         The response returned by Vuforia which included this error.
         """
         return self._response
-
-
-class TargetProcessingTimeout(Exception):
-    """
-    Exception raised when waiting for a target to be processed times out.
-    """
