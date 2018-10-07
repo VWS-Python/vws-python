@@ -310,6 +310,7 @@ class VWS:
         self,
         target_id: str,
         seconds_between_requests: float = 0.2,
+        timeout_seconds: float = 60 * 5,
     ) -> None:
         """
         Wait up to five minutes (arbitrary) for a target to get past the
@@ -322,6 +323,8 @@ class VWS:
                 We wait 0.2 seconds by default, rather than less, than that to
                 decrease the number of calls made to the API, to decrease the
                 likelihood of hitting the request quota.
+            timeout_seconds: The maximum number of seconds to wait for the
+                target to be processed.
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
@@ -329,11 +332,10 @@ class VWS:
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
             TimeoutError: The target remained in the processing stage for more
-                than five minutes.
+                than ``timeout_seconds`` seconds.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
-        timeout_seconds = 60 * 5
 
         @timeout(seconds=timeout_seconds)
         def decorated() -> None:
