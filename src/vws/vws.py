@@ -332,8 +332,8 @@ class VWS:
                 correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
-            TimeoutError: The target remained in the processing stage for more
-                than ``timeout_seconds`` seconds.
+            ~vws.exceptions.TargetProcessingTimeout: The target remained in the
+                processing stage for more than ``timeout_seconds`` seconds.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
