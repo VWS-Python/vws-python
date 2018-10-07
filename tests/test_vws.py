@@ -6,12 +6,11 @@ import io
 from typing import Optional
 
 import pytest
-import timeout_decorator
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS
-from vws.exceptions import UnknownTarget
+from vws.exceptions import TargetProcessingTimeout
 
 
 class TestAddTarget:
@@ -154,9 +153,9 @@ class TestDelete:
         )
 
         client.wait_for_target_processed(target_id=target_id)
+        assert target_id in client.list_targets()
         client.delete_target(target_id=target_id)
-        with pytest.raises(UnknownTarget):
-            client.get_target_record(target_id=target_id)
+        assert target_id not in client.list_targets()
 
 
 class TestGetTargetSummaryReport:
@@ -388,7 +387,7 @@ class TestWaitForTargetProcessed:
 
             report = client.get_target_summary_report(target_id=target_id)
             assert report['status'] == 'processing'
-            with pytest.raises(timeout_decorator.TimeoutError):
+            with pytest.raises(TargetProcessingTimeout):
                 client.wait_for_target_processed(
                     target_id=target_id,
                     timeout_seconds=0.1,
