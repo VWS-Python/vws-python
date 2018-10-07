@@ -291,7 +291,7 @@ class TestGetDuplicateTargets:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        XXX
+        It is possible to get the IDs of similar targets.
         """
         target_id = client.add_target(
             name='x',
@@ -303,5 +303,8 @@ class TestGetDuplicateTargets:
             width=1,
             image=high_quality_image,
         )
+
+        client.wait_for_target_processed(target_id=target_id)
+        client.wait_for_target_processed(target_id=similar_target_id)
         duplicates = client.get_duplicate_targets(target_id=target_id)
-        assert duplicates == []
+        assert duplicates == [similar_target_id]

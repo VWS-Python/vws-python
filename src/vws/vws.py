@@ -190,7 +190,8 @@ class VWS:
         Add a target to a Vuforia Web Services database.
 
         See
-        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target for parameter details.
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target
+        for parameter details.
 
         Args:
             name: The name of the target.
@@ -441,4 +442,4 @@ class VWS:
             expected_result_code='Success',
         )
 
-        return response.json()['similar_targets']
+        return list(response.json()['similar_targets'])
