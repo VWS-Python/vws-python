@@ -329,7 +329,7 @@ class VWS:
         # number of calls made to the API, to decrease the likelihood of
         # hitting the request quota.
         seconds_between_requests = 0.2
-        _wait_for_target_processed(
+        self._wait_for_target_processed(
             target_id=target_id,
             seconds_between_requests=seconds_between_requests,
         )
