@@ -6,6 +6,7 @@ import io
 from typing import Optional
 
 import pytest
+import timeout_decorator
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
@@ -387,7 +388,7 @@ class TestWaitForTargetProcessed:
 
             report = client.get_target_summary_report(target_id=target_id)
             assert report['status'] == 'processing'
-            with pytest.raises(TimeoutError):
+            with pytest.raises(timeout_decorator.TimeoutError):
                 client.wait_for_target_processed(
                     target_id=target_id,
                     timeout_seconds=0.1,
@@ -395,7 +396,7 @@ class TestWaitForTargetProcessed:
 
             client.wait_for_target_processed(
                 target_id=target_id,
-                timeout_seconds=0.4,
+                timeout_seconds=0.5,
             )
             report = client.get_target_summary_report(target_id=target_id)
             assert report['status'] != 'processing'
