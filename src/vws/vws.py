@@ -190,7 +190,7 @@ class VWS:
         Add a target to a Vuforia Web Services database.
 
         See
-        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target for parameter details.
 
         Args:
             name: The name of the target.
