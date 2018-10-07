@@ -1,5 +1,5 @@
 """
-Tests for helper function for adding a target to a Vuforia database.
+Tests for helper functions for managing a Vuforia database.
 """
 
 import io
@@ -278,3 +278,33 @@ class TestWaitForTargetProcessed:
         client.wait_for_target_processed(target_id=target_id)
         report = client.get_target_summary_report(target_id=target_id)
         assert report['status'] != 'processing'
+
+
+class TestGetDuplicateTargets:
+    """
+    Tests for getting duplicate targets.
+    """
+
+    def test_get_duplicate_targets(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to get the IDs of similar targets.
+        """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        similar_target_id = client.add_target(
+            name='a',
+            width=1,
+            image=high_quality_image,
+        )
+
+        client.wait_for_target_processed(target_id=target_id)
+        client.wait_for_target_processed(target_id=similar_target_id)
+        duplicates = client.get_duplicate_targets(target_id=target_id)
+        assert duplicates == [similar_target_id]

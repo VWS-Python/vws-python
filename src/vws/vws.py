@@ -190,7 +190,8 @@ class VWS:
         Add a target to a Vuforia Web Services database.
 
         See
-        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target
+        for parameter details.
 
         Args:
             name: The name of the target.
@@ -275,6 +276,36 @@ class VWS:
 
         return dict(response.json()['target_record'])
 
+    def _wait_for_target_processed(
+        self,
+        target_id: str,
+        seconds_between_requests: float,
+    ) -> None:
+        """
+        Wait indefinitely for a target to get past the processing stage.
+
+        Args:
+            target_id: The ID of the target to wait for.
+            seconds_between_requests: The number of seconds to wait between
+                requests made while polling the target status.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            TimeoutError: The target remained in the processing stage for more
+                than five minutes.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+        """
+        while True:
+            report = self.get_target_summary_report(target_id=target_id)
+            if report['status'] != 'processing':
+                return
+
+            sleep(seconds_between_requests)
+
     @timeout_decorator.timeout(seconds=60 * 5)
     def wait_for_target_processed(self, target_id: str) -> None:
         """
@@ -294,15 +325,14 @@ class VWS:
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
-        while True:
-            report = self.get_target_summary_report(target_id=target_id)
-            if report['status'] != 'processing':
-                return
-
-            # We wait 0.2 seconds rather than less than that to decrease the
-            # number of calls made to the API, to decrease the likelihood of
-            # hitting the request quota.
-            sleep(0.2)
+        # We wait 0.2 seconds rather than less than that to decrease the
+        # number of calls made to the API, to decrease the likelihood of
+        # hitting the request quota.
+        seconds_between_requests = 0.2
+        self._wait_for_target_processed(
+            target_id=target_id,
+            seconds_between_requests=seconds_between_requests,
+        )
 
     def list_targets(self) -> List[str]:
         """
@@ -413,3 +443,34 @@ class VWS:
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
         )
+
+    def get_duplicate_targets(self, target_id: str) -> List[str]:
+        """
+        Get targets which may be considered duplicates of a given target.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Check-for-Duplicate-Targets.
+
+        Args:
+            target_id: The ID of the target to delete.
+
+        Returns:
+            The target IDs of duplicate targets.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
+        """
+        response = self._make_request(
+            method='GET',
+            content=b'',
+            request_path=f'/duplicates/{target_id}',
+            expected_result_code='Success',
+        )
+
+        return list(response.json()['similar_targets'])
