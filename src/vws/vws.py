@@ -307,13 +307,22 @@ class VWS:
             sleep(seconds_between_requests)
 
     @timeout_decorator.timeout(seconds=60 * 5)
-    def wait_for_target_processed(self, target_id: str) -> None:
+    def wait_for_target_processed(
+        self,
+        target_id: str,
+        seconds_between_requests: float = 0.2,
+    ) -> None:
         """
         Wait up to five minutes (arbitrary) for a target to get past the
         processing stage.
 
         Args:
             target_id: The ID of the target to wait for.
+            seconds_between_requests: The number of seconds to wait between
+                requests made while polling the target status.
+                We wait 0.2 seconds by default, rather than less, than that to
+                decrease the number of calls made to the API, to decrease the
+                likelihood of hitting the request quota.
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
@@ -325,10 +334,6 @@ class VWS:
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
-        # We wait 0.2 seconds rather than less than that to decrease the
-        # number of calls made to the API, to decrease the likelihood of
-        # hitting the request quota.
-        seconds_between_requests = 0.2
         self._wait_for_target_processed(
             target_id=target_id,
             seconds_between_requests=seconds_between_requests,
