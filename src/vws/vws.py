@@ -10,8 +10,8 @@ from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import requests
-import timeout_decorator
 from requests import Response
+from timeout_decorator import timeout
 
 from vws._authorization import authorization_header, rfc_1123_date
 from vws.exceptions import (
@@ -306,7 +306,6 @@ class VWS:
 
             sleep(seconds_between_requests)
 
-    @timeout_decorator.timeout(seconds=60 * 5)
     def wait_for_target_processed(
         self,
         target_id: str,
@@ -334,10 +333,16 @@ class VWS:
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
         """
-        self._wait_for_target_processed(
-            target_id=target_id,
-            seconds_between_requests=seconds_between_requests,
-        )
+        timeout_seconds = 60 * 5
+
+        @timeout(seconds=timeout_seconds)
+        def decorated() -> None:
+            self._wait_for_target_processed(
+                target_id=target_id,
+                seconds_between_requests=seconds_between_requests,
+            )
+
+        decorated()
 
     def list_targets(self) -> List[str]:
         """
