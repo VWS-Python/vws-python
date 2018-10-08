@@ -4,6 +4,7 @@ ImageTooLarge
 MetadataTooLarge
 ProjectInactive
 TargetNameExist
+TargetProcessingTimeout
 TargetStatusProcessing
 Ubuntu
 UnknownTarget
