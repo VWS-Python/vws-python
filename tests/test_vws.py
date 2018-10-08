@@ -429,3 +429,36 @@ class TestGetDuplicateTargets:
         client.wait_for_target_processed(target_id=similar_target_id)
         duplicates = client.get_duplicate_targets(target_id=target_id)
         assert duplicates == [similar_target_id]
+
+
+class TestUpdateTarget:
+    """
+    Tests for updating a target.
+    """
+
+    def test_update_target(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to update a target.
+        """
+
+    def test_target_status_not_success(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to update a target.
+        """
+
+    def test_no_fields_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to update a target.
+        """
