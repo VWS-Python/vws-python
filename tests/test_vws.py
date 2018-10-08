@@ -444,6 +444,12 @@ class TestUpdateTarget:
         """
         It is possible to update a target.
         """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        client.update_target(target_id=target_id)
 
     def test_target_status_not_success(
         self,
@@ -453,6 +459,12 @@ class TestUpdateTarget:
         """
         It is possible to update a target.
         """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        client.update_target(target_id=target_id)
 
     def test_no_fields_given(
         self,
@@ -462,3 +474,9 @@ class TestUpdateTarget:
         """
         It is possible to update a target.
         """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        client.update_target(target_id=target_id)
