@@ -449,6 +449,7 @@ class TestUpdateTarget:
             width=1,
             image=high_quality_image,
         )
+        client.wait_for_target_processed(target_id=target_id)
         client.update_target(target_id=target_id)
 
     def test_target_status_not_success(
@@ -464,6 +465,7 @@ class TestUpdateTarget:
             width=1,
             image=high_quality_image,
         )
+        client.wait_for_target_processed(target_id=target_id)
         client.update_target(target_id=target_id)
 
     def test_no_fields_given(
@@ -479,4 +481,5 @@ class TestUpdateTarget:
             width=1,
             image=high_quality_image,
         )
+        client.wait_for_target_processed(target_id=target_id)
         client.update_target(target_id=target_id)

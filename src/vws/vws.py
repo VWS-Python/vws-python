@@ -499,7 +499,7 @@ class VWS:
         image: Optional[io.BytesIO] = None,
         active_flag: Optional[bool] = None,
         application_metadata: Optional[bytes] = None,
-    ) -> str:
+    ) -> None:
         """
         Add a target to a Vuforia Web Services database.
 
@@ -562,5 +562,3 @@ class VWS:
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
         )
-
-        return str(response.json()['target_id'])
