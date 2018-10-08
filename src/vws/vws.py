@@ -533,25 +533,26 @@ class VWS:
                 already exists.
             ~vws.exceptions.ProjectInactive: The project is inactive.
         """
-        if image is None:
-            image_data_encoded = None
-        else:
+        data = {}
+
+        if name is not None:
+            data['name'] = name
+
+        if width is not None:
+            data['width'] = name
+
+        if image is not None:
             image_data = image.getvalue()
             image_data_encoded = base64.b64encode(image_data).decode('ascii')
+            data['image'] = image_data_encoded
 
-        if application_metadata is None:
-            metadata_encoded = None
-        else:
+        if active_flag is not None:
+            data['active_flag'] = active_flag
+
+        if application_metadata is not None:
             metadata_encoded_str = base64.b64encode(application_metadata)
             metadata_encoded = metadata_encoded_str.decode('ascii')
-
-        data = {
-            # 'name': name,
-            # 'width': width,
-            # 'image': image_data_encoded,
-            # 'active_flag': active_flag,
-            # 'application_metadata': metadata_encoded,
-        }
+            data['application_metadata'] = metadata_encoded
 
         content = bytes(json.dumps(data), encoding='utf-8')
 
