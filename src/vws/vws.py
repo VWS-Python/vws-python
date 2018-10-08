@@ -546,11 +546,11 @@ class VWS:
             metadata_encoded = metadata_encoded_str.decode('ascii')
 
         data = {
-            'name': name,
-            'width': width,
-            'image': image_data_encoded,
-            'active_flag': active_flag,
-            'application_metadata': metadata_encoded,
+            # 'name': name,
+            # 'width': width,
+            # 'image': image_data_encoded,
+            # 'active_flag': active_flag,
+            # 'application_metadata': metadata_encoded,
         }
 
         content = bytes(json.dumps(data), encoding='utf-8')
