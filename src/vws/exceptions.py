@@ -203,6 +203,21 @@ class ImageTooLarge(Exception):
         return self._response
 
 
+class TargetStatusNotSuccess(Exception):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'TargetStatusNotSuccess'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self.response = response
+
+
 class TargetProcessingTimeout(Exception):
     """
     Exception raised when waiting for a target to be processed times out.

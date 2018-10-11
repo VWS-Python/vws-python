@@ -429,3 +429,56 @@ class TestGetDuplicateTargets:
         client.wait_for_target_processed(target_id=similar_target_id)
         duplicates = client.get_duplicate_targets(target_id=target_id)
         assert duplicates == [similar_target_id]
+
+
+class TestUpdateTarget:
+    """
+    Tests for updating a target.
+    """
+
+    def test_update_target(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to update a target.
+        """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+        )
+        client.wait_for_target_processed(target_id=target_id)
+        client.update_target(
+            target_id=target_id,
+            name='x2',
+            width=2,
+            active_flag=False,
+            # These will be tested in
+            # https://github.com/adamtheturtle/vws-python/issues/809.
+            image=high_quality_image,
+            application_metadata=b'a',
+        )
+
+        target_details = client.get_target_record(target_id=target_id)
+        assert target_details['name'] == 'x2'
+        assert target_details['width'] == 2
+        assert not target_details['active_flag']
+
+    def test_no_fields_given(
+        self,
+        client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to give no update fields.
+        """
+        target_id = client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        client.wait_for_target_processed(target_id=target_id)
+        client.update_target(target_id=target_id)

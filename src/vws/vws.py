@@ -23,6 +23,7 @@ from vws.exceptions import (
     ProjectInactive,
     TargetNameExist,
     TargetProcessingTimeout,
+    TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
 )
@@ -111,6 +112,7 @@ def _raise_for_result_code(
         'ProjectInactive': ProjectInactive,
         'TargetNameExist': TargetNameExist,
         'TargetStatusProcessing': TargetStatusProcessing,
+        'TargetStatusNotSuccess': TargetStatusNotSuccess,
         'UnknownTarget': UnknownTarget,
     }[result_code]
 
@@ -490,3 +492,73 @@ class VWS:
         )
 
         return list(response.json()['similar_targets'])
+
+    def update_target(
+        self,
+        target_id: str,
+        name: Optional[str] = None,
+        width: Optional[Union[int, float]] = None,
+        image: Optional[io.BytesIO] = None,
+        active_flag: Optional[bool] = None,
+        application_metadata: Optional[bytes] = None,
+    ) -> None:
+        """
+        Add a target to a Vuforia Web Services database.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target
+        for parameter details.
+
+        Args:
+            target_id: The ID of the target to get details of.
+            name: The name of the target.
+            width: The width of the target.
+            image: The image of the target.
+            active_flag: Whether or not the target is active for query.
+            application_metadata: The application metadata of the target.
+                This will be base64 encoded.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.BadImage: There is a problem with the given image.
+                For example, it must be a JPEG or PNG file in the grayscale or
+                RGB color space.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.MetadataTooLarge: The given metadata is too large.
+                The maximum size is 1 MB of data when Base64 encoded.
+            ~vws.exceptions.ImageTooLarge: The given image is too large.
+            ~vws.exceptions.TargetNameExist: A target with the given ``name``
+                already exists.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
+        """
+        data: Dict[str, Union[str, bool, float, int]] = {}
+
+        if name is not None:
+            data['name'] = name
+
+        if width is not None:
+            data['width'] = width
+
+        if image is not None:
+            image_data = image.getvalue()
+            image_data_encoded = base64.b64encode(image_data).decode('ascii')
+            data['image'] = image_data_encoded
+
+        if active_flag is not None:
+            data['active_flag'] = active_flag
+
+        if application_metadata is not None:
+            metadata_encoded_str = base64.b64encode(application_metadata)
+            metadata_encoded = metadata_encoded_str.decode('ascii')
+            data['application_metadata'] = metadata_encoded
+
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        self._make_request(
+            method='PUT',
+            content=content,
+            request_path=f'/targets/{target_id}',
+            expected_result_code='Success',
+        )
