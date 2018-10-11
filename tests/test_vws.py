@@ -448,9 +448,20 @@ class TestUpdateTarget:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
         )
         client.wait_for_target_processed(target_id=target_id)
-        client.update_target(target_id=target_id)
+        client.update_target(
+            target_id=target_id,
+            name='x2',
+            width=2,
+            active_flag=False,
+        )
+
+        target_details = client.get_target_record(target_id=target_id)
+        assert target_details['name'] == 'x2'
+        assert target_details['width'] == 2
+        assert not target_details['active_flag']
 
     def test_no_fields_given(
         self,
@@ -458,7 +469,7 @@ class TestUpdateTarget:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        It is possible to update a target.
+        It is possible to give no update fields.
         """
         target_id = client.add_target(
             name='x',
