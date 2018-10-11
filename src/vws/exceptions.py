@@ -215,7 +215,14 @@ class TargetStatusNotSuccess(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class TargetProcessingTimeout(Exception):
