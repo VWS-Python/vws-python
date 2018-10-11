@@ -533,13 +533,13 @@ class VWS:
                 already exists.
             ~vws.exceptions.ProjectInactive: The project is inactive.
         """
-        data = {}
+        data: Dict[str, Union[str, bool, float, int]] = {}
 
         if name is not None:
             data['name'] = name
 
         if width is not None:
-            data['width'] = str(width)
+            data['width'] = width
 
         if image is not None:
             image_data = image.getvalue()
