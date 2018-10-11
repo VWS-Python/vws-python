@@ -456,6 +456,10 @@ class TestUpdateTarget:
             name='x2',
             width=2,
             active_flag=False,
+            # These will be tested in
+            # https://github.com/adamtheturtle/vws-python/issues/809.
+            image=high_quality_image,
+            application_metadata=b'a',
         )
 
         target_details = client.get_target_record(target_id=target_id)
