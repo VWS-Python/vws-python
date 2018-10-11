@@ -23,8 +23,8 @@ from vws.exceptions import (
     ProjectInactive,
     TargetNameExist,
     TargetProcessingTimeout,
-    TargetStatusProcessing,
     TargetStatusNotSuccess,
+    TargetStatusProcessing,
     UnknownTarget,
 )
 
@@ -510,15 +510,13 @@ class VWS:
         for parameter details.
 
         Args:
+            target_id: The ID of the target to get details of.
             name: The name of the target.
             width: The width of the target.
             image: The image of the target.
             active_flag: Whether or not the target is active for query.
             application_metadata: The application metadata of the target.
                 This will be base64 encoded.
-
-        Returns:
-            The target ID of the new target.
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
@@ -558,7 +556,7 @@ class VWS:
 
         content = bytes(json.dumps(data), encoding='utf-8')
 
-        response = self._make_request(
+        self._make_request(
             method='PUT',
             content=content,
             request_path=f'/targets/{target_id}',

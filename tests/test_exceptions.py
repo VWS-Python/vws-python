@@ -227,6 +227,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
 
         assert exc.value.response.status_code == codes.UNAUTHORIZED
 
+
 def test_target_status_not_success(
     client: VWS,
     high_quality_image: io.BytesIO,
