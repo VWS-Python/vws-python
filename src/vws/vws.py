@@ -539,7 +539,7 @@ class VWS:
             data['name'] = name
 
         if width is not None:
-            data['width'] = width
+            data['width'] = str(width)
 
         if image is not None:
             image_data = image.getvalue()
