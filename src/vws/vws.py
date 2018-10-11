@@ -116,12 +116,11 @@ def _raise_for_result_code(
         'InactiveProject': InactiveProject,
         'MetadataTooLarge': MetadataTooLarge,
         'ProjectInactive': ProjectInactive,
-        'RequestTimeTooSkewed': RequestTimeTooSkewed,
-        'TargetStatusNotSuccess': TargetStatusNotSuccess,
         'RequestQuotaReached': RequestQuotaReached,
+        'RequestTimeTooSkewed': RequestTimeTooSkewed,
         'TargetNameExist': TargetNameExist,
-        'TargetStatusProcessing': TargetStatusProcessing,
         'TargetStatusNotSuccess': TargetStatusNotSuccess,
+        'TargetStatusProcessing': TargetStatusProcessing,
         'UnknownTarget': UnknownTarget,
     }[result_code]
 
