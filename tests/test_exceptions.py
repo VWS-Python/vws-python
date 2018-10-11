@@ -21,6 +21,7 @@ from vws.exceptions import (
     MetadataTooLarge,
     ProjectInactive,
     TargetNameExist,
+    TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
 )
@@ -225,3 +226,22 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
             )
 
         assert exc.value.response.status_code == codes.UNAUTHORIZED
+
+def test_target_status_not_success(
+    client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    A ``TargetStatusNotSuccess`` exception is raised when updating a target
+    which has a status which is not "Success".
+    """
+    target_id = client.add_target(
+        name='x',
+        width=1,
+        image=high_quality_image,
+    )
+
+    with pytest.raises(TargetStatusNotSuccess) as exc:
+        client.update_target(target_id=target_id)
+
+    assert exc.value.response.status_code == codes.FORBIDDEN

@@ -24,6 +24,7 @@ from vws.exceptions import (
     TargetNameExist,
     TargetProcessingTimeout,
     TargetStatusProcessing,
+    TargetStatusNotSuccess,
     UnknownTarget,
 )
 
@@ -111,6 +112,7 @@ def _raise_for_result_code(
         'ProjectInactive': ProjectInactive,
         'TargetNameExist': TargetNameExist,
         'TargetStatusProcessing': TargetStatusProcessing,
+        'TargetStatusNotSuccess': TargetStatusNotSuccess,
         'UnknownTarget': UnknownTarget,
     }[result_code]
 
