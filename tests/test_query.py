@@ -30,6 +30,7 @@ class TestQuery:
             client_access_key='foo',
             client_secret_key='bar',
         )
-        cloud_reco_client.query(image=high_quality_image)
+        result = cloud_reco_client.query(image=high_quality_image)
+        assert result == []
 
 # TODO test custom base URL
