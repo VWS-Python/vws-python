@@ -3,7 +3,7 @@ check-manifest==0.37
 codecov==2.0.15 # Upload coverage data
 doc8==0.8.0
 dodgy==0.1.9  # Look for uploaded secrets
-dulwich==0.19.6
+dulwich==0.19.7
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==1.0.0  # Require single quotes
 flake8==3.6.0  # Lint
