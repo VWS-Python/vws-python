@@ -3,7 +3,7 @@ check-manifest==0.37
 codecov==2.0.15 # Upload coverage data
 doc8==0.8.0
 dodgy==0.1.9  # Look for uploaded secrets
-dulwich==0.19.6
+dulwich==0.19.8
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==1.0.0  # Require single quotes
 flake8==3.6.0  # Lint
@@ -17,9 +17,9 @@ Pygments==2.2.0
 pylint==2.1.1  # Lint
 pyroma==2.4  # Packaging best practices checker
 pytest-cov==2.6.0  # Measure code coverage
-pytest==3.10.0  # Test runners
+pytest==3.10.1  # Test runners
 PyYAML==3.13
-Sphinx==1.8.1
+Sphinx==1.8.2
 sphinx-autodoc-typehints==1.4.0
 sphinxcontrib-spelling==4.2.0
 twine==1.12.1
