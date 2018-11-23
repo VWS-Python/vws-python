@@ -34,3 +34,7 @@ class TestQuery:
         # assert result == []
 
 # TODO test custom base URL
+# TODO test bad credentials
+# TODO test no results
+# TODO test some results
+# TODO do we give an image type? Infer it? What happens if we just always give jpeg?
