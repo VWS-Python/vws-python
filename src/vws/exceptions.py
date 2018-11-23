@@ -253,7 +253,6 @@ class TargetStatusNotSuccess(Exception):
         The response returned by Vuforia which included this error.
         """
         return self._response
-<<<<<<< HEAD
 
 
 class InactiveProject(Exception):
