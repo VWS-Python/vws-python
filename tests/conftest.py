@@ -24,8 +24,8 @@ def client() -> Iterator[VWS]:
         database = VuforiaDatabase()
         mock.add_database(database=database)
         vws_client = VWS(
-            server_access_key=database.server_access_key.decode(),
-            server_secret_key=database.server_secret_key.decode(),
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
         )
 
         yield vws_client
