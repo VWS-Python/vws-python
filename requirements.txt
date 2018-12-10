@@ -1,2 +1,2 @@
-requests==2.20.1
+requests==2.21.0
 timeout-decorator==0.4.1
