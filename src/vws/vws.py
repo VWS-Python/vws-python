@@ -516,7 +516,8 @@ class VWS:
             image: The image of the target.
             active_flag: Whether or not the target is active for query.
             application_metadata: The application metadata of the target.
-                This will be base64 encoded.
+                This will be base64 encoded. Giving ``None`` will not change
+                the application metadata.
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
