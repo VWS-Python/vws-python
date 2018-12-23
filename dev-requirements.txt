@@ -20,7 +20,7 @@ pytest-cov==2.6.0  # Measure code coverage
 pytest==4.0.2  # Test runners
 PyYAML==3.13
 Sphinx==1.8.2
-sphinx-autodoc-typehints==1.5.2
+sphinx-autodoc-typehints==1.6.0
 sphinxcontrib-spelling==4.2.0
 twine==1.12.1
 versioneer==0.18
