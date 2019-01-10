@@ -16,7 +16,7 @@ pygithub==1.43.4
 Pygments==2.3.1
 pylint==2.2.2  # Lint
 pyroma==2.4  # Packaging best practices checker
-pytest-cov==2.6.0  # Measure code coverage
+pytest-cov==2.6.1  # Measure code coverage
 pytest==4.1.0  # Test runners
 PyYAML==3.13
 Sphinx==1.8.3
