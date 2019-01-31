@@ -6,7 +6,7 @@ dodgy==0.1.9  # Look for uploaded secrets
 dulwich==0.19.10
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==1.0.0  # Require single quotes
-flake8==3.6.0  # Lint
+flake8==3.7.3  # Lint
 isort==4.3.4  # Lint imports
 mypy==0.660  # Type checking
 mypy-mypyc==0.660  # Type checking
