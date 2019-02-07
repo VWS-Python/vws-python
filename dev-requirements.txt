@@ -13,7 +13,7 @@ mypy-mypyc==0.660  # Type checking
 pip_check_reqs==2.0.3
 pydocstyle==3.0.0  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
-pygithub==1.43.4
+pygithub==1.43.5
 Pygments==2.3.1
 pylint==2.2.2  # Lint
 pyroma==2.4  # Packaging best practices checker
