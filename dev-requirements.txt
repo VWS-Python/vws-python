@@ -8,9 +8,7 @@ flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==1.0.0  # Require single quotes
 flake8==3.7.5  # Lint
 isort==4.3.4  # Lint imports
-mypy==0.670  # Type checking
-mypy-mypyc==0.660  # Type checking
-pip_check_reqs==2.0.3
+mypy-mypyc==0.670  # Type checking
 pydocstyle==3.0.0  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
 pygithub==1.43.5
@@ -18,7 +16,7 @@ Pygments==2.3.1
 pylint==2.2.2  # Lint
 pyroma==2.4  # Packaging best practices checker
 pytest-cov==2.6.1  # Measure code coverage
-pytest==4.2.0  # Test runners
+pytest==4.2.1  # Test runners
 PyYAML==3.13
 Sphinx==1.8.4
 sphinx-autodoc-typehints==1.6.0
@@ -27,4 +25,4 @@ twine==1.12.1
 versioneer==0.18
 vulture==1.0
 VWS-Python-Mock==2018.12.1.0
-yapf==0.25.0  # Automatic formatting for Python
+yapf==0.26.0  # Automatic formatting for Python
