@@ -22,7 +22,7 @@ PyYAML==3.13
 Sphinx==1.8.4
 sphinx-autodoc-typehints==1.6.0
 sphinxcontrib-spelling==4.2.0
-twine==1.12.1
+twine==1.13.0
 versioneer==0.18
 vulture==1.0
 VWS-Python-Mock==2018.12.1.0
