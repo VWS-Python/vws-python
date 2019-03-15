@@ -7,7 +7,7 @@ dulwich==0.19.11
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==1.0.0  # Require single quotes
 flake8==3.7.7  # Lint
-isort==4.3.14  # Lint imports
+isort==4.3.15  # Lint imports
 mypy-mypyc==0.670  # Type checking
 pip_check_reqs==2.0.3
 pydocstyle==3.0.0  # Lint docstrings
@@ -18,7 +18,7 @@ pylint==2.3.1  # Lint
 pyroma==2.4  # Packaging best practices checker
 pytest-cov==2.6.1  # Measure code coverage
 pytest==4.3.1  # Test runners
-PyYAML==3.13
+PyYAML==5.1
 Sphinx==1.8.5
 sphinx-autodoc-typehints==1.6.0
 sphinxcontrib-spelling==4.2.0
