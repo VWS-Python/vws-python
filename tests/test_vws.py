@@ -191,7 +191,7 @@ class TestGetTargetSummaryReport:
             'current_month_recos',
             'previous_month_recos',
         }
-        assert result.keys() == expected_keys
+        assert set(result.keys()) == expected_keys
 
 
 class TestGetDatabaseSummaryReport:
@@ -220,7 +220,7 @@ class TestGetDatabaseSummaryReport:
             'total_recos',
             'transaction_id',
         }
-        assert report.keys() == expected_keys
+        assert set(report.keys()) == expected_keys
 
 
 class TestGetTargetRecord:
@@ -252,7 +252,7 @@ class TestGetTargetRecord:
             'tracking_rating',
             'reco_rating',
         }
-        assert result.keys() == expected_keys
+        assert set(result.keys()) == expected_keys
 
 
 class TestWaitForTargetProcessed:
