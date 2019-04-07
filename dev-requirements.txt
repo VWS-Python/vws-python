@@ -26,4 +26,4 @@ twine==1.13.0
 versioneer==0.18
 vulture==1.0
 VWS-Python-Mock==2018.12.1.0
-yapf==0.26.0  # Automatic formatting for Python
+yapf==0.27.0  # Automatic formatting for Python
