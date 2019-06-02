@@ -40,5 +40,6 @@ setup(
         'Environment :: Web Environment',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.7',
+        'Development Status :: 3 - Alpha',
     ],
 )
