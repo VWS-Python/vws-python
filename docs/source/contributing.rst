@@ -14,7 +14,7 @@ Install Python dependencies in a virtual environment.
 
 .. code:: sh
 
-    pip install --editable .[dev]
+    pip install --editable '.[dev]'
 
 Spell checking requires ``enchant``.
 This can be installed on macOS, for example, with `Homebrew <https://brew.sh>`__:
