@@ -31,8 +31,8 @@ def client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
     Yield a VWS client which connects to a mock.
     """
     vws_client = VWS(
-        server_access_key=_mock_database.server_access_key.decode(),
-        server_secret_key=_mock_database.server_secret_key.decode(),
+        server_access_key=_mock_database.server_access_key,
+        server_secret_key=_mock_database.server_secret_key,
     )
 
     yield vws_client
@@ -46,8 +46,8 @@ def cloud_reco_client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
     Yield a VWS client which connects to a mock.
     """
     vws_client = VWS(
-        server_access_key=_mock_database.server_access_key.decode(),
-        server_secret_key=_mock_database.server_secret_key.decode(),
+        server_access_key=_mock_database.server_access_key,
+        server_secret_key=_mock_database.server_secret_key,
     )
 
     yield vws_client
