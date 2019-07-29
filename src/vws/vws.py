@@ -14,19 +14,8 @@ from requests import Response
 from timeout_decorator import timeout
 
 from vws._authorization import authorization_header, rfc_1123_date
-from vws.exceptions import (
-    AuthenticationFailure,
-    BadImage,
-    Fail,
-    ImageTooLarge,
-    MetadataTooLarge,
-    ProjectInactive,
-    TargetNameExist,
-    TargetProcessingTimeout,
-    TargetStatusNotSuccess,
-    TargetStatusProcessing,
-    UnknownTarget,
-)
+from vws._result_codes import raise_for_result_code
+from vws.exceptions import TargetProcessingTimeout
 
 
 def _target_api_request(
@@ -86,39 +75,6 @@ def _target_api_request(
     return response
 
 
-def _raise_for_result_code(
-    response: Response,
-    expected_result_code: str,
-) -> None:
-    """
-    Raise an appropriate exception if the expected result code for a successful
-    request is not returned.
-
-    Args:
-        response: A response from Vuforia.
-        expected_result_code: See
-            https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
-    """
-    result_code = response.json()['result_code']
-    if result_code == expected_result_code:
-        return
-
-    exception = {
-        'AuthenticationFailure': AuthenticationFailure,
-        'BadImage': BadImage,
-        'Fail': Fail,
-        'ImageTooLarge': ImageTooLarge,
-        'MetadataTooLarge': MetadataTooLarge,
-        'ProjectInactive': ProjectInactive,
-        'TargetNameExist': TargetNameExist,
-        'TargetStatusProcessing': TargetStatusProcessing,
-        'TargetStatusNotSuccess': TargetStatusNotSuccess,
-        'UnknownTarget': UnknownTarget,
-    }[result_code]
-
-    raise exception(response=response)
-
-
 class VWS:
     """
     An interface to Vuforia Web Services APIs.
@@ -173,7 +129,7 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        _raise_for_result_code(
+        raise_for_result_code(
             response=response,
             expected_result_code=expected_result_code,
         )
