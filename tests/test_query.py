@@ -23,7 +23,7 @@ class TestQuery:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        TODO docstring
+        An empty list is returned if there are no matches.
         """
         result = cloud_reco_client.query(image=high_quality_image)
         assert result == []
@@ -35,7 +35,7 @@ class TestQuery:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        XXX
+        Details of matching targets are returned.
         """
         target_id = vws_client.add_target(
             name='x',
@@ -59,7 +59,7 @@ class TestMaxNumResults:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        XXX
+        By default the maximum number of results is 1.
         """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
@@ -83,7 +83,7 @@ class TestMaxNumResults:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        XXX
+        It is possible to set a custom ``max_num_results``.
         """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
@@ -114,6 +114,10 @@ class TestMaxNumResults:
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        A ``MaxNumResultsOutOfRange`` error is raised if the given
+        ``max_num_results`` is out of range.
+        """
         with pytest.raises(MaxNumResultsOutOfRange) as exc:
             cloud_reco_client.query(
                 image=high_quality_image,
@@ -127,6 +131,9 @@ class TestMaxNumResults:
         assert str(exc.value) == expected_value
 
 class TestBadCredentials:
+    """
+    Tests for using bad credentials.
+    """
 
     def test_bad_credentials(self, high_quality_image: io.BytesIO):
         cloud_reco_client = CloudRecoService(
