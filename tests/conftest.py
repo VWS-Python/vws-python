@@ -41,13 +41,11 @@ def client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
 @pytest.fixture()
 def cloud_reco_client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
     """
-    # TODO rename this fixture
-
-    Yield a VWS client which connects to a mock.
+    TODO Docstring
     """
-    vws_client = VWS(
-        server_access_key=_mock_database.server_access_key,
-        server_secret_key=_mock_database.server_secret_key,
+    client = CloudRecoService(
+        client_access_key=_mock_database.client_access_key,
+        client_secret_key=_mock_database.client_secret_key,
     )
 
-    yield vws_client
+    yield client

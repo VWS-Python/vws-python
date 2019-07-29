@@ -9,6 +9,7 @@ class CloudRecoService:
         self,
         client_access_key: str,
         client_secret_key: str,
+        # TODO - instead use vwq URL
         base_vws_url: str = 'https://vws.vuforia.com',
     ) -> None:
         """
@@ -26,6 +27,6 @@ class CloudRecoService:
         image: io.BytesIO,
     ) -> str:
         """
-        Add a target to a Vuforia Web Services database.
-
+        TODO docstring
         """
+        pass
