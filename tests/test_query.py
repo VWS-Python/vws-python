@@ -99,27 +99,23 @@ class TestMaxNumResults:
         client.wait_for_target_processed(target_id=target_id)
         client.wait_for_target_processed(target_id=target_id_2)
         client.wait_for_target_processed(target_id=target_id_3)
-        matches = cloud_reco_client.query(image=high_quality_image, max_num_results=2)
+        matches = cloud_reco_client.query(
+            image=high_quality_image,
+            max_num_results=2,
+        )
         assert len(matches) == 2
 
 
 
-    def test_foo(self):
-        pass
-        # target_ids = set([])
-        # for i in range(15):
-        #     target_id = client.add_target(
-        #         name=uuid.uuid4().hex,
-        #         width=1,
-        #         image=high_quality_image,
-        #     )
-        #     target_ids.add(target_id)
-        #
-        # for target_id in target_ids:
-        #     client.wait_for_target_processed(target_id=target_id)
-        #
-        # matching_targets = cloud_reco_client.query(image=high_quality_image)
-        # assert len(matching_targets) == 1
+    def test_too_many(
+        self,
+        cloud_reco_client: CloudRecoService,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        matches = cloud_reco_client.query(
+            image=high_quality_image,
+            max_num_results=51,
+        )
 
 
 # TODO test custom base URL

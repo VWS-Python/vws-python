@@ -40,7 +40,7 @@ class CloudRecoService:
         image_content = image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'max_num_results': (None, max_num_results, 'text/plain'),
+            'max_num_results': (None, int(max_num_results), 'text/plain'),
         }
         date = rfc_1123_date()
         request_path = '/v1/query'
