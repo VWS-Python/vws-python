@@ -22,6 +22,7 @@ def _mock_database() -> Iterator[VuforiaDatabase]:
         mock.add_database(database=database)
         yield database
 
+
 @pytest.fixture()
 def client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
     """

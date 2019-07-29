@@ -24,7 +24,7 @@ class TestQuery:
         high_quality_image: io.BytesIO,
     ) -> None:
         """
-        No exception is raised when adding one target.
+        TODO docstring
         """
         cloud_reco_client = CloudRecoService(
             client_access_key='foo',
