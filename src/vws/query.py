@@ -8,6 +8,8 @@ from urllib3.filepost import encode_multipart_formdata
 from vws.exceptions import MaxNumResultsOutOfRange
 
 from ._authorization import authorization_header, rfc_1123_date
+# TODO this cannot be private...
+from .vws import _raise_for_result_code
 
 
 class CloudRecoService:
@@ -74,8 +76,8 @@ class CloudRecoService:
             data=content,
         )
 
-        try:
-            return response.json()['results']
-        except json.decoder.JSONDecodeError:
-            if 'Accepted range is from 1 to 50 (inclusive).' in response.text:
-                raise MaxNumResultsOutOfRange(response=response)
+        if 'Accepted range is from 1 to 50 (inclusive).' in response.text:
+            raise MaxNumResultsOutOfRange(response=response)
+
+        _raise_for_result_code(response=response, expected_result_code='Success')
+        return response.json()['results']
