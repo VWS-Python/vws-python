@@ -24,10 +24,8 @@ def _mock_database() -> Iterator[VuforiaDatabase]:
 
 
 @pytest.fixture()
-def client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
+def vws_client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
     """
-    # TODO rename this fixture
-
     Yield a VWS client which connects to a mock.
     """
     vws_client = VWS(

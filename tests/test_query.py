@@ -30,19 +30,19 @@ class TestQuery:
 
     def test_match(
         self,
-        client: VWS,
+        vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         XXX
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
         )
-        client.wait_for_target_processed(target_id=target_id)
+        vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
         assert matching_target['target_id'] == target_id
 
@@ -54,55 +54,55 @@ class TestMaxNumResults:
 
     def test_default(
         self,
-        client: VWS,
+        vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         XXX
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
         )
-        target_id_2 = client.add_target(
+        target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
         )
-        client.wait_for_target_processed(target_id=target_id)
-        client.wait_for_target_processed(target_id=target_id_2)
+        vws_client.wait_for_target_processed(target_id=target_id)
+        vws_client.wait_for_target_processed(target_id=target_id_2)
         matches = cloud_reco_client.query(image=high_quality_image)
         assert len(matches) == 1
 
     def test_custom(
         self,
-        client: VWS,
+        vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         XXX
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
         )
-        target_id_2 = client.add_target(
+        target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
         )
-        target_id_3 = client.add_target(
+        target_id_3 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
         )
-        client.wait_for_target_processed(target_id=target_id)
-        client.wait_for_target_processed(target_id=target_id_2)
-        client.wait_for_target_processed(target_id=target_id_3)
+        vws_client.wait_for_target_processed(target_id=target_id)
+        vws_client.wait_for_target_processed(target_id=target_id_2)
+        vws_client.wait_for_target_processed(target_id=target_id_3)
         matches = cloud_reco_client.query(
             image=high_quality_image,
             max_num_results=2,
