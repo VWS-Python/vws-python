@@ -152,8 +152,8 @@ def test_project_inactive(client: VWS, high_quality_image: io.BytesIO) -> None:
     with MockVWS() as mock:
         mock.add_database(database=database)
         client = VWS(
-            server_access_key=database.server_access_key.decode(),
-            server_secret_key=database.server_secret_key.decode(),
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
         )
 
         with pytest.raises(ProjectInactive) as exc:
@@ -214,7 +214,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     with MockVWS() as mock:
         mock.add_database(database=database)
         client = VWS(
-            server_access_key=database.server_access_key.decode(),
+            server_access_key=database.server_access_key,
             server_secret_key='a',
         )
 

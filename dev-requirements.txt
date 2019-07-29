@@ -1,29 +1,29 @@
-autoflake==1.2
-check-manifest==0.37
+autoflake==1.3
+check-manifest==0.39
 codecov==2.0.15 # Upload coverage data
 doc8==0.8.0
 dodgy==0.1.9  # Look for uploaded secrets
-dulwich==0.19.6
+dulwich==0.19.11
 flake8-commas==2.0.0  # Require silicon valley commas
-flake8-quotes==1.0.0  # Require single quotes
-flake8==3.5.0  # Lint
-isort==4.3.4  # Lint imports
-mypy==0.630  # Type checking
+flake8-quotes==2.0.1  # Require single quotes
+flake8==3.7.7  # Lint
+isort==4.3.21  # Lint imports
+mypy==0.711  # Type checking
 pip_check_reqs==2.0.3
-pydocstyle==2.1.1  # Lint docstrings
+pydocstyle==3.0.0  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
-pygithub==1.43.2
-Pygments==2.2.0
-pylint==2.1.1  # Lint
-pyroma==2.4  # Packaging best practices checker
-pytest-cov==2.6.0  # Measure code coverage
-pytest==3.8.2  # Test runners
-PyYAML==3.13
-Sphinx==1.8.1
-sphinx-autodoc-typehints==1.3.0
-sphinxcontrib-spelling==4.2.0
-twine==1.12.1
+pygithub==1.43.8
+Pygments==2.4.2
+pylint==2.3.1  # Lint
+pyroma==2.5  # Packaging best practices checker
+pytest-cov==2.7.1  # Measure code coverage
+pytest==5.0.1  # Test runners
+PyYAML==5.1.1
+Sphinx==2.1.2
+sphinx-autodoc-typehints==1.7.0
+sphinxcontrib-spelling==4.3.0
+twine==1.13.0
 versioneer==0.18
-vulture==0.29
-VWS-Python-Mock==2018.10.02.0
-yapf==0.24.0  # Automatic formatting for Python
+vulture==1.0
+VWS-Python-Mock==2018.12.1.0
+yapf==0.28.0  # Automatic formatting for Python
