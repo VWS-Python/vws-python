@@ -32,12 +32,16 @@ class CloudRecoService:
     def query(
         self,
         image: io.BytesIO,
+        max_num_results: int = 1,
     ) -> str:
         """
         TODO docstring
         """
         image_content = image.getvalue()
-        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        body = {
+            'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'max_num_results': (None, max_num_results, 'text/plain'),
+        }
         date = rfc_1123_date()
         request_path = '/v1/query'
         content, content_type_header = encode_multipart_formdata(body)
