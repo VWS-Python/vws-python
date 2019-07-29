@@ -5,6 +5,27 @@ Custom exceptions for Vuforia errors.
 from requests import Response
 
 
+class MaxNumResultsOutOfRange(Exception):
+    """
+    TODO
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__(response.text)
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
 class UnknownTarget(Exception):
     """
     Exception raised when Vuforia returns a response with a result code

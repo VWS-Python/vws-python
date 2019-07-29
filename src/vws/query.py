@@ -1,5 +1,7 @@
 import io
+import json
 from urllib.parse import urljoin
+from vws.exceptions import MaxNumResultsOutOfRange
 
 import requests
 from urllib3.filepost import encode_multipart_formdata
@@ -71,6 +73,8 @@ class CloudRecoService:
             data=content,
         )
 
-        return response.json()['results']
-        import pdb; pdb.set_trace()
-        return response
+        try:
+            return response.json()['results']
+        except json.decoder.JSONDecodeError:
+            if 'Accepted range is from 1 to 50 (inclusive).' in response.text:
+                raise MaxNumResultsOutOfRange(response=response)

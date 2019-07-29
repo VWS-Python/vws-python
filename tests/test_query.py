@@ -4,8 +4,10 @@ Tests for helper functions for managing a Vuforia database.
 
 import io
 import uuid
+import pytest
 
 from vws import VWS, CloudRecoService
+from vws.exceptions import MaxNumResultsOutOfRange
 
 
 class TestQuery:
@@ -112,10 +114,18 @@ class TestMaxNumResults:
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
-        matches = cloud_reco_client.query(
-            image=high_quality_image,
-            max_num_results=51,
+        with pytest.raises(MaxNumResultsOutOfRange) as exc:
+            cloud_reco_client.query(
+                image=high_quality_image,
+                max_num_results=51,
+            )
+
+        expected_value = (
+            "Integer out of range (51) in form data part 'max_result'. "
+            'Accepted range is from 1 to 50 (inclusive).'
         )
+        assert str(exc.value) == expected_value
+
 
 
 # TODO test custom base URL
