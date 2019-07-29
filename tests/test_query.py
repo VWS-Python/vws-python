@@ -91,8 +91,14 @@ class TestMaxNumResults:
             width=1,
             image=high_quality_image,
         )
+        target_id_3 = client.add_target(
+            name=uuid.uuid4().hex,
+            width=1,
+            image=high_quality_image,
+        )
         client.wait_for_target_processed(target_id=target_id)
         client.wait_for_target_processed(target_id=target_id_2)
+        client.wait_for_target_processed(target_id=target_id_3)
         matches = cloud_reco_client.query(image=high_quality_image, max_num_results=2)
         assert len(matches) == 2
 
