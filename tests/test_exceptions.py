@@ -211,7 +211,7 @@ def test_metadata_too_large(
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     """
     An ``AuthenticationFailure`` exception is raised when the server access key
-    does not exist.
+    exists but the server secret key is incorrect.
     """
     database = VuforiaDatabase()
     with MockVWS() as mock:
