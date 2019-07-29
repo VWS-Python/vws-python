@@ -128,7 +128,7 @@ class TestMaxNumResults:
 
 # TODO test custom base URL
 # TODO test bad credentials
-# TODO test options - max_num_results + include_target_data
+# TODO test options - include_target_data
 
 # TODO do we give an image type? Infer it?
 # What happens if we just always give jpeg?
