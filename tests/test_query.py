@@ -4,6 +4,7 @@ Tests for helper functions for managing a Vuforia database.
 
 import io
 import uuid
+
 import pytest
 
 from vws import VWS, CloudRecoService
@@ -107,8 +108,6 @@ class TestMaxNumResults:
         )
         assert len(matches) == 2
 
-
-
     def test_too_many(
         self,
         cloud_reco_client: CloudRecoService,
@@ -125,7 +124,6 @@ class TestMaxNumResults:
             'Accepted range is from 1 to 50 (inclusive).'
         )
         assert str(exc.value) == expected_value
-
 
 
 # TODO test custom base URL

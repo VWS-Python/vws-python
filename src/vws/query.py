@@ -1,10 +1,11 @@
 import io
 import json
 from urllib.parse import urljoin
-from vws.exceptions import MaxNumResultsOutOfRange
 
 import requests
 from urllib3.filepost import encode_multipart_formdata
+
+from vws.exceptions import MaxNumResultsOutOfRange
 
 from ._authorization import authorization_header, rfc_1123_date
 
