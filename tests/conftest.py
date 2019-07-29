@@ -8,7 +8,7 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
-from vws import VWS
+from vws import CloudRecoService, VWS
 
 pytest_plugins = [  # pylint: disable=invalid-name
     'tests.fixtures.images',

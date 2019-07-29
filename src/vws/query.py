@@ -1,4 +1,11 @@
 import io
+from urllib.parse import urljoin
+
+import requests
+from urllib3.filepost import encode_multipart_formdata
+
+from ._authorization import authorization_header, rfc_1123_date
+
 
 class CloudRecoService:
     """
@@ -9,8 +16,8 @@ class CloudRecoService:
         self,
         client_access_key: str,
         client_secret_key: str,
-        # TODO - instead use vwq URL
-        base_vws_url: str = 'https://vws.vuforia.com',
+        # TODO - instead use/call this vwq URL
+        base_vws_url: str = 'https://cloudreco.vuforia.com',
     ) -> None:
         """
         Args:
@@ -29,4 +36,37 @@ class CloudRecoService:
         """
         TODO docstring
         """
-        pass
+        image_content = image.getvalue()
+        body = {'image': ('image.jpeg', image_content, 'image/jpeg')}
+        date = rfc_1123_date()
+        request_path = '/v1/query'
+        content, content_type_header = encode_multipart_formdata(body)
+        method = 'POST'
+
+        authorization_string = authorization_header(
+            access_key=self._client_access_key,
+            secret_key=self._client_secret_key,
+            method=method,
+            content=content,
+            # Note that this is not the actual Content-Type header value sent.
+            content_type='multipart/form-data',
+            date=date,
+            request_path=request_path,
+        )
+
+        headers = {
+            'Authorization': authorization_string,
+            'Date': date,
+            'Content-Type': content_type_header,
+        }
+
+        response = requests.request(
+            method=method,
+            url=urljoin(base=self._base_vws_url, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        return response.json()['results']
+        import pdb; pdb.set_trace()
+        return response
