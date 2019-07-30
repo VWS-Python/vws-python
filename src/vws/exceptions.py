@@ -5,10 +5,10 @@ Custom exceptions for Vuforia errors.
 from requests import Response
 
 
-class MatchDeleted(Exception):
+class MatchProcessing(Exception):
     """
     Exception raised when a query is made with an image which matches a target
-    which has recently been deleted.
+    which is processing or has recently been deleted.
     """
 
     def __init__(self, response: Response) -> None:
