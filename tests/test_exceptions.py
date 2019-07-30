@@ -12,7 +12,7 @@ from mock_vws.states import States
 from PIL import Image
 from requests import codes
 
-from vws import VWS
+from vws import CloudRecoService, VWS
 from vws.exceptions import (
     AuthenticationFailure,
     BadImage,
@@ -211,7 +211,8 @@ def test_metadata_too_large(
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     """
     An ``AuthenticationFailure`` exception is raised when the server access key
-    exists but the server secret key is incorrect.
+    exists but the server secret key is incorrect, or when a client key is
+    incorrect.
     """
     database = VuforiaDatabase()
     with MockVWS() as mock:
@@ -227,6 +228,16 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
                 width=1,
                 image=high_quality_image,
             )
+
+        assert exc.value.response.status_code == codes.UNAUTHORIZED
+
+        cloud_reco_client = CloudRecoService(
+            client_access_key=database.client_access_key,
+            client_secret_key='a',
+        )
+
+        with pytest.raises(AuthenticationFailure) as exc:
+            cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == codes.UNAUTHORIZED
 
