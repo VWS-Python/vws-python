@@ -10,9 +10,9 @@ import requests
 from urllib3.filepost import encode_multipart_formdata
 
 from ._authorization import authorization_header, rfc_1123_date
-from .include_target_data import CloudRecoIncludeTargetData
 from ._result_codes import raise_for_result_code
 from .exceptions import MaxNumResultsOutOfRange
+from .include_target_data import CloudRecoIncludeTargetData
 
 
 class CloudRecoService:
