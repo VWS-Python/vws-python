@@ -159,6 +159,11 @@ def test_project_inactive(
             server_secret_key=database.server_secret_key,
         )
 
+        cloud_reco_client = CloudRecoService(
+            client_access_key=database.client_access_key,
+            client_secret_key=database.client_secret_key,
+        )
+
         with pytest.raises(ProjectInactive) as exc:
             vws_client.add_target(
                 name='x',
@@ -166,7 +171,12 @@ def test_project_inactive(
                 image=high_quality_image,
             )
 
-    assert exc.value.response.status_code == codes.FORBIDDEN
+        assert exc.value.response.status_code == codes.FORBIDDEN
+
+        with pytest.raises(ProjectInactive) as exc:
+            cloud_reco_client.query(image=high_quality_image)
+
+        assert exc.value.response.status_code == codes.FORBIDDEN
 
 
 def test_target_status_processing(

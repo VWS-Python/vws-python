@@ -42,6 +42,7 @@ def raise_for_result_code(
         'ImageTooLarge': ImageTooLarge,
         'MetadataTooLarge': MetadataTooLarge,
         'ProjectInactive': ProjectInactive,
+        'InactiveProject': ProjectInactive,
         'TargetNameExist': TargetNameExist,
         'TargetStatusProcessing': TargetStatusProcessing,
         'TargetStatusNotSuccess': TargetStatusNotSuccess,
