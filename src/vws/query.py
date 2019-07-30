@@ -41,7 +41,7 @@ class CloudRecoService:
         image: io.BytesIO,
         max_num_results: int = 1,
         include_target_data:
-        'CloudRecoIncludeTargetData' = CloudRecoIncludeTargetData.TOP,
+        CloudRecoIncludeTargetData = CloudRecoIncludeTargetData.TOP,
     ) -> List[Dict[str, Any]]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
