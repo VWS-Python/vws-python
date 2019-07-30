@@ -12,7 +12,7 @@ from vws import VWS, CloudRecoService
 
 class TestQuery:
     """
-    TODO
+    Tests for making image queries.
     """
 
     def test_no_matches(
