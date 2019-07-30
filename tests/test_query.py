@@ -166,4 +166,4 @@ class TestMaxNumResults:
             "Integer out of range (51) in form data part 'max_result'. "
             'Accepted range is from 1 to 50 (inclusive).'
         )
-        assert str(exc.value) == expected_value
+        assert str(exc.value) == exc.value.response.text == expected_value

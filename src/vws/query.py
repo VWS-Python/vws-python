@@ -11,6 +11,7 @@ from urllib3.filepost import encode_multipart_formdata
 
 from ._authorization import authorization_header, rfc_1123_date
 from ._result_codes import raise_for_result_code
+from .exceptions import MaxNumResultsOutOfRange
 
 
 class CloudRecoService:
@@ -85,6 +86,9 @@ class CloudRecoService:
             headers=headers,
             data=content,
         )
+
+        if 'Integer out of range' in response.text:
+            raise MaxNumResultsOutOfRange(response=response)
 
         raise_for_result_code(
             response=response,
