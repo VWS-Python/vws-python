@@ -13,7 +13,7 @@ from ._result_codes import raise_for_result_code
 
 class CloudRecoService:
     """
-    An interface to Vuforia Web Services APIs.
+    TODO
     """
 
     def __init__(
