@@ -9,8 +9,9 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
-from vws import VWS, CloudRecoIncludeTargetData, CloudRecoService
+from vws import VWS, CloudRecoService
 from vws.exceptions import MaxNumResultsOutOfRange
+from vws.include_target_data import CloudRecoIncludeTargetData
 
 
 class TestQuery:
