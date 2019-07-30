@@ -9,7 +9,7 @@ from ._authorization import authorization_header, rfc_1123_date
 
 class CloudRecoService:
     """
-    TODO
+    An interface to the Vuforia Cloud Recognition Web APIs.
     """
 
     def __init__(
