@@ -5,8 +5,6 @@ Tests for the ``CloudRecoService`` querying functionality.
 import io
 import uuid
 
-import pytest
-
 from vws import VWS, CloudRecoService
 
 

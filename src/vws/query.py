@@ -27,7 +27,17 @@ class CloudRecoService:
 
     def query(self, image: io.BytesIO) -> str:
         """
-        TODO docstring
+        Use the Vuforia Web Query API to make an Image Recognition Query.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
+        for parameter details.
+
+        Args:
+            image: The image to make a query against.
+
+        Returns:
+            An ordered list of target details of matching targets.
         """
         image_content = image.getvalue()
         body = {
