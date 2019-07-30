@@ -12,7 +12,7 @@ from mock_vws.states import States
 from PIL import Image
 from requests import codes
 
-from vws import CloudRecoService, VWS
+from vws import VWS, CloudRecoService
 from vws.exceptions import (
     AuthenticationFailure,
     BadImage,
