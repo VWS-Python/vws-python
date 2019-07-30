@@ -11,6 +11,7 @@ from urllib3.filepost import encode_multipart_formdata
 
 from ._authorization import authorization_header, rfc_1123_date
 from ._result_codes import raise_for_result_code
+from .exceptions import MaxNumResultsOutOfRange
 
 
 class CloudRecoService:
@@ -34,7 +35,11 @@ class CloudRecoService:
         self._client_secret_key = client_secret_key.encode()
         self._base_vwq_url = base_vwq_url
 
-    def query(self, image: io.BytesIO) -> List[Dict[str, Any]]:
+    def query(
+        self,
+        image: io.BytesIO,
+        max_num_results: int = 1,
+    ) -> List[Dict[str, Any]]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
 
@@ -51,6 +56,7 @@ class CloudRecoService:
         image_content = image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
+            'max_num_results': (None, int(max_num_results), 'text/plain'),
         }
         date = rfc_1123_date()
         request_path = '/v1/query'
@@ -80,6 +86,9 @@ class CloudRecoService:
             headers=headers,
             data=content,
         )
+
+        if 'Integer out of range' in response.text:
+            raise MaxNumResultsOutOfRange(response=response)
 
         raise_for_result_code(
             response=response,

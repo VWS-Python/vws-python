@@ -5,10 +5,12 @@ Tests for the ``CloudRecoService`` querying functionality.
 import io
 import uuid
 
+import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
+from vws.exceptions import MaxNumResultsOutOfRange
 
 
 class TestQuery:
@@ -111,3 +113,57 @@ class TestMaxNumResults:
         vws_client.wait_for_target_processed(target_id=target_id_2)
         matches = cloud_reco_client.query(image=high_quality_image)
         assert len(matches) == 1
+
+    def test_custom(
+        self,
+        vws_client: VWS,
+        cloud_reco_client: CloudRecoService,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to set a custom ``max_num_results``.
+        """
+        target_id = vws_client.add_target(
+            name=uuid.uuid4().hex,
+            width=1,
+            image=high_quality_image,
+        )
+        target_id_2 = vws_client.add_target(
+            name=uuid.uuid4().hex,
+            width=1,
+            image=high_quality_image,
+        )
+        target_id_3 = vws_client.add_target(
+            name=uuid.uuid4().hex,
+            width=1,
+            image=high_quality_image,
+        )
+        vws_client.wait_for_target_processed(target_id=target_id)
+        vws_client.wait_for_target_processed(target_id=target_id_2)
+        vws_client.wait_for_target_processed(target_id=target_id_3)
+        matches = cloud_reco_client.query(
+            image=high_quality_image,
+            max_num_results=2,
+        )
+        assert len(matches) == 2
+
+    def test_too_many(
+        self,
+        cloud_reco_client: CloudRecoService,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        A ``MaxNumResultsOutOfRange`` error is raised if the given
+        ``max_num_results`` is out of range.
+        """
+        with pytest.raises(MaxNumResultsOutOfRange) as exc:
+            cloud_reco_client.query(
+                image=high_quality_image,
+                max_num_results=51,
+            )
+
+        expected_value = (
+            "Integer out of range (51) in form data part 'max_result'. "
+            'Accepted range is from 1 to 50 (inclusive).'
+        )
+        assert str(exc.value) == exc.value.response.text == expected_value
