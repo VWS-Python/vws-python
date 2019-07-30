@@ -14,7 +14,7 @@ from vws.exceptions import AuthenticationFailure, MaxNumResultsOutOfRange
 
 class TestQuery:
     """
-    Tests for adding a target.
+    TODO
     """
 
     def test_no_matches(
