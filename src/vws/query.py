@@ -21,14 +21,17 @@ class CloudRecoService:
         self,
         client_access_key: str,
         client_secret_key: str,
+        base_vwq_url: str = 'https://cloudreco.vuforia.com',
     ) -> None:
         """
         Args:
             client_access_key: A VWS client access key.
             client_secret_key: A VWS client secret key.
+            base_vwq_url: The base URL for the VWQ API.
         """
         self._client_access_key = client_access_key.encode()
         self._client_secret_key = client_secret_key.encode()
+        self._base_vwq_url = base_vwq_url
 
     def query(self, image: io.BytesIO) -> List[Dict[str, Any]]:
         """
@@ -70,10 +73,9 @@ class CloudRecoService:
             'Content-Type': content_type_header,
         }
 
-        base_vwq_url = 'https://cloudreco.vuforia.com'
         response = requests.request(
             method=method,
-            url=urljoin(base=base_vwq_url, url=request_path),
+            url=urljoin(base=self._base_vwq_url, url=request_path),
             headers=headers,
             data=content,
         )
