@@ -3,11 +3,12 @@ A library for Vuforia Web Services.
 """
 
 from ._version import get_versions
-from .query import CloudRecoService
+from .query import CloudRecoIncludeTargetData, CloudRecoService
 from .vws import VWS
 
 __all__ = [
     'CloudRecoService',
+    'CloudRecoIncludeTargetData',
     'VWS',
 ]
 

@@ -9,7 +9,7 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
-from vws import VWS, CloudRecoService
+from vws import VWS, CloudRecoIncludeTargetData, CloudRecoService
 from vws.exceptions import MaxNumResultsOutOfRange
 
 
@@ -180,6 +180,9 @@ class TestIncludeTargetData:
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        By default, target data is only returned in the top match.
+        """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
@@ -205,6 +208,10 @@ class TestIncludeTargetData:
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        When ``CloudRecoIncludeTargetData.TOP`` is given, target data is only
+        returned in the top match.
+        """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
@@ -220,6 +227,7 @@ class TestIncludeTargetData:
         top_match, second_match = cloud_reco_client.query(
             image=high_quality_image,
             max_num_results=2,
+            include_target_data=CloudRecoIncludeTargetData.TOP,
         )
         assert 'target_data' in top_match
         assert 'target_data' not in second_match
@@ -230,6 +238,10 @@ class TestIncludeTargetData:
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        When ``CloudRecoIncludeTargetData.NONE`` is given, target data is not
+        returned in any match.
+        """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
@@ -245,6 +257,7 @@ class TestIncludeTargetData:
         top_match, second_match = cloud_reco_client.query(
             image=high_quality_image,
             max_num_results=2,
+            include_target_data=CloudRecoIncludeTargetData.NONE,
         )
         assert 'target_data' not in top_match
         assert 'target_data' not in second_match
@@ -255,6 +268,10 @@ class TestIncludeTargetData:
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
+        """
+        When ``CloudRecoIncludeTargetData.ALL`` is given, target data is
+        returned in all matches.
+        """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
@@ -270,6 +287,7 @@ class TestIncludeTargetData:
         top_match, second_match = cloud_reco_client.query(
             image=high_quality_image,
             max_num_results=2,
+            include_target_data=CloudRecoIncludeTargetData.ALL,
         )
         assert 'target_data' in top_match
         assert 'target_data' in second_match
