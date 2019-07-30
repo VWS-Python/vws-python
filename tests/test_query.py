@@ -167,9 +167,3 @@ class TestMaxNumResults:
             'Accepted range is from 1 to 50 (inclusive).'
         )
         assert str(exc.value) == expected_value
-
-
-# TODO test options - include_target_data
-
-# TODO do we give an image type? Infer it?
-# What happens if we just always give jpeg?
