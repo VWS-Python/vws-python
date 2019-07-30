@@ -171,7 +171,6 @@ class TestMaxNumResults:
         assert str(exc.value) == expected_value
 
 
-# TODO test custom base URL
 # TODO test options - include_target_data
 
 # TODO do we give an image type? Infer it?
