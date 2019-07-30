@@ -8,6 +8,9 @@ from requests import codes
 
 import pytest
 
+from mock_vws import MockVWS
+from mock_vws.database import VuforiaDatabase
+
 from vws import VWS, CloudRecoService
 from vws.exceptions import AuthenticationFailure, MaxNumResultsOutOfRange
 
@@ -45,6 +48,43 @@ class TestQuery:
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
         assert matching_target['target_id'] == target_id
+
+
+class TestCustomBaseVWQURL:
+    """
+    Tests for using a custom base VWQ URL.
+    """
+
+    def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
+        """
+        It is possible to use query a target to a database under a custom VWQ
+        URL.
+        """
+        base_vwq_url = 'http://example.com'
+        with MockVWS(base_vwq_url=base_vwq_url) as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+
+            target_id = vws_client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+            vws_client.wait_for_target_processed(target_id=target_id)
+
+            cloud_reco_client = CloudRecoService(
+                client_access_key=database.client_access_key,
+                client_secret_key=database.client_secret_key,
+                base_vwq_url=base_vwq_url,
+            )
+
+            [match] = cloud_reco_client.query(image=high_quality_image)
+            assert match['target_id'] == target_id
 
 
 class TestMaxNumResults:
