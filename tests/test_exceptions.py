@@ -18,6 +18,7 @@ from vws.exceptions import (
     BadImage,
     Fail,
     ImageTooLarge,
+    MatchDeleted,
     MetadataTooLarge,
     ProjectInactive,
     TargetNameExist,
@@ -270,3 +271,24 @@ def test_target_status_not_success(
         vws_client.update_target(target_id=target_id)
 
     assert exc.value.response.status_code == codes.FORBIDDEN
+
+
+def test_match_deleted(
+    vws_client: VWS,
+    cloud_reco_client: CloudRecoService,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    A ``MatchDeleted`` exception is raised when a deleted target is matched.
+    """
+    target_id = vws_client.add_target(
+        name='x',
+        width=1,
+        image=high_quality_image,
+    )
+    vws_client.wait_for_target_processed(target_id=target_id)
+    vws_client.delete_target(target_id=target_id)
+    with pytest.raises(MatchDeleted) as exc:
+        cloud_reco_client.query(image=high_quality_image)
+
+    assert exc.value.response.status_code == codes.INTERNAL_SERVER_ERROR

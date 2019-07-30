@@ -11,7 +11,7 @@ from urllib3.filepost import encode_multipart_formdata
 
 from ._authorization import authorization_header, rfc_1123_date
 from ._result_codes import raise_for_result_code
-from .exceptions import MaxNumResultsOutOfRange
+from .exceptions import MatchDeleted, MaxNumResultsOutOfRange
 from .include_target_data import CloudRecoIncludeTargetData
 
 
@@ -104,6 +104,9 @@ class CloudRecoService:
 
         if 'Integer out of range' in response.text:
             raise MaxNumResultsOutOfRange(response=response)
+
+        if 'No content to map due to end-of-input' in response.text:
+            raise MatchDeleted(response=response)
 
         raise_for_result_code(
             response=response,
