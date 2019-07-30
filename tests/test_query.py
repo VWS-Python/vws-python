@@ -1,5 +1,5 @@
 """
-TODO
+Tests for the ``CloudRecoService`` querying functionality.
 """
 
 import io
