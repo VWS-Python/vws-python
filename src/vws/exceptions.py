@@ -5,6 +5,28 @@ Custom exceptions for Vuforia errors.
 from requests import Response
 
 
+class MatchDeleted(Exception):
+    """
+    Exception raised when a query is made with an image which matches a target
+    which has recently been deleted.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
 class MaxNumResultsOutOfRange(Exception):
     """
     Exception raised when the ``max_num_results`` given to the Cloud
