@@ -34,7 +34,7 @@ class CloudRecoService:
         """
         self._client_access_key = client_access_key.encode()
         self._client_secret_key = client_secret_key.encode()
-        self._base_vws_url = base_vws_url
+        self._base_vwq_url = base_vwq_url
 
     def query(
         self,
