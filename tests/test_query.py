@@ -1,5 +1,5 @@
 """
-TODO
+Tests for the ``CloudRecoService`` querying functionality.
 """
 
 import io
@@ -14,7 +14,7 @@ from vws.exceptions import AuthenticationFailure, MaxNumResultsOutOfRange
 
 class TestQuery:
     """
-    TODO
+    Tests for making image queries.
     """
 
     def test_no_matches(

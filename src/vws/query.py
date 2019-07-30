@@ -1,5 +1,9 @@
+"""
+Tools for interacting with the Vuforia Cloud Recognition Web APIs.
+"""
+
 import io
-import json
+from typing import Any, Dict, List
 from urllib.parse import urljoin
 
 import requests
@@ -13,7 +17,7 @@ from ._result_codes import raise_for_result_code
 
 class CloudRecoService:
     """
-    TODO
+    An interface to the Vuforia Cloud Recognition Web APIs.
     """
 
     def __init__(
@@ -37,9 +41,19 @@ class CloudRecoService:
         self,
         image: io.BytesIO,
         max_num_results: int = 1,
-    ) -> str:
+    ) -> List[Dict[str, Any]]:
         """
-        TODO docstring
+        Use the Vuforia Web Query API to make an Image Recognition Query.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query
+        for parameter details.
+
+        Args:
+            image: The image to make a query against.
+
+        Returns:
+            An ordered list of target details of matching targets.
         """
         image_content = image.getvalue()
         body = {
@@ -79,4 +93,4 @@ class CloudRecoService:
             raise MaxNumResultsOutOfRange(response=response)
 
         raise_for_result_code(response=response, expected_result_code='Success')
-        return response.json()['results']
+        return list(response.json()['results'])

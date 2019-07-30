@@ -29,7 +29,7 @@ def _mock_database() -> Iterator[VuforiaDatabase]:
 @pytest.fixture()
 def vws_client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
     """
-    Yield a VWS client which connects to a mock.
+    Yield a VWS client which connects to a mock database.
     """
     yield VWS(
         server_access_key=_mock_database.server_access_key,
@@ -38,9 +38,10 @@ def vws_client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
 
 
 @pytest.fixture()
-def cloud_reco_client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
+def cloud_reco_client(_mock_database: VuforiaDatabase,
+                      ) -> Iterator[CloudRecoService]:
     """
-    TODO Docstring
+    Yield a ``CloudRecoService`` client which connects to a mock database.
     """
     yield CloudRecoService(
         client_access_key=_mock_database.client_access_key,
