@@ -12,6 +12,7 @@ from urllib3.filepost import encode_multipart_formdata
 from ._authorization import authorization_header, rfc_1123_date
 from ._result_codes import raise_for_result_code
 from .exceptions import MaxNumResultsOutOfRange
+from .include_target_data import CloudRecoIncludeTargetData
 
 
 class CloudRecoService:
@@ -39,6 +40,8 @@ class CloudRecoService:
         self,
         image: io.BytesIO,
         max_num_results: int = 1,
+        include_target_data:
+        CloudRecoIncludeTargetData = CloudRecoIncludeTargetData.TOP,
     ) -> List[Dict[str, Any]]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
@@ -49,6 +52,16 @@ class CloudRecoService:
 
         Args:
             image: The image to make a query against.
+            max_num_results: The maximum number of matching targets to be
+                returned.
+            include_target_data: "Indicates if target_data records shall be
+                returned for the matched targets. Accepted values are top
+                (default value, only return target_data for top ranked match),
+                none (return no target_data), all (for all matched targets)".
+
+        Raises:
+            ~vws.exceptions.MaxNumResultsOutOfRange: `max_num_results`` is not
+                within the range (1, 50).
 
         Returns:
             An ordered list of target details of matching targets.
@@ -57,6 +70,8 @@ class CloudRecoService:
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'max_num_results': (None, int(max_num_results), 'text/plain'),
+            'include_target_data':
+            (None, include_target_data.value, 'text/plain'),
         }
         date = rfc_1123_date()
         request_path = '/v1/query'
