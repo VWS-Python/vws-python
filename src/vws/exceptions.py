@@ -7,7 +7,8 @@ from requests import Response
 
 class MaxNumResultsOutOfRange(Exception):
     """
-    TODO
+    Exception raised when the ``max_num_results`` given to the Cloud
+    Recognition Web API query endpoint is out of range.
     """
 
     def __init__(self, response: Response) -> None:
