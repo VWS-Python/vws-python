@@ -9,8 +9,6 @@ from urllib.parse import urljoin
 import requests
 from urllib3.filepost import encode_multipart_formdata
 
-from vws.exceptions import MaxNumResultsOutOfRange
-
 from ._authorization import authorization_header, rfc_1123_date
 from ._result_codes import raise_for_result_code
 

@@ -4,15 +4,13 @@ Tests for the ``CloudRecoService`` querying functionality.
 
 import io
 import uuid
-from requests import codes
 
 import pytest
-
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
-from vws.exceptions import AuthenticationFailure, MaxNumResultsOutOfRange
+from vws.exceptions import MaxNumResultsOutOfRange
 
 
 class TestQuery:
