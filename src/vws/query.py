@@ -88,8 +88,8 @@ class CloudRecoService:
             data=content,
         )
 
-        if 'Accepted range is from 1 to 50 (inclusive).' in response.text:
-            raise MaxNumResultsOutOfRange(response=response)
-
-        raise_for_result_code(response=response, expected_result_code='Success')
+        raise_for_result_code(
+            response=response,
+            expected_result_code='Success',
+        )
         return list(response.json()['results'])
