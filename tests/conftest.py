@@ -16,14 +16,22 @@ pytest_plugins = [  # pylint: disable=invalid-name
 
 
 @pytest.fixture()
-def vws_client() -> Iterator[VWS]:
+def _mock_database() -> Iterator[VuforiaDatabase]:
     """
-    Yield a VWS client which connects to a mock.
+    Yield a mock ``VuforiaDatabase``.
     """
     with MockVWS() as mock:
         database = VuforiaDatabase()
         mock.add_database(database=database)
-        yield VWS(
-            server_access_key=database.server_access_key,
-            server_secret_key=database.server_secret_key,
-        )
+        yield database
+
+
+@pytest.fixture()
+def vws_client(_mock_database: VuforiaDatabase) -> Iterator[VWS]:
+    """
+    Yield a VWS client which connects to a mock.
+    """
+    yield VWS(
+        server_access_key=_mock_database.server_access_key,
+        server_secret_key=_mock_database.server_secret_key,
+    )
