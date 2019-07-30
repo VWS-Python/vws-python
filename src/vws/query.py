@@ -1,4 +1,9 @@
+"""
+Tools for interacting with the Vuforia Cloud Recognition Web APIs.
+"""
+
 import io
+from typing import Any, Dict, List
 from urllib.parse import urljoin
 
 import requests
@@ -25,7 +30,7 @@ class CloudRecoService:
         self._client_access_key = client_access_key.encode()
         self._client_secret_key = client_secret_key.encode()
 
-    def query(self, image: io.BytesIO) -> str:
+    def query(self, image: io.BytesIO) -> List[Dict[str, Any]]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
 
@@ -73,4 +78,4 @@ class CloudRecoService:
             data=content,
         )
 
-        return response.json()['results']
+        return list(response.json()['results'])
