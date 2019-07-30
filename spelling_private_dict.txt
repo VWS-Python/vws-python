@@ -1,6 +1,7 @@
 AuthenticationFailure
 BadImage
 ImageTooLarge
+MaxNumResultsOutOfRange
 MetadataTooLarge
 ProjectInactive
 TargetNameExist

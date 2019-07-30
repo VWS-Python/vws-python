@@ -76,6 +76,7 @@ nitpick_ignore = [
 html_show_copyright = False
 html_show_sphinx = False
 html_show_sourcelink = False
+autoclass_content = 'both'
 
 html_theme_options = {
     'show_powered_by': 'false',

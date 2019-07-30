@@ -3,7 +3,6 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
 import io
-from enum import Enum
 from typing import Any, Dict, List
 from urllib.parse import urljoin
 
@@ -11,19 +10,9 @@ import requests
 from urllib3.filepost import encode_multipart_formdata
 
 from ._authorization import authorization_header, rfc_1123_date
+from .include_target_data import CloudRecoIncludeTargetData
 from ._result_codes import raise_for_result_code
 from .exceptions import MaxNumResultsOutOfRange
-
-
-class CloudRecoIncludeTargetData(Enum):
-    """
-    Options for the ``include_target_data`` parameter of
-    ``CloudRecoService.query``.
-    """
-
-    TOP = 'top'
-    NONE = 'none'
-    ALL = 'all'
 
 
 class CloudRecoService:
@@ -52,7 +41,7 @@ class CloudRecoService:
         image: io.BytesIO,
         max_num_results: int = 1,
         include_target_data:
-        CloudRecoIncludeTargetData = CloudRecoIncludeTargetData.TOP,
+        'CloudRecoIncludeTargetData' = CloudRecoIncludeTargetData.TOP,
     ) -> List[Dict[str, Any]]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
@@ -71,8 +60,8 @@ class CloudRecoService:
                 none (return no target_data), all (for all matched targets)".
 
         Raises:
-            MaxNumResultsOutOfRange: ``max_num_results`` is not within the
-            range (1, 50).
+            ~vws.exceptions.MaxNumResultsOutOfRange: `max_num_results`` is not
+                within the range (1, 50).
 
         Returns:
             An ordered list of target details of matching targets.
