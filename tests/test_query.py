@@ -196,6 +196,8 @@ class TestIncludeTargetData:
             image=high_quality_image,
             max_num_results=2,
         )
+        assert 'target_data' in top_match
+        assert 'target_data' not in second_match
 
     def test_top(
         self,
@@ -219,6 +221,8 @@ class TestIncludeTargetData:
             image=high_quality_image,
             max_num_results=2,
         )
+        assert 'target_data' in top_match
+        assert 'target_data' not in second_match
 
     def test_none(
         self,
@@ -242,6 +246,8 @@ class TestIncludeTargetData:
             image=high_quality_image,
             max_num_results=2,
         )
+        assert 'target_data' not in top_match
+        assert 'target_data' not in second_match
 
     def test_all(
         self,
@@ -265,3 +271,5 @@ class TestIncludeTargetData:
             image=high_quality_image,
             max_num_results=2,
         )
+        assert 'target_data' in top_match
+        assert 'target_data' in second_match
