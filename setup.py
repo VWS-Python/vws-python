@@ -1,7 +1,8 @@
 """Setup script for VWS Python, a wrapper for Vuforia's Web Services APIs."""
 
-import versioneer
 from setuptools import find_packages, setup
+
+import versioneer
 
 # We use requirements.txt instead of just declaring the requirements here
 # because this helps with Docker package caching.
@@ -39,5 +40,6 @@ setup(
         'Environment :: Web Environment',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.7',
+        'Development Status :: 3 - Alpha',
     ],
 )

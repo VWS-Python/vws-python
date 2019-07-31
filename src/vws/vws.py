@@ -14,6 +14,7 @@ from requests import Response
 from timeout_decorator import timeout
 
 from vws._authorization import authorization_header, rfc_1123_date
+from vws._result_codes import raise_for_result_code
 from vws.exceptions import (
     AuthenticationFailure,
     BadImage,
@@ -90,6 +91,7 @@ def _target_api_request(
     return response
 
 
+<<<<<<< HEAD
 def _raise_for_result_code(
     response: Response,
     expected_result_code: str,
@@ -181,7 +183,7 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        _raise_for_result_code(
+        raise_for_result_code(
             response=response,
             expected_result_code=expected_result_code,
         )
@@ -524,7 +526,8 @@ class VWS:
             image: The image of the target.
             active_flag: Whether or not the target is active for query.
             application_metadata: The application metadata of the target.
-                This will be base64 encoded.
+                This will be base64 encoded. Giving ``None`` will not change
+                the application metadata.
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
