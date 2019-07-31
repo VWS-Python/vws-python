@@ -454,6 +454,7 @@ class TestUpdateTarget:
         self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
+        image_file_failed_state: io.BytesIO,
     ) -> None:
         """
         It is possible to update a target.
@@ -465,21 +466,24 @@ class TestUpdateTarget:
             active_flag=True,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
+        report = vws_client.get_target_summary_report(target_id=target_id)
+        assert report['status'] == 'success'
         vws_client.update_target(
             target_id=target_id,
             name='x2',
             width=2,
             active_flag=False,
-            # These will be tested in
-            # https://github.com/adamtheturtle/vws-python/issues/809.
-            image=high_quality_image,
+            image=image_file_failed_state,
             application_metadata=b'a',
         )
 
+        vws_client.wait_for_target_processed(target_id=target_id)
         target_details = vws_client.get_target_record(target_id=target_id)
         assert target_details['name'] == 'x2'
         assert target_details['width'] == 2
         assert not target_details['active_flag']
+        report = vws_client.get_target_summary_report(target_id=target_id)
+        assert report['status'] == 'failed'
 
     def test_no_fields_given(
         self,
