@@ -1,6 +1,7 @@
 AuthenticationFailure
 BadImage
 ImageTooLarge
+MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
 ProjectInactive

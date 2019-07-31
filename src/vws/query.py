@@ -64,6 +64,9 @@ class CloudRecoService:
                 is not correct.
             ~vws.exceptions.MaxNumResultsOutOfRange: `max_num_results`` is not
                 within the range (1, 50).
+            ~vws.exceptions.MatchProcessing: The given image matches a target
+                which was recently added, updated or deleted and Vuforia
+                returns an error in this case.
             ~vws.exceptions.ProjectInactive: The project is inactive.
 
         Returns:
