@@ -60,8 +60,11 @@ class CloudRecoService:
                 none (return no target_data), all (for all matched targets)".
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The client access key pair
+                is not correct.
             ~vws.exceptions.MaxNumResultsOutOfRange: `max_num_results`` is not
                 within the range (1, 50).
+            ~vws.exceptions.ProjectInactive: The project is inactive.
 
         Returns:
             An ordered list of target details of matching targets.
