@@ -177,7 +177,7 @@ class TargetStatusProcessing(Exception):
 class ProjectInactive(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
-    'ProjectInactive'.
+    'ProjectInactive' or 'InactiveProject'.
     """
 
     def __init__(self, response: Response) -> None:
@@ -281,28 +281,6 @@ class TargetStatusNotSuccess(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetStatusNotSuccess'.
-    """
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
-
-class InactiveProject(Exception):
-    """
-    Exception raised when Vuforia returns a response with a result code
-    'InactiveProject'.
     """
 
     def __init__(self, response: Response) -> None:
