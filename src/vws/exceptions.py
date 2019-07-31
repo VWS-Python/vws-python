@@ -5,6 +5,50 @@ Custom exceptions for Vuforia errors.
 from requests import Response
 
 
+class MatchProcessing(Exception):
+    """
+    Exception raised when a query is made with an image which matches a target
+    which is processing or has recently been deleted.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+class MaxNumResultsOutOfRange(Exception):
+    """
+    Exception raised when the ``max_num_results`` given to the Cloud
+    Recognition Web API query endpoint is out of range.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__(response.text)
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
 class UnknownTarget(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -17,7 +61,14 @@ class UnknownTarget(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class Fail(Exception):
@@ -32,7 +83,14 @@ class Fail(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class BadImage(Exception):
@@ -47,7 +105,36 @@ class BadImage(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+class AuthenticationFailure(Exception):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'AuthenticationFailure'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class TargetStatusProcessing(Exception):
@@ -62,13 +149,20 @@ class TargetStatusProcessing(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class ProjectInactive(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
-    'ProjectInactive'.
+    'ProjectInactive' or 'InactiveProject'.
     """
 
     def __init__(self, response: Response) -> None:
@@ -77,7 +171,14 @@ class ProjectInactive(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class MetadataTooLarge(Exception):
@@ -92,7 +193,14 @@ class MetadataTooLarge(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class TargetNameExist(Exception):
@@ -107,7 +215,14 @@ class TargetNameExist(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
 
 
 class ImageTooLarge(Exception):
@@ -122,4 +237,39 @@ class ImageTooLarge(Exception):
             response: The response to a request to Vuforia.
         """
         super().__init__()
-        self.response = response
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+class TargetStatusNotSuccess(Exception):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'TargetStatusNotSuccess'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+class TargetProcessingTimeout(Exception):
+    """
+    Exception raised when waiting for a target to be processed times out.
+    """

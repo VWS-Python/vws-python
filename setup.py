@@ -2,6 +2,8 @@
 
 from setuptools import find_packages, setup
 
+import versioneer
+
 # We use requirements.txt instead of just declaring the requirements here
 # because this helps with Docker package caching.
 with open('requirements.txt') as requirements:
@@ -17,7 +19,8 @@ with open('README.rst') as f:
 
 setup(
     name='VWS Python',
-    version='0.1',
+    version=versioneer.get_version(),  # type: ignore
+    cmdclass=versioneer.get_cmdclass(),  # type: ignore
     author='Adam Dangoor',
     author_email='adamdangoor@gmail.com',
     description='Interact with the Vuforia Web Services (VWS) API.',
@@ -36,6 +39,7 @@ setup(
         'Operating System :: POSIX',
         'Environment :: Web Environment',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Development Status :: 3 - Alpha',
     ],
 )

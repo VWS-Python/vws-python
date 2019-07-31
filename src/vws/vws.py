@@ -10,20 +10,12 @@ from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import requests
-import timeout_decorator
 from requests import Response
+from timeout_decorator import timeout
 
 from vws._authorization import authorization_header, rfc_1123_date
-from vws.exceptions import (
-    BadImage,
-    Fail,
-    ImageTooLarge,
-    MetadataTooLarge,
-    ProjectInactive,
-    TargetNameExist,
-    TargetStatusProcessing,
-    UnknownTarget,
-)
+from vws._result_codes import raise_for_result_code
+from vws.exceptions import TargetProcessingTimeout
 
 
 def _target_api_request(
@@ -47,7 +39,6 @@ def _target_api_request(
         content: The request body which will be used in the request.
         request_path: The path to the endpoint which will be used in the
             request.
-
         base_vws_url: The base URL for the VWS API.
 
     Returns:
@@ -82,37 +73,6 @@ def _target_api_request(
     )
 
     return response
-
-
-def _raise_for_result_code(
-    response: Response,
-    expected_result_code: str,
-) -> None:
-    """
-    Raise an appropriate exception if the expected result code for a successful
-    request is not returned.
-
-    Args:
-        response: A response from Vuforia.
-        expected_result_code: See
-            https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
-    """
-    result_code = response.json()['result_code']
-    if result_code == expected_result_code:
-        return
-
-    exception = {
-        'BadImage': BadImage,
-        'Fail': Fail,
-        'ImageTooLarge': ImageTooLarge,
-        'MetadataTooLarge': MetadataTooLarge,
-        'ProjectInactive': ProjectInactive,
-        'TargetNameExist': TargetNameExist,
-        'TargetStatusProcessing': TargetStatusProcessing,
-        'UnknownTarget': UnknownTarget,
-    }[result_code]
-
-    raise exception(response=response)
 
 
 class VWS:
@@ -169,7 +129,7 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        _raise_for_result_code(
+        raise_for_result_code(
             response=response,
             expected_result_code=expected_result_code,
         )
@@ -188,7 +148,8 @@ class VWS:
         Add a target to a Vuforia Web Services database.
 
         See
-        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target.
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target
+        for parameter details.
 
         Args:
             name: The name of the target.
@@ -200,6 +161,21 @@ class VWS:
 
         Returns:
             The target ID of the new target.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.BadImage: There is a problem with the given image.
+                For example, it must be a JPEG or PNG file in the grayscale or
+                RGB color space.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.MetadataTooLarge: The given metadata is too large.
+                The maximum size is 1 MB of data when Base64 encoded.
+            ~vws.exceptions.ImageTooLarge: The given image is too large.
+            ~vws.exceptions.TargetNameExist: A target with the given ``name``
+                already exists.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -240,6 +216,14 @@ class VWS:
 
         Returns:
             Response details of a target from Vuforia.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         response = self._make_request(
             method='GET',
@@ -250,28 +234,79 @@ class VWS:
 
         return dict(response.json()['target_record'])
 
-    @timeout_decorator.timeout(seconds=60 * 5)
-    def wait_for_target_processed(self, target_id: str) -> None:
+    def _wait_for_target_processed(
+        self,
+        target_id: str,
+        seconds_between_requests: float,
+    ) -> None:
         """
-        Wait up to five minutes (arbitrary) for a target to get past the
-        processing stage.
+        Wait indefinitely for a target to get past the processing stage.
 
         Args:
             target_id: The ID of the target to wait for.
+            seconds_between_requests: The number of seconds to wait between
+                requests made while polling the target status.
 
         Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
             TimeoutError: The target remained in the processing stage for more
                 than five minutes.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         while True:
             report = self.get_target_summary_report(target_id=target_id)
             if report['status'] != 'processing':
                 return
 
-            # We wait 0.2 seconds rather than less than that to decrease the
-            # number of calls made to the API, to decrease the likelihood of
-            # hitting the request quota.
-            sleep(0.2)
+            sleep(seconds_between_requests)
+
+    def wait_for_target_processed(
+        self,
+        target_id: str,
+        seconds_between_requests: float = 0.2,
+        timeout_seconds: Optional[float] = 60 * 5,
+    ) -> None:
+        """
+        Wait up to five minutes (arbitrary) for a target to get past the
+        processing stage.
+
+        Args:
+            target_id: The ID of the target to wait for.
+            seconds_between_requests: The number of seconds to wait between
+                requests made while polling the target status.
+                We wait 0.2 seconds by default, rather than less, than that to
+                decrease the number of calls made to the API, to decrease the
+                likelihood of hitting the request quota.
+            timeout_seconds: The maximum number of seconds to wait for the
+                target to be processed. If ``None`` is given, no maximum is
+                applied.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.TargetProcessingTimeout: The target remained in the
+                processing stage for more than ``timeout_seconds`` seconds.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+        """
+
+        @timeout(
+            seconds=timeout_seconds,
+            timeout_exception=TargetProcessingTimeout,
+        )
+        def decorated() -> None:
+            self._wait_for_target_processed(
+                target_id=target_id,
+                seconds_between_requests=seconds_between_requests,
+            )
+
+        decorated()
 
     def list_targets(self) -> List[str]:
         """
@@ -282,6 +317,12 @@ class VWS:
 
         Returns:
             The IDs of all targets in the database.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
         """
         response = self._make_request(
             method='GET',
@@ -307,6 +348,14 @@ class VWS:
 
         Returns:
             Details of the target.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
         """
         response = self._make_request(
             method='GET',
@@ -326,6 +375,12 @@ class VWS:
 
         Returns:
             Details of the database.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
         """
         response = self._make_request(
             method='GET',
@@ -345,10 +400,122 @@ class VWS:
 
         Args:
             target_id: The ID of the target to delete.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+            ~vws.exceptions.TargetStatusProcessing: The given target is in the
+                processing state.
         """
         self._make_request(
             method='DELETE',
             content=b'',
+            request_path=f'/targets/{target_id}',
+            expected_result_code='Success',
+        )
+
+    def get_duplicate_targets(self, target_id: str) -> List[str]:
+        """
+        Get targets which may be considered duplicates of a given target.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Check-for-Duplicate-Targets.
+
+        Args:
+            target_id: The ID of the target to delete.
+
+        Returns:
+            The target IDs of duplicate targets.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
+        """
+        response = self._make_request(
+            method='GET',
+            content=b'',
+            request_path=f'/duplicates/{target_id}',
+            expected_result_code='Success',
+        )
+
+        return list(response.json()['similar_targets'])
+
+    def update_target(
+        self,
+        target_id: str,
+        name: Optional[str] = None,
+        width: Optional[Union[int, float]] = None,
+        image: Optional[io.BytesIO] = None,
+        active_flag: Optional[bool] = None,
+        application_metadata: Optional[bytes] = None,
+    ) -> None:
+        """
+        Add a target to a Vuforia Web Services database.
+
+        See
+        https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Add-a-Target
+        for parameter details.
+
+        Args:
+            target_id: The ID of the target to get details of.
+            name: The name of the target.
+            width: The width of the target.
+            image: The image of the target.
+            active_flag: Whether or not the target is active for query.
+            application_metadata: The application metadata of the target.
+                This will be base64 encoded. Giving ``None`` will not change
+                the application metadata.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.BadImage: There is a problem with the given image.
+                For example, it must be a JPEG or PNG file in the grayscale or
+                RGB color space.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            ~vws.exceptions.MetadataTooLarge: The given metadata is too large.
+                The maximum size is 1 MB of data when Base64 encoded.
+            ~vws.exceptions.ImageTooLarge: The given image is too large.
+            ~vws.exceptions.TargetNameExist: A target with the given ``name``
+                already exists.
+            ~vws.exceptions.ProjectInactive: The project is inactive.
+        """
+        data: Dict[str, Union[str, bool, float, int]] = {}
+
+        if name is not None:
+            data['name'] = name
+
+        if width is not None:
+            data['width'] = width
+
+        if image is not None:
+            image_data = image.getvalue()
+            image_data_encoded = base64.b64encode(image_data).decode('ascii')
+            data['image'] = image_data_encoded
+
+        if active_flag is not None:
+            data['active_flag'] = active_flag
+
+        if application_metadata is not None:
+            metadata_encoded_str = base64.b64encode(application_metadata)
+            metadata_encoded = metadata_encoded_str.decode('ascii')
+            data['application_metadata'] = metadata_encoded
+
+        content = bytes(json.dumps(data), encoding='utf-8')
+
+        self._make_request(
+            method='PUT',
+            content=content,
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
         )

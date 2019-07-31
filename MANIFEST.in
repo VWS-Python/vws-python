@@ -1,0 +1,3 @@
+include versioneer.py
+include src/vws/_version.py
+include src/vws/py.typed

@@ -9,7 +9,9 @@
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=CVS
+ignore=CVS,
+      versioneer.py,
+      _version.py,
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
@@ -96,6 +98,8 @@ disable=
     bad-whitespace,
     # Too difficult to please
     duplicate-code,
+    # Let isort handle imports
+    wrong-import-order,
 
 [REPORTS]
 

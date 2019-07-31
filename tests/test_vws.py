@@ -1,5 +1,5 @@
 """
-Tests for helper function for adding a target to a Vuforia database.
+Tests for helper functions for managing a Vuforia database.
 """
 
 import io
@@ -7,9 +7,10 @@ from typing import Optional
 
 import pytest
 from mock_vws import MockVWS
+from mock_vws.database import VuforiaDatabase
 
 from vws import VWS
-from vws.exceptions import UnknownTarget
+from vws.exceptions import TargetProcessingTimeout
 
 
 class TestAddTarget:
@@ -19,7 +20,7 @@ class TestAddTarget:
 
     def test_add_target(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
@@ -27,19 +28,19 @@ class TestAddTarget:
         """
         name = 'x'
         width = 1
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name=name,
             width=width,
             image=high_quality_image,
         )
-        target_record = client.get_target_record(target_id=target_id)
+        target_record = vws_client.get_target_record(target_id=target_id)
         assert target_record['name'] == name
         assert target_record['width'] == width
         assert target_record['active_flag'] is True
 
     def test_add_two_targets(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
@@ -47,20 +48,20 @@ class TestAddTarget:
 
         This demonstrates that the image seek position is not changed.
         """
-        client.add_target(name='x', width=1, image=high_quality_image)
-        client.add_target(name='a', width=1, image=high_quality_image)
+        vws_client.add_target(name='x', width=1, image=high_quality_image)
+        vws_client.add_target(name='a', width=1, image=high_quality_image)
 
     @pytest.mark.parametrize('application_metadata', [None, b'a'])
     def test_valid_metadata(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
         application_metadata: Optional[bytes],
     ) -> None:
         """
         No exception is raised when ``None`` or bytes is given.
         """
-        client.add_target(
+        vws_client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
@@ -70,20 +71,20 @@ class TestAddTarget:
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_active_flag_given(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
         active_flag: bool,
     ) -> None:
         """
         It is possible to set the active flag to a boolean value.
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
             active_flag=active_flag,
         )
-        target_record = client.get_target_record(target_id=target_id)
+        target_record = vws_client.get_target_record(target_id=target_id)
         assert target_record['active_flag'] is active_flag
 
 
@@ -99,13 +100,15 @@ class TestCustomBaseVWSURL:
         """
         base_vws_url = 'http://example.com'
         with MockVWS(base_vws_url=base_vws_url) as mock:
-            client = VWS(
-                server_access_key=mock.server_access_key,
-                server_secret_key=mock.server_secret_key,
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
                 base_vws_url=base_vws_url,
             )
 
-            client.add_target(
+            vws_client.add_target(
                 name='x',
                 width=1,
                 image=high_quality_image,
@@ -119,15 +122,23 @@ class TestListTargets:
 
     def test_list_targets(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         It is possible to get a list of target IDs.
         """
-        id_1 = client.add_target(name='x', width=1, image=high_quality_image)
-        id_2 = client.add_target(name='a', width=1, image=high_quality_image)
-        assert sorted(client.list_targets()) == sorted([id_1, id_2])
+        id_1 = vws_client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        id_2 = vws_client.add_target(
+            name='a',
+            width=1,
+            image=high_quality_image,
+        )
+        assert sorted(vws_client.list_targets()) == sorted([id_1, id_2])
 
 
 class TestDelete:
@@ -137,22 +148,22 @@ class TestDelete:
 
     def test_delete_target(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         It is possible to delete a target.
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
         )
 
-        client.wait_for_target_processed(target_id=target_id)
-        client.delete_target(target_id=target_id)
-        with pytest.raises(UnknownTarget):
-            client.get_target_record(target_id=target_id)
+        vws_client.wait_for_target_processed(target_id=target_id)
+        assert target_id in vws_client.list_targets()
+        vws_client.delete_target(target_id=target_id)
+        assert target_id not in vws_client.list_targets()
 
 
 class TestGetTargetSummaryReport:
@@ -162,19 +173,19 @@ class TestGetTargetSummaryReport:
 
     def test_get_target_summary_report(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         Details of a target are returned by ``get_target_summary_report``.
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
         )
 
-        result = client.get_target_summary_report(target_id=target_id)
+        result = vws_client.get_target_summary_report(target_id=target_id)
         expected_keys = {
             'status',
             'result_code',
@@ -188,7 +199,7 @@ class TestGetTargetSummaryReport:
             'current_month_recos',
             'previous_month_recos',
         }
-        assert result.keys() == expected_keys
+        assert set(result.keys()) == expected_keys
 
 
 class TestGetDatabaseSummaryReport:
@@ -196,11 +207,11 @@ class TestGetDatabaseSummaryReport:
     Tests for getting a summary report for a database.
     """
 
-    def test_get_target(self, client: VWS) -> None:
+    def test_get_target(self, vws_client: VWS) -> None:
         """
         Details of a database are returned by ``get_database_summary_report``.
         """
-        report = client.get_database_summary_report()
+        report = vws_client.get_database_summary_report()
         expected_keys = {
             'active_images',
             'current_month_recos',
@@ -217,7 +228,7 @@ class TestGetDatabaseSummaryReport:
             'total_recos',
             'transaction_id',
         }
-        assert report.keys() == expected_keys
+        assert set(report.keys()) == expected_keys
 
 
 class TestGetTargetRecord:
@@ -227,19 +238,19 @@ class TestGetTargetRecord:
 
     def test_get_target_record(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         Details of a target are returned by ``get_target_record``.
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
         )
 
-        result = client.get_target_record(target_id=target_id)
+        result = vws_client.get_target_record(target_id=target_id)
 
         expected_keys = {
             'target_id',
@@ -249,7 +260,7 @@ class TestGetTargetRecord:
             'tracking_rating',
             'reco_rating',
         }
-        assert result.keys() == expected_keys
+        assert set(result.keys()) == expected_keys
 
 
 class TestWaitForTargetProcessed:
@@ -259,19 +270,229 @@ class TestWaitForTargetProcessed:
 
     def test_wait_for_target_processed(
         self,
-        client: VWS,
+        vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
         It is possible to wait until a target is processed.
         """
-        target_id = client.add_target(
+        target_id = vws_client.add_target(
             name='x',
             width=1,
             image=high_quality_image,
         )
-        report = client.get_target_summary_report(target_id=target_id)
+        report = vws_client.get_target_summary_report(target_id=target_id)
         assert report['status'] == 'processing'
-        client.wait_for_target_processed(target_id=target_id)
-        report = client.get_target_summary_report(target_id=target_id)
+        vws_client.wait_for_target_processed(target_id=target_id)
+        report = vws_client.get_target_summary_report(target_id=target_id)
         assert report['status'] != 'processing'
+
+    def test_default_seconds_between_requests(
+        self,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        By default, 0.2 seconds are waited between polling requests.
+        """
+        with MockVWS(processing_time_seconds=0.5) as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+
+            target_id = vws_client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+            vws_client.wait_for_target_processed(target_id=target_id)
+            report = vws_client.get_database_summary_report()
+            expected_requests = (
+                # Add target request
+                1 +
+                # Database summary request
+                1 +
+                # Initial request
+                1 +
+                # Request after 0.2 seconds - not processed
+                1 +
+                # Request after 0.4 seconds - not processed
+                # This assumes that there is less than 0.1 seconds taken
+                # between the start of the target processing and the start of
+                # waiting for the target to be processed.
+                1 +
+                # Request after 0.6 seconds - processed
+                1
+            )
+            # At the time of writing there is a bug which prevents request
+            # usage from being tracked so we cannot track this.
+            expected_requests = 0
+            assert report['request_usage'] == expected_requests
+
+    def test_custom_seconds_between_requests(
+        self,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to customize the time waited between polling requests.
+        """
+        with MockVWS(processing_time_seconds=0.5) as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+
+            target_id = vws_client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+            vws_client.wait_for_target_processed(
+                target_id=target_id,
+                seconds_between_requests=0.3,
+            )
+            report = vws_client.get_database_summary_report()
+            expected_requests = (
+                # Add target request
+                1 +
+                # Database summary request
+                1 +
+                # Initial request
+                1 +
+                # Request after 0.3 seconds - not processed
+                # This assumes that there is less than 0.2 seconds taken
+                # between the start of the target processing and the start of
+                # waiting for the target to be processed.
+                1 +
+                # Request after 0.6 seconds - processed
+                1
+            )
+            # At the time of writing there is a bug which prevents request
+            # usage from being tracked so we cannot track this.
+            expected_requests = 0
+            assert report['request_usage'] == expected_requests
+
+    def test_custom_timeout(
+        self,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to set a maximum timeout.
+        """
+        with MockVWS(processing_time_seconds=0.5) as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+
+            target_id = vws_client.add_target(
+                name='x',
+                width=1,
+                image=high_quality_image,
+            )
+
+            report = vws_client.get_target_summary_report(target_id=target_id)
+            assert report['status'] == 'processing'
+            with pytest.raises(TargetProcessingTimeout):
+                vws_client.wait_for_target_processed(
+                    target_id=target_id,
+                    timeout_seconds=0.1,
+                )
+
+            vws_client.wait_for_target_processed(
+                target_id=target_id,
+                timeout_seconds=0.5,
+            )
+            report = vws_client.get_target_summary_report(target_id=target_id)
+            assert report['status'] != 'processing'
+
+
+class TestGetDuplicateTargets:
+    """
+    Tests for getting duplicate targets.
+    """
+
+    def test_get_duplicate_targets(
+        self,
+        vws_client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to get the IDs of similar targets.
+        """
+        target_id = vws_client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        similar_target_id = vws_client.add_target(
+            name='a',
+            width=1,
+            image=high_quality_image,
+        )
+
+        vws_client.wait_for_target_processed(target_id=target_id)
+        vws_client.wait_for_target_processed(target_id=similar_target_id)
+        duplicates = vws_client.get_duplicate_targets(target_id=target_id)
+        assert duplicates == [similar_target_id]
+
+
+class TestUpdateTarget:
+    """
+    Tests for updating a target.
+    """
+
+    def test_update_target(
+        self,
+        vws_client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to update a target.
+        """
+        target_id = vws_client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+        )
+        vws_client.wait_for_target_processed(target_id=target_id)
+        vws_client.update_target(
+            target_id=target_id,
+            name='x2',
+            width=2,
+            active_flag=False,
+            # These will be tested in
+            # https://github.com/adamtheturtle/vws-python/issues/809.
+            image=high_quality_image,
+            application_metadata=b'a',
+        )
+
+        target_details = vws_client.get_target_record(target_id=target_id)
+        assert target_details['name'] == 'x2'
+        assert target_details['width'] == 2
+        assert not target_details['active_flag']
+
+    def test_no_fields_given(
+        self,
+        vws_client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """
+        It is possible to give no update fields.
+        """
+        target_id = vws_client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+        )
+        vws_client.wait_for_target_processed(target_id=target_id)
+        vws_client.update_target(target_id=target_id)
