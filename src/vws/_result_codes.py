@@ -44,6 +44,7 @@ def raise_for_result_code(
         'DateRangeError': DateRangeError,
         'Fail': Fail,
         'ImageTooLarge': ImageTooLarge,
+        'InactiveProject': ProjectInactive,
         'MetadataTooLarge': MetadataTooLarge,
         'ProjectInactive': ProjectInactive,
         'RequestQuotaReached': RequestQuotaReached,
