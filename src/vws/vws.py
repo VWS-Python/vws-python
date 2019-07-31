@@ -176,6 +176,8 @@ class VWS:
             ~vws.exceptions.TargetNameExist: A target with the given ``name``
                 already exists.
             ~vws.exceptions.ProjectInactive: The project is inactive.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -224,6 +226,8 @@ class VWS:
                 example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -256,6 +260,8 @@ class VWS:
                 than five minutes.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         while True:
             report = self.get_target_summary_report(target_id=target_id)
@@ -294,6 +300,8 @@ class VWS:
                 processing stage for more than ``timeout_seconds`` seconds.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
 
         @timeout(
@@ -323,6 +331,8 @@ class VWS:
                 correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -356,6 +366,8 @@ class VWS:
                 example, the given access key does not match a known database.
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -381,6 +393,8 @@ class VWS:
                 correct.
             ~vws.exceptions.Fail: There was an error with the request. For
                 example, the given access key does not match a known database.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -410,6 +424,8 @@ class VWS:
                 target in the database.
             ~vws.exceptions.TargetStatusProcessing: The given target is in the
                 processing state.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         self._make_request(
             method='DELETE',
@@ -439,6 +455,8 @@ class VWS:
             ~vws.exceptions.UnknownTarget: The given target ID does not match a
                 target in the database.
             ~vws.exceptions.ProjectInactive: The project is inactive.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -489,6 +507,8 @@ class VWS:
             ~vws.exceptions.TargetNameExist: A target with the given ``name``
                 already exists.
             ~vws.exceptions.ProjectInactive: The project is inactive.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
         """
         data: Dict[str, Union[str, bool, float, int]] = {}
 

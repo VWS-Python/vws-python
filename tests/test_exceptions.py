@@ -6,6 +6,7 @@ import io
 import random
 
 import pytest
+from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
@@ -21,6 +22,7 @@ from vws.exceptions import (
     MatchProcessing,
     MetadataTooLarge,
     ProjectInactive,
+    RequestTimeTooSkewed,
     TargetNameExist,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
@@ -217,6 +219,28 @@ def test_metadata_too_large(
         )
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+
+
+def test_request_time_too_skewed(vws_client: VWS) -> None:
+    """
+    A ``RequestTimeTooSkewed`` exception is raised when the request time is
+    more than five minutes different from the server time.
+    """
+    vws_max_time_skew = 60 * 5
+    leeway = 10
+    time_difference_from_now = vws_max_time_skew + leeway
+
+    # We use a custom tick because we expect the following:
+    #
+    # * At least one time check when creating the request
+    # * At least one time check when processing the request
+    #
+    # >= 1 ticks are acceptable.
+    with freeze_time(auto_tick_seconds=time_difference_from_now):
+        with pytest.raises(RequestTimeTooSkewed) as exc:
+            vws_client.get_target_record(target_id='a')
+
+    assert exc.value.response.status_code == codes.FORBIDDEN
 
 
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
