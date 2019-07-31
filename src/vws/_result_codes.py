@@ -7,10 +7,13 @@ from requests import Response
 from vws.exceptions import (
     AuthenticationFailure,
     BadImage,
+    DateRangeError,
     Fail,
     ImageTooLarge,
     MetadataTooLarge,
     ProjectInactive,
+    RequestQuotaReached,
+    RequestTimeTooSkewed,
     TargetNameExist,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
@@ -38,14 +41,16 @@ def raise_for_result_code(
     exception = {
         'AuthenticationFailure': AuthenticationFailure,
         'BadImage': BadImage,
+        'DateRangeError': DateRangeError,
         'Fail': Fail,
         'ImageTooLarge': ImageTooLarge,
         'MetadataTooLarge': MetadataTooLarge,
         'ProjectInactive': ProjectInactive,
-        'InactiveProject': ProjectInactive,
+        'RequestQuotaReached': RequestQuotaReached,
+        'RequestTimeTooSkewed': RequestTimeTooSkewed,
         'TargetNameExist': TargetNameExist,
-        'TargetStatusProcessing': TargetStatusProcessing,
         'TargetStatusNotSuccess': TargetStatusNotSuccess,
+        'TargetStatusProcessing': TargetStatusProcessing,
         'UnknownTarget': UnknownTarget,
     }[result_code]
 
