@@ -24,6 +24,7 @@ from vws.exceptions import (
     MatchProcessing,
     MetadataTooLarge,
     ProjectInactive,
+    RequestTimeTooSkewed,
     TargetNameExist,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
@@ -223,16 +224,12 @@ def test_metadata_too_large(
 
 
 def test_request_time_too_skewed(vws_client: VWS) -> None:
-    # TODO Use a flask-based mock so it is not affected by the time freeze
-    # or :( monkeypatch the time getting thing
     vws_max_time_skew = timedelta(minutes=5)
     leeway = timedelta(seconds=10)
     time_difference_from_now = vws_max_time_skew + leeway
-    gmt = pytz.timezone('GMT')
-    with freeze_time(datetime.now(tz=gmt), auto_tick_seconds=1000):
-        vws_client.get_target_record(target_id='a')
-        # with pytest.raises(RequestTimeTooSkewed):
-        #     pass
+    with freeze_time(auto_tick_seconds=time_difference_from_now.seconds):
+        with pytest.raises(RequestTimeTooSkewed):
+            vws_client.get_target_record(target_id='a')
 
 
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
