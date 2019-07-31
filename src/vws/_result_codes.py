@@ -40,12 +40,12 @@ def raise_for_result_code(
         'BadImage': BadImage,
         'Fail': Fail,
         'ImageTooLarge': ImageTooLarge,
+        'InactiveProject': ProjectInactive,
         'MetadataTooLarge': MetadataTooLarge,
         'ProjectInactive': ProjectInactive,
-        'InactiveProject': ProjectInactive,
         'TargetNameExist': TargetNameExist,
-        'TargetStatusProcessing': TargetStatusProcessing,
         'TargetStatusNotSuccess': TargetStatusNotSuccess,
+        'TargetStatusProcessing': TargetStatusProcessing,
         'UnknownTarget': UnknownTarget,
     }[result_code]
 
