@@ -237,8 +237,10 @@ def test_request_time_too_skewed(vws_client: VWS) -> None:
     #
     # >= 1 ticks are acceptable.
     with freeze_time(auto_tick_seconds=time_difference_from_now):
-        with pytest.raises(RequestTimeTooSkewed):
+        with pytest.raises(RequestTimeTooSkewed) as exc:
             vws_client.get_target_record(target_id='a')
+
+    assert exc.value.response.status_code == codes.FORBIDDEN
 
 
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
