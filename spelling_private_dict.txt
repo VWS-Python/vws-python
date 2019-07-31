@@ -1,9 +1,11 @@
 AuthenticationFailure
 BadImage
 ImageTooLarge
+MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
 ProjectInactive
+RequestTimeTooSkewed
 TargetNameExist
 TargetProcessingTimeout
 TargetStatusProcessing
