@@ -18,7 +18,7 @@ Pygments==2.4.2
 pylint==2.3.1  # Lint
 pyroma==2.5  # Packaging best practices checker
 pytest-cov==2.7.1  # Measure code coverage
-pytest==5.0.1  # Test runners
+pytest==5.1.1  # Test runners
 PyYAML==5.1.2
 Sphinx==2.1.2
 sphinx-autodoc-typehints==1.7.0
