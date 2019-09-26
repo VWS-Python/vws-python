@@ -25,6 +25,6 @@ sphinx-autodoc-typehints==1.8.0
 sphinxcontrib-spelling==4.3.0
 twine==2.0.0
 versioneer==0.18
-vulture==1.0
+vulture==1.1
 VWS-Python-Mock==2018.12.1.0
 yapf==0.28.0  # Automatic formatting for Python
