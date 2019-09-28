@@ -56,6 +56,10 @@ class TestQuery:
         cloud_reco_client: CloudRecoService,
         png_too_large: io.BytesIO,
     ) -> None:
+        """
+        A ``ConnectionErrorPossiblyImageTooLarge`` exception is raised if an
+        image which is too large is given.
+        """
         with pytest.raises(ConnectionErrorPossiblyImageTooLarge):
             cloud_reco_client.query(image=png_too_large)
 
