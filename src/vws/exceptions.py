@@ -11,7 +11,7 @@ class UnknownVWSErrorPossiblyBadName(Exception):
     Exception raised when VWS returns an HTML page which says "Oops, an error
     occurred".
 
-    THis has been seen to happen when the given name includes a bad character.
+    This has been seen to happen when the given name includes a bad character.
     """
 
 
