@@ -26,5 +26,5 @@ sphinxcontrib-spelling==4.3.0
 twine==2.0.0
 versioneer==0.18
 vulture==1.1
-VWS-Python-Mock==2018.12.1.0
+VWS-Python-Mock==2019.9.28.0
 yapf==0.28.0  # Automatic formatting for Python
