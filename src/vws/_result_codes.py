@@ -2,6 +2,8 @@
 Tools for managing result codes.
 """
 
+import json
+
 from requests import Response
 
 from vws.exceptions import (
@@ -16,6 +18,7 @@ from vws.exceptions import (
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
+    UnknownVWSErrorPossiblyBadName,
 )
 
 
@@ -32,7 +35,12 @@ def raise_for_result_code(
         expected_result_code: See
             https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
     """
-    result_code = response.json()['result_code']
+    try:
+        result_code = response.json()['result_code']
+    except json.decoder.JSONDecodeError as exc:
+        assert 'Oops' in response.text
+        raise UnknownVWSErrorPossiblyBadName() from exc
+
     if result_code == expected_result_code:
         return
 
