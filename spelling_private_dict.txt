@@ -1,5 +1,6 @@
 AuthenticationFailure
 BadImage
+ConnectionErrorPossiblyImageTooLarge
 ImageTooLarge
 MatchProcessing
 MaxNumResultsOutOfRange
