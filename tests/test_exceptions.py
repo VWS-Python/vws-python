@@ -262,20 +262,14 @@ def test_match_processing(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``MatchProcessing`` exception is raised when a deleted target is matched.
+    A ``MatchProcessing`` exception is raised when a target in processing is
+    matched.
     """
-    target_id = vws_client.add_target(
+    vws_client.add_target(
         name='x',
         width=1,
         image=high_quality_image,
     )
     with pytest.raises(MatchProcessing) as exc:
         cloud_reco_client.query(image=high_quality_image)
-    assert exc.value.response.status_code == codes.INTERNAL_SERVER_ERROR
-    vws_client.wait_for_target_processed(target_id=target_id)
-    cloud_reco_client.query(image=high_quality_image)
-    vws_client.delete_target(target_id=target_id)
-    with pytest.raises(MatchProcessing) as exc:
-        cloud_reco_client.query(image=high_quality_image)
-
     assert exc.value.response.status_code == codes.INTERNAL_SERVER_ERROR
