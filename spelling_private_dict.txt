@@ -12,6 +12,7 @@ TargetProcessingTimeout
 TargetStatusProcessing
 Ubuntu
 UnknownTarget
+UnknownVWSErrorPossiblyBadName
 api
 args
 ascii
