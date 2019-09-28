@@ -178,6 +178,10 @@ class VWS:
             ~vws.exceptions.ProjectInactive: The project is inactive.
             ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
                 time sent to Vuforia.
+            ~vws.exceptions.UnknownVWSErrorPossiblyBadName: Vuforia returns an
+                HTML page with the text "Oops, an error occurred". This has
+                been seen to happen when the given name includes a bad
+                character.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')

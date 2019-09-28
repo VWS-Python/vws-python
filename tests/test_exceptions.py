@@ -25,6 +25,7 @@ from vws.exceptions import (
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
+    UnknownVWSErrorPossiblyBadName,
 )
 
 
@@ -50,6 +51,17 @@ def test_invalid_given_id(vws_client: VWS) -> None:
     with pytest.raises(UnknownTarget) as exc:
         vws_client.delete_target(target_id='x')
     assert exc.value.response.status_code == codes.NOT_FOUND
+
+
+def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
+    """
+    When a name with a bad character is given, an
+    ``UnknownVWSErrorPossiblyBadName`` exception is raised.
+    """
+    max_char_value = 65535
+    bad_name = chr(max_char_value + 1)
+    with pytest.raises(UnknownVWSErrorPossiblyBadName):
+        vws_client.add_target(name=bad_name, width=1, image=high_quality_image)
 
 
 def test_request_quota_reached() -> None:
