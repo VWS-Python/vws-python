@@ -11,7 +11,11 @@ from urllib3.filepost import encode_multipart_formdata
 
 from ._authorization import authorization_header, rfc_1123_date
 from ._result_codes import raise_for_result_code
-from .exceptions import MatchProcessing, MaxNumResultsOutOfRange
+from .exceptions import (
+    ConnectionErrorPossiblyImageTooLarge,
+    MatchProcessing,
+    MaxNumResultsOutOfRange,
+)
 from .include_target_data import CloudRecoIncludeTargetData
 
 
@@ -68,6 +72,8 @@ class CloudRecoService:
                 which was recently added, updated or deleted and Vuforia
                 returns an error in this case.
             ~vws.exceptions.ProjectInactive: The project is inactive.
+            ~vws.exceptions.ConnectionErrorPossiblyImageTooLarge: The given
+                image is too large.
 
         Returns:
             An ordered list of target details of matching targets.
@@ -101,12 +107,15 @@ class CloudRecoService:
             'Content-Type': content_type_header,
         }
 
-        response = requests.request(
-            method=method,
-            url=urljoin(base=self._base_vwq_url, url=request_path),
-            headers=headers,
-            data=content,
-        )
+        try:
+            response = requests.request(
+                method=method,
+                url=urljoin(base=self._base_vwq_url, url=request_path),
+                headers=headers,
+                data=content,
+            )
+        except requests.exceptions.ConnectionError as exc:
+            raise ConnectionErrorPossiblyImageTooLarge from exc
 
         if 'Integer out of range' in response.text:
             raise MaxNumResultsOutOfRange(response=response)

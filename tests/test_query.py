@@ -10,7 +10,10 @@ from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
-from vws.exceptions import MaxNumResultsOutOfRange
+from vws.exceptions import (
+    ConnectionErrorPossiblyImageTooLarge,
+    MaxNumResultsOutOfRange,
+)
 from vws.include_target_data import CloudRecoIncludeTargetData
 
 
@@ -47,6 +50,18 @@ class TestQuery:
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
         assert matching_target['target_id'] == target_id
+
+    def test_too_large(
+        self,
+        cloud_reco_client: CloudRecoService,
+        png_too_large: io.BytesIO,
+    ) -> None:
+        """
+        A ``ConnectionErrorPossiblyImageTooLarge`` exception is raised if an
+        image which is too large is given.
+        """
+        with pytest.raises(ConnectionErrorPossiblyImageTooLarge):
+            cloud_reco_client.query(image=png_too_large)
 
 
 class TestCustomBaseVWQURL:

@@ -25,6 +25,7 @@ from vws.exceptions import (
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
+    UnknownVWSErrorPossiblyBadName,
 )
 
 
@@ -50,6 +51,17 @@ def test_invalid_given_id(vws_client: VWS) -> None:
     with pytest.raises(UnknownTarget) as exc:
         vws_client.delete_target(target_id='x')
     assert exc.value.response.status_code == codes.NOT_FOUND
+
+
+def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
+    """
+    When a name with a bad character is given, an
+    ``UnknownVWSErrorPossiblyBadName`` exception is raised.
+    """
+    max_char_value = 65535
+    bad_name = chr(max_char_value + 1)
+    with pytest.raises(UnknownVWSErrorPossiblyBadName):
+        vws_client.add_target(name=bad_name, width=1, image=high_quality_image)
 
 
 def test_request_quota_reached() -> None:
@@ -262,20 +274,14 @@ def test_match_processing(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``MatchProcessing`` exception is raised when a deleted target is matched.
+    A ``MatchProcessing`` exception is raised when a target in processing is
+    matched.
     """
-    target_id = vws_client.add_target(
+    vws_client.add_target(
         name='x',
         width=1,
         image=high_quality_image,
     )
     with pytest.raises(MatchProcessing) as exc:
         cloud_reco_client.query(image=high_quality_image)
-    assert exc.value.response.status_code == codes.INTERNAL_SERVER_ERROR
-    vws_client.wait_for_target_processed(target_id=target_id)
-    cloud_reco_client.query(image=high_quality_image)
-    vws_client.delete_target(target_id=target_id)
-    with pytest.raises(MatchProcessing) as exc:
-        cloud_reco_client.query(image=high_quality_image)
-
     assert exc.value.response.status_code == codes.INTERNAL_SERVER_ERROR

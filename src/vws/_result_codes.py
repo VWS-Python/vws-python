@@ -2,6 +2,8 @@
 Tools for managing result codes.
 """
 
+import json
+
 from requests import Response
 
 from vws.exceptions import (
@@ -18,6 +20,7 @@ from vws.exceptions import (
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
+    UnknownVWSErrorPossiblyBadName,
 )
 
 
@@ -33,8 +36,18 @@ def raise_for_result_code(
         response: A response from Vuforia.
         expected_result_code: See
             https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
+
+    Raises:
+        ~vws.exceptions.UnknownVWSErrorPossiblyBadName: Vuforia returns an HTML
+            page with the text "Oops, an error occurred". This has been seen to
+            happen when the given name includes a bad character.
     """
-    result_code = response.json()['result_code']
+    try:
+        result_code = response.json()['result_code']
+    except json.decoder.JSONDecodeError as exc:
+        assert 'Oops' in response.text
+        raise UnknownVWSErrorPossiblyBadName() from exc
+
     if result_code == expected_result_code:
         return
 

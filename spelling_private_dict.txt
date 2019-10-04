@@ -1,5 +1,6 @@
 AuthenticationFailure
 BadImage
+ConnectionErrorPossiblyImageTooLarge
 ImageTooLarge
 MatchProcessing
 MaxNumResultsOutOfRange
@@ -11,6 +12,7 @@ TargetProcessingTimeout
 TargetStatusProcessing
 Ubuntu
 UnknownTarget
+UnknownVWSErrorPossiblyBadName
 api
 args
 ascii
