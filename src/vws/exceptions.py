@@ -156,6 +156,22 @@ class AuthenticationFailure(Exception):
         return self._response
 
 
+# See https://github.com/adamtheturtle/vws-python/issues/822.
+class RequestQuotaReached(Exception):  # pragma: no cover
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'RequestQuotaReached'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self.response = response
+
+
 class TargetStatusProcessing(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -285,6 +301,29 @@ class TargetStatusNotSuccess(Exception):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetStatusNotSuccess'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+# See https://github.com/adamtheturtle/vws-python/issues/846.
+class DateRangeError(Exception):  # pragma: no cover
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'DateRangeError'.
     """
 
     def __init__(self, response: Response) -> None:
