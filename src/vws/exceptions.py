@@ -156,7 +156,8 @@ class AuthenticationFailure(Exception):
         return self._response
 
 
-class RequestQuotaReached(Exception):
+# See https://github.com/adamtheturtle/vws-python/issues/822.
+class RequestQuotaReached(Exception):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'RequestQuotaReached'.
@@ -318,7 +319,8 @@ class TargetStatusNotSuccess(Exception):
         return self._response
 
 
-class DateRangeError(Exception):
+# See https://github.com/adamtheturtle/vws-python/issues/846.
+class DateRangeError(Exception):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'DateRangeError'.
