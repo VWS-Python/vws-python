@@ -23,6 +23,8 @@ To write unit tests for code which uses this library, without using your Vuforia
 
 XXX example
 
+There are some differences... see XXX for details
+
 
 Reference
 ---------
