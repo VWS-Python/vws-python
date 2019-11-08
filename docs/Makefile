@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = DCOSE2E
+SPHINXPROJ    = VWSPYTHON
 SOURCEDIR     = source
 BUILDDIR      = build
 
