@@ -15,13 +15,13 @@ pydocstyle==4.0.1  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
 pygithub==1.44.1
 Pygments==2.4.2
-pylint==2.4.3  # Lint
+pylint==2.4.4  # Lint
 pyroma==2.6  # Packaging best practices checker
 pytest-cov==2.8.1  # Measure code coverage
-pytest==5.2.2  # Test runners
+pytest==5.2.4  # Test runners
 PyYAML==5.1.2
 Sphinx==2.2.1
-sphinx-autodoc-typehints==1.10.2
+sphinx-autodoc-typehints==1.10.3
 sphinxcontrib-spelling==4.3.0
 twine==2.0.0
 versioneer==0.18
