@@ -52,7 +52,7 @@ Store your PyPI password:
 
 #. Get a GitHub access token:
 
-   Follow the `GitHub instructions <https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/>`__ for getting an access token.
+   Follow the `GitHub access token instructions`_ for getting an access token.
 
 #. Set environment variables to GitHub credentials, e.g.:
 
@@ -66,3 +66,5 @@ Store your PyPI password:
     .. code:: sh
 
        curl https://raw.githubusercontent.com/"$GITHUB_OWNER"/vws-python/master/admin/release.sh | bash
+
+.. _GitHub access token instructions: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line/
