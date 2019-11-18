@@ -14,7 +14,9 @@ Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with a
 Example usage
 -------------
 
-See the API reference for full usage details.
+See the :doc:`api-reference` for full usage details.
+
+.. code:: python
 
 Testing
 -------
