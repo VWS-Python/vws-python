@@ -32,9 +32,7 @@ setup(
     keywords='vuforia fake client',
     package_dir={'': 'src'},
     include_package_data=True,
-    package_data = {
-        'vws': ['py.typed'],
-    },
+    package_data={'vws': ['py.typed']},
     install_requires=INSTALL_REQUIRES,
     extras_require={
         'dev': DEV_REQUIRES,
