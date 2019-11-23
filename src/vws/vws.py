@@ -141,8 +141,8 @@ class VWS:
         name: str,
         width: Union[int, float],
         image: io.BytesIO,
-        active_flag: bool = True,
-        application_metadata: Optional[bytes] = None,
+        active_flag: bool,
+        application_metadata: Optional[bytes],
     ) -> str:
         """
         Add a target to a Vuforia Web Services database.

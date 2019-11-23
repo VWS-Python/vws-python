@@ -38,7 +38,13 @@ def test_image_too_large(
     raised.
     """
     with pytest.raises(ImageTooLarge) as exc:
-        vws_client.add_target(name='x', width=1, image=png_too_large)
+        vws_client.add_target(
+            name='x',
+            width=1,
+            image=png_too_large,
+            active_flag=True,
+            application_metadata=None,
+        )
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
@@ -61,7 +67,13 @@ def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
     max_char_value = 65535
     bad_name = chr(max_char_value + 1)
     with pytest.raises(UnknownVWSErrorPossiblyBadName):
-        vws_client.add_target(name=bad_name, width=1, image=high_quality_image)
+        vws_client.add_target(
+            name=bad_name,
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
+        )
 
 
 def test_request_quota_reached() -> None:
@@ -86,6 +98,8 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
         assert exc.value.response.status_code == codes.BAD_REQUEST
@@ -97,7 +111,13 @@ def test_bad_image(vws_client: VWS) -> None:
     """
     not_an_image = io.BytesIO(b'Not an image')
     with pytest.raises(BadImage) as exc:
-        vws_client.add_target(name='x', width=1, image=not_an_image)
+        vws_client.add_target(
+            name='x',
+            width=1,
+            image=not_an_image,
+            active_flag=True,
+            application_metadata=None,
+        )
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
@@ -110,9 +130,21 @@ def test_target_name_exist(
     A ``TargetNameExist`` exception is raised after adding two targets with
     the same name.
     """
-    vws_client.add_target(name='x', width=1, image=high_quality_image)
+    vws_client.add_target(
+        name='x',
+        width=1,
+        image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
+    )
     with pytest.raises(TargetNameExist) as exc:
-        vws_client.add_target(name='x', width=1, image=high_quality_image)
+        vws_client.add_target(
+            name='x',
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
+        )
 
     assert exc.value.response.status_code == codes.FORBIDDEN
 
@@ -143,6 +175,8 @@ def test_project_inactive(
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
         assert exc.value.response.status_code == codes.FORBIDDEN
@@ -165,6 +199,8 @@ def test_target_status_processing(
         name='x',
         width=1,
         image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
     )
 
     with pytest.raises(TargetStatusProcessing) as exc:
@@ -186,6 +222,7 @@ def test_metadata_too_large(
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
             application_metadata=b'a' * 1024 * 1024,
         )
 
@@ -233,6 +270,8 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
         assert exc.value.response.status_code == codes.UNAUTHORIZED
@@ -260,6 +299,8 @@ def test_target_status_not_success(
         name='x',
         width=1,
         image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
     )
 
     with pytest.raises(TargetStatusNotSuccess) as exc:
@@ -281,6 +322,8 @@ def test_match_processing(
         name='x',
         width=1,
         image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
     )
     with pytest.raises(MatchProcessing) as exc:
         cloud_reco_client.query(image=high_quality_image)

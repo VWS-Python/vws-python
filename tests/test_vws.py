@@ -18,10 +18,14 @@ class TestAddTarget:
     Tests for adding a target.
     """
 
+    @pytest.mark.parametrize('application_metadata', [None, b'a'])
+    @pytest.mark.parametrize('active_flag', [True, False])
     def test_add_target(
         self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
+        active_flag: bool,
+        application_metadata: Optional[bytes],
     ) -> None:
         """
         No exception is raised when adding one target.
@@ -32,11 +36,13 @@ class TestAddTarget:
             name=name,
             width=width,
             image=high_quality_image,
+            application_metadata=application_metadata,
+            active_flag=active_flag,
         )
         target_record = vws_client.get_target_record(target_id=target_id)
         assert target_record['name'] == name
         assert target_record['width'] == width
-        assert target_record['active_flag'] is True
+        assert target_record['active_flag'] is active_flag
 
     def test_add_two_targets(
         self,
@@ -48,44 +54,14 @@ class TestAddTarget:
 
         This demonstrates that the image seek position is not changed.
         """
-        vws_client.add_target(name='x', width=1, image=high_quality_image)
-        vws_client.add_target(name='a', width=1, image=high_quality_image)
-
-    @pytest.mark.parametrize('application_metadata', [None, b'a'])
-    def test_valid_metadata(
-        self,
-        vws_client: VWS,
-        high_quality_image: io.BytesIO,
-        application_metadata: Optional[bytes],
-    ) -> None:
-        """
-        No exception is raised when ``None`` or bytes is given.
-        """
-        vws_client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            application_metadata=application_metadata,
-        )
-
-    @pytest.mark.parametrize('active_flag', [True, False])
-    def test_active_flag_given(
-        self,
-        vws_client: VWS,
-        high_quality_image: io.BytesIO,
-        active_flag: bool,
-    ) -> None:
-        """
-        It is possible to set the active flag to a boolean value.
-        """
-        target_id = vws_client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            active_flag=active_flag,
-        )
-        target_record = vws_client.get_target_record(target_id=target_id)
-        assert target_record['active_flag'] is active_flag
+        for name in ('a', 'b'):
+            vws_client.add_target(
+                name=name,
+                width=1,
+                image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
+            )
 
 
 class TestCustomBaseVWSURL:
@@ -112,6 +88,8 @@ class TestCustomBaseVWSURL:
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
 
@@ -132,11 +110,15 @@ class TestListTargets:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         id_2 = vws_client.add_target(
             name='a',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         assert sorted(vws_client.list_targets()) == sorted([id_1, id_2])
 
@@ -158,6 +140,8 @@ class TestDelete:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
 
         vws_client.wait_for_target_processed(target_id=target_id)
@@ -183,6 +167,8 @@ class TestGetTargetSummaryReport:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
 
         result = vws_client.get_target_summary_report(target_id=target_id)
@@ -248,6 +234,8 @@ class TestGetTargetRecord:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
 
         result = vws_client.get_target_record(target_id=target_id)
@@ -280,6 +268,8 @@ class TestWaitForTargetProcessed:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         report = vws_client.get_target_summary_report(target_id=target_id)
         assert report['status'] == 'processing'
@@ -306,6 +296,8 @@ class TestWaitForTargetProcessed:
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
             vws_client.wait_for_target_processed(target_id=target_id)
@@ -351,6 +343,8 @@ class TestWaitForTargetProcessed:
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
             vws_client.wait_for_target_processed(
@@ -397,6 +391,8 @@ class TestWaitForTargetProcessed:
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
             report = vws_client.get_target_summary_report(target_id=target_id)
@@ -432,11 +428,15 @@ class TestGetDuplicateTargets:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         similar_target_id = vws_client.add_target(
             name='a',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
 
         vws_client.wait_for_target_processed(target_id=target_id)
@@ -464,6 +464,7 @@ class TestUpdateTarget:
             width=1,
             image=high_quality_image,
             active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         report = vws_client.get_target_summary_report(target_id=target_id)
@@ -497,6 +498,8 @@ class TestUpdateTarget:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.update_target(target_id=target_id)

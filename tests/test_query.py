@@ -46,6 +46,8 @@ class TestQuery:
             name='x',
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
@@ -87,6 +89,8 @@ class TestCustomBaseVWQURL:
                 name='x',
                 width=1,
                 image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
             )
 
             vws_client.wait_for_target_processed(target_id=target_id)
@@ -119,11 +123,15 @@ class TestMaxNumResults:
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
@@ -143,16 +151,22 @@ class TestMaxNumResults:
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         target_id_3 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
@@ -203,11 +217,15 @@ class TestIncludeTargetData:
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
@@ -232,11 +250,15 @@ class TestIncludeTargetData:
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
@@ -262,11 +284,15 @@ class TestIncludeTargetData:
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
@@ -292,11 +318,15 @@ class TestIncludeTargetData:
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
             image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)

@@ -44,6 +44,8 @@ See the :doc:`api-reference` for full usage details.
        name=name,
        width=1,
        image=my_image,
+       active_flag=True,
+       application_metadata=None,
    )
    vws_client.wait_for_target_processed(target_id=target_id)
    matching_targets = cloud_reco_client.query(image=my_image)
