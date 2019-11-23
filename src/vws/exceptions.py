@@ -1,6 +1,7 @@
 """
 Custom exceptions for Vuforia errors.
 """
+from urllib.parse import urlparse
 
 import requests
 from requests import Response
@@ -88,6 +89,16 @@ class UnknownTarget(Exception):
         The response returned by Vuforia which included this error.
         """
         return self._response
+
+    @property
+    def target_id(self) -> str:
+        """
+        The unknown target ID.
+        """
+        path = urlparse(self.response.url).path
+        # Every HTTP path which can raise this error is in the format
+        # `/something/{target_id}`.
+        return path.split(sep='/', maxsplit=2)[-1]
 
 
 class Fail(Exception):
