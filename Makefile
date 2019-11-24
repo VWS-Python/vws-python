@@ -10,7 +10,7 @@ lint:
 	dodgy
 	flake8 .
 	isort --recursive --check-only
-	mypy src/ tests/
+	mypy *.py src/ tests/ admin/
 	pip-extra-reqs src/
 	pip-missing-reqs src/
 	pydocstyle **

@@ -17,6 +17,7 @@ TargetStatusProcessing
 Ubuntu
 UnknownTarget
 UnknownVWSErrorPossiblyBadName
+admin
 api
 args
 ascii
