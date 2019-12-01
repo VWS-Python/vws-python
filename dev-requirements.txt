@@ -9,7 +9,7 @@ flake8-quotes==2.1.1  # Require single quotes
 flake8==3.7.9  # Lint
 freezegun==0.3.12
 isort==4.3.21  # Lint imports
-mypy==0.740  # Type checking
+mypy==0.750  # Type checking
 pip_check_reqs==2.0.3
 pydocstyle==4.0.1  # Lint docstrings
 pyenchant==2.0.0  # Bindings for a spellchecking sytem
