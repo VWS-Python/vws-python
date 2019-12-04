@@ -2,6 +2,7 @@
 Tests for helper functions for managing a Vuforia database.
 """
 
+import base64
 import io
 from typing import Optional
 
@@ -9,7 +10,7 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
-from vws import VWS
+from vws import VWS, CloudRecoService
 from vws.exceptions import TargetProcessingTimeout
 
 
@@ -26,23 +27,40 @@ class TestAddTarget:
         high_quality_image: io.BytesIO,
         active_flag: bool,
         application_metadata: Optional[bytes],
+        cloud_reco_client: CloudRecoService,
     ) -> None:
         """
         No exception is raised when adding one target.
         """
         name = 'x'
         width = 1
+        if application_metadata is None:
+            encoded_metadata = None
+        else:
+            encoded_metadata_bytes = base64.b64encode(application_metadata)
+            encoded_metadata = encoded_metadata_bytes.decode('utf-8')
+
         target_id = vws_client.add_target(
             name=name,
             width=width,
             image=high_quality_image,
-            application_metadata=application_metadata,
+            application_metadata=encoded_metadata,
             active_flag=active_flag,
         )
         target_record = vws_client.get_target_record(target_id=target_id)
         assert target_record['name'] == name
         assert target_record['width'] == width
         assert target_record['active_flag'] is active_flag
+        vws_client.wait_for_target_processed(target_id=target_id)
+        matching_targets = cloud_reco_client.query(image=high_quality_image)
+        if active_flag:
+            [matching_target] = matching_targets
+            assert matching_target['target_id'] == target_id
+            query_target_data = matching_target['target_data']
+            query_metadata = query_target_data['application_metadata']
+            assert query_metadata == encoded_metadata
+        else:
+            assert matching_targets == []
 
     def test_add_two_targets(
         self,
