@@ -493,7 +493,7 @@ class TestUpdateTarget:
             width=2,
             active_flag=False,
             image=image_file_failed_state,
-            application_metadata=b'a',
+            application_metadata=base64.b64encode(b'a').decode('ascii'),
         )
 
         vws_client.wait_for_target_processed(target_id=target_id)
