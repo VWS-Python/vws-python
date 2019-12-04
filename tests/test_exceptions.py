@@ -225,7 +225,7 @@ def test_metadata_too_large(
             width=1,
             image=high_quality_image,
             active_flag=True,
-            application_metadata=b'a' * 1024 * 1024,
+            application_metadata='a' * 1024 * 1024 * 10,
         )
 
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY

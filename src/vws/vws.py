@@ -142,7 +142,7 @@ class VWS:
         width: Union[int, float],
         image: io.BytesIO,
         active_flag: bool,
-        application_metadata: Optional[bytes],
+        application_metadata: Optional[str],
     ) -> str:
         """
         Add a target to a Vuforia Web Services database.
@@ -157,7 +157,9 @@ class VWS:
             image: The image of the target.
             active_flag: Whether or not the target is active for query.
             application_metadata: The application metadata of the target.
-                This will be base64 encoded.
+                This must be base64 encoded, for example by using::
+
+                    base64.b64encode('input_string').decode('ascii')
 
         Returns:
             The target ID of the new target.
@@ -185,18 +187,13 @@ class VWS:
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
-        if application_metadata is None:
-            metadata_encoded = None
-        else:
-            metadata_encoded_str = base64.b64encode(application_metadata)
-            metadata_encoded = metadata_encoded_str.decode('ascii')
 
         data = {
             'name': name,
             'width': width,
             'image': image_data_encoded,
             'active_flag': active_flag,
-            'application_metadata': metadata_encoded,
+            'application_metadata': application_metadata,
         }
 
         content = bytes(json.dumps(data), encoding='utf-8')
@@ -478,7 +475,7 @@ class VWS:
         width: Optional[Union[int, float]] = None,
         image: Optional[io.BytesIO] = None,
         active_flag: Optional[bool] = None,
-        application_metadata: Optional[bytes] = None,
+        application_metadata: Optional[str] = None,
     ) -> None:
         """
         Add a target to a Vuforia Web Services database.
@@ -494,8 +491,11 @@ class VWS:
             image: The image of the target.
             active_flag: Whether or not the target is active for query.
             application_metadata: The application metadata of the target.
-                This will be base64 encoded. Giving ``None`` will not change
-                the application metadata.
+                This must be base64 encoded, for example by using::
+
+                    base64.b64encode('input_string').decode('ascii')
+
+                Giving ``None`` will not change the application metadata.
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The secret key is not
@@ -531,9 +531,7 @@ class VWS:
             data['active_flag'] = active_flag
 
         if application_metadata is not None:
-            metadata_encoded_str = base64.b64encode(application_metadata)
-            metadata_encoded = metadata_encoded_str.decode('ascii')
-            data['application_metadata'] = metadata_encoded
+            data['application_metadata'] = application_metadata
 
         content = bytes(json.dumps(data), encoding='utf-8')
 
