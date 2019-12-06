@@ -1,5 +1,5 @@
-Contributing to VWS Python
-==========================
+Contributing to |project|
+=========================
 
 .. contents::
 
@@ -7,7 +7,7 @@ Contributions to this repository must pass tests and linting.
 
 Travis CI is the canonical source truth.
 
-Install Contribution Dependencies
+Install contribution dependencies
 ---------------------------------
 
 Install Python dependencies in a virtual environment.

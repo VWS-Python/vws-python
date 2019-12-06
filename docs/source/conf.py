@@ -6,12 +6,19 @@ Configuration for Sphinx.
 
 # pylint: disable=invalid-name
 
+import datetime
 import os
 import sys
+from email import message_from_string
+from pathlib import Path
+
+import pkg_resources
 
 import vws
 
 sys.path.insert(0, os.path.abspath('.'))
+
+key_package = vws
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -25,9 +32,24 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 master_doc = 'index'
 
-project = 'VWS Python'
-copyright = '2018, Adam Dangoor'  # pylint: disable=redefined-builtin
-author = 'Adam Dangoor'
+docs_source_dir = Path(__file__).parent
+docs_dir = docs_source_dir.parent
+repo_dir = docs_dir.parent
+src_dir = repo_dir / 'src'
+distributions = {v.key: v for v in set(pkg_resources.working_set)}
+(distribution, ) = {
+    dist
+    for dist in distributions.values() if dist.location == str(src_dir)
+}
+project_name = distribution.project_name
+
+pkg_info = distribution.get_metadata('PKG-INFO')
+pkg_info_as_message = message_from_string(pkg_info)
+
+project = pkg_info_as_message['Name']
+author = pkg_info_as_message['Author']
+year = datetime.datetime.now().year
+copyright = f'{year}, {author}'  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -103,3 +125,7 @@ linkcheck_ignore = [
 spelling_word_list_filename = '../../spelling_private_dict.txt'
 
 autodoc_member_order = 'bysource'
+
+rst_prolog = f"""
+.. |project| replace:: {project}
+"""
