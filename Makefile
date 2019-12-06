@@ -1,30 +1,27 @@
 SHELL := /bin/bash -euxo pipefail
 
+include lint.mk
+
 # Treat Sphinx warnings as errors
 SPHINXOPTS := -W
 
 .PHONY: lint
-lint:
-	check-manifest .
-	doc8 .
-	dodgy
-	flake8 .
-	isort --recursive --check-only
-	mypy *.py src/ tests/ admin/
-	pip-extra-reqs src/
-	pip-missing-reqs src/
-	pydocstyle **
-	pylint *.py src tests
-	pyroma --min 10 .
-	vulture . --min-confidence 100
-	$(MAKE) -C docs spelling SPHINXOPTS=$(SPHINXOPTS)
-	$(MAKE) -C docs linkcheck SPHINXOPTS=$(SPHINXOPTS)
-	yapf \
-	    --diff \
-	    --recursive \
-	    --exclude versioneer.py \
-	    --exclude src/vws/_version.py \
-	    .
+lint: \
+    check-manifest \
+    doc8 \
+    flake8 \
+    isort \
+    linkcheck \
+    mypy \
+    pip-extra-reqs \
+    pip-missing-reqs \
+    pyroma \
+    shellcheck \
+    spelling \
+    vulture \
+    pylint \
+    pydocstyle \
+    yapf
 
 .PHONY: fix-lint
 fix-lint:
@@ -32,19 +29,8 @@ fix-lint:
 	# See https://github.com/myint/autoflake/issues/8.
 	# Then later we put them back.
 	isort --force-single-line --recursive --apply
-	autoflake \
-	    --in-place \
-	    --recursive \
-	    --remove-all-unused-imports \
-	    --remove-unused-variables \
-	    --exclude src/vws/_version.py,versioneer.py \
-	    .
-	yapf \
-	    --in-place \
-	    --recursive \
-	    --exclude versioneer.py  \
-	    --exclude src/vws/_version.py \
-	    .
+	$(MAKE) autoflake
+	$(MAKE) fix-yapf
 	isort --recursive --apply
 
 .PHONY: docs
@@ -53,6 +39,4 @@ docs:
 
 .PHONY: open-docs
 open-docs:
-	xdg-open docs/build/html/index.html >/dev/null 2>&1 || \
-	open docs/build/html/index.html >/dev/null 2>&1 || \
-	echo "Requires 'xdg-open' or 'open' but neither is available."
+	python -c 'import os, webbrowser; webbrowser.open("file://" + os.path.abspath("docs/build/html/index.html"))'
