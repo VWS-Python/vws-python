@@ -1,5 +1,5 @@
-VWS Python
-==========
+|project|
+=========
 
 Installation
 ------------
