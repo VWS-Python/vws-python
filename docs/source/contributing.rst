@@ -12,20 +12,20 @@ Install contribution dependencies
 
 Install Python dependencies in a virtual environment.
 
-.. code:: sh
+.. substitution-prompt:: bash
 
     pip install --editable '.[dev]'
 
 Spell checking requires ``enchant``.
 This can be installed on macOS, for example, with `Homebrew <https://brew.sh>`__:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
     brew install enchant
 
 and on Ubuntu with ``apt``:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
     apt-get install -y enchant
 
@@ -34,13 +34,13 @@ Linting
 
 Run lint tools:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
     make lint
 
 To fix some lint errors, run the following:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
     make fix-lint
 
@@ -49,7 +49,7 @@ Running tests
 
 Run ``pytest``:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
     pytest
 
@@ -60,7 +60,7 @@ Documentation is built on Read the Docs.
 
 Run the following commands to build and view documentation locally:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
    make docs
    make open-docs
