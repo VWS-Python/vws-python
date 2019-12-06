@@ -25,6 +25,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.napoleon',
     'sphinx_autodoc_typehints',
+    'sphinx_substitution_extensions',
     'sphinxcontrib.spelling',
 ]
 
@@ -56,6 +57,12 @@ copyright = f'{year}, {author}'  # pylint: disable=redefined-builtin
 # built documents.
 version = vws.__version__
 release = version.split('+')[0]
+
+substitutions = [
+    ('|release|', release),
+    ('|github-owner|', 'adamtheturtle'),
+    ('|github-repository|', 'vws-python'),
+]
 
 language = None
 

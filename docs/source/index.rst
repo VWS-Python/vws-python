@@ -4,7 +4,7 @@
 Installation
 ------------
 
-.. code:: sh
+.. substitution-prompt:: bash
 
    pip3 install vws-python
 
@@ -57,7 +57,7 @@ Testing
 
 To write unit tests for code which uses this library, without using your Vuforia quota, you can use the `VWS Python Mock`_ tool:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
    pip3 install vws-python-mock
 

@@ -24,7 +24,7 @@ Perform a Release
 
    E.g.:
 
-   .. code:: sh
+   .. substitution-prompt:: bash
 
       curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
       pipsi install keyring
@@ -46,7 +46,7 @@ Add the following information to :file:`~/.pypirc`.
 
 Store your PyPI password:
 
-.. code:: sh
+.. substitution-prompt:: bash
 
    keyring set https://upload.pypi.org/legacy/ <Your PyPI username>
 
@@ -56,15 +56,15 @@ Store your PyPI password:
 
 #. Set environment variables to GitHub credentials, e.g.:
 
-    .. code:: sh
+    .. substitution-prompt:: bash
 
        export GITHUB_TOKEN=75c72ad718d9c346c13d30ce762f121647b502414
-       export GITHUB_OWNER=adamtheturtle
 
 #. Perform a release:
 
-    .. code:: sh
+    .. substitution-prompt:: bash
 
-       curl https://raw.githubusercontent.com/"$GITHUB_OWNER"/vws-python/master/admin/release.sh | bash
+       export GITHUB_OWNER=|github-owner|
+       curl https://raw.githubusercontent.com/"$GITHUB_OWNER"/|github-repository|/master/admin/release.sh | bash
 
 .. _GitHub access token instructions: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line/
