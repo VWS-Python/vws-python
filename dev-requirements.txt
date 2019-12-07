@@ -2,13 +2,13 @@ PyYAML==5.2
 Pygments==2.5.2
 Sphinx-Substitution-Extensions==2019.6.15.0
 Sphinx==2.2.2
-VWS-Python-Mock==2019.9.28.0
+VWS-Python-Mock==2019.12.7.1
 autoflake==1.3.1
 check-manifest==0.40
 codecov==2.0.15 # Upload coverage data
 doc8==0.8.0
 dodgy==0.1.9  # Look for uploaded secrets
-dulwich==0.19.13
+dulwich==0.19.14
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==2.1.1  # Require single quotes
 flake8==3.7.9  # Lint

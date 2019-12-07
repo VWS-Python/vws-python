@@ -19,8 +19,8 @@ from vws.exceptions import TargetProcessingTimeout
 
 
 def _target_api_request(
-    server_access_key: bytes,
-    server_secret_key: bytes,
+    server_access_key: str,
+    server_secret_key: str,
     method: str,
     content: bytes,
     request_path: str,
@@ -92,8 +92,8 @@ class VWS:
             server_secret_key: A VWS server secret key.
             base_vws_url: The base URL for the VWS API.
         """
-        self._server_access_key = server_access_key.encode()
-        self._server_secret_key = server_secret_key.encode()
+        self._server_access_key = server_access_key
+        self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
 
     def _make_request(

@@ -36,8 +36,8 @@ class CloudRecoService:
             client_secret_key: A VWS client secret key.
             base_vwq_url: The base URL for the VWQ API.
         """
-        self._client_access_key = client_access_key.encode()
-        self._client_secret_key = client_secret_key.encode()
+        self._client_access_key = client_access_key
+        self._client_secret_key = client_secret_key
         self._base_vwq_url = base_vwq_url
 
     def query(
