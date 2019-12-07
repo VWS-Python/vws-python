@@ -1,6 +1,6 @@
 """Setup script for VWS Python, a wrapper for Vuforia's Web Services APIs."""
 
-from setuptools import find_packages, setup
+from setuptools import setup
 
 import versioneer
 
