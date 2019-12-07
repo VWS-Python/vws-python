@@ -17,7 +17,6 @@ with open('dev-requirements.txt') as dev_requirements:
 setup(
     version=versioneer.get_version(),  # type: ignore
     cmdclass=versioneer.get_cmdclass(),  # type: ignore
-    package_data={'vws': ['py.typed']},
     install_requires=INSTALL_REQUIRES,
     extras_require={'dev': DEV_REQUIRES},
 )
