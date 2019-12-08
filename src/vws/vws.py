@@ -12,8 +12,8 @@ from urllib.parse import urljoin
 import requests
 from requests import Response
 from timeout_decorator import timeout
+from vws_auth_tools import authorization_header, rfc_1123_date
 
-from vws._authorization import authorization_header, rfc_1123_date
 from vws._result_codes import raise_for_result_code
 from vws.exceptions import TargetProcessingTimeout
 
