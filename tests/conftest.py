@@ -10,10 +10,6 @@ from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
 
-pytest_plugins = [  # pylint: disable=invalid-name
-    'tests.fixtures.images',
-]
-
 
 @pytest.fixture()
 def _mock_database() -> Iterator[VuforiaDatabase]:
