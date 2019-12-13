@@ -1,8 +1,9 @@
 """Setup script for VWS Python, a wrapper for Vuforia's Web Services APIs."""
 
 from pathlib import Path
-from setuptools import setup
 from typing import List
+
+from setuptools import setup
 
 import versioneer
 
@@ -30,6 +31,7 @@ PACKAGING_REQUIRES = _get_dependencies(
 )
 
 setup(
+    version=versioneer.get_version(),  # type: ignore
     cmdclass=versioneer.get_cmdclass(),  # type: ignore
     install_requires=INSTALL_REQUIRES,
     extras_require={'dev': DEV_REQUIRES},
