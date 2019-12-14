@@ -149,6 +149,7 @@ def test_target_name_exist(
         )
 
     assert exc.value.response.status_code == codes.FORBIDDEN
+    assert exc.value.target_name == 'x'
 
 
 def test_project_inactive(

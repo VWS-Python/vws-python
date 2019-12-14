@@ -1,6 +1,8 @@
 """
 Custom exceptions for Vuforia errors.
 """
+
+import json
 from urllib.parse import urlparse
 
 import requests
@@ -284,6 +286,15 @@ class TargetNameExist(Exception):
         The response returned by Vuforia which included this error.
         """
         return self._response
+
+    @property
+    def target_name(self) -> str:
+        """
+        The target name which already exists.
+        """
+        response_body = self.response.request.body or b''
+        request_json = json.loads(response_body)
+        return str(request_json['name'])
 
 
 class ImageTooLarge(Exception):
