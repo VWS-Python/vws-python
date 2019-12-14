@@ -285,6 +285,13 @@ class TargetNameExist(Exception):
         """
         return self._response
 
+    @property
+    def target_name(self) -> str:
+        """
+        The target name which already exists.
+        """
+        return self.response.request.json()['name']
+
 
 class ImageTooLarge(Exception):
     """
