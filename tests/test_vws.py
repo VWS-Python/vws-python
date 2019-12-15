@@ -4,6 +4,8 @@ Tests for helper functions for managing a Vuforia database.
 
 import base64
 import io
+import random
+import uuid
 from typing import Optional
 
 import pytest
@@ -472,37 +474,58 @@ class TestUpdateTarget:
         self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
-        image_file_failed_state: io.BytesIO,
+        different_high_quality_image: io.BytesIO,
+        cloud_reco_client: CloudRecoService,
     ) -> None:
         """
         It is possible to update a target.
         """
+        old_name = uuid.uuid4().hex
+        old_width = random.uniform(a=0.01, b=50)
         target_id = vws_client.add_target(
-            name='x',
-            width=1,
+            name=old_name,
+            width=old_width,
             image=high_quality_image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
-        report = vws_client.get_target_summary_report(target_id=target_id)
-        assert report['status'] == 'success'
+        [matching_target] = cloud_reco_client.query(image=high_quality_image)
+        assert matching_target['target_id'] == target_id
+        query_target_data = matching_target['target_data']
+        query_metadata = query_target_data['application_metadata']
+        assert query_metadata is None
+
+        new_name = uuid.uuid4().hex
+        new_width = random.uniform(a=0.01, b=50)
+        new_application_metadata = base64.b64encode(b'a').decode('ascii')
         vws_client.update_target(
             target_id=target_id,
-            name='x2',
-            width=2,
-            active_flag=False,
-            image=image_file_failed_state,
-            application_metadata=base64.b64encode(b'a').decode('ascii'),
+            name=new_name,
+            width=new_width,
+            active_flag=True,
+            image=different_high_quality_image,
+            application_metadata=new_application_metadata,
         )
 
         vws_client.wait_for_target_processed(target_id=target_id)
+        [
+            matching_target,
+        ] = cloud_reco_client.query(image=different_high_quality_image)
+        assert matching_target['target_id'] == target_id
+        query_target_data = matching_target['target_data']
+        query_metadata = query_target_data['application_metadata']
+        assert query_metadata == new_application_metadata
+
+        vws_client.update_target(
+            target_id=target_id,
+            active_flag=False,
+        )
+
         target_details = vws_client.get_target_record(target_id=target_id)
-        assert target_details['name'] == 'x2'
-        assert target_details['width'] == 2
+        assert target_details['name'] == new_name
+        assert target_details['width'] == new_width
         assert not target_details['active_flag']
-        report = vws_client.get_target_summary_report(target_id=target_id)
-        assert report['status'] == 'failed'
 
     def test_no_fields_given(
         self,
