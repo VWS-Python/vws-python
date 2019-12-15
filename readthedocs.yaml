@@ -1,0 +1,13 @@
+version: 2
+
+python:
+  install:
+     - method: pip
+       path: .
+       extra_requirements:
+           - dev
+  version: 3.7
+
+sphinx:
+  builder: html
+  fail_on_warning: true
