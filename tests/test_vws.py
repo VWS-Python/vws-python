@@ -490,7 +490,6 @@ class TestUpdateTarget:
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
-        report = vws_client.get_target_summary_report(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
         assert matching_target['target_id'] == target_id
         query_target_data = matching_target['target_data']
@@ -510,8 +509,9 @@ class TestUpdateTarget:
         )
 
         vws_client.wait_for_target_processed(target_id=target_id)
-        [matching_target
-         ] = cloud_reco_client.query(image=different_high_quality_image, )
+        [
+            matching_target,
+        ] = cloud_reco_client.query(image=different_high_quality_image)
         assert matching_target['target_id'] == target_id
         query_target_data = matching_target['target_data']
         query_metadata = query_target_data['application_metadata']
