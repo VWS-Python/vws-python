@@ -26,8 +26,9 @@ Perform a Release
 
    .. substitution-prompt:: bash
 
-      curl https://raw.githubusercontent.com/mitsuhiko/pipsi/master/get-pipsi.py | python
-      pipsi install keyring
+      python3 -m pip install --user pipx
+      python3 -m pipx ensurepath
+      pipx install keyring
 
 #. Set up PyPI credentials
 
