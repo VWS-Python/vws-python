@@ -350,6 +350,16 @@ class TargetStatusNotSuccess(Exception):
         """
         return self._response
 
+    @property
+    def target_id(self) -> str:
+        """
+        The unknown target ID.
+        """
+        path = urlparse(self.response.url).path
+        # Every HTTP path which can raise this error is in the format
+        # `/something/{target_id}`.
+        return path.split(sep='/', maxsplit=2)[-1]
+
 
 # See https://github.com/adamtheturtle/vws-python/issues/846.
 class DateRangeError(Exception):  # pragma: no cover

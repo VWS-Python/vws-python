@@ -311,6 +311,7 @@ def test_target_status_not_success(
         vws_client.update_target(target_id=target_id)
 
     assert exc.value.response.status_code == codes.FORBIDDEN
+    assert exc.value.target_id == target_id
 
 
 def test_match_processing(
