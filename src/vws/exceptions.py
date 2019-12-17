@@ -206,6 +206,16 @@ class TargetStatusProcessing(Exception):
         """
         return self._response
 
+    @property
+    def target_id(self) -> str:
+        """
+        The processing target ID.
+        """
+        path = urlparse(self.response.url).path
+        # Every HTTP path which can raise this error is in the format
+        # `/something/{target_id}`.
+        return path.split(sep='/', maxsplit=2)[-1]
+
 
 class ProjectInactive(Exception):
     """

@@ -210,6 +210,7 @@ def test_target_status_processing(
         vws_client.delete_target(target_id=target_id)
 
     assert exc.value.response.status_code == codes.FORBIDDEN
+    assert exc.value.target_id == target_id
 
 
 def test_metadata_too_large(
