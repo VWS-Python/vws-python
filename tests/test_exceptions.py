@@ -49,12 +49,12 @@ def test_image_too_large(
     assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
 
 
-@pytest.mark.parametrize('target_id', ['x', 'x/1'])
-def test_invalid_given_id(vws_client: VWS, target_id: str) -> None:
+def test_invalid_given_id(vws_client: VWS) -> None:
     """
     Giving an invalid ID to a helper which requires a target ID to be given
     causes an ``UnknownTarget`` exception to be raised.
     """
+    target_id = '12345abc'
     with pytest.raises(UnknownTarget) as exc:
         vws_client.delete_target(target_id=target_id)
     assert exc.value.response.status_code == codes.NOT_FOUND
