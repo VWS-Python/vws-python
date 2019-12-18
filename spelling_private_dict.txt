@@ -7,11 +7,14 @@ InactiveProject
 MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
+ProjectHasNoAPIAccess
 ProjectInactive
+ProjectSuspended
 RequestQuotaReached
 RequestTimeTooSkewed
 TargetNameExist
 TargetProcessingTimeout
+TargetQuotaReached
 TargetStatusNotSuccess
 TargetStatusProcessing
 Ubuntu
