@@ -361,11 +361,80 @@ class TargetStatusNotSuccess(Exception):
         return path.split(sep='/', maxsplit=2)[-1]
 
 
-# See https://github.com/adamtheturtle/vws-python/issues/846.
+# This is not simulated by the mock.
 class DateRangeError(Exception):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'DateRangeError'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+# This is not simulated by the mock.
+class TargetQuotaReached(Exception):  # pragma: no cover
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'TargetQuotaReached'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+# This is not simulated by the mock.
+class ProjectSuspended(Exception):  # pragma: no cover
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'ProjectSuspended'.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response to a request to Vuforia.
+        """
+        super().__init__()
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
+
+# This is not simulated by the mock.
+class ProjectHasNoAPIAccess(Exception):  # pragma: no cover
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'ProjectHasNoAPIAccess'.
     """
 
     def __init__(self, response: Response) -> None:
