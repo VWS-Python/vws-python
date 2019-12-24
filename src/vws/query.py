@@ -58,10 +58,10 @@ class CloudRecoService:
             image: The image to make a query against.
             max_num_results: The maximum number of matching targets to be
                 returned.
-            include_target_data: "Indicates if target_data records shall be
+            include_target_data: Indicates if target_data records shall be
                 returned for the matched targets. Accepted values are top
                 (default value, only return target_data for top ranked match),
-                none (return no target_data), all (for all matched targets)".
+                none (return no target_data), all (for all matched targets).
 
         Raises:
             ~vws.exceptions.AuthenticationFailure: The client access key pair
