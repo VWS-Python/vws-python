@@ -66,7 +66,7 @@ class CloudRecoService:
         Raises:
             ~vws.exceptions.AuthenticationFailure: The client access key pair
                 is not correct.
-            ~vws.exceptions.MaxNumResultsOutOfRange: `max_num_results`` is not
+            ~vws.exceptions.MaxNumResultsOutOfRange: ``max_num_results`` is not
                 within the range (1, 50).
             ~vws.exceptions.MatchProcessing: The given image matches a target
                 which was recently added, updated or deleted and Vuforia
