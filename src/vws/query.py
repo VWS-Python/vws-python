@@ -74,6 +74,11 @@ class CloudRecoService:
             ~vws.exceptions.ProjectInactive: The project is inactive.
             ~vws.exceptions.ConnectionErrorPossiblyImageTooLarge: The given
                 image is too large.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
+            ~vws.exceptions.BadImage: There is a problem with the given image.
+                For example, it must be a JPEG or PNG file in the grayscale or
+                RGB color space.
 
         Returns:
             An ordered list of target details of matching targets.
