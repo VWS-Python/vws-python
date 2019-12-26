@@ -272,7 +272,7 @@ class VWS:
         """
         while True:
             report = self.get_target_summary_report(target_id=target_id)
-            if report['status'] != 'processing':
+            if report.status != TargetStatuses.PROCESSING:
                 return
 
             sleep(seconds_between_requests)
@@ -350,10 +350,7 @@ class VWS:
 
         return list(response.json()['results'])
 
-    def get_target_summary_report(
-        self,
-        target_id: str,
-    ) -> Dict[str, Union[str, int]]:
+    def get_target_summary_report(self, target_id: str) -> TargetSummaryReport:
         """
         Get a summary report for a target.
 

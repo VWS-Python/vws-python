@@ -300,10 +300,10 @@ class TestWaitForTargetProcessed:
             application_metadata=None,
         )
         report = vws_client.get_target_summary_report(target_id=target_id)
-        assert report['status'] == 'processing'
+        assert report.status == TargetStatuses.PROCESSING
         vws_client.wait_for_target_processed(target_id=target_id)
         report = vws_client.get_target_summary_report(target_id=target_id)
-        assert report['status'] != 'processing'
+        assert report.status != TargetStatuses.PROCESSING
 
     def test_default_seconds_between_requests(
         self,
@@ -424,7 +424,7 @@ class TestWaitForTargetProcessed:
             )
 
             report = vws_client.get_target_summary_report(target_id=target_id)
-            assert report['status'] == 'processing'
+            assert report.status == TargetStatuses.PROCESSING
             with pytest.raises(TargetProcessingTimeout):
                 vws_client.wait_for_target_processed(
                     target_id=target_id,
@@ -436,7 +436,7 @@ class TestWaitForTargetProcessed:
                 timeout_seconds=0.5,
             )
             report = vws_client.get_target_summary_report(target_id=target_id)
-            assert report['status'] != 'processing'
+            assert report.status != TargetStatuses.PROCESSING
 
 
 class TestGetDuplicateTargets:
