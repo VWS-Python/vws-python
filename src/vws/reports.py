@@ -51,8 +51,7 @@ class TargetSummaryReport:
     https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Summary-Report.
     """
 
-    target_status: TargetStatuses
-    total_recos: int
+    status: TargetStatuses
     database_name: str
     target_name: str
     upload_date: datetime.date

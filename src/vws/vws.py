@@ -5,6 +5,7 @@ Tools for interacting with Vuforia APIs.
 import base64
 import io
 import json
+from datetime import date
 from time import sleep
 from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
@@ -16,7 +17,7 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._result_codes import raise_for_result_code
 from vws.exceptions import TargetProcessingTimeout
-from vws.reports import DatabaseSummaryReport
+from vws.reports import DatabaseSummaryReport, TargetSummaryReport, TargetStatuses
 
 
 def _target_api_request(
@@ -378,7 +379,18 @@ class VWS:
             expected_result_code='Success',
         )
 
-        return dict(response.json())
+        result_data = dict(response.json())
+        return TargetSummaryReport(
+            status=TargetStatuses(result_data['status']),
+            database_name=result_data['database_name'],
+            target_name=result_data['target_name'],
+            upload_date=date.fromisoformat(result_data['upload_date']),
+            active_flag=result_data['active_flag'],
+            tracking_rating=result_data['tracking_rating'],
+            total_recos=result_data['total_recos'],
+            current_month_recos=result_data['current_month_recos'],
+            previous_month_recos=result_data['previous_month_recos'],
+        )
 
     def get_database_summary_report(self) -> DatabaseSummaryReport:
         """
