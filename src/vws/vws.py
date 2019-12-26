@@ -50,7 +50,7 @@ def _target_api_request(
     Returns:
         The response to the request made by `requests`.
     """
-    date = rfc_1123_date()
+    date_string = rfc_1123_date()
     content_type = 'application/json'
 
     signature_string = authorization_header(
@@ -59,7 +59,7 @@ def _target_api_request(
         method=method,
         content=content,
         content_type=content_type,
-        date=date,
+        date=date_string,
         request_path=request_path,
     )
 
