@@ -3,18 +3,24 @@ Tests for helper functions for managing a Vuforia database.
 """
 
 import base64
+import datetime
 import io
 import random
 import uuid
 from typing import Optional
 
 import pytest
+from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
 from vws.exceptions import TargetProcessingTimeout
-from vws.reports import DatabaseSummaryReport
+from vws.reports import (
+    DatabaseSummaryReport,
+    TargetStatuses,
+    TargetSummaryReport,
+)
 
 
 class TestAddTarget:
@@ -184,29 +190,31 @@ class TestGetTargetSummaryReport:
         """
         Details of a target are returned by ``get_target_summary_report``.
         """
-        target_id = vws_client.add_target(
-            name='x',
-            width=1,
-            image=high_quality_image,
-            active_flag=True,
-            application_metadata=None,
-        )
+        date = '2018-04-25'
+        target_name = uuid.uuid4().hex
+        with freeze_time(date):
+            target_id = vws_client.add_target(
+                name=target_name,
+                width=1,
+                image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
+            )
 
         result = vws_client.get_target_summary_report(target_id=target_id)
-        expected_keys = {
-            'status',
-            'result_code',
-            'transaction_id',
-            'database_name',
-            'target_name',
-            'upload_date',
-            'active_flag',
-            'tracking_rating',
-            'total_recos',
-            'current_month_recos',
-            'previous_month_recos',
-        }
-        assert set(result.keys()) == expected_keys
+
+        expected_report = TargetSummaryReport(
+            status=TargetStatuses.SUCCESS,
+            database_name=result.database_name,
+            target_name=target_name,
+            upload_date=datetime.date(2018, 4, 25),
+            active_flag=True,
+            tracking_rating=result.tracking_rating,
+            total_recos=0,
+            current_month_recos=0,
+            previous_month_recos=0,
+        )
+        assert result == expected_report
 
 
 class TestGetDatabaseSummaryReport:
@@ -292,10 +300,10 @@ class TestWaitForTargetProcessed:
             application_metadata=None,
         )
         report = vws_client.get_target_summary_report(target_id=target_id)
-        assert report['status'] == 'processing'
+        assert report.status == TargetStatuses.PROCESSING
         vws_client.wait_for_target_processed(target_id=target_id)
         report = vws_client.get_target_summary_report(target_id=target_id)
-        assert report['status'] != 'processing'
+        assert report.status != TargetStatuses.PROCESSING
 
     def test_default_seconds_between_requests(
         self,
@@ -416,7 +424,7 @@ class TestWaitForTargetProcessed:
             )
 
             report = vws_client.get_target_summary_report(target_id=target_id)
-            assert report['status'] == 'processing'
+            assert report.status == TargetStatuses.PROCESSING
             with pytest.raises(TargetProcessingTimeout):
                 vws_client.wait_for_target_processed(
                     target_id=target_id,
@@ -428,7 +436,7 @@ class TestWaitForTargetProcessed:
                 timeout_seconds=0.5,
             )
             report = vws_client.get_target_summary_report(target_id=target_id)
-            assert report['status'] != 'processing'
+            assert report.status != TargetStatuses.PROCESSING
 
 
 class TestGetDuplicateTargets:
