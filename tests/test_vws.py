@@ -65,9 +65,9 @@ class TestAddTarget:
         matching_targets = cloud_reco_client.query(image=high_quality_image)
         if active_flag:
             [matching_target] = matching_targets
-            assert matching_target['target_id'] == target_id
-            query_target_data = matching_target['target_data']
-            query_metadata = query_target_data['application_metadata']
+            assert matching_target.target_id == target_id
+            assert matching_target.target_data is not None
+            query_metadata = matching_target.target_data.application_metadata
             assert query_metadata == encoded_metadata
         else:
             assert matching_targets == []
@@ -500,9 +500,10 @@ class TestUpdateTarget:
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
-        assert matching_target['target_id'] == target_id
-        query_target_data = matching_target['target_data']
-        query_metadata = query_target_data['application_metadata']
+        assert matching_target.target_id == target_id
+        query_target_data = matching_target.target_data
+        assert query_target_data is not None
+        query_metadata = query_target_data.application_metadata
         assert query_metadata is None
 
         new_name = uuid.uuid4().hex

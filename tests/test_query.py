@@ -51,7 +51,7 @@ class TestQuery:
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
-        assert matching_target['target_id'] == target_id
+        assert matching_target.target_id == target_id
 
     def test_too_large(
         self,
@@ -102,7 +102,7 @@ class TestCustomBaseVWQURL:
             )
 
             [match] = cloud_reco_client.query(image=high_quality_image)
-            assert match['target_id'] == target_id
+            assert match.target_id == target_id
 
 
 class TestMaxNumResults:
@@ -233,8 +233,8 @@ class TestIncludeTargetData:
             image=high_quality_image,
             max_num_results=2,
         )
-        assert 'target_data' in top_match
-        assert 'target_data' not in second_match
+        assert top_match.target_data is not None
+        assert second_match.target_data is None
 
     def test_top(
         self,
@@ -267,8 +267,8 @@ class TestIncludeTargetData:
             max_num_results=2,
             include_target_data=CloudRecoIncludeTargetData.TOP,
         )
-        assert 'target_data' in top_match
-        assert 'target_data' not in second_match
+        assert top_match.target_data is not None
+        assert second_match.target_data is None
 
     def test_none(
         self,
@@ -301,8 +301,8 @@ class TestIncludeTargetData:
             max_num_results=2,
             include_target_data=CloudRecoIncludeTargetData.NONE,
         )
-        assert 'target_data' not in top_match
-        assert 'target_data' not in second_match
+        assert top_match.target_data is None
+        assert second_match.target_data is None
 
     def test_all(
         self,
@@ -335,5 +335,5 @@ class TestIncludeTargetData:
             max_num_results=2,
             include_target_data=CloudRecoIncludeTargetData.ALL,
         )
-        assert 'target_data' in top_match
-        assert 'target_data' in second_match
+        assert top_match.target_data is not None
+        assert second_match.target_data is not None

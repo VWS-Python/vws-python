@@ -2,6 +2,7 @@
 Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
+import datetime
 import io
 from typing import List
 from urllib.parse import urljoin
@@ -17,8 +18,11 @@ from vws.exceptions import (
     MaxNumResultsOutOfRange,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
-from vws.reports import QueryResult
+from vws.reports import QueryResult, TargetData
 
+
+def _cloud_reco_response_item_to_query_result():
+    pass
 
 class CloudRecoService:
     """
@@ -133,4 +137,29 @@ class CloudRecoService:
             response=response,
             expected_result_code='Success',
         )
-        return list(response.json()['results'])
+
+        result = []
+        result_list = list(response.json()['results'])
+        for item in result_list:
+            if 'target_data' in item:
+                target_data_dict = item['target_data']
+                metadata = target_data_dict['application_metadata']
+                timestamp_string = target_data_dict['target_timestamp']
+                target_timestamp = datetime.datetime.utcfromtimestamp(
+                    timestamp_string,
+                )
+                target_data = TargetData(
+                    name=target_data_dict['name'],
+                    application_metadata=metadata,
+                    target_timestamp=target_timestamp,
+                )
+            else:
+                target_data = None
+
+            query_result = QueryResult(
+                target_id=item['target_id'],
+                target_data=target_data,
+            )
+
+            result.append(query_result)
+        return result
