@@ -12,7 +12,7 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
-from vws import VWS, CloudRecoService
+from vws import VWS, CloudRecoService, DatabaseSummaryReport
 from vws.exceptions import TargetProcessingTimeout
 
 
@@ -218,23 +218,22 @@ class TestGetDatabaseSummaryReport:
         Details of a database are returned by ``get_database_summary_report``.
         """
         report = vws_client.get_database_summary_report()
-        expected_keys = {
-            'active_images',
-            'current_month_recos',
-            'failed_images',
-            'inactive_images',
-            'name',
-            'previous_month_recos',
-            'processing_images',
-            'reco_threshold',
-            'request_quota',
-            'request_usage',
-            'result_code',
-            'target_quota',
-            'total_recos',
-            'transaction_id',
-        }
-        assert set(report.keys()) == expected_keys
+
+        expected_report = DatabaseSummaryReport(
+            active_images=0,
+            current_month_recos=0,
+            failed_images=0,
+            inactive_images=0,
+            name=report.name,
+            previous_month_recos=0,
+            processing_images=0,
+            reco_threshold=1000,
+            request_quota=100000,
+            request_usage=0,
+            target_quota=1000,
+            total_recos=0,
+        )
+        assert report == expected_report
 
 
 class TestGetTargetRecord:
@@ -342,7 +341,7 @@ class TestWaitForTargetProcessed:
             # At the time of writing there is a bug which prevents request
             # usage from being tracked so we cannot track this.
             expected_requests = 0
-            assert report['request_usage'] == expected_requests
+            assert report.request_usage == expected_requests
 
     def test_custom_seconds_between_requests(
         self,
@@ -390,7 +389,7 @@ class TestWaitForTargetProcessed:
             # At the time of writing there is a bug which prevents request
             # usage from being tracked so we cannot track this.
             expected_requests = 0
-            assert report['request_usage'] == expected_requests
+            assert report.request_usage == expected_requests
 
     def test_custom_timeout(
         self,
