@@ -12,8 +12,9 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
-from vws import VWS, CloudRecoService, DatabaseSummaryReport
+from vws import VWS, CloudRecoService
 from vws.exceptions import TargetProcessingTimeout
+from vws.reports import DatabaseSummaryReport
 
 
 class TestAddTarget:
