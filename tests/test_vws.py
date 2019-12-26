@@ -212,7 +212,7 @@ class TestGetTargetSummaryReport:
             tracking_rating=result.tracking_rating,
             total_recos=0,
             current_month_recos=0,
-            previous_month_recos=0
+            previous_month_recos=0,
         )
         assert result == expected_report
 
