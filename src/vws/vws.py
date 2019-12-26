@@ -16,6 +16,7 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._result_codes import raise_for_result_code
 from vws.exceptions import TargetProcessingTimeout
+from vws.reports import DatabaseSummaryReport
 
 
 def _target_api_request(
@@ -379,7 +380,7 @@ class VWS:
 
         return dict(response.json())
 
-    def get_database_summary_report(self) -> Dict[str, Union[str, int]]:
+    def get_database_summary_report(self) -> DatabaseSummaryReport:
         """
         Get a summary report for the database.
 
@@ -404,7 +405,22 @@ class VWS:
             expected_result_code='Success',
         )
 
-        return dict(response.json())
+        response_data = dict(response.json())
+        database_summary_report = DatabaseSummaryReport(
+            active_images=response_data['active_images'],
+            current_month_recos=response_data['current_month_recos'],
+            failed_images=response_data['failed_images'],
+            inactive_images=response_data['inactive_images'],
+            name=response_data['name'],
+            previous_month_recos=response_data['previous_month_recos'],
+            processing_images=response_data['processing_images'],
+            reco_threshold=response_data['reco_threshold'],
+            request_quota=response_data['request_quota'],
+            request_usage=response_data['request_usage'],
+            target_quota=response_data['target_quota'],
+            total_recos=response_data['total_recos'],
+        )
+        return database_summary_report
 
     def delete_target(self, target_id: str) -> None:
         """

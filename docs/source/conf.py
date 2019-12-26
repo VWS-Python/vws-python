@@ -112,3 +112,5 @@ autodoc_member_order = 'bysource'
 rst_prolog = f"""
 .. |project| replace:: {project}
 """
+
+always_document_param_types = True
