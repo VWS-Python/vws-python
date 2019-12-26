@@ -5,6 +5,7 @@ Classes for representing Vuforia reports.
 import datetime
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 
 @dataclass
@@ -77,3 +78,24 @@ class TargetRecord:
     width: float
     tracking_rating: int
     reco_rating: str
+
+
+@dataclass
+class TargetData:
+    """
+    XXX
+    """
+
+    name: str
+    application_metadata: str
+    target_timestamp: datetime.datetime
+
+
+@dataclass
+class QueryResult:
+    """
+    XXX
+    """
+
+    target_id: str
+    target_data: Optional[TargetData]
