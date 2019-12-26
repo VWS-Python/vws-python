@@ -65,7 +65,7 @@ def _target_api_request(
 
     headers = {
         'Authorization': signature_string,
-        'Date': date,
+        'Date': date_string,
         'Content-Type': content_type,
     }
 
