@@ -60,3 +60,20 @@ class TargetSummaryReport:
     total_recos: int
     current_month_recos: int
     previous_month_recos: int
+
+
+@dataclass
+class TargetRecord:
+    """
+    A target summary record.
+
+    See
+    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Record.
+    """
+
+    target_id: str
+    active_flag: bool
+    name: str
+    width: float
+    tracking_rating: int
+    reco_rating: str
