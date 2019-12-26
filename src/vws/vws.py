@@ -17,7 +17,11 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._result_codes import raise_for_result_code
 from vws.exceptions import TargetProcessingTimeout
-from vws.reports import DatabaseSummaryReport, TargetSummaryReport, TargetStatuses
+from vws.reports import (
+    DatabaseSummaryReport,
+    TargetStatuses,
+    TargetSummaryReport,
+)
 
 
 def _target_api_request(
