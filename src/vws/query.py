@@ -24,6 +24,7 @@ from vws.reports import QueryResult, TargetData
 def _cloud_reco_response_item_to_query_result():
     pass
 
+
 class CloudRecoService:
     """
     An interface to the Vuforia Cloud Recognition Web APIs.
