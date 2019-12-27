@@ -83,18 +83,21 @@ class TargetRecord:
 @dataclass
 class TargetData:
     """
-    XXX
+    The target data optionally included with a query match.
     """
 
     name: str
-    application_metadata: str
+    application_metadata: Optional[str]
     target_timestamp: datetime.datetime
 
 
 @dataclass
 class QueryResult:
     """
-    XXX
+    One query match result.
+
+    See
+    https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
     """
 
     target_id: str
