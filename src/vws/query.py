@@ -2,21 +2,23 @@
 Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
+import datetime
 import io
-from typing import Any, Dict, List
+from typing import List, Optional
 from urllib.parse import urljoin
 
 import requests
 from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
-from ._result_codes import raise_for_result_code
-from .exceptions import (
+from vws._result_codes import raise_for_result_code
+from vws.exceptions import (
     ConnectionErrorPossiblyImageTooLarge,
     MatchProcessing,
     MaxNumResultsOutOfRange,
 )
-from .include_target_data import CloudRecoIncludeTargetData
+from vws.include_target_data import CloudRecoIncludeTargetData
+from vws.reports import QueryResult, TargetData
 
 
 class CloudRecoService:
@@ -46,7 +48,7 @@ class CloudRecoService:
         max_num_results: int = 1,
         include_target_data:
         CloudRecoIncludeTargetData = CloudRecoIncludeTargetData.TOP,
-    ) -> List[Dict[str, Any]]:
+    ) -> List[QueryResult]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
 
@@ -132,4 +134,28 @@ class CloudRecoService:
             response=response,
             expected_result_code='Success',
         )
-        return list(response.json()['results'])
+
+        result = []
+        result_list = list(response.json()['results'])
+        for item in result_list:
+            target_data: Optional[TargetData] = None
+            if 'target_data' in item:
+                target_data_dict = item['target_data']
+                metadata = target_data_dict['application_metadata']
+                timestamp_string = target_data_dict['target_timestamp']
+                target_timestamp = datetime.datetime.utcfromtimestamp(
+                    timestamp_string,
+                )
+                target_data = TargetData(
+                    name=target_data_dict['name'],
+                    application_metadata=metadata,
+                    target_timestamp=target_timestamp,
+                )
+
+            query_result = QueryResult(
+                target_id=item['target_id'],
+                target_data=target_data,
+            )
+
+            result.append(query_result)
+        return result
