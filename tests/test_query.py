@@ -101,7 +101,9 @@ class TestCustomBaseVWQURL:
                 base_vwq_url=base_vwq_url,
             )
 
-            [match] = cloud_reco_client.query(image=high_quality_image)
+            matches = cloud_reco_client.query(image=high_quality_image)
+            assert len(matches) == 1
+            match = matches[0]
             assert match.target_id == target_id
 
 
