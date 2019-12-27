@@ -4,7 +4,7 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 
 import datetime
 import io
-from typing import List
+from typing import List, Optional
 from urllib.parse import urljoin
 
 import requests
@@ -19,10 +19,6 @@ from vws.exceptions import (
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
-
-
-def _cloud_reco_response_item_to_query_result():
-    pass
 
 
 class CloudRecoService:
@@ -142,6 +138,7 @@ class CloudRecoService:
         result = []
         result_list = list(response.json()['results'])
         for item in result_list:
+            target_data: Optional[TargetData] = None
             if 'target_data' in item:
                 target_data_dict = item['target_data']
                 metadata = target_data_dict['application_metadata']
@@ -154,8 +151,6 @@ class CloudRecoService:
                     application_metadata=metadata,
                     target_timestamp=target_timestamp,
                 )
-            else:
-                target_data = None
 
             query_result = QueryResult(
                 target_id=item['target_id'],
