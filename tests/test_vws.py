@@ -522,9 +522,10 @@ class TestUpdateTarget:
         [
             matching_target,
         ] = cloud_reco_client.query(image=different_high_quality_image)
-        assert matching_target['target_id'] == target_id
-        query_target_data = matching_target['target_data']
-        query_metadata = query_target_data['application_metadata']
+        assert matching_target.target_id == target_id
+        query_target_data = matching_target.target_data
+        assert query_target_data is not None
+        query_metadata = query_target_data.application_metadata
         assert query_metadata == new_application_metadata
 
         vws_client.update_target(
