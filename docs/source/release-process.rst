@@ -66,6 +66,7 @@ Store your PyPI password:
     .. substitution-prompt:: bash
 
        export GITHUB_OWNER=|github-owner|
-       curl https://raw.githubusercontent.com/"$GITHUB_OWNER"/|github-repository|/master/admin/release.sh | bash
+       export GITHUB_REPOSITORY_NAME=|github-repository|
+       curl https://raw.githubusercontent.com/"$GITHUB_OWNER"/"$GITHUB_REPOSITORY_NAME"/master/admin/release.sh | bash
 
 .. _GitHub access token instructions: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line/
