@@ -106,3 +106,6 @@ secrets.tar
 
 # pytest
 .pytest_cache/
+
+# setuptools_scm
+src/*/_setuptools_scm_version.txt
