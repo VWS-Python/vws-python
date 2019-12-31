@@ -1,4 +1,4 @@
-|Build Status| |codecov| |Updates| |PyPI| |Documentation Status|
+|Build Status| |codecov| |PyPI| |Documentation Status|
 
 vws-python
 ==========
@@ -64,8 +64,6 @@ See the `full documentation <https://vws-python.readthedocs.io/en/latest>`__.
    :target: https://travis-ci.org/adamtheturtle/vws-python
 .. |codecov| image:: https://codecov.io/gh/adamtheturtle/vws-python/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/adamtheturtle/vws-python
-.. |Updates| image:: https://pyup.io/repos/github/adamtheturtle/vws-python/shield.svg
-   :target: https://pyup.io/repos/github/adamtheturtle/vws-python/
 .. |Documentation Status| image:: https://readthedocs.org/projects/vws-python/badge/?version=latest
    :target: https://vws-python.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
