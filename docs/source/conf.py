@@ -32,7 +32,8 @@ copyright = f'{year}, {author}'  # pylint: disable=redefined-builtin
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 version = vws.__version__
-release = version.split('+')[0]
+_month, _day, _year, *_ = version.split('.')
+release = f'{_month}.{_day}.{_year}'
 
 substitutions = [
     ('|release|', release),
