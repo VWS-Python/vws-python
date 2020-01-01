@@ -7,7 +7,7 @@ Configuration for Sphinx.
 
 import datetime
 
-import vws
+from pkg_resources import get_distribution
 
 project = 'VWS-Python'
 author = 'Adam Dangoor'
@@ -31,7 +31,10 @@ copyright = f'{year}, {author}'  # pylint: disable=redefined-builtin
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-version = vws.__version__
+#
+# Use ``pkg_resources`` as per
+# https://github.com/pypa/setuptools_scm#usage-from-sphinx.
+version = get_distribution(project).version
 _month, _day, _year, *_ = version.split('.')
 release = f'{_month}.{_day}.{_year}'
 

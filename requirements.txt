@@ -2,4 +2,3 @@ VWS-Auth-Tools==2019.12.28.3
 requests==2.22.0
 timeout-decorator==0.4.1
 urllib3==1.25.7
-setuptools-scm==3.3.3
