@@ -1,7 +1,7 @@
 # We use dev-requirements.txt instead of just declaring the requirements here
 # because Read The Docs needs a requirements file.
 PyYAML==5.3
-Pygments==2.5.2
+Pygments==2.6.1
 Sphinx-Substitution-Extensions==2020.2.21.0
 Sphinx==2.4.4
 VWS-Python-Mock==2019.12.27.0
