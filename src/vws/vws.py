@@ -324,6 +324,7 @@ class VWS:
         @timeout(
             dec_timeout=timeout_seconds,
             timeout_exception=TargetProcessingTimeout,
+            use_signals=False,
         )
         def decorated() -> None:
             self._wait_for_target_processed(
