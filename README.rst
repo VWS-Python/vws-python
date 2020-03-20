@@ -52,7 +52,7 @@ Getting Started
    vws_client.wait_for_target_processed(target_id=target_id)
    matching_targets = cloud_reco_client.query(image=my_image)
 
-   assert matching_targets[0]['target_id'] == target_id
+   assert matching_targets[0].target_id == target_id
 
 
 Full Documentation
