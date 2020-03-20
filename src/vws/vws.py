@@ -324,6 +324,9 @@ class VWS:
         @timeout(
             seconds=timeout_seconds,
             timeout_exception=TargetProcessingTimeout,
+            # Without this, signals are used which Windows does not support.
+            # See https://github.com/pnpnpn/timeout-decorator/issues/45
+            use_signals=False,
         )
         def decorated() -> None:
             self._wait_for_target_processed(
