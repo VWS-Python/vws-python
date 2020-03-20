@@ -3,7 +3,7 @@ environment:
   - PYTHON: "C:\\Python37"
 
 install:
-- %PYTHON%\\python.exe -m pip install --upgrade pip setuptools
-- %PYTHON%\\python.exe -m pip install --upgrade --editable .[dev]
+- "%PYTHON%\\python.exe -m pip install --upgrade pip setuptools"
+- "%PYTHON%\\python.exe -m pip install --upgrade --editable .[dev]"
 test_script:
-- %PYTHON%\\python.exe -m pytest -vvv --exitfirst tests/ --cov-fail-under 100 --cov src --cov tests
+- "%PYTHON%\\python.exe -m pytest -vvv --exitfirst tests/ --cov-fail-under 100 --cov src --cov tests"
