@@ -1,0 +1,5 @@
+install:
+- pip install --upgrade pip setuptools
+- pip install --upgrade --editable .[dev]
+test_script:
+- pytest -vvv --exitfirst tests/ --cov-fail-under 100 --cov src --cov tests
