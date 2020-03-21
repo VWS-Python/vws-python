@@ -6,6 +6,8 @@ Changelog
 Next
 ----
 
+* Add Windows support.
+
 2019.11.23.0
 ------------
 
