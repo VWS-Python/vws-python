@@ -13,6 +13,8 @@ import requests
 from requests import Response
 from vws_auth_tools import authorization_header, rfc_1123_date
 
+from func_timeout.exceptions import FunctionTimedOut
+from vws.exceptions import TargetProcessingTimeout
 from vws._result_codes import raise_for_result_code
 from vws._wait_for_target_processed import foobar
 from vws.reports import (
@@ -286,12 +288,15 @@ class VWS:
             ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
                 time sent to Vuforia.
         """
-        foobar(
-            vws_client=self,
-            target_id=target_id,
-            timeout_seconds=timeout_seconds,
-            seconds_between_requests=seconds_between_requests,
-        )
+        try:
+            foobar(
+                vws_client=self,
+                target_id=target_id,
+                timeout_seconds=timeout_seconds,
+                seconds_between_requests=seconds_between_requests,
+            )
+        except FunctionTimedOut:
+            raise TargetProcessingTimeout
 
     def list_targets(self) -> List[str]:
         """

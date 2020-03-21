@@ -8,6 +8,7 @@ from time import sleep
 from typing import Optional
 
 from wrapt_timeout_decorator import timeout
+from func_timeout import func_set_timeout
 
 import vws
 from vws.exceptions import TargetProcessingTimeout
@@ -58,10 +59,9 @@ def foobar(
     Add Windows support.
     """
 
-    @timeout(
-        dec_timeout=timeout_seconds,
-        timeout_exception=TargetProcessingTimeout,
-        use_signals=False,
+    @func_set_timeout(
+        timeout=timeout_seconds,
+        # timeout_exception=TargetProcessingTimeout,
     )
     def decorated() -> None:
         _wait_for_target_processed(

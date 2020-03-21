@@ -2,6 +2,7 @@
 Custom exceptions for Vuforia errors.
 """
 
+from func_timeout.exceptions import FunctionTimedOut
 import json
 from urllib.parse import urlparse
 
