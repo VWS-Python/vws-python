@@ -11,19 +11,18 @@ lint: \
     doc8 \
     flake8 \
     isort \
+    linkcheck \
     mypy \
     pip-extra-reqs \
     pip-missing-reqs \
     pyroma \
     shellcheck \
+    spelling \
     vulture \
     pylint \
     pydocstyle \
     yapf
 
-# TODO add stuff back
-# spelling, linkcheck
-#
 .PHONY: fix-lint
 fix-lint:
 	# Move imports to a single line so that autoflake can handle them.
