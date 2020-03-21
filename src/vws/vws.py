@@ -12,11 +12,9 @@ from urllib.parse import urljoin
 
 import requests
 from requests import Response
-from wrapt_timeout_decorator import timeout
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._result_codes import raise_for_result_code
-from vws.exceptions import TargetProcessingTimeout
 from vws.reports import (
     DatabaseSummaryReport,
     TargetRecord,
@@ -320,19 +318,8 @@ class VWS:
             ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
                 time sent to Vuforia.
         """
-
-        @timeout(
-            dec_timeout=timeout_seconds,
-            timeout_exception=TargetProcessingTimeout,
-            use_signals=False,
-        )
-        def decorated() -> None:
-            self._wait_for_target_processed(
-                target_id=target_id,
-                seconds_between_requests=seconds_between_requests,
-            )
-
-        decorated()
+        from _wait_for_target_processed import foobar
+        foobar(vws_client=self)
 
     def list_targets(self) -> List[str]:
         """
