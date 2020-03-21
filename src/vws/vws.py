@@ -6,17 +6,17 @@ import base64
 import io
 import json
 from datetime import date
+from time import sleep
 from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import requests
 from requests import Response
+from timeout_decorator import timeout
 from vws_auth_tools import authorization_header, rfc_1123_date
 
-from func_timeout.exceptions import FunctionTimedOut
-from vws.exceptions import TargetProcessingTimeout
 from vws._result_codes import raise_for_result_code
-from vws._wait_for_target_processed import foobar
+from vws.exceptions import TargetProcessingTimeout
 from vws.reports import (
     DatabaseSummaryReport,
     TargetRecord,
@@ -255,6 +255,38 @@ class VWS:
         )
         return target_record
 
+    def _wait_for_target_processed(
+        self,
+        target_id: str,
+        seconds_between_requests: float,
+    ) -> None:
+        """
+        Wait indefinitely for a target to get past the processing stage.
+
+        Args:
+            target_id: The ID of the target to wait for.
+            seconds_between_requests: The number of seconds to wait between
+                requests made while polling the target status.
+
+        Raises:
+            ~vws.exceptions.AuthenticationFailure: The secret key is not
+                correct.
+            ~vws.exceptions.Fail: There was an error with the request. For
+                example, the given access key does not match a known database.
+            TimeoutError: The target remained in the processing stage for more
+                than five minutes.
+            ~vws.exceptions.UnknownTarget: The given target ID does not match a
+                target in the database.
+            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
+                time sent to Vuforia.
+        """
+        while True:
+            report = self.get_target_summary_report(target_id=target_id)
+            if report.status != TargetStatuses.PROCESSING:
+                return
+
+            sleep(seconds_between_requests)
+
     def wait_for_target_processed(
         self,
         target_id: str,
@@ -288,15 +320,18 @@ class VWS:
             ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
                 time sent to Vuforia.
         """
-        try:
-            foobar(
-                vws_client=self,
+
+        @timeout(
+            seconds=timeout_seconds,
+            timeout_exception=TargetProcessingTimeout,
+        )
+        def decorated() -> None:
+            self._wait_for_target_processed(
                 target_id=target_id,
-                timeout_seconds=timeout_seconds,
                 seconds_between_requests=seconds_between_requests,
             )
-        except FunctionTimedOut:
-            raise TargetProcessingTimeout
+
+        decorated()
 
     def list_targets(self) -> List[str]:
         """
