@@ -11,8 +11,9 @@ from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import requests
+from func_timeout import func_set_timeout
+from func_timeout.exceptions import FunctionTimedOut
 from requests import Response
-from timeout_decorator import timeout
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._result_codes import raise_for_result_code
@@ -321,17 +322,17 @@ class VWS:
                 time sent to Vuforia.
         """
 
-        @timeout(
-            seconds=timeout_seconds,
-            timeout_exception=TargetProcessingTimeout,
-        )
+        @func_set_timeout(timeout=timeout_seconds)
         def decorated() -> None:
             self._wait_for_target_processed(
                 target_id=target_id,
                 seconds_between_requests=seconds_between_requests,
             )
 
-        decorated()
+        try:
+            decorated()
+        except FunctionTimedOut:
+            raise TargetProcessingTimeout
 
     def list_targets(self) -> List[str]:
         """
