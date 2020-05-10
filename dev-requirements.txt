@@ -7,7 +7,7 @@ Sphinx==3.0.3
 VWS-Python-Mock==2019.12.27.0
 VWS-Test-Fixtures==2019.12.13.1
 autoflake==1.3.1
-check-manifest==0.41
+check-manifest==0.42
 codecov==2.0.22 # Upload coverage data
 doc8==0.8.0
 dodgy==0.2.1  # Look for uploaded secrets
@@ -17,14 +17,14 @@ flake8==3.7.9  # Lint
 freezegun==0.3.15
 isort==4.3.21  # Lint imports
 mypy==0.770  # Type checking
-pip-check-reqs-pip-gte-20==2.0.3.1
+pip-check-reqs-pip-gte-20==2.0.3.2
 pydocstyle==5.0.2  # Lint docstrings
 pyenchant==3.0.1  # Bindings for a spellchecking sytem
-pygithub==1.50
-pylint==2.5.0  # Lint
+pygithub==1.51
+pylint==2.5.2  # Lint
 pyroma==2.6  # Packaging best practices checker
 pytest-cov==2.8.1  # Measure code coverage
-pytest==5.4.1  # Test runners
+pytest==5.4.2  # Test runners
 sphinx-autodoc-typehints==1.10.3
 sphinxcontrib-spelling==5.0.0
 twine==3.1.1
