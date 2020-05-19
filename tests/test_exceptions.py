@@ -80,7 +80,7 @@ def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
 
 def test_request_quota_reached() -> None:
     """
-    See https://github.com/adamtheturtle/vws-python/issues/822 for writing
+    See https://github.com/VWS-Python/vws-python/issues/822 for writing
     this test.
     """
 

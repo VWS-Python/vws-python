@@ -91,7 +91,7 @@ To write unit tests for code which uses this library, without using your Vuforia
 There are some differences between the mock and the real Vuforia.
 See https://vws-python-mock.readthedocs.io/en/latest/differences-to-vws.html for details.
 
-.. _VWS Python Mock: https://github.com/adamtheturtle/vws-python-mock
+.. _VWS Python Mock: https://github.com/VWS-Python/vws-python-mock
 
 
 Reference

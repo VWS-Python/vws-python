@@ -40,7 +40,7 @@ release = f'{_month}.{_day}.{_year}'
 
 substitutions = [
     ('|release|', release),
-    ('|github-owner|', 'adamtheturtle'),
+    ('|github-owner|', 'VWS-Python'),
     ('|github-repository|', 'vws-python'),
 ]
 
