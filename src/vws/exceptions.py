@@ -169,7 +169,7 @@ class AuthenticationFailure(Exception):
         return self._response
 
 
-# See https://github.com/adamtheturtle/vws-python/issues/822.
+# See https://github.com/VWS-Python/vws-python/issues/822.
 class RequestQuotaReached(Exception):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
