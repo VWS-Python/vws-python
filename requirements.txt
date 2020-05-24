@@ -2,8 +2,3 @@ VWS-Auth-Tools==2019.12.28.3
 func-timeout==4.3.5
 requests==2.23.0
 urllib3==1.25.9
-# Dataclasses are built in to Python 3.7+.
-# However, for Python 3.6 we need this backport.
-# We support Python 3.6 in CI because we are working around
-# https://github.com/agronholm/sphinx-autodoc-typehints/issues/123.
-dataclasses==0.7

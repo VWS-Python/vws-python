@@ -4,7 +4,7 @@ include lint.mk
 
 # Treat Sphinx warnings as errors
 # But still continue
-SPHINXOPTS :="-W --keep-going"
+SPHINXOPTS :="-W"
 
 .PHONY: lint
 lint: \
