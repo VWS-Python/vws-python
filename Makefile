@@ -3,7 +3,8 @@ SHELL := /bin/bash -euxo pipefail
 include lint.mk
 
 # Treat Sphinx warnings as errors
-SPHINXOPTS := -W
+# But still continue
+SPHINXOPTS :="-W --keep-going"
 
 .PHONY: lint
 lint: \
