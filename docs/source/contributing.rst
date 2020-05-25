@@ -5,7 +5,7 @@ Contributing to |project|
 
 Contributions to this repository must pass tests and linting.
 
-Travis CI is the canonical source truth.
+CI is the canonical source truth.
 
 Install contribution dependencies
 ---------------------------------
@@ -65,11 +65,11 @@ Run the following commands to build and view documentation locally:
    make docs
    make open-docs
 
-Travis CI
----------
+Continuous integration
+----------------------
 
-Tests are run on Travis CI.
-The configuration for this is in :file:`.travis.yml`.
+Tests are run on GitHub Actions.
+The configuration for this is in :file:`.github/workflows/`.
 
 Performing a release
 --------------------
