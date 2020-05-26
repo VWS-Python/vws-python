@@ -60,12 +60,6 @@ version = get_distribution(project).version
 _month, _day, _year, *_ = version.split('.')
 release = f'{_month}.{_day}.{_year}'
 
-substitutions = [
-    ('|release|', release),
-    ('|github-owner|', 'VWS-Python'),
-    ('|github-repository|', 'vws-python'),
-]
-
 language = None
 
 # The name of the syntax highlighting style to use.
@@ -137,6 +131,9 @@ autodoc_member_order = 'bysource'
 
 rst_prolog = f"""
 .. |project| replace:: {project}
+.. |release| replace:: {release}
+.. |github-owner| replace:: VWS-Python
+.. |github-repository| replace:: vws-python
 """
 
 always_document_param_types = True
