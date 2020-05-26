@@ -5,7 +5,7 @@ Contributing to |project|
 
 Contributions to this repository must pass tests and linting.
 
-CI is the canonical source truth.
+CI is the canonical source of truth.
 
 Install contribution dependencies
 ---------------------------------
