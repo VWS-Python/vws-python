@@ -60,8 +60,8 @@ Full Documentation
 
 See the `full documentation <https://vws-python.readthedocs.io/en/latest>`__.
 
-.. |Build Status| image:: https://travis-ci.com/VWS-Python/vws-python.svg?branch=master
-   :target: https://travis-ci.com/VWS-Python/vws-python
+.. |Build Status| image:: https://github.com/VWS-Python/vws-python/workflows/CI/badge.svg
+   :target: https://github.com/VWS-Python/vws-python/actions
 .. |codecov| image:: https://codecov.io/gh/VWS-Python/vws-python/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/VWS-Python/vws-python
 .. |Documentation Status| image:: https://readthedocs.org/projects/vws-python/badge/?version=latest
