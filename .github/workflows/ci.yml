@@ -15,9 +15,6 @@ jobs:
 
     strategy:
       matrix:
-        # For now we can only use low versions of Python 3.7 and below.
-        # This is because we use dataclasses and hit:
-        # https://github.com/agronholm/sphinx-autodoc-typehints/issues/123.
         python-version: [3.7, 3.8]
 
     steps:
