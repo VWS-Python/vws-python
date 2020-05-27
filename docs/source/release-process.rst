@@ -24,7 +24,7 @@ Perform a Release
 
    E.g.:
 
-   .. substitution-prompt:: bash
+   .. prompt:: bash
 
       python3 -m pip install --user pipx
       python3 -m pipx ensurepath
@@ -47,7 +47,7 @@ Add the following information to :file:`~/.pypirc`.
 
 Store your PyPI password:
 
-.. substitution-prompt:: bash
+.. prompt:: bash
 
    keyring set https://upload.pypi.org/legacy/ <Your PyPI username>
 
@@ -57,16 +57,17 @@ Store your PyPI password:
 
 #. Set environment variables to GitHub credentials, e.g.:
 
-    .. substitution-prompt:: bash
+    .. prompt:: bash
 
        export GITHUB_TOKEN=75c72ad718d9c346c13d30ce762f121647b502414
 
 #. Perform a release:
 
-    .. substitution-prompt:: bash
+   .. prompt:: bash
+      :substitutions:
 
-       export GITHUB_OWNER=|github-owner|
-       export GITHUB_REPOSITORY_NAME=|github-repository|
-       curl https://raw.githubusercontent.com/"$GITHUB_OWNER"/"$GITHUB_REPOSITORY_NAME"/master/admin/release.sh | bash
+      export GITHUB_OWNER=|github-owner|
+      export GITHUB_REPOSITORY_NAME=|github-repository|
+      curl https://raw.githubusercontent.com/"$GITHUB_OWNER"/"$GITHUB_REPOSITORY_NAME"/master/admin/release.sh | bash
 
 .. _GitHub access token instructions: https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line/
