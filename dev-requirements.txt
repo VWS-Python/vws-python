@@ -19,7 +19,7 @@ isort==4.3.21  # Lint imports
 mypy==0.770  # Type checking
 pip-check-reqs-pip-gte-20==2.0.3.4
 pydocstyle==5.0.2  # Lint docstrings
-pyenchant==3.1.0  # Bindings for a spellchecking sytem
+pyenchant==3.1.1  # Bindings for a spellchecking sytem
 pygithub==1.51
 pylint==2.5.2  # Lint
 pyroma==2.6  # Packaging best practices checker
