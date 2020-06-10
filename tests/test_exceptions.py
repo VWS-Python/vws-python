@@ -3,13 +3,13 @@ Tests for various exceptions.
 """
 
 import io
+from http import HTTPStatus
 
 import pytest
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
-from requests import codes
 
 from vws import VWS, CloudRecoService
 from vws.exceptions import (
@@ -46,7 +46,7 @@ def test_image_too_large(
             application_metadata=None,
         )
 
-    assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+    assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 def test_invalid_given_id(vws_client: VWS) -> None:
@@ -57,7 +57,7 @@ def test_invalid_given_id(vws_client: VWS) -> None:
     target_id = '12345abc'
     with pytest.raises(UnknownTarget) as exc:
         vws_client.delete_target(target_id=target_id)
-    assert exc.value.response.status_code == codes.NOT_FOUND
+    assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
     assert exc.value.target_id == target_id
 
 
@@ -104,7 +104,7 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
                 application_metadata=None,
             )
 
-        assert exc.value.response.status_code == codes.BAD_REQUEST
+        assert exc.value.response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_bad_image(vws_client: VWS) -> None:
@@ -121,7 +121,7 @@ def test_bad_image(vws_client: VWS) -> None:
             application_metadata=None,
         )
 
-    assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+    assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 def test_target_name_exist(
@@ -148,7 +148,7 @@ def test_target_name_exist(
             application_metadata=None,
         )
 
-    assert exc.value.response.status_code == codes.FORBIDDEN
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
     assert exc.value.target_name == 'x'
 
 
@@ -182,12 +182,12 @@ def test_project_inactive(
                 application_metadata=None,
             )
 
-        assert exc.value.response.status_code == codes.FORBIDDEN
+        assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
         with pytest.raises(ProjectInactive) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
-        assert exc.value.response.status_code == codes.FORBIDDEN
+        assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
 def test_target_status_processing(
@@ -209,7 +209,7 @@ def test_target_status_processing(
     with pytest.raises(TargetStatusProcessing) as exc:
         vws_client.delete_target(target_id=target_id)
 
-    assert exc.value.response.status_code == codes.FORBIDDEN
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
     assert exc.value.target_id == target_id
 
 
@@ -230,7 +230,7 @@ def test_metadata_too_large(
             application_metadata='a' * 1024 * 1024 * 10,
         )
 
-    assert exc.value.response.status_code == codes.UNPROCESSABLE_ENTITY
+    assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 def test_request_time_too_skewed(vws_client: VWS) -> None:
@@ -252,7 +252,7 @@ def test_request_time_too_skewed(vws_client: VWS) -> None:
         with pytest.raises(RequestTimeTooSkewed) as exc:
             vws_client.get_target_record(target_id='a')
 
-    assert exc.value.response.status_code == codes.FORBIDDEN
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
@@ -278,7 +278,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
                 application_metadata=None,
             )
 
-        assert exc.value.response.status_code == codes.UNAUTHORIZED
+        assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
 
         cloud_reco_client = CloudRecoService(
             client_access_key=database.client_access_key,
@@ -288,7 +288,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
         with pytest.raises(AuthenticationFailure) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
-        assert exc.value.response.status_code == codes.UNAUTHORIZED
+        assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
 
 
 def test_target_status_not_success(
@@ -310,7 +310,7 @@ def test_target_status_not_success(
     with pytest.raises(TargetStatusNotSuccess) as exc:
         vws_client.update_target(target_id=target_id)
 
-    assert exc.value.response.status_code == codes.FORBIDDEN
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
     assert exc.value.target_id == target_id
 
 
@@ -332,4 +332,4 @@ def test_match_processing(
     )
     with pytest.raises(MatchProcessing) as exc:
         cloud_reco_client.query(image=high_quality_image)
-    assert exc.value.response.status_code == codes.INTERNAL_SERVER_ERROR
+    assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
