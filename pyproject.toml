@@ -81,5 +81,4 @@
 
     # Tells whether to store unknown words to indicated private dictionary in
     # --spelling-private-dict-file option instead of raising a message.
-
     spelling-store-unknown-words = 'no'
