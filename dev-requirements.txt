@@ -16,7 +16,7 @@ flake8==3.8.3  # Lint
 freezegun==0.3.15
 isort==4.3.21  # Lint imports
 mypy==0.780  # Type checking
-pip-check-reqs-pip-gte-20==2.0.3.4
+pip_check_reqs==2.1.0
 pydocstyle==5.0.2  # Lint docstrings
 pyenchant==3.1.1  # Bindings for a spellchecking sytem
 pygithub==1.51
