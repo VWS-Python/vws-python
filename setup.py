@@ -33,4 +33,5 @@ setup(
     setup_requires=SETUP_REQUIRES,
     install_requires=INSTALL_REQUIRES,
     extras_require={'dev': DEV_REQUIRES},
+    python_requires='>=3',
 )
