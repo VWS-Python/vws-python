@@ -36,7 +36,7 @@ flake8:
 
 .PHONY: isort
 isort:
-	isort --recursive --check-only
+	isort --check-only .
 
 .PHONY: pip-extra-reqs
 pip-extra-reqs:
