@@ -7,21 +7,8 @@ SPHINXOPTS := -W
 
 .PHONY: lint
 lint: \
-    check-manifest \
-    doc8 \
-    flake8 \
-    isort \
-    linkcheck \
-    mypy \
     pip-extra-reqs \
-    pip-missing-reqs \
-    pyroma \
-    shellcheck \
-    spelling \
-    vulture \
-    pylint \
-    pydocstyle \
-    yapf
+    pip-missing-reqs
 
 .PHONY: fix-lint
 fix-lint:
