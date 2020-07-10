@@ -20,7 +20,7 @@ jobs:
         python-version: [3.7, 3.8]
         platform: [ubuntu-latest, windows-latest]
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
 
     steps:
       - uses: actions/checkout@v2
