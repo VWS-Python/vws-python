@@ -1,6 +1,6 @@
 ---
 
-name: CI
+name: Windows CI
 
 on:
   push:
@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.7, 3.8]
-        platform: [ubuntu-latest]
+        platform: [windows-latest]
 
     runs-on: ${{ matrix.platform }}
 
@@ -36,15 +36,7 @@ jobs:
           # issues - we have seen packages from this cache be cause trouble with
           # pip-extra-reqs.
           python -m pip install --ignore-installed --upgrade --editable .[dev]
-          sudo apt-get install -y enchant
-
-      - name: "Lint"
-        run: |
-          make lint
 
       - name: "Run tests"
         run: |
           pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests tests/ --cov-report=xml
-
-      - name: "Upload coverage to Codecov"
-        uses: "codecov/codecov-action@v1"
