@@ -97,6 +97,7 @@ nitpick_ignore = [
     # Requests documentation exposes ``requests.Response``, not
     # ``requests.models.response``.
     ('py:class', 'requests.models.Response'),
+    ('py:class', 'requests.exceptions.ConnectionError'),
 ]
 
 html_show_copyright = False

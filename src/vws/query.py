@@ -126,7 +126,10 @@ class CloudRecoService:
                 data=content,
             )
         except requests.exceptions.ConnectionError as exc:
-            raise ConnectionErrorPossiblyImageTooLarge from exc
+            raise ConnectionErrorPossiblyImageTooLarge(
+                request=exc.request,
+                response=exc.response,
+            ) from exc
 
         if 'Integer out of range' in response.text:
             raise MaxNumResultsOutOfRange(response=response)

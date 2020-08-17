@@ -49,7 +49,7 @@ def raise_for_result_code(
         result_code = response.json()['result_code']
     except json.decoder.JSONDecodeError as exc:
         assert 'Oops' in response.text
-        raise UnknownVWSErrorPossiblyBadName() from exc
+        raise UnknownVWSErrorPossiblyBadName(response=response) from exc
 
     if result_code == expected_result_code:
         return
