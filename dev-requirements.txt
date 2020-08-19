@@ -25,7 +25,7 @@ pyroma==2.6  # Packaging best practices checker
 pytest-cov==2.10.1  # Measure code coverage
 pytest==6.0.1  # Test runners
 sphinx-autodoc-typehints==1.11.0
-sphinxcontrib-spelling==5.2.2
+sphinxcontrib-spelling==5.3.0
 twine==3.2.0
 versioneer==0.18
 vulture==2.0
