@@ -6,6 +6,9 @@ Changelog
 Next
 ----
 
+2020.08.21.0
+------------
+
 * Change the return type of ``vws_client.get_target_record`` to match what is returned by the web API.
 
 2020.06.19.0
