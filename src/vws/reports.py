@@ -66,7 +66,7 @@ class TargetSummaryReport:
 @dataclass
 class TargetRecord:
     """
-    A target summary record.
+    A target record.
 
     See
     https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Record.
@@ -102,3 +102,16 @@ class QueryResult:
 
     target_id: str
     target_data: Optional[TargetData]
+
+
+@dataclass
+class TargetStatusAndRecord:
+    """
+    The target status and a target record.
+
+    See
+    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Record.
+    """
+
+    status: TargetStatuses
+    target_record: TargetRecord

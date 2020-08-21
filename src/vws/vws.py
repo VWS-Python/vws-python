@@ -21,6 +21,7 @@ from vws.exceptions import TargetProcessingTimeout
 from vws.reports import (
     DatabaseSummaryReport,
     TargetRecord,
+    TargetStatusAndRecord,
     TargetStatuses,
     TargetSummaryReport,
 )
@@ -215,7 +216,7 @@ class VWS:
 
         return str(response.json()['target_id'])
 
-    def get_target_record(self, target_id: str) -> TargetRecord:
+    def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
         """
         Get a given target's target record from the Target Management System.
 
@@ -245,7 +246,9 @@ class VWS:
             expected_result_code='Success',
         )
 
-        target_record_dict = dict(response.json()['target_record'])
+        result_data = response.json()
+        status = TargetStatuses(result_data['status'])
+        target_record_dict = dict(result_data['target_record'])
         target_record = TargetRecord(
             target_id=target_record_dict['target_id'],
             active_flag=target_record_dict['active_flag'],
@@ -254,7 +257,11 @@ class VWS:
             tracking_rating=target_record_dict['tracking_rating'],
             reco_rating=target_record_dict['reco_rating'],
         )
-        return target_record
+        target_status_and_record = TargetStatusAndRecord(
+            status=status,
+            target_record=target_record,
+        )
+        return target_status_and_record
 
     def _wait_for_target_processed(
         self,

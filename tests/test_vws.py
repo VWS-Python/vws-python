@@ -57,7 +57,9 @@ class TestAddTarget:
             application_metadata=encoded_metadata,
             active_flag=active_flag,
         )
-        target_record = vws_client.get_target_record(target_id=target_id)
+        target_record = vws_client.get_target_record(
+            target_id=target_id,
+        ).target_record
         assert target_record.name == name
         assert target_record.width == width
         assert target_record.active_flag is active_flag
@@ -277,7 +279,8 @@ class TestGetTargetRecord:
             reco_rating='',
         )
 
-        assert result == expected_target_record
+        assert result.target_record == expected_target_record
+        assert result.status == TargetStatuses.PROCESSING
 
 
 class TestWaitForTargetProcessed:
@@ -534,9 +537,9 @@ class TestUpdateTarget:
         )
 
         target_details = vws_client.get_target_record(target_id=target_id)
-        assert target_details.name == new_name
-        assert target_details.width == new_width
-        assert not target_details.active_flag
+        assert target_details.target_record.name == new_name
+        assert target_details.target_record.width == new_width
+        assert not target_details.target_record.active_flag
 
     def test_no_fields_given(
         self,
