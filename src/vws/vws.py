@@ -338,8 +338,8 @@ class VWS:
 
         try:
             decorated()
-        except FunctionTimedOut:
-            raise TargetProcessingTimeout
+        except FunctionTimedOut as exc:
+            raise TargetProcessingTimeout from exc
 
     def list_targets(self) -> List[str]:
         """
