@@ -14,13 +14,13 @@ flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==3.2.0  # Require single quotes
 flake8==3.8.3  # Lint
 freezegun==0.3.15
-isort==4.3.21  # Lint imports
+isort==5.4.2  # Lint imports
 mypy==0.782  # Type checking
 pip_check_reqs==2.1.1
 pydocstyle==5.1.0  # Lint docstrings
 pyenchant==3.1.1  # Bindings for a spellchecking sytem
 pygithub==1.53
-pylint==2.5.3  # Lint
+pylint==2.6.0  # Lint
 pyroma==2.6  # Packaging best practices checker
 pytest-cov==2.10.1  # Measure code coverage
 pytest==6.0.1  # Test runners
