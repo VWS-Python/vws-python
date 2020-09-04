@@ -46,8 +46,9 @@ class CloudRecoService:
         self,
         image: io.BytesIO,
         max_num_results: int = 1,
-        include_target_data:
-        CloudRecoIncludeTargetData = CloudRecoIncludeTargetData.TOP,
+        include_target_data: CloudRecoIncludeTargetData = (
+            CloudRecoIncludeTargetData.TOP
+        ),
     ) -> List[QueryResult]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
@@ -89,8 +90,11 @@ class CloudRecoService:
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
             'max_num_results': (None, int(max_num_results), 'text/plain'),
-            'include_target_data':
-            (None, include_target_data.value, 'text/plain'),
+            'include_target_data': (
+                None,
+                include_target_data.value,
+                'text/plain',
+            ),
         }
         date = rfc_1123_date()
         request_path = '/v1/query'
