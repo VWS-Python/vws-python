@@ -4,8 +4,10 @@ Tests for various exceptions.
 
 import io
 from http import HTTPStatus
+from typing import List, Type, Union
 
 import pytest
+import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
@@ -15,17 +17,27 @@ from vws import VWS, CloudRecoService
 from vws.exceptions import (
     AuthenticationFailure,
     BadImage,
+    CloudRecoException,
+    ConnectionErrorPossiblyImageTooLarge,
+    DateRangeError,
     Fail,
     ImageTooLarge,
     MatchProcessing,
+    MaxNumResultsOutOfRange,
     MetadataTooLarge,
+    ProjectHasNoAPIAccess,
     ProjectInactive,
+    ProjectSuspended,
+    RequestQuotaReached,
     RequestTimeTooSkewed,
     TargetNameExist,
+    TargetProcessingTimeout,
+    TargetQuotaReached,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
     UnknownVWSErrorPossiblyBadName,
+    VWSException,
 )
 
 
@@ -333,3 +345,71 @@ def test_match_processing(
     with pytest.raises(MatchProcessing) as exc:
         cloud_reco_client.query(image=high_quality_image)
     assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+def test_vwsexception_inheritance() -> None:
+    """
+    VWS-related exceptions should inherit from VWSException.
+    """
+    subclasses = [
+        AuthenticationFailure,
+        BadImage,
+        DateRangeError,
+        Fail,
+        ImageTooLarge,
+        MetadataTooLarge,
+        ProjectInactive,
+        ProjectHasNoAPIAccess,
+        ProjectSuspended,
+        RequestQuotaReached,
+        RequestTimeTooSkewed,
+        TargetNameExist,
+        TargetQuotaReached,
+        TargetStatusNotSuccess,
+        TargetStatusProcessing,
+        UnknownTarget,
+        UnknownVWSErrorPossiblyBadName,
+    ]
+    for subclass in subclasses:
+        assert issubclass(subclass, VWSException)
+
+
+def test_cloudrecoexception_inheritance() -> None:
+    """
+    CloudRecoService-specific exceptions should inherit from
+    CloudRecoException.
+    """
+    subclasses = [
+        MatchProcessing,
+        MaxNumResultsOutOfRange,
+    ]
+    for subclass in subclasses:
+        assert issubclass(subclass, CloudRecoException)
+
+
+def test_others_inheritance() -> None:
+    """
+    Make sure other exceptions are inherited from their expected super-classes.
+    """
+    assert issubclass(
+        ConnectionErrorPossiblyImageTooLarge,
+        requests.ConnectionError,
+    )
+    assert issubclass(TargetProcessingTimeout, Exception)
+
+
+def test_base_exceptions_have_response_property_and_text_str() -> None:
+    """
+    A VWSException or CloudRecoException should have a response property
+    and string representation with the text property of the response.
+    """
+    base_classes: List[Union[Type[CloudRecoException], Type[VWSException]]] = [
+        CloudRecoException,
+        VWSException,
+    ]
+    for base in base_classes:
+        response = requests.Response()
+        setattr(response, '._content', bytes(f'Test{base.__name__}', 'ascii'))
+        exception = base(response=response)
+        assert exception.response == response
+        assert str(exception) == response.text
