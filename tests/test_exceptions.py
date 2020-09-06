@@ -191,6 +191,7 @@ def test_project_inactive(high_quality_image: io.BytesIO) -> None:
 
         assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
+
 def test_inactive_project(high_quality_image: io.BytesIO) -> None:
     """
     An ``InactiveProject`` exception is raised when querying an inactive

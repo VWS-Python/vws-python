@@ -16,8 +16,28 @@ from func_timeout.exceptions import FunctionTimedOut
 from requests import Response
 from vws_auth_tools import authorization_header, rfc_1123_date
 
-from vws._result_codes import raise_for_result_code
-from vws.exceptions.custom_exceptions import TargetProcessingTimeout
+from vws.exceptions.custom_exceptions import (
+    TargetProcessingTimeout,
+    UnknownVWSErrorPossiblyBadName,
+)
+from vws.exceptions.vws_exceptions import (
+    AuthenticationFailure,
+    BadImage,
+    DateRangeError,
+    Fail,
+    ImageTooLarge,
+    MetadataTooLarge,
+    ProjectHasNoAPIAccess,
+    ProjectInactive,
+    ProjectSuspended,
+    RequestQuotaReached,
+    RequestTimeTooSkewed,
+    TargetNameExist,
+    TargetQuotaReached,
+    TargetStatusNotSuccess,
+    TargetStatusProcessing,
+    UnknownTarget,
+)
 from vws.reports import (
     DatabaseSummaryReport,
     TargetRecord,
@@ -138,12 +158,35 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        raise_for_result_code(
-            response=response,
-            expected_result_code=expected_result_code,
-        )
+        try:
+            result_code = response.json()['result_code']
+        except json.decoder.JSONDecodeError as exc:
+            assert 'Oops' in response.text
+            raise UnknownVWSErrorPossiblyBadName() from exc
 
-        return response
+        if result_code == expected_result_code:
+            return response
+
+        exception = {
+            'AuthenticationFailure': AuthenticationFailure,
+            'BadImage': BadImage,
+            'DateRangeError': DateRangeError,
+            'Fail': Fail,
+            'ImageTooLarge': ImageTooLarge,
+            'MetadataTooLarge': MetadataTooLarge,
+            'ProjectHasNoAPIAccess': ProjectHasNoAPIAccess,
+            'ProjectInactive': ProjectInactive,
+            'ProjectSuspended': ProjectSuspended,
+            'RequestQuotaReached': RequestQuotaReached,
+            'RequestTimeTooSkewed': RequestTimeTooSkewed,
+            'TargetNameExist': TargetNameExist,
+            'TargetQuotaReached': TargetQuotaReached,
+            'TargetStatusNotSuccess': TargetStatusNotSuccess,
+            'TargetStatusProcessing': TargetStatusProcessing,
+            'UnknownTarget': UnknownTarget,
+        }[result_code]
+
+        raise exception(response=response)
 
     def add_target(
         self,
