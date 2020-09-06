@@ -1,3 +1,9 @@
+"""
+Exceptions which do not map to errors at
+https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Interperete-VWS-API-Result-Codes
+or simple errors given by the cloud recognition service.
+"""
+
 import requests
 
 

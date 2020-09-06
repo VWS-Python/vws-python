@@ -14,16 +14,22 @@ from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
 
 from vws import VWS, CloudRecoService
-from vws.exceptions import (
+from vws.exceptions.base_exceptions import CloudRecoException, VWSException
+from vws.exceptions.cloud_reco_exceptions import (
+    MatchProcessing,
+    MaxNumResultsOutOfRange,
+)
+from vws.exceptions.custom_exceptions import (
+    ConnectionErrorPossiblyImageTooLarge,
+    TargetProcessingTimeout,
+    UnknownVWSErrorPossiblyBadName,
+)
+from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
     BadImage,
-    CloudRecoException,
-    ConnectionErrorPossiblyImageTooLarge,
     DateRangeError,
     Fail,
     ImageTooLarge,
-    MatchProcessing,
-    MaxNumResultsOutOfRange,
     MetadataTooLarge,
     ProjectHasNoAPIAccess,
     ProjectInactive,
@@ -31,13 +37,10 @@ from vws.exceptions import (
     RequestQuotaReached,
     RequestTimeTooSkewed,
     TargetNameExist,
-    TargetProcessingTimeout,
     TargetQuotaReached,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
-    UnknownVWSErrorPossiblyBadName,
-    VWSException,
 )
 
 
@@ -368,7 +371,6 @@ def test_vwsexception_inheritance() -> None:
         TargetStatusNotSuccess,
         TargetStatusProcessing,
         UnknownTarget,
-        UnknownVWSErrorPossiblyBadName,
     ]
     for subclass in subclasses:
         assert issubclass(subclass, VWSException)

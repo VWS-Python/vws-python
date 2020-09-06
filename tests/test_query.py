@@ -10,9 +10,9 @@ from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
-from vws.exceptions import (
+from vws.exceptions.cloud_reco_exceptions import MaxNumResultsOutOfRange
+from vws.exceptions.custom_exceptions import (
     ConnectionErrorPossiblyImageTooLarge,
-    MaxNumResultsOutOfRange,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 

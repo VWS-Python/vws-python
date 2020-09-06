@@ -1,3 +1,8 @@
+"""
+Exceptions which match errors raised by the Vuforia Cloud Recognition Web APIs.
+"""
+
+
 from vws.exceptions.base_exceptions import CloudRecoException
 
 
