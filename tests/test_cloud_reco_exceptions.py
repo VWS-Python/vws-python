@@ -15,9 +15,9 @@ from vws import VWS, CloudRecoService
 from vws.exceptions.base_exceptions import CloudRecoException
 from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailure,
+    InactiveProject,
     MatchProcessing,
     MaxNumResultsOutOfRange,
-    InactiveProject,
 )
 from vws.exceptions.custom_exceptions import (
     ConnectionErrorPossiblyImageTooLarge,
