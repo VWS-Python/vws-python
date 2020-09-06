@@ -5,16 +5,10 @@ Tests for the ``CloudRecoService`` querying functionality.
 import io
 import uuid
 
-import pytest
-import requests
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
-from vws.exceptions.cloud_reco_exceptions import MaxNumResultsOutOfRange
-from vws.exceptions.custom_exceptions import (
-    ConnectionErrorPossiblyImageTooLarge,
-)
 from vws.include_target_data import CloudRecoIncludeTargetData
 
 
@@ -53,20 +47,6 @@ class TestQuery:
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=high_quality_image)
         assert matching_target.target_id == target_id
-
-    def test_too_large(
-        self,
-        cloud_reco_client: CloudRecoService,
-        png_too_large: io.BytesIO,
-    ) -> None:
-        """
-        A ``ConnectionErrorPossiblyImageTooLarge`` exception is raised if an
-        image which is too large is given.
-        """
-        with pytest.raises(ConnectionErrorPossiblyImageTooLarge) as exc:
-            cloud_reco_client.query(image=png_too_large)
-
-        assert isinstance(exc.value, requests.ConnectionError)
 
 
 class TestCustomBaseVWQURL:
@@ -181,27 +161,6 @@ class TestMaxNumResults:
             max_num_results=2,
         )
         assert len(matches) == 2
-
-    def test_too_many(
-        self,
-        cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
-    ) -> None:
-        """
-        A ``MaxNumResultsOutOfRange`` error is raised if the given
-        ``max_num_results`` is out of range.
-        """
-        with pytest.raises(MaxNumResultsOutOfRange) as exc:
-            cloud_reco_client.query(
-                image=high_quality_image,
-                max_num_results=51,
-            )
-
-        expected_value = (
-            "Integer out of range (51) in form data part 'max_result'. "
-            'Accepted range is from 1 to 50 (inclusive).'
-        )
-        assert str(exc.value) == exc.value.response.text == expected_value
 
 
 class TestIncludeTargetData:

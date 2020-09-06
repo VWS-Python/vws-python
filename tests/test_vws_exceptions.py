@@ -1,5 +1,5 @@
 """
-Tests for various exceptions.
+Tests for VWS exceptions.
 """
 
 import io
@@ -11,13 +11,8 @@ from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
 
-from vws import VWS, CloudRecoService
-from vws.exceptions.base_exceptions import CloudRecoException, VWSException
-from vws.exceptions.cloud_reco_exceptions import (
-    InactiveProject,
-    MatchProcessing,
-    MaxNumResultsOutOfRange,
-)
+from vws import VWS
+from vws.exceptions.base_exceptions import VWSException
 from vws.exceptions.custom_exceptions import UnknownVWSErrorPossiblyBadName
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
@@ -187,25 +182,6 @@ def test_project_inactive(high_quality_image: io.BytesIO) -> None:
         assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_inactive_project(high_quality_image: io.BytesIO) -> None:
-    """
-    An ``InactiveProject`` exception is raised when querying an inactive
-    database.
-    """
-    database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
-    with MockVWS() as mock:
-        mock.add_database(database=database)
-        cloud_reco_client = CloudRecoService(
-            client_access_key=database.client_access_key,
-            client_secret_key=database.client_secret_key,
-        )
-
-        with pytest.raises(InactiveProject) as exc:
-            cloud_reco_client.query(image=high_quality_image)
-
-        assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
-
-
 def test_target_status_processing(
     vws_client: VWS,
     high_quality_image: io.BytesIO,
@@ -278,12 +254,14 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     incorrect.
     """
     database = VuforiaDatabase()
+
+    vws_client = VWS(
+        server_access_key=database.server_access_key,
+        server_secret_key='a',
+    )
+
     with MockVWS() as mock:
         mock.add_database(database=database)
-        vws_client = VWS(
-            server_access_key=database.server_access_key,
-            server_secret_key='a',
-        )
 
         with pytest.raises(AuthenticationFailure) as exc:
             vws_client.add_target(
@@ -293,16 +271,6 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
                 active_flag=True,
                 application_metadata=None,
             )
-
-        assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
-
-        cloud_reco_client = CloudRecoService(
-            client_access_key=database.client_access_key,
-            client_secret_key='a',
-        )
-
-        with pytest.raises(AuthenticationFailure) as exc:
-            cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
 
@@ -328,27 +296,6 @@ def test_target_status_not_success(
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
     assert exc.value.target_id == target_id
-
-
-def test_match_processing(
-    vws_client: VWS,
-    cloud_reco_client: CloudRecoService,
-    high_quality_image: io.BytesIO,
-) -> None:
-    """
-    A ``MatchProcessing`` exception is raised when a target in processing is
-    matched.
-    """
-    vws_client.add_target(
-        name='x',
-        width=1,
-        image=high_quality_image,
-        active_flag=True,
-        application_metadata=None,
-    )
-    with pytest.raises(MatchProcessing) as exc:
-        cloud_reco_client.query(image=high_quality_image)
-    assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 def test_vwsexception_inheritance() -> None:
@@ -377,27 +324,12 @@ def test_vwsexception_inheritance() -> None:
         assert issubclass(subclass, VWSException)
 
 
-def test_cloudrecoexception_inheritance() -> None:
-    """
-    CloudRecoService-specific exceptions should inherit from
-    CloudRecoException.
-    """
-    subclasses = [
-        MatchProcessing,
-        MaxNumResultsOutOfRange,
-    ]
-    for subclass in subclasses:
-        assert issubclass(subclass, CloudRecoException)
-
-
-def test_base_exceptions_properties(
+def test_base_exception(
     vws_client: VWS,
-    cloud_reco_client: CloudRecoService,
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    ``VWSException``s and ``CloudRecoException```s each have a response
-    property.
+    ``VWSException``s has a response property.
     """
     with pytest.raises(VWSException) as exc:
         vws_client.get_target_record(target_id='a')
@@ -410,12 +342,4 @@ def test_base_exceptions_properties(
         image=high_quality_image,
         active_flag=True,
         application_metadata=None,
-    )
-
-    with pytest.raises(CloudRecoException) as cloud_reco_exc:
-        cloud_reco_client.query(image=high_quality_image)
-
-    assert (
-        cloud_reco_exc.value.response.status_code
-        == HTTPStatus.INTERNAL_SERVER_ERROR
     )

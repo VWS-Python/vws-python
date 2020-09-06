@@ -148,6 +148,12 @@ class VWS:
 
         Returns:
             The response to the request made by `requests`.
+
+        Raises:
+            ~vws.exceptions.UnknownVWSErrorPossiblyBadName: Vuforia returns an
+                HTML page with the text "Oops, an error occurred". This has
+                been seen to happen when the given name includes a bad
+                character.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
