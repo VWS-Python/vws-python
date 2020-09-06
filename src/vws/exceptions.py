@@ -9,50 +9,9 @@ import requests
 from requests import Response
 
 
-class UnknownVWSErrorPossiblyBadName(Exception):
+class CloudRecoException(Exception):
     """
-    Exception raised when VWS returns an HTML page which says "Oops, an error
-    occurred".
-
-    This has been seen to happen when the given name includes a bad character.
-    """
-
-
-class ConnectionErrorPossiblyImageTooLarge(
-    requests.exceptions.ConnectionError,
-):
-    """
-    Exception raised when a ConnectionError is raised from a query. This has
-    been seen to happen when the given image is too large.
-    """
-
-
-class MatchProcessing(Exception):
-    """
-    Exception raised when a query is made with an image which matches a target
-    which is processing or has recently been deleted.
-    """
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
-
-class MaxNumResultsOutOfRange(Exception):
-    """
-    Exception raised when the ``max_num_results`` given to the Cloud
-    Recognition Web API query endpoint is out of range.
+    Base class for Vuforia Cloud Recognition Web API exceptions.
     """
 
     def __init__(self, response: Response) -> None:
@@ -71,10 +30,9 @@ class MaxNumResultsOutOfRange(Exception):
         return self._response
 
 
-class UnknownTarget(Exception):
+class VWSException(Exception):
     """
-    Exception raised when Vuforia returns a response with a result code
-    'UnknownTarget'.
+    Base class for Vuforia Web Service errors.
     """
 
     def __init__(self, response: Response) -> None:
@@ -82,7 +40,7 @@ class UnknownTarget(Exception):
         Args:
             response: The response to a request to Vuforia.
         """
-        super().__init__()
+        super().__init__(response.text)
         self._response = response
 
     @property
@@ -91,6 +49,43 @@ class UnknownTarget(Exception):
         The response returned by Vuforia which included this error.
         """
         return self._response
+
+
+class UnknownVWSErrorPossiblyBadName(VWSException):
+    """
+    Exception raised when VWS returns an HTML page which says "Oops, an error
+    occurred".
+
+    This has been seen to happen when the given name includes a bad character.
+    """
+
+
+class ConnectionErrorPossiblyImageTooLarge(requests.ConnectionError):
+    """
+    Exception raised when a ConnectionError is raised from a query. This has
+    been seen to happen when the given image is too large.
+    """
+
+
+class MatchProcessing(CloudRecoException):
+    """
+    Exception raised when a query is made with an image which matches a target
+    which is processing or has recently been deleted.
+    """
+
+
+class MaxNumResultsOutOfRange(CloudRecoException):
+    """
+    Exception raised when the ``max_num_results`` given to the Cloud
+    Recognition Web API query endpoint is out of range.
+    """
+
+
+class UnknownTarget(VWSException):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'UnknownTarget'.
+    """
 
     @property
     def target_id(self) -> str:
@@ -103,108 +98,40 @@ class UnknownTarget(Exception):
         return path.split(sep='/', maxsplit=2)[-1]
 
 
-class Fail(Exception):
+class Fail(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'Fail'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
 
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
-
-class BadImage(Exception):
+class BadImage(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'BadImage'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
 
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
-
-class AuthenticationFailure(Exception):
+class AuthenticationFailure(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'AuthenticationFailure'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
 
 # See https://github.com/VWS-Python/vws-python/issues/822.
-class RequestQuotaReached(Exception):  # pragma: no cover
+class RequestQuotaReached(VWSException):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'RequestQuotaReached'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self.response = response
 
-
-class TargetStatusProcessing(Exception):
+class TargetStatusProcessing(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetStatusProcessing'.
     """
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
 
     @property
     def target_id(self) -> str:
@@ -217,85 +144,32 @@ class TargetStatusProcessing(Exception):
         return path.split(sep='/', maxsplit=2)[-1]
 
 
-class ProjectInactive(Exception):
+class ProjectInactive(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectInactive' or 'InactiveProject'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
 
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
-
-class MetadataTooLarge(Exception):
+class MetadataTooLarge(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'MetadataTooLarge'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
 
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
-
-class RequestTimeTooSkewed(Exception):
+class RequestTimeTooSkewed(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'RequestTimeTooSkewed'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self.response = response
 
-
-class TargetNameExist(Exception):
+class TargetNameExist(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetNameExist'.
     """
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
 
     @property
     def target_name(self) -> str:
@@ -307,48 +181,18 @@ class TargetNameExist(Exception):
         return str(request_json['name'])
 
 
-class ImageTooLarge(Exception):
+class ImageTooLarge(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'ImageTooLarge'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
 
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
-
-class TargetStatusNotSuccess(Exception):
+class TargetStatusNotSuccess(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetStatusNotSuccess'.
     """
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
 
     @property
     def target_id(self) -> str:
@@ -362,95 +206,35 @@ class TargetStatusNotSuccess(Exception):
 
 
 # This is not simulated by the mock.
-class DateRangeError(Exception):  # pragma: no cover
+class DateRangeError(VWSException):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'DateRangeError'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
 
 # This is not simulated by the mock.
-class TargetQuotaReached(Exception):  # pragma: no cover
+class TargetQuotaReached(VWSException):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetQuotaReached'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
 
 # This is not simulated by the mock.
-class ProjectSuspended(Exception):  # pragma: no cover
+class ProjectSuspended(VWSException):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectSuspended'.
     """
 
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
-
 
 # This is not simulated by the mock.
-class ProjectHasNoAPIAccess(Exception):  # pragma: no cover
+class ProjectHasNoAPIAccess(VWSException):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectHasNoAPIAccess'.
     """
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__()
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
-        return self._response
 
 
 class TargetProcessingTimeout(Exception):
