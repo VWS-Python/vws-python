@@ -7,6 +7,7 @@ import json
 from requests import Response
 
 from vws.exceptions.custom_exceptions import UnknownVWSErrorPossiblyBadName
+from vws.exceptions.cloud_reco_exceptions import InactiveProject
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
     BadImage,
@@ -60,7 +61,7 @@ def raise_for_result_code(
         'DateRangeError': DateRangeError,
         'Fail': Fail,
         'ImageTooLarge': ImageTooLarge,
-        'InactiveProject': ProjectInactive,
+        'InactiveProject': InactiveProject,
         'MetadataTooLarge': MetadataTooLarge,
         'ProjectHasNoAPIAccess': ProjectHasNoAPIAccess,
         'ProjectInactive': ProjectInactive,

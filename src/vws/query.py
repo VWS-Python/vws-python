@@ -76,8 +76,8 @@ class CloudRecoService:
             ~vws.exceptions.cloud_reco_exceptions.MatchProcessing: The given
                 image matches a target which was recently added, updated or
                 deleted and Vuforia returns an error in this case.
-            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
-                inactive.
+            ~vws.exceptions.cloud_reco_exceptions.InactiveProject: The project
+                is inactive.
             ~vws.exceptions.custom_exceptions.ConnectionErrorPossiblyImageTooLarge:
                 The given image is too large.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an

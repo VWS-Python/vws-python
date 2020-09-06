@@ -14,6 +14,7 @@ from mock_vws.states import States
 from vws import VWS, CloudRecoService
 from vws.exceptions.base_exceptions import CloudRecoException, VWSException
 from vws.exceptions.cloud_reco_exceptions import (
+    InactiveProject,
     MatchProcessing,
     MaxNumResultsOutOfRange,
 )
@@ -161,10 +162,7 @@ def test_target_name_exist(
     assert exc.value.target_name == 'x'
 
 
-def test_project_inactive(
-    vws_client: VWS,
-    high_quality_image: io.BytesIO,
-) -> None:
+def test_project_inactive(high_quality_image: io.BytesIO) -> None:
     """
     A ``ProjectInactive`` exception is raised if adding a target to an
     inactive database.
@@ -193,7 +191,20 @@ def test_project_inactive(
 
         assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
-        with pytest.raises(ProjectInactive) as exc:
+def test_inactive_project(high_quality_image: io.BytesIO) -> None:
+    """
+    An ``InactiveProject`` exception is raised when querying an inactive
+    database.
+    """
+    database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
+    with MockVWS() as mock:
+        mock.add_database(database=database)
+        cloud_reco_client = CloudRecoService(
+            client_access_key=database.client_access_key,
+            client_secret_key=database.client_secret_key,
+        )
+
+        with pytest.raises(InactiveProject) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.FORBIDDEN

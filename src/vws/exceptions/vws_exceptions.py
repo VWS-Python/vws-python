@@ -108,7 +108,7 @@ class ProjectHasNoAPIAccess(VWSException):  # pragma: no cover
 class ProjectInactive(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
-    'ProjectInactive' or 'InactiveProject'.
+    'ProjectInactive'.
     """
 
 
