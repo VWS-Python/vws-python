@@ -6,6 +6,7 @@ import io
 import uuid
 
 import pytest
+import requests
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
@@ -62,8 +63,10 @@ class TestQuery:
         A ``ConnectionErrorPossiblyImageTooLarge`` exception is raised if an
         image which is too large is given.
         """
-        with pytest.raises(ConnectionErrorPossiblyImageTooLarge):
+        with pytest.raises(ConnectionErrorPossiblyImageTooLarge) as exc:
             cloud_reco_client.query(image=png_too_large)
+
+        assert isinstance(exc.value, requests.ConnectionError)
 
 
 class TestCustomBaseVWQURL:

@@ -4,10 +4,8 @@ Tests for various exceptions.
 
 import io
 from http import HTTPStatus
-from typing import List, Type, Union
 
 import pytest
-import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
@@ -19,11 +17,7 @@ from vws.exceptions.cloud_reco_exceptions import (
     MatchProcessing,
     MaxNumResultsOutOfRange,
 )
-from vws.exceptions.custom_exceptions import (
-    ConnectionErrorPossiblyImageTooLarge,
-    TargetProcessingTimeout,
-    UnknownVWSErrorPossiblyBadName,
-)
+from vws.exceptions.custom_exceptions import UnknownVWSErrorPossiblyBadName
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
     BadImage,
@@ -389,29 +383,32 @@ def test_cloudrecoexception_inheritance() -> None:
         assert issubclass(subclass, CloudRecoException)
 
 
-def test_others_inheritance() -> None:
+def test_base_exceptions_properties(
+    vws_client: VWS,
+    cloud_reco_client: CloudRecoService,
+    high_quality_image: io.BytesIO,
+) -> None:
     """
-    Make sure other exceptions are inherited from their expected super-classes.
+    ``VWSException``s and ``CloudRecoException```s each have a response
+    property.
     """
-    assert issubclass(
-        ConnectionErrorPossiblyImageTooLarge,
-        requests.ConnectionError,
+    with pytest.raises(VWSException) as exc:
+        vws_client.get_target_record(target_id='a')
+
+    assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
+
+    vws_client.add_target(
+        name='x',
+        width=1,
+        image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
     )
-    assert issubclass(TargetProcessingTimeout, Exception)
 
+    with pytest.raises(CloudRecoException) as cloud_reco_exc:
+        cloud_reco_client.query(image=high_quality_image)
 
-def test_base_exceptions_have_response_property_and_text_str() -> None:
-    """
-    A VWSException or CloudRecoException should have a response property
-    and string representation with the text property of the response.
-    """
-    base_classes: List[Union[Type[CloudRecoException], Type[VWSException]]] = [
-        CloudRecoException,
-        VWSException,
-    ]
-    for base in base_classes:
-        response = requests.Response()
-        setattr(response, '._content', bytes(f'Test{base.__name__}', 'ascii'))
-        exception = base(response=response)
-        assert exception.response == response
-        assert str(exception) == response.text
+    assert (
+        cloud_reco_exc.value.response.status_code
+        == HTTPStatus.INTERNAL_SERVER_ERROR
+    )

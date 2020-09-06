@@ -1,3 +1,9 @@
+"""
+Exception raised when Vuforia returns a response with a result code matching
+one of those documented at
+https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Interperete-VWS-API-Result-Codes.
+"""
+
 import json
 from urllib.parse import urlparse
 
