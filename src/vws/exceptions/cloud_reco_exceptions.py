@@ -25,3 +25,24 @@ class InactiveProject(CloudRecoException):
     Exception raised when Vuforia returns a response with a result code
     'InactiveProject'.
     """
+
+
+class BadImage(CloudRecoException):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'BadImage'.
+    """
+
+
+class AuthenticationFailure(CloudRecoException):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'AuthenticationFailure'.
+    """
+
+
+class RequestTimeTooSkewed(CloudRecoException):
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'RequestTimeTooSkewed'.
+    """

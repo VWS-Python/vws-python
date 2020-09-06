@@ -15,14 +15,12 @@ from vws.exceptions.cloud_reco_exceptions import (
     InactiveProject,
     MatchProcessing,
     MaxNumResultsOutOfRange,
-)
-from vws.exceptions.custom_exceptions import (
-    ConnectionErrorPossiblyImageTooLarge,
-)
-from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
     BadImage,
     RequestTimeTooSkewed,
+)
+from vws.exceptions.custom_exceptions import (
+    ConnectionErrorPossiblyImageTooLarge,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
@@ -74,8 +72,8 @@ class CloudRecoService:
                 none (return no target_data), all (for all matched targets).
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The client
-                access key pair is not correct.
+            ~vws.exceptions.cloud_reco_exceptions.AuthenticationFailure: The
+                client access key pair is not correct.
             ~vws.exceptions.cloud_reco_exceptions.MaxNumResultsOutOfRange:
                 ``max_num_results`` is not within the range (1, 50).
             ~vws.exceptions.cloud_reco_exceptions.MatchProcessing: The given
@@ -85,11 +83,11 @@ class CloudRecoService:
                 is inactive.
             ~vws.exceptions.custom_exceptions.ConnectionErrorPossiblyImageTooLarge:
                 The given image is too large.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
-            ~vws.exceptions.vws_exceptions.BadImage: There is a problem with
-                the given image.  For example, it must be a JPEG or PNG file in
-                the grayscale or RGB color space.
+            ~vws.exceptions.cloud_reco_exceptions.RequestTimeTooSkewed: There
+                is an error with the time sent to Vuforia.
+            ~vws.exceptions.cloud_reco_exceptions.BadImage: There is a problem
+                with the given image.  For example, it must be a JPEG or PNG
+                file in the grayscale or RGB color space.
 
         Returns:
             An ordered list of target details of matching targets.
