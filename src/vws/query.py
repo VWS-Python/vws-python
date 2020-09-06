@@ -12,11 +12,11 @@ from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.cloud_reco_exceptions import (
+    AuthenticationFailure,
+    BadImage,
     InactiveProject,
     MatchProcessing,
     MaxNumResultsOutOfRange,
-    AuthenticationFailure,
-    BadImage,
     RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
