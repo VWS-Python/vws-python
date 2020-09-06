@@ -6,7 +6,8 @@ import json
 
 from requests import Response
 
-from vws.exceptions import (
+from vws.exceptions.custom_exceptions import UnknownVWSErrorPossiblyBadName
+from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
     BadImage,
     DateRangeError,
@@ -23,7 +24,6 @@ from vws.exceptions import (
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
-    UnknownVWSErrorPossiblyBadName,
 )
 
 
@@ -49,7 +49,7 @@ def raise_for_result_code(
         result_code = response.json()['result_code']
     except json.decoder.JSONDecodeError as exc:
         assert 'Oops' in response.text
-        raise UnknownVWSErrorPossiblyBadName(response=response) from exc
+        raise UnknownVWSErrorPossiblyBadName() from exc
 
     if result_code == expected_result_code:
         return

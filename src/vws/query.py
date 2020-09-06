@@ -12,10 +12,12 @@ from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._result_codes import raise_for_result_code
-from vws.exceptions import (
-    ConnectionErrorPossiblyImageTooLarge,
+from vws.exceptions.cloud_reco_exceptions import (
     MatchProcessing,
     MaxNumResultsOutOfRange,
+)
+from vws.exceptions.custom_exceptions import (
+    ConnectionErrorPossiblyImageTooLarge,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
