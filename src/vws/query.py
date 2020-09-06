@@ -69,21 +69,22 @@ class CloudRecoService:
                 none (return no target_data), all (for all matched targets).
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The client access key pair
-                is not correct.
-            ~vws.exceptions.MaxNumResultsOutOfRange: ``max_num_results`` is not
-                within the range (1, 50).
-            ~vws.exceptions.MatchProcessing: The given image matches a target
-                which was recently added, updated or deleted and Vuforia
-                returns an error in this case.
-            ~vws.exceptions.ProjectInactive: The project is inactive.
-            ~vws.exceptions.ConnectionErrorPossiblyImageTooLarge: The given
-                image is too large.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
-            ~vws.exceptions.BadImage: There is a problem with the given image.
-                For example, it must be a JPEG or PNG file in the grayscale or
-                RGB color space.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The client
+                access key pair is not correct.
+            ~vws.exceptions.cloud_reco_exceptions.MaxNumResultsOutOfRange:
+                ``max_num_results`` is not within the range (1, 50).
+            ~vws.exceptions.cloud_reco_exceptions.MatchProcessing: The given
+                image matches a target which was recently added, updated or
+                deleted and Vuforia returns an error in this case.
+            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
+                inactive.
+            ~vws.exceptions.custom_exceptions.ConnectionErrorPossiblyImageTooLarge:
+                The given image is too large.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.BadImage: There is a problem with
+                the given image.  For example, it must be a JPEG or PNG file in
+                the grayscale or RGB color space.
 
         Returns:
             An ordered list of target details of matching targets.

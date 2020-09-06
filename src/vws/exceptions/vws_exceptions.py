@@ -99,7 +99,6 @@ class ProjectHasNoAPIAccess(VWSException):  # pragma: no cover
     """
 
 
-# TODO separate InactiveProject
 class ProjectInactive(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code

@@ -174,25 +174,30 @@ class VWS:
             The target ID of the new target.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.BadImage: There is a problem with the given image.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.BadImage: There is a problem with
+                the given image.
                 For example, it must be a JPEG or PNG file in the grayscale or
                 RGB color space.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.MetadataTooLarge: The given metadata is too large.
-                The maximum size is 1 MB of data when Base64 encoded.
-            ~vws.exceptions.ImageTooLarge: The given image is too large.
-            ~vws.exceptions.TargetNameExist: A target with the given ``name``
-                already exists.
-            ~vws.exceptions.ProjectInactive: The project is inactive.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
-            ~vws.exceptions.UnknownVWSErrorPossiblyBadName: Vuforia returns an
-                HTML page with the text "Oops, an error occurred". This has
-                been seen to happen when the given name includes a bad
-                character.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.MetadataTooLarge: The given metadata
+                is too large. The maximum size is 1 MB of data when Base64
+                encoded.
+            ~vws.exceptions.vws_exceptions.ImageTooLarge: The given image is
+                too large.
+            ~vws.exceptions.vws_exceptions.TargetNameExist: A target with the
+                given ``name`` already exists.
+            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
+                inactive.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.UnknownVWSErrorPossiblyBadName:
+                Vuforia returns an HTML page with the text "Oops, an error
+                occurred". This has been seen to happen when the given name
+                includes a bad character.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -230,14 +235,15 @@ class VWS:
             Response details of a target from Vuforia.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.UnknownTarget: The given target ID does not match a
-                target in the database.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
+                does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -277,16 +283,17 @@ class VWS:
                 requests made while polling the target status.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
             TimeoutError: The target remained in the processing stage for more
                 than five minutes.
-            ~vws.exceptions.UnknownTarget: The given target ID does not match a
-                target in the database.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
+                does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         while True:
             report = self.get_target_summary_report(target_id=target_id)
@@ -317,16 +324,18 @@ class VWS:
                 applied.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.TargetProcessingTimeout: The target remained in the
-                processing stage for more than ``timeout_seconds`` seconds.
-            ~vws.exceptions.UnknownTarget: The given target ID does not match a
-                target in the database.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.custom_exceptions.TargetProcessingTimeout: The
+                target remained in the processing stage for more than
+                ``timeout_seconds`` seconds.
+            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
+                does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
 
         @func_set_timeout(timeout=timeout_seconds)
@@ -352,12 +361,13 @@ class VWS:
             The IDs of all targets in the database.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -382,14 +392,15 @@ class VWS:
             Details of the target.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.UnknownTarget: The given target ID does not match a
-                target in the database.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
+                does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -422,12 +433,13 @@ class VWS:
             Details of the database.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -464,16 +476,17 @@ class VWS:
             target_id: The ID of the target to delete.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.UnknownTarget: The given target ID does not match a
-                target in the database.
-            ~vws.exceptions.TargetStatusProcessing: The given target is in the
-                processing state.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
+                does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.TargetStatusProcessing: The given
+                target is in the processing state.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         self._make_request(
             method='DELETE',
@@ -496,15 +509,17 @@ class VWS:
             The target IDs of duplicate targets.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.UnknownTarget: The given target ID does not match a
-                target in the database.
-            ~vws.exceptions.ProjectInactive: The project is inactive.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
+                does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
+                inactive.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         response = self._make_request(
             method='GET',
@@ -545,21 +560,25 @@ class VWS:
                 Giving ``None`` will not change the application metadata.
 
         Raises:
-            ~vws.exceptions.AuthenticationFailure: The secret key is not
-                correct.
-            ~vws.exceptions.BadImage: There is a problem with the given image.
-                For example, it must be a JPEG or PNG file in the grayscale or
-                RGB color space.
-            ~vws.exceptions.Fail: There was an error with the request. For
-                example, the given access key does not match a known database.
-            ~vws.exceptions.MetadataTooLarge: The given metadata is too large.
-                The maximum size is 1 MB of data when Base64 encoded.
-            ~vws.exceptions.ImageTooLarge: The given image is too large.
-            ~vws.exceptions.TargetNameExist: A target with the given ``name``
-                already exists.
-            ~vws.exceptions.ProjectInactive: The project is inactive.
-            ~vws.exceptions.RequestTimeTooSkewed: There is an error with the
-                time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
+                key is not correct.
+            ~vws.exceptions.vws_exceptions.BadImage: There is a problem with
+                the given image.  For example, it must be a JPEG or PNG file in
+                the grayscale or RGB color space.
+            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
+                request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.MetadataTooLarge: The given metadata
+                is too large.  The maximum size is 1 MB of data when Base64
+                encoded.
+            ~vws.exceptions.vws_exceptions.ImageTooLarge: The given image is
+                too large.
+            ~vws.exceptions.vws_exceptions.TargetNameExist: A target with the
+                given ``name`` already exists.
+            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
+                inactive.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
+                error with the time sent to Vuforia.
         """
         data: Dict[str, Union[str, bool, float, int]] = {}
 
