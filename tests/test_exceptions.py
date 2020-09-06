@@ -175,11 +175,6 @@ def test_project_inactive(high_quality_image: io.BytesIO) -> None:
             server_secret_key=database.server_secret_key,
         )
 
-        cloud_reco_client = CloudRecoService(
-            client_access_key=database.client_access_key,
-            client_secret_key=database.client_secret_key,
-        )
-
         with pytest.raises(ProjectInactive) as exc:
             vws_client.add_target(
                 name='x',
