@@ -6,6 +6,9 @@ Changelog
 Next
 ----
 
+2020.09.07.0
+------------
+
 * Breaking change: Move exceptions and create base exceptions.
   It is now possible to, for example, catch
   ``vws.exceptions.base_exceptions.VWSException`` to catch many of the
