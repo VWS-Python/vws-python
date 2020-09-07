@@ -1,29 +1,25 @@
 """
-Tests for various exceptions.
+Tests for VWS exceptions.
 """
 
 import io
 from http import HTTPStatus
-from typing import List, Type, Union
 
 import pytest
-import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
 
-from vws import VWS, CloudRecoService
-from vws.exceptions import (
+from vws import VWS
+from vws.exceptions.base_exceptions import VWSException
+from vws.exceptions.custom_exceptions import UnknownVWSErrorPossiblyBadName
+from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
     BadImage,
-    CloudRecoException,
-    ConnectionErrorPossiblyImageTooLarge,
     DateRangeError,
     Fail,
     ImageTooLarge,
-    MatchProcessing,
-    MaxNumResultsOutOfRange,
     MetadataTooLarge,
     ProjectHasNoAPIAccess,
     ProjectInactive,
@@ -31,13 +27,10 @@ from vws.exceptions import (
     RequestQuotaReached,
     RequestTimeTooSkewed,
     TargetNameExist,
-    TargetProcessingTimeout,
     TargetQuotaReached,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
     UnknownTarget,
-    UnknownVWSErrorPossiblyBadName,
-    VWSException,
 )
 
 
@@ -164,10 +157,7 @@ def test_target_name_exist(
     assert exc.value.target_name == 'x'
 
 
-def test_project_inactive(
-    vws_client: VWS,
-    high_quality_image: io.BytesIO,
-) -> None:
+def test_project_inactive(high_quality_image: io.BytesIO) -> None:
     """
     A ``ProjectInactive`` exception is raised if adding a target to an
     inactive database.
@@ -180,11 +170,6 @@ def test_project_inactive(
             server_secret_key=database.server_secret_key,
         )
 
-        cloud_reco_client = CloudRecoService(
-            client_access_key=database.client_access_key,
-            client_secret_key=database.client_secret_key,
-        )
-
         with pytest.raises(ProjectInactive) as exc:
             vws_client.add_target(
                 name='x',
@@ -193,11 +178,6 @@ def test_project_inactive(
                 active_flag=True,
                 application_metadata=None,
             )
-
-        assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
-
-        with pytest.raises(ProjectInactive) as exc:
-            cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
@@ -274,12 +254,14 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     incorrect.
     """
     database = VuforiaDatabase()
+
+    vws_client = VWS(
+        server_access_key=database.server_access_key,
+        server_secret_key='a',
+    )
+
     with MockVWS() as mock:
         mock.add_database(database=database)
-        vws_client = VWS(
-            server_access_key=database.server_access_key,
-            server_secret_key='a',
-        )
 
         with pytest.raises(AuthenticationFailure) as exc:
             vws_client.add_target(
@@ -289,16 +271,6 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
                 active_flag=True,
                 application_metadata=None,
             )
-
-        assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
-
-        cloud_reco_client = CloudRecoService(
-            client_access_key=database.client_access_key,
-            client_secret_key='a',
-        )
-
-        with pytest.raises(AuthenticationFailure) as exc:
-            cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
 
@@ -326,27 +298,6 @@ def test_target_status_not_success(
     assert exc.value.target_id == target_id
 
 
-def test_match_processing(
-    vws_client: VWS,
-    cloud_reco_client: CloudRecoService,
-    high_quality_image: io.BytesIO,
-) -> None:
-    """
-    A ``MatchProcessing`` exception is raised when a target in processing is
-    matched.
-    """
-    vws_client.add_target(
-        name='x',
-        width=1,
-        image=high_quality_image,
-        active_flag=True,
-        application_metadata=None,
-    )
-    with pytest.raises(MatchProcessing) as exc:
-        cloud_reco_client.query(image=high_quality_image)
-    assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
-
-
 def test_vwsexception_inheritance() -> None:
     """
     VWS-related exceptions should inherit from VWSException.
@@ -368,48 +319,27 @@ def test_vwsexception_inheritance() -> None:
         TargetStatusNotSuccess,
         TargetStatusProcessing,
         UnknownTarget,
-        UnknownVWSErrorPossiblyBadName,
     ]
     for subclass in subclasses:
         assert issubclass(subclass, VWSException)
 
 
-def test_cloudrecoexception_inheritance() -> None:
+def test_base_exception(
+    vws_client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
     """
-    CloudRecoService-specific exceptions should inherit from
-    CloudRecoException.
+    ``VWSException``s has a response property.
     """
-    subclasses = [
-        MatchProcessing,
-        MaxNumResultsOutOfRange,
-    ]
-    for subclass in subclasses:
-        assert issubclass(subclass, CloudRecoException)
+    with pytest.raises(VWSException) as exc:
+        vws_client.get_target_record(target_id='a')
 
+    assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
 
-def test_others_inheritance() -> None:
-    """
-    Make sure other exceptions are inherited from their expected super-classes.
-    """
-    assert issubclass(
-        ConnectionErrorPossiblyImageTooLarge,
-        requests.ConnectionError,
+    vws_client.add_target(
+        name='x',
+        width=1,
+        image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
     )
-    assert issubclass(TargetProcessingTimeout, Exception)
-
-
-def test_base_exceptions_have_response_property_and_text_str() -> None:
-    """
-    A VWSException or CloudRecoException should have a response property
-    and string representation with the text property of the response.
-    """
-    base_classes: List[Union[Type[CloudRecoException], Type[VWSException]]] = [
-        CloudRecoException,
-        VWSException,
-    ]
-    for base in base_classes:
-        response = requests.Response()
-        setattr(response, '._content', bytes(f'Test{base.__name__}', 'ascii'))
-        exception = base(response=response)
-        assert exception.response == response
-        assert str(exception) == response.text

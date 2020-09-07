@@ -6,6 +6,12 @@ Changelog
 Next
 ----
 
+* Breaking change: Move exceptions and create base exceptions.
+  It is now possible to, for example, catch
+  ``vws.exceptions.base_exceptions.VWSException`` to catch many of the
+  exceptions raised by the ``VWS`` client.
+  Credit to ``@laymonage`` for this change.
+
 2020.08.21.0
 ------------
 
