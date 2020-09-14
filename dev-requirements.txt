@@ -2,7 +2,7 @@
 # the setup function because Read The Docs needs a requirements file.
 black==20.8b1
 PyYAML==5.3.1
-Pygments==2.6.1
+Pygments==2.7.0
 Sphinx-Substitution-Extensions==2020.7.4.1
 Sphinx==3.2.1
 VWS-Python-Mock==2019.12.27.0
