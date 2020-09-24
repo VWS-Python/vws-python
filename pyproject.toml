@@ -101,5 +101,3 @@ requires = [
 ]
 
 [tool.setuptools_scm]
-
-
