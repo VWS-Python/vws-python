@@ -90,3 +90,16 @@
 
 line-length = 79
 skip-string-normalization = true
+
+[build-system]
+
+requires = [
+    "setuptools>=42",
+    "wheel",
+    "setuptools_scm[toml]==4.1.2",
+    "setuptools-scm-git-archive==1.1"
+]
+
+[tool.setuptools_scm]
+
+
