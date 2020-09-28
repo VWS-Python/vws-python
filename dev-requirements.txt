@@ -5,7 +5,7 @@ PyYAML==5.3.1
 Pygments==2.7.1
 Sphinx-Substitution-Extensions==2020.7.4.1
 Sphinx==3.2.1
-VWS-Python-Mock==2019.12.27.0
+VWS-Python-Mock==2020.9.25.0
 VWS-Test-Fixtures==2020.9.25.1
 autoflake==1.4
 check-manifest==0.43
