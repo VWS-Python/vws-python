@@ -8,7 +8,7 @@ Installation
 
    pip3 install vws-python
 
-This is tested on Python 3.7+.
+This is tested on Python 3.8+.
 Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with another language.
 
 Usage
