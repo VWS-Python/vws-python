@@ -225,11 +225,22 @@ def test_metadata_too_large(
     assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
-def test_request_time_too_skewed(vws_client: VWS) -> None:
+def test_request_time_too_skewed(
+    vws_client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
     """
     A ``RequestTimeTooSkewed`` exception is raised when the request time is
     more than five minutes different from the server time.
     """
+    target_id = vws_client.add_target(
+        name='x',
+        width=1,
+        image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
+    )
+
     vws_max_time_skew = 60 * 5
     leeway = 10
     time_difference_from_now = vws_max_time_skew + leeway
