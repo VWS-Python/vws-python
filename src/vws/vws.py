@@ -167,7 +167,7 @@ class VWS:
         try:
             result_code = response.json()['result_code']
         except json.decoder.JSONDecodeError as exc:
-            assert 'Oops' in response.text
+            assert 'Oops' in response.text, response.text
             raise UnknownVWSErrorPossiblyBadName() from exc
 
         if result_code == expected_result_code:

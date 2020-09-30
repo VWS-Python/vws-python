@@ -1,12 +1,17 @@
 version: 2
 
+# We do this because at the time of writing we need "image: latest" for Python
+# 3.8.
+build:
+  image: latest
+
 python:
   install:
      - method: pip
        path: .
        extra_requirements:
            - dev
-  version: 3.7
+  version: 3.8
 
 sphinx:
   builder: html
