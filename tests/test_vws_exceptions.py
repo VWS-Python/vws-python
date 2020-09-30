@@ -253,7 +253,7 @@ def test_request_time_too_skewed(
     # >= 1 ticks are acceptable.
     with freeze_time(auto_tick_seconds=time_difference_from_now):
         with pytest.raises(RequestTimeTooSkewed) as exc:
-            vws_client.get_target_record(target_id='a')
+            vws_client.get_target_record(target_id=target_id)
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
