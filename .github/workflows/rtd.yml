@@ -24,7 +24,7 @@ jobs:
     steps:
       # See https://github.com/dfm/rtds-action#usage for variables to set up
       - name: Trigger RTDs build
-        uses: dfm/rtds-action@v1
+        uses: dfm/rtds-action@v1.0.2
         with:
           webhook_url: ${{ secrets.RTDS_WEBHOOK_URL }}
           webhook_token: ${{ secrets.RTDS_WEBHOOK_TOKEN }}
