@@ -1,6 +1,6 @@
 ---
 
-name: CI
+name: RTD
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-			# See https://github.com/dfm/rtds-action#usage for variables to set up
+      # See https://github.com/dfm/rtds-action#usage for variables to set up
       - name: Trigger RTDs build
         uses: dfm/rtds-action@v1
         with:
