@@ -109,7 +109,6 @@ log_cli = true
 
 ignore = [
     "*.enc",
-    "setup-requirements.txt",
     ".appveyor.yml",
     ".coveragerc",
     ".isort.cfg",
