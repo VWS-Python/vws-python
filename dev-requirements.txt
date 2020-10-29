@@ -24,7 +24,7 @@ pygithub==1.53
 pylint==2.6.0  # Lint
 pyroma==2.6  # Packaging best practices checker
 pytest-cov==2.10.1  # Measure code coverage
-pytest==6.1.1  # Test runners
+pytest==6.1.2  # Test runners
 sphinx-autodoc-typehints==1.11.1
 sphinxcontrib-spelling==7.0.0
 twine==3.2.0
