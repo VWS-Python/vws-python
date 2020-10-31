@@ -146,7 +146,7 @@ ignore = [
 
 [bumpver]
 
-current_version = "2020.10.31.0"
+current_version = "2020.10.31.1"
 version_pattern = "YYYY.MM.DD.INC0"
 commit = true
 tag = true
