@@ -143,3 +143,11 @@ ignore = [
     "vuforia_secrets.env.example",
     "lint.mk",
 ]
+
+[bumpver]
+
+current_version = "2019.12.30.8"
+version_pattern = "YYYY.MM.DD.INC0"
+commit = true
+tag = true
+push = true
