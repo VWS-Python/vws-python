@@ -8,7 +8,7 @@ Sphinx==3.2.1
 VWS-Python-Mock==2020.10.3.0
 VWS-Test-Fixtures==2020.9.25.1
 autoflake==1.4
-check-manifest==0.44
+check-manifest==0.45
 doc8==0.8.1
 dodgy==0.2.1  # Look for uploaded secrets
 flake8-commas==2.0.0  # Require silicon valley commas
