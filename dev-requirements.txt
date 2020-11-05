@@ -4,7 +4,7 @@ black==20.8b1
 PyYAML==5.3.1
 Pygments==2.7.2
 Sphinx-Substitution-Extensions==2020.9.30.0
-Sphinx==3.2.1
+Sphinx==3.3.0
 VWS-Python-Mock==2020.10.3.0
 VWS-Test-Fixtures==2020.9.25.1
 autoflake==1.4
