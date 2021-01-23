@@ -1,12 +1,11 @@
 """Setup script for VWS Python, a wrapper for Vuforia's Web Services APIs."""
 
 from pathlib import Path
-from typing import List
 
 from setuptools import setup
 
 
-def _get_dependencies(requirements_file: Path) -> List[str]:
+def _get_dependencies(requirements_file: Path) -> list[str]:
     """
     Return requirements from a requirements file.
 

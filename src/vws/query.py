@@ -4,7 +4,7 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 
 import datetime
 import io
-from typing import List, Optional
+from typing import Optional
 from urllib.parse import urljoin
 
 import requests
@@ -54,7 +54,7 @@ class CloudRecoService:
         include_target_data: CloudRecoIncludeTargetData = (
             CloudRecoIncludeTargetData.TOP
         ),
-    ) -> List[QueryResult]:
+    ) -> list[QueryResult]:
         """
         Use the Vuforia Web Query API to make an Image Recognition Query.
 

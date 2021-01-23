@@ -7,7 +7,7 @@ import io
 import json
 from datetime import date
 from time import sleep
-from typing import Dict, List, Optional, Union
+from typing import Dict, Optional, Union
 from urllib.parse import urljoin
 
 import requests
@@ -399,7 +399,7 @@ class VWS:
         except FunctionTimedOut as exc:
             raise TargetProcessingTimeout from exc
 
-    def list_targets(self) -> List[str]:
+    def list_targets(self) -> list[str]:
         """
         List target IDs.
 
@@ -544,7 +544,7 @@ class VWS:
             expected_result_code='Success',
         )
 
-    def get_duplicate_targets(self, target_id: str) -> List[str]:
+    def get_duplicate_targets(self, target_id: str) -> list[str]:
         """
         Get targets which may be considered duplicates of a given target.
 
