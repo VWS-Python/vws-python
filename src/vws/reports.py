@@ -2,11 +2,10 @@
 Classes for representing Vuforia reports.
 """
 
-from __future__ import annotations
-
 import datetime
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 
 @dataclass
@@ -88,7 +87,7 @@ class TargetData:
     """
 
     name: str
-    application_metadata: str | None
+    application_metadata: Optional[str]
     target_timestamp: datetime.datetime
 
 
@@ -102,7 +101,7 @@ class QueryResult:
     """
 
     target_id: str
-    target_data: TargetData | None
+    target_data: Optional[TargetData]
 
 
 @dataclass
