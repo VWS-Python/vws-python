@@ -2,6 +2,8 @@
 Tests for helper functions for managing a Vuforia database.
 """
 
+from __future__ import annotations
+
 import base64
 import datetime
 import io

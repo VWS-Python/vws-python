@@ -2,6 +2,8 @@
 Classes for representing Vuforia reports.
 """
 
+from __future__ import annotations
+
 import datetime
 from dataclasses import dataclass
 from enum import Enum
