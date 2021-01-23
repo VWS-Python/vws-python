@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import datetime
 import io
-from typing import Optional
 from urllib.parse import urljoin
 
 import requests
@@ -158,7 +157,7 @@ class CloudRecoService:
         result = []
         result_list = list(response.json()['results'])
         for item in result_list:
-            target_data: Optional[TargetData] = None
+            target_data: TargetData | None = None
             if 'target_data' in item:
                 target_data_dict = item['target_data']
                 metadata = target_data_dict['application_metadata']

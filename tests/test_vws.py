@@ -36,7 +36,7 @@ class TestAddTarget:
         vws_client: VWS,
         high_quality_image: io.BytesIO,
         active_flag: bool,
-        application_metadata: Optional[bytes],
+        application_metadata: bytes | None,
         cloud_reco_client: CloudRecoService,
     ) -> None:
         """

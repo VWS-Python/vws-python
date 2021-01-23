@@ -87,7 +87,7 @@ class TargetData:
     """
 
     name: str
-    application_metadata: Optional[str]
+    application_metadata: str | None
     target_timestamp: datetime.datetime
 
 
@@ -101,7 +101,7 @@ class QueryResult:
     """
 
     target_id: str
-    target_data: Optional[TargetData]
+    target_data: TargetData | None
 
 
 @dataclass

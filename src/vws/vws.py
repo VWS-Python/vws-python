@@ -199,10 +199,10 @@ class VWS:
     def add_target(
         self,
         name: str,
-        width: Union[int, float],
+        width: int | float,
         image: io.BytesIO,
         active_flag: bool,
-        application_metadata: Optional[str],
+        application_metadata: str | None,
     ) -> str:
         """
         Add a target to a Vuforia Web Services database.
@@ -357,7 +357,7 @@ class VWS:
         self,
         target_id: str,
         seconds_between_requests: float = 0.2,
-        timeout_seconds: Optional[float] = 60 * 5,
+        timeout_seconds: float | None = 60 * 5,
     ) -> None:
         """
         Wait up to five minutes (arbitrary) for a target to get past the
@@ -584,11 +584,11 @@ class VWS:
     def update_target(
         self,
         target_id: str,
-        name: Optional[str] = None,
-        width: Optional[Union[int, float]] = None,
-        image: Optional[io.BytesIO] = None,
-        active_flag: Optional[bool] = None,
-        application_metadata: Optional[str] = None,
+        name: str | None = None,
+        width: int | float | None = None,
+        image: io.BytesIO | None = None,
+        active_flag: bool | None = None,
+        application_metadata: str | None = None,
     ) -> None:
         """
         Add a target to a Vuforia Web Services database.
@@ -631,7 +631,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
         """
-        data: Dict[str, Union[str, bool, float, int]] = {}
+        data: Dict[str, str | bool | float| int] = {}
 
         if name is not None:
             data['name'] = name
