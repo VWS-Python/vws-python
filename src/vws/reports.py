@@ -5,7 +5,6 @@ Classes for representing Vuforia reports.
 import datetime
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 
 @dataclass

@@ -7,7 +7,6 @@ import datetime
 import io
 import random
 import uuid
-from typing import Optional
 
 import pytest
 from freezegun import freeze_time
