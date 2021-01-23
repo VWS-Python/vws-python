@@ -2,12 +2,13 @@
 Tests for helper functions for managing a Vuforia database.
 """
 
+from __future__ import annotations
+
 import base64
 import datetime
 import io
 import random
 import uuid
-from typing import Optional
 
 import pytest
 from freezegun import freeze_time
@@ -36,7 +37,7 @@ class TestAddTarget:
         vws_client: VWS,
         high_quality_image: io.BytesIO,
         active_flag: bool,
-        application_metadata: Optional[bytes],
+        application_metadata: bytes | None,
         cloud_reco_client: CloudRecoService,
     ) -> None:
         """
