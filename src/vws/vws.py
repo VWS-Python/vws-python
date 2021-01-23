@@ -2,6 +2,8 @@
 Tools for interacting with Vuforia APIs.
 """
 
+from __future__ import annotations
+
 import base64
 import io
 import json

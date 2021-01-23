@@ -2,6 +2,8 @@
 Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
+from __future__ import annotations
+
 import datetime
 import io
 from typing import Optional

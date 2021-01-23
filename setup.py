@@ -1,5 +1,7 @@
 """Setup script for VWS Python, a wrapper for Vuforia's Web Services APIs."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from setuptools import setup
