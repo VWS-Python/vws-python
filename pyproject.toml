@@ -67,6 +67,8 @@
         'wrong-import-order',
         # pylint does not support new type hint styles e.g. list[str]
         'unsubscriptable-object',
+		# mypy does not want untyped parameters.
+		'useless-type-doc',
     ]
 
     [tool.pylint.'FORMAT']
