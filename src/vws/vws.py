@@ -156,6 +156,9 @@ class VWS:
                 HTML page with the text "Oops, an error occurred". This has
                 been seen to happen when the given name includes a bad
                 character.
+            json.decoder.JSONDecodeError: The server did not respond with valid
+                JSON. This may happen if the server address is not a valid
+                Vuforia server.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
@@ -166,11 +169,10 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        try:
-            result_code = response.json()['result_code']
-        except json.decoder.JSONDecodeError as exc:
-            assert 'Oops' in response.text, response.text
-            raise UnknownVWSErrorPossiblyBadName() from exc
+        if 'Oops, an error occurred' in response.text:
+            raise UnknownVWSErrorPossiblyBadName
+
+        result_code = response.json()['result_code']
 
         if result_code == expected_result_code:
             return response
