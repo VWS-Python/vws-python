@@ -8,6 +8,7 @@ Next
 
 * Breaking change: The ``vws.exceptions.cloud_reco_exceptions.MatchProcessing`` is now ``vws.exceptions.custom_exceptions.ActiveMatchingTargetsDeleteProcessing``.
 * Added new exception ``vws.exceptions.custom_exceptions.RequestEntityTooLarge``.
+* Add better exception handling when querying a server which does not serve the Vuforia API.
 
 2020.09.07.0
 ------------
