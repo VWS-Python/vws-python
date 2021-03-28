@@ -4,8 +4,6 @@ https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Service
 or simple errors given by the cloud recognition service.
 """
 
-import requests
-
 
 class UnknownVWSErrorPossiblyBadName(Exception):
     """
@@ -16,14 +14,20 @@ class UnknownVWSErrorPossiblyBadName(Exception):
     """
 
 
-class ConnectionErrorPossiblyImageTooLarge(requests.ConnectionError):
+class RequestEntityTooLarge(Exception):
     """
-    Exception raised when a ConnectionError is raised from a query. This has
-    been seen to happen when the given image is too large.
+    Exception raised when the given image is too large.
     """
 
 
 class TargetProcessingTimeout(Exception):
     """
     Exception raised when waiting for a target to be processed times out.
+    """
+
+
+class ActiveMatchingTargetsDeleteProcessing(Exception):
+    """
+    Exception raised when a query is made with an image which matches a target
+    which has recently been deleted.
     """

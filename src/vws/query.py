@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import datetime
 import io
+from http import HTTPStatus
 from urllib.parse import urljoin
 
 import requests
@@ -16,12 +17,12 @@ from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailure,
     BadImage,
     InactiveProject,
-    MatchProcessing,
     MaxNumResultsOutOfRange,
     RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
-    ConnectionErrorPossiblyImageTooLarge,
+    ActiveMatchingTargetsDeleteProcessing,
+    RequestEntityTooLarge,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
@@ -77,22 +78,21 @@ class CloudRecoService:
                 client access key pair is not correct.
             ~vws.exceptions.cloud_reco_exceptions.MaxNumResultsOutOfRange:
                 ``max_num_results`` is not within the range (1, 50).
-            ~vws.exceptions.cloud_reco_exceptions.MatchProcessing: The given
-                image matches a target which was recently added, updated or
-                deleted and Vuforia returns an error in this case.
             ~vws.exceptions.cloud_reco_exceptions.InactiveProject: The project
                 is inactive.
-            ~vws.exceptions.custom_exceptions.ConnectionErrorPossiblyImageTooLarge:
-                The given image is too large.
             ~vws.exceptions.cloud_reco_exceptions.RequestTimeTooSkewed: There
                 is an error with the time sent to Vuforia.
             ~vws.exceptions.cloud_reco_exceptions.BadImage: There is a problem
                 with the given image.  For example, it must be a JPEG or PNG
                 file in the grayscale or RGB color space.
+            ~vws.exceptions.custom_exceptions.RequestEntityTooLarge: The given
+                image is too large.
+            ~vws.exceptions.custom_exceptions.ActiveMatchingTargetsDeleteProcessing:
+                The given image matches a target which was recently deleted.
 
         Returns:
             An ordered list of target details of matching targets.
-        """
+        """  # noqa: E501
         image_content = image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
@@ -125,24 +125,21 @@ class CloudRecoService:
             'Content-Type': content_type_header,
         }
 
-        try:
-            response = requests.request(
-                method=method,
-                url=urljoin(base=self._base_vwq_url, url=request_path),
-                headers=headers,
-                data=content,
-            )
-        except requests.exceptions.ConnectionError as exc:
-            raise ConnectionErrorPossiblyImageTooLarge(
-                request=exc.request,
-                response=exc.response,
-            ) from exc
+        response = requests.request(
+            method=method,
+            url=urljoin(base=self._base_vwq_url, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
+            raise RequestEntityTooLarge
 
         if 'Integer out of range' in response.text:
             raise MaxNumResultsOutOfRange(response=response)
 
         if 'No content to map due to end-of-input' in response.text:
-            raise MatchProcessing(response=response)
+            raise ActiveMatchingTargetsDeleteProcessing
 
         result_code = response.json()['result_code']
         if result_code != 'Success':

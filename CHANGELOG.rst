@@ -6,14 +6,8 @@ Changelog
 Next
 ----
 
-2020.09.28.0
-------------
-
-2020.09.25.0
-------------
-
-2020.09.08.0
-------------
+* Breaking change: The ``vws.exceptions.cloud_reco_exceptions.MatchProcessing`` is now ``vws.exceptions.custom_exceptions.ActiveMatchingTargetsDeleteProcessing``.
+* Added new exception ``vws.exceptions.custom_exceptions.RequestEntityTooLarge``.
 
 2020.09.07.0
 ------------
