@@ -16,10 +16,9 @@ class UnknownVWSErrorPossiblyBadName(Exception):
     """
 
 
-class ConnectionErrorPossiblyImageTooLarge(requests.ConnectionError):
+class RequestEntityTooLarge(Exception):
     """
-    Exception raised when a ConnectionError is raised from a query. This has
-    been seen to happen when the given image is too large.
+    Exception raised when the given image is too large.
     """
 
 

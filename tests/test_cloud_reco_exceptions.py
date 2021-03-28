@@ -20,7 +20,7 @@ from vws.exceptions.cloud_reco_exceptions import (
     MaxNumResultsOutOfRange,
 )
 from vws.exceptions.custom_exceptions import (
-    ConnectionErrorPossiblyImageTooLarge,
+    RequestEntityTooLarge,
 )
 
 
@@ -50,14 +50,11 @@ def test_image_too_large(
     png_too_large: io.BytesIO,
 ) -> None:
     """
-    A ``ConnectionErrorPossiblyImageTooLarge`` exception is raised if an
-    image which is too large is given.
+    A ``RequestEntityTooLarge`` exception is raised if an image which is too
+    large is given.
     """
-    with pytest.raises(ConnectionErrorPossiblyImageTooLarge) as exc:
+    with pytest.raises(RequestEntityTooLarge) as exc:
         cloud_reco_client.query(image=png_too_large)
-
-    assert isinstance(exc.value, requests.ConnectionError)
-
 
 def test_cloudrecoexception_inheritance() -> None:
     """

@@ -5,6 +5,7 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 from __future__ import annotations
 
 import datetime
+from http import HTTPStatus
 import io
 from urllib.parse import urljoin
 
@@ -21,7 +22,7 @@ from vws.exceptions.cloud_reco_exceptions import (
     RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
-    ConnectionErrorPossiblyImageTooLarge,
+    RequestEntityTooLarge,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
@@ -82,13 +83,13 @@ class CloudRecoService:
                 deleted and Vuforia returns an error in this case.
             ~vws.exceptions.cloud_reco_exceptions.InactiveProject: The project
                 is inactive.
-            ~vws.exceptions.custom_exceptions.ConnectionErrorPossiblyImageTooLarge:
-                The given image is too large.
             ~vws.exceptions.cloud_reco_exceptions.RequestTimeTooSkewed: There
                 is an error with the time sent to Vuforia.
             ~vws.exceptions.cloud_reco_exceptions.BadImage: There is a problem
                 with the given image.  For example, it must be a JPEG or PNG
                 file in the grayscale or RGB color space.
+            ~vws.exceptions.custom_exceptions.RequestEntityTooLarge:
+                The given image is too large.
 
         Returns:
             An ordered list of target details of matching targets.
@@ -125,18 +126,15 @@ class CloudRecoService:
             'Content-Type': content_type_header,
         }
 
-        try:
-            response = requests.request(
-                method=method,
-                url=urljoin(base=self._base_vwq_url, url=request_path),
-                headers=headers,
-                data=content,
-            )
-        except requests.exceptions.ConnectionError as exc:
-            raise ConnectionErrorPossiblyImageTooLarge(
-                request=exc.request,
-                response=exc.response,
-            ) from exc
+        response = requests.request(
+            method=method,
+            url=urljoin(base=self._base_vwq_url, url=request_path),
+            headers=headers,
+            data=content,
+        )
+
+        if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
+            raise RequestEntityTooLarge
 
         if 'Integer out of range' in response.text:
             raise MaxNumResultsOutOfRange(response=response)
