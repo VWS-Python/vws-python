@@ -4,6 +4,7 @@ ConnectionErrorPossiblyImageTooLarge
 DateRangeError
 ImageTooLarge
 InactiveProject
+JSONDecodeError
 MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
