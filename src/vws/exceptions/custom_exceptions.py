@@ -4,8 +4,6 @@ https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Service
 or simple errors given by the cloud recognition service.
 """
 
-import requests
-
 
 class UnknownVWSErrorPossiblyBadName(Exception):
     """
@@ -25,4 +23,11 @@ class RequestEntityTooLarge(Exception):
 class TargetProcessingTimeout(Exception):
     """
     Exception raised when waiting for a target to be processed times out.
+    """
+
+
+class ActiveMatchingTargetsDeleteProcessing(Exception):
+    """
+    Exception raised when a query is made with an image which matches a target
+    which has recently been deleted.
     """

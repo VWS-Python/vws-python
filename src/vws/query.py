@@ -5,8 +5,8 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 from __future__ import annotations
 
 import datetime
-from http import HTTPStatus
 import io
+from http import HTTPStatus
 from urllib.parse import urljoin
 
 import requests
@@ -21,8 +21,8 @@ from vws.exceptions.cloud_reco_exceptions import (
     RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
-    RequestEntityTooLarge,
     ActiveMatchingTargetsDeleteProcessing,
+    RequestEntityTooLarge,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
@@ -78,9 +78,6 @@ class CloudRecoService:
                 client access key pair is not correct.
             ~vws.exceptions.cloud_reco_exceptions.MaxNumResultsOutOfRange:
                 ``max_num_results`` is not within the range (1, 50).
-            ~vws.exceptions.cloud_reco_exceptions.ActiveMatchingTargetsDeleteProcessing: The given
-                image matches a target which was recently
-                deleted.
             ~vws.exceptions.cloud_reco_exceptions.InactiveProject: The project
                 is inactive.
             ~vws.exceptions.cloud_reco_exceptions.RequestTimeTooSkewed: There
@@ -88,12 +85,14 @@ class CloudRecoService:
             ~vws.exceptions.cloud_reco_exceptions.BadImage: There is a problem
                 with the given image.  For example, it must be a JPEG or PNG
                 file in the grayscale or RGB color space.
-            ~vws.exceptions.custom_exceptions.RequestEntityTooLarge:
-                The given image is too large.
+            ~vws.exceptions.custom_exceptions.RequestEntityTooLarge: The given
+                image is too large.
+            ~vws.exceptions.custom_exceptions.ActiveMatchingTargetsDeleteProcessing:
+                The given image matches a target which was recently deleted.
 
         Returns:
             An ordered list of target details of matching targets.
-        """
+        """  # noqa: E501
         image_content = image.getvalue()
         body = {
             'image': ('image.jpeg', image_content, 'image/jpeg'),
@@ -140,7 +139,7 @@ class CloudRecoService:
             raise MaxNumResultsOutOfRange(response=response)
 
         if 'No content to map due to end-of-input' in response.text:
-            raise ActiveMatchingTargetsDeleteProcessing(response=response)
+            raise ActiveMatchingTargetsDeleteProcessing
 
         result_code = response.json()['result_code']
         if result_code != 'Success':

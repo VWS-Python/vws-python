@@ -7,7 +7,6 @@ import time
 from http import HTTPStatus
 
 import pytest
-import requests
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
@@ -16,11 +15,13 @@ from vws import VWS, CloudRecoService
 from vws.exceptions.base_exceptions import CloudRecoException
 from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailure,
+    BadImage,
     InactiveProject,
-    MatchProcessing,
     MaxNumResultsOutOfRange,
+    RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
+    ActiveMatchingTargetsDeleteProcessing,
     RequestEntityTooLarge,
 )
 
@@ -54,29 +55,33 @@ def test_image_too_large(
     A ``RequestEntityTooLarge`` exception is raised if an image which is too
     large is given.
     """
-    with pytest.raises(RequestEntityTooLarge) as exc:
+    with pytest.raises(RequestEntityTooLarge):
         cloud_reco_client.query(image=png_too_large)
+
 
 def test_cloudrecoexception_inheritance() -> None:
     """
     CloudRecoService-specific exceptions inherit from CloudRecoException.
     """
     subclasses = [
-        MatchProcessing,
         MaxNumResultsOutOfRange,
+        InactiveProject,
+        BadImage,
+        AuthenticationFailure,
+        RequestTimeTooSkewed,
     ]
     for subclass in subclasses:
         assert issubclass(subclass, CloudRecoException)
 
 
-def test_match_processing(
+def test_active_matching_targets_delete_processing(
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``MatchProcessing`` exception is raised when a target in processing is
-    matched.
+    A ``ActiveMatchingTargetsDeleteProcessing`` exception is raised when a
+    target which has recently been deleted is matched.
     """
     target_id = vws_client.add_target(
         name='x',
@@ -88,10 +93,8 @@ def test_match_processing(
     vws_client.wait_for_target_processed(target_id=target_id)
     vws_client.delete_target(target_id=target_id)
     time.sleep(0.2)
-    with pytest.raises(MatchProcessing) as exc:
-        response = cloud_reco_client.query(image=high_quality_image)
-
-    assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+    with pytest.raises(ActiveMatchingTargetsDeleteProcessing):
+        cloud_reco_client.query(image=high_quality_image)
 
 
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
