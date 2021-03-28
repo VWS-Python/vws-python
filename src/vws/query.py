@@ -17,12 +17,12 @@ from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailure,
     BadImage,
     InactiveProject,
-    MatchProcessing,
     MaxNumResultsOutOfRange,
     RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLarge,
+    ActiveMatchingTargetsDeleteProcessing,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
@@ -78,9 +78,9 @@ class CloudRecoService:
                 client access key pair is not correct.
             ~vws.exceptions.cloud_reco_exceptions.MaxNumResultsOutOfRange:
                 ``max_num_results`` is not within the range (1, 50).
-            ~vws.exceptions.cloud_reco_exceptions.MatchProcessing: The given
-                image matches a target which was recently added, updated or
-                deleted and Vuforia returns an error in this case.
+            ~vws.exceptions.cloud_reco_exceptions.ActiveMatchingTargetsDeleteProcessing: The given
+                image matches a target which was recently
+                deleted.
             ~vws.exceptions.cloud_reco_exceptions.InactiveProject: The project
                 is inactive.
             ~vws.exceptions.cloud_reco_exceptions.RequestTimeTooSkewed: There
@@ -140,7 +140,7 @@ class CloudRecoService:
             raise MaxNumResultsOutOfRange(response=response)
 
         if 'No content to map due to end-of-input' in response.text:
-            raise MatchProcessing(response=response)
+            raise ActiveMatchingTargetsDeleteProcessing(response=response)
 
         result_code = response.json()['result_code']
         if result_code != 'Success':

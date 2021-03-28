@@ -3,6 +3,7 @@ Tests for exceptions raised when using the CloudRecoService.
 """
 
 import io
+import time
 from http import HTTPStatus
 
 import pytest
@@ -68,28 +69,6 @@ def test_cloudrecoexception_inheritance() -> None:
         assert issubclass(subclass, CloudRecoException)
 
 
-def test_base_exception(
-    vws_client: VWS,
-    cloud_reco_client: CloudRecoService,
-    high_quality_image: io.BytesIO,
-) -> None:
-    """
-    ``CloudRecoException``s has a response property.
-    """
-    vws_client.add_target(
-        name='x',
-        width=1,
-        image=high_quality_image,
-        active_flag=True,
-        application_metadata=None,
-    )
-
-    with pytest.raises(CloudRecoException) as exc:
-        cloud_reco_client.query(image=high_quality_image)
-
-    assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
-
-
 def test_match_processing(
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
@@ -99,15 +78,19 @@ def test_match_processing(
     A ``MatchProcessing`` exception is raised when a target in processing is
     matched.
     """
-    vws_client.add_target(
+    target_id = vws_client.add_target(
         name='x',
         width=1,
         image=high_quality_image,
         active_flag=True,
         application_metadata=None,
     )
+    vws_client.wait_for_target_processed(target_id=target_id)
+    vws_client.delete_target(target_id=target_id)
+    time.sleep(0.2)
     with pytest.raises(MatchProcessing) as exc:
-        cloud_reco_client.query(image=high_quality_image)
+        response = cloud_reco_client.query(image=high_quality_image)
+
     assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
 
 
