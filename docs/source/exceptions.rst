@@ -1,8 +1,6 @@
 Exceptions
 ==========
 
-.. contents::
-
 Base exceptions
 ---------------
 

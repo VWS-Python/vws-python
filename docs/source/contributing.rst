@@ -1,8 +1,6 @@
 Contributing to |project|
 =========================
 
-.. contents::
-
 Contributions to this repository must pass tests and linting.
 
 CI is the canonical source of truth.
