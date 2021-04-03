@@ -1,8 +1,6 @@
 Changelog
 =========
 
-.. contents::
-
 Next
 ----
 
