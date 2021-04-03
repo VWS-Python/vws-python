@@ -43,18 +43,14 @@ language = None
 
 # The name of the syntax highlighting style to use.
 pygments_style = 'sphinx'
-html_theme = 'alabaster'
 
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# This is required for the alabaster theme
-# refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
-    ],
+html_theme = 'furo'
+html_title = project
+html_show_copyright = False
+html_show_sphinx = False
+html_show_sourcelink = False
+html_theme_options = {
+    'sidebar_hide_name': False,
 }
 
 # Output file base name for HTML help builder.
@@ -66,34 +62,15 @@ intersphinx_mapping = {
 nitpicky = True
 warning_is_error = True
 nitpick_ignore = [
-    ('py:exc', 'RetryError'),
-    # See https://bugs.python.org/issue31024 for why Sphinx cannot find this.
-    ('py:class', 'typing.Tuple'),
-    ('py:class', 'typing.Optional'),
     ('py:class', '_io.BytesIO'),
-    ('py:class', 'docker.types.services.Mount'),
     # Requests documentation exposes ``requests.Response``, not
     # ``requests.models.response``.
     ('py:class', 'requests.models.Response'),
-    ('py:class', 'requests.exceptions.ConnectionError'),
 ]
 
-html_show_copyright = False
-html_show_sphinx = False
-html_show_sourcelink = False
+
 autoclass_content = 'both'
 
-html_theme_options = {
-    'show_powered_by': 'false',
-}
-
-html_sidebars = {
-    '**': [
-        'about.html',
-        'navigation.html',
-        'searchbox.html',
-    ],
-}
 
 # Don't check anchors because many websites use #! for AJAX magic
 # http://sphinx-doc.org/config.html#confval-linkcheck_anchors
