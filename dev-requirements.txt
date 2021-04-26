@@ -1,6 +1,6 @@
 # We use dev-requirements.txt instead of just declaring the requirements in
 # the setup function because Read The Docs needs a requirements file.
-black==20.8b1
+black==21.4b0
 PyYAML==5.4.1
 Pygments==2.8.1
 Sphinx-Substitution-Extensions==2020.9.30.0
