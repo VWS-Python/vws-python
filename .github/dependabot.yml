@@ -1,6 +1,18 @@
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "daily"
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: twine
+    versions:
+    - 3.4.0
+  - dependency-name: pylint
+    versions:
+    - 2.7.0
+    - 2.7.1
+  - dependency-name: pyroma
+    versions:
+    - 2.6.1
