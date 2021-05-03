@@ -27,6 +27,6 @@ jobs:
         if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
         run: |
           echo "HERE1"
-          echo github.event
+          echo ${{ github.event }}
           echo "HERE2"
 
