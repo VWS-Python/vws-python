@@ -23,38 +23,10 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v2
-      - name: "Set up Python"
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          # This is like the example but we use ``*requirements.txt`` rather
-          # than ``requirements.txt`` because we have multiple requirements
-          # files.
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/*requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: "Install dependencies"
+      - name: "Example"
+        if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          # We use '--ignore-installed' to avoid GitHub's cache which can cause
-          # issues - we have seen packages from this cache be cause trouble with
-          # pip-extra-reqs.
-          python -m pip install --ignore-installed --upgrade --editable .[dev]
-          sudo apt-get install -y enchant
+          echo "HERE1"
+          echo github.event
+          echo "HERE2"
 
-      - name: "Lint"
-        run: |
-          make lint
-
-      - name: "Run tests"
-        run: |
-          pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests tests/ --cov-report=xml
-
-      - name: "Upload coverage to Codecov"
-        uses: "codecov/codecov-action@v1"
