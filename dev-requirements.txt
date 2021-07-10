@@ -4,7 +4,7 @@ black==21.5b0
 PyYAML==5.4.1
 Pygments==2.9.0
 Sphinx-Substitution-Extensions==2020.9.30.0
-Sphinx==3.5.4
+Sphinx==4.0.3
 VWS-Python-Mock==2021.3.27.1
 VWS-Test-Fixtures==2020.9.25.1
 autoflake==1.4
@@ -13,20 +13,23 @@ doc8==0.8.1
 dodgy==0.2.1  # Look for uploaded secrets
 flake8-commas==2.0.0  # Require silicon valley commas
 flake8-quotes==3.2.0  # Require single quotes
-flake8==3.9.1  # Lint
+flake8==3.9.2  # Lint
 freezegun==1.1.0
-furo==2021.4.11b34
-isort==5.8.0  # Lint imports
-mypy==0.812  # Type checking
-pip_check_reqs==2.2.0
-pydocstyle==6.0.0  # Lint docstrings
-pyenchant==3.2.0  # Bindings for a spellchecking sytem
+furo==2021.7.5b38
+isort==5.9.2  # Lint imports
+mypy==0.910  # Type checking
+pip_check_reqs==2.2.2
+pydocstyle==6.1.1  # Lint docstrings
+pyenchant==3.2.1  # Bindings for a spellchecking sytem
 pygithub==1.55
-pylint==2.8.2  # Lint
-pyroma==3.1  # Packaging best practices checker
-pytest-cov==2.11.1  # Measure code coverage
+pylint==2.9.3  # Lint
+pyroma==3.2  # Packaging best practices checker
+pytest-cov==2.12.1  # Measure code coverage
 pytest==6.2.4  # Test runners
 sphinx-autodoc-typehints==1.12.0
 sphinxcontrib-spelling==7.2.1
 twine==3.4.1
+types-freezegun==0.1.4
+types-requests==2.25.0
+types-setuptools==57.0.0
 vulture==2.3
