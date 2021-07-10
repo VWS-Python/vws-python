@@ -391,7 +391,8 @@ class VWS:
                 error with the time sent to Vuforia.
         """
 
-        @func_set_timeout(timeout=timeout_seconds)
+        # func_timeout does not have type hints.
+        @func_set_timeout(timeout=timeout_seconds)  # type: ignore
         def decorated() -> None:
             self._wait_for_target_processed(
                 target_id=target_id,
