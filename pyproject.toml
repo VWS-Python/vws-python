@@ -65,10 +65,8 @@
         'duplicate-code',
         # Let isort handle imports
         'wrong-import-order',
-        # pylint does not support new type hint styles e.g. list[str]
-        'unsubscriptable-object',
-		# mypy does not want untyped parameters.
-		'useless-type-doc',
+    		# mypy does not want untyped parameters.
+    		'useless-type-doc',
     ]
 
     [tool.pylint.'FORMAT']
@@ -166,3 +164,20 @@ warn_redundant_casts = true
 warn_return_any = true
 warn_unused_configs = true
 warn_unused_ignores = true
+
+[tool.pydocstyle]
+# We do not have summary lines, care about "mood", or need sections with
+# dash underlined titles.
+ignore = [
+  'D200',
+  'D205',
+  'D400',
+  'D415',
+  'D202',
+  'D203',
+  'D212',
+  'D401',
+  'D406',
+  'D407',
+  'D413',
+]
