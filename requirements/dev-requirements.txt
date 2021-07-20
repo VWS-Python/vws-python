@@ -1,5 +1,3 @@
-# We use dev-requirements.txt instead of just declaring the requirements in
-# the setup function because Read The Docs needs a requirements file.
 black==21.5b0
 PyYAML==5.4.1
 Pygments==2.9.0
