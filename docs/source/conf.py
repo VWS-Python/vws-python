@@ -27,7 +27,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 year = datetime.datetime.now().year
-copyright = f'{year}, {author}'  # pylint: disable=redefined-builtin
+project_copyright = f'{year}, {author}'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
