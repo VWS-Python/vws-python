@@ -9,7 +9,7 @@ autoflake==1.4
 check-manifest==0.47
 doc8==0.9.1
 dodgy==0.2.1  # Look for uploaded secrets
-flake8-commas==2.0.0  # Require silicon valley commas
+flake8-commas==2.1.0  # Require silicon valley commas
 flake8-quotes==3.3.0  # Require single quotes
 flake8==3.9.2  # Lint
 freezegun==1.1.0
