@@ -1,5 +1,5 @@
 black==21.9b0
-PyYAML==5.4.1
+PyYAML==6.0
 Pygments==2.10.0
 Sphinx-Substitution-Extensions==2020.9.30.0
 Sphinx==4.2.0
