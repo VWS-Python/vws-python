@@ -181,3 +181,7 @@ ignore = [
   'D407',
   'D413',
 ]
+
+[build-system]
+requires = ["setuptools", "pip", "wheel"]
+build-backend = "setuptools.build_meta"

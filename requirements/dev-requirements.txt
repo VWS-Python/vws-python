@@ -1,5 +1,5 @@
 black==21.9b0
-PyYAML==5.4.1
+PyYAML==6.0
 Pygments==2.10.0
 Sphinx-Substitution-Extensions==2020.9.30.0
 Sphinx==4.2.0
@@ -9,14 +9,14 @@ autoflake==1.4
 check-manifest==0.47
 doc8==0.9.1
 dodgy==0.2.1  # Look for uploaded secrets
-flake8-commas==2.0.0  # Require silicon valley commas
-flake8-quotes==3.3.0  # Require single quotes
-flake8==3.9.2  # Lint
+flake8-commas==2.1.0  # Require silicon valley commas
+flake8-quotes==3.3.1  # Require single quotes
+flake8==4.0.1  # Lint
 freezegun==1.1.0
-furo==2021.9.22
+furo==2021.10.9
 isort==5.9.3  # Lint imports
 mypy==0.910  # Type checking
-pip_check_reqs==2.3.0
+pip_check_reqs==2.3.1
 pydocstyle==6.1.1  # Lint docstrings
 pyenchant==3.2.2  # Bindings for a spellchecking sytem
 pygithub==1.55
@@ -27,7 +27,7 @@ pytest==6.2.5  # Test runners
 sphinx-autodoc-typehints==1.12.0
 sphinxcontrib-spelling==7.2.1
 twine==3.4.2
-types-freezegun==1.1.0
-types-requests==2.25.9
-types-setuptools==57.4.0
+types-freezegun==1.1.2
+types-requests==2.25.11
+types-setuptools==57.4.2
 vulture==2.3
