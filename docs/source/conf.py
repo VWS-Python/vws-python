@@ -57,7 +57,7 @@ html_theme_options = {
 htmlhelp_basename = 'VWSPYTHONdoc'
 autoclass_content = 'init'
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3.9', None),
+    'python': ('https://docs.python.org/3.10', None),
 }
 nitpicky = True
 warning_is_error = True

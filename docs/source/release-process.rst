@@ -10,7 +10,7 @@ Outcomes
 Prerequisites
 ~~~~~~~~~~~~~
 
-* ``python3`` on your ``PATH`` set to Python 3.9+.
+* ``python3`` on your ``PATH`` set to Python 3.10+.
 * ``virtualenv``.
 * Push access to this repository.
 * Trust that ``master`` is ready and high enough quality for release.
