@@ -13,7 +13,7 @@ flake8-commas==2.1.0  # Require silicon valley commas
 flake8-quotes==3.3.1  # Require single quotes
 flake8==4.0.1  # Lint
 freezegun==1.1.0
-furo==2021.11.15
+furo==2021.11.16
 isort==5.10.1  # Lint imports
 mypy==0.910  # Type checking
 pip_check_reqs==2.3.2
