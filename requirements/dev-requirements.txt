@@ -29,5 +29,5 @@ sphinxcontrib-spelling==7.2.1
 twine==3.6.0
 types-freezegun==1.1.3
 types-requests==2.26.1
-types-setuptools==57.4.3
+types-setuptools==57.4.4
 vulture==2.3
