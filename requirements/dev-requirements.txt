@@ -1,4 +1,4 @@
-black==21.12b0
+black==22.1.0
 PyYAML==6.0
 Pygments==2.11.2
 Sphinx-Substitution-Extensions==2020.9.30.0
