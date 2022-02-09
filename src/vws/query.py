@@ -105,7 +105,12 @@ class CloudRecoService:
         }
         date = rfc_1123_date()
         request_path = '/v1/query'
-        content, content_type_header = encode_multipart_formdata(body)
+        (
+            content,
+            content_type_header,
+        ) = encode_multipart_formdata(  # type:ignore
+            fields=body,
+        )
         method = 'POST'
 
         authorization_string = authorization_header(
