@@ -26,6 +26,6 @@ pytest==7.0.0  # Test runners
 sphinx-autodoc-typehints==1.16.0
 sphinxcontrib-spelling==7.3.2
 types-freezegun==1.1.6
-types-requests==2.27.0
+types-requests==2.27.9
 types-setuptools==57.4.9
 vulture==2.3
