@@ -1,9 +1,9 @@
 version: 2
 
-# We do this because at the time of writing we need "image: latest" for Python
-# 3.8.
 build:
-  image: latest
+  os: ubuntu-20.04
+  tools:
+    python: "3.9"
 
 python:
   install:
@@ -11,7 +11,6 @@ python:
        path: .
        extra_requirements:
            - dev
-  version: 3.8
 
 sphinx:
   builder: html

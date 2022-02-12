@@ -44,7 +44,7 @@ pip-missing-reqs:
 
 .PHONY: pylint
 pylint:
-	pylint *.py src/ tests/ admin/ docs/
+	pylint *.py src/ tests/ docs/
 
 .PHONY: pyroma
 pyroma:
@@ -61,10 +61,6 @@ linkcheck:
 .PHONY: spelling
 spelling:
 	$(MAKE) -C docs/ spelling SPHINXOPTS=$(SPHINXOPTS)
-
-.PHONY: shellcheck
-shellcheck:
-	shellcheck --exclude SC2164,SC1091 */*.sh
 
 .PHONY: autoflake
 autoflake:

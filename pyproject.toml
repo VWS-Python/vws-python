@@ -121,8 +121,6 @@ ignore = [
     "readthedocs.yaml",
     ".style.yapf",
     ".travis.yml",
-    "admin",
-    "admin/**",
     "CHANGELOG.rst",
     "CODE_OF_CONDUCT.rst",
     "CONTRIBUTING.rst",
@@ -144,6 +142,18 @@ ignore = [
     "tests/**",
     "vuforia_secrets.env.example",
     "lint.mk",
+]
+
+[tool.doc8]
+
+max_line_length = 2000
+ignore_path = [
+    "./.eggs",
+    "./docs/build",
+    "./docs/build/spelling/output.txt",
+    "./node_modules",
+    "./src/*.egg-info/",
+    "./src/*/_setuptools_scm_version.txt",
 ]
 
 [tool.mypy]
