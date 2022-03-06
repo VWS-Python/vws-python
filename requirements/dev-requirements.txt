@@ -12,8 +12,8 @@ dodgy==0.2.1  # Look for uploaded secrets
 flake8-commas==2.1.0  # Require silicon valley commas
 flake8-quotes==3.3.1  # Require single quotes
 flake8==4.0.1  # Lint
-freezegun==1.1.0
-furo==2022.1.2
+freezegun==1.2.0
+furo==2022.3.4
 isort==5.10.1  # Lint imports
 mypy==0.931  # Type checking
 pip_check_reqs==2.3.2
@@ -22,11 +22,11 @@ pyenchant==3.2.2  # Bindings for a spellchecking sytem
 pylint==2.12.2  # Lint
 pyroma==3.2  # Packaging best practices checker
 pytest-cov==3.0.0  # Measure code coverage
-pytest==7.0.0  # Test runners
-sphinx-autodoc-typehints==1.16.0
+pytest==7.0.1  # Test runners
+sphinx-autodoc-typehints==1.17.0
 sphinx-prompt==1.5.0
 sphinxcontrib-spelling==7.3.2
 types-freezegun==1.1.6
-types-requests==2.27.9
+types-requests==2.27.11
 types-setuptools==57.4.9
 vulture==2.3
