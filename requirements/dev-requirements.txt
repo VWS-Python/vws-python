@@ -28,5 +28,5 @@ sphinx-prompt==1.5.0
 sphinxcontrib-spelling==7.3.2
 types-freezegun==1.1.8
 types-requests==2.27.16
-types-setuptools==57.4.11
+types-setuptools==57.4.12
 vulture==2.3
