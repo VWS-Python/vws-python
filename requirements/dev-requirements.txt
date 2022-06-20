@@ -25,7 +25,7 @@ pytest-cov==3.0.0  # Measure code coverage
 pytest==7.1.2  # Test runners
 sphinx-autodoc-typehints==1.18.3
 sphinx-prompt==1.5.0
-sphinxcontrib-spelling==7.4.1
+sphinxcontrib-spelling==7.5.1
 types-freezegun==1.1.10
 types-requests==2.27.29
 types-setuptools==57.4.17
