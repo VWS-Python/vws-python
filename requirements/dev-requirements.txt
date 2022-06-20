@@ -19,7 +19,7 @@ mypy==0.950  # Type checking
 pip_check_reqs==2.3.2
 pydocstyle==6.1.1  # Lint docstrings
 pyenchant==3.2.2  # Bindings for a spellchecking sytem
-pylint==2.14.1  # Lint
+pylint==2.14.3  # Lint
 pyroma==4.0  # Packaging best practices checker
 pytest-cov==3.0.0  # Measure code coverage
 pytest==7.1.2  # Test runners
