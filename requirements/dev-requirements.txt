@@ -29,4 +29,4 @@ sphinxcontrib-spelling==7.6.0
 types-freezegun==1.1.10
 types-requests==2.27.29
 types-setuptools==57.4.18
-vulture==2.3
+vulture==2.4
