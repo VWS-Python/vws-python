@@ -39,7 +39,7 @@ version = get_distribution(project).version
 _month, _day, _year, *_ = version.split('.')
 release = f'{_month}.{_day}.{_year}'
 
-language = None
+language = 'en'
 
 # The name of the syntax highlighting style to use.
 pygments_style = 'sphinx'
