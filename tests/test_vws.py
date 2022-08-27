@@ -30,10 +30,10 @@ class TestAddTarget:
     Tests for adding a target.
     """
 
+    @staticmethod
     @pytest.mark.parametrize('application_metadata', [None, b'a'])
     @pytest.mark.parametrize('active_flag', [True, False])
     def test_add_target(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
         active_flag: bool,
@@ -75,8 +75,8 @@ class TestAddTarget:
         else:
             assert matching_targets == []
 
+    @staticmethod
     def test_add_two_targets(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -100,7 +100,8 @@ class TestCustomBaseVWSURL:
     Tests for using a custom base VWS URL.
     """
 
-    def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
+    @staticmethod
+    def test_custom_base_url(high_quality_image: io.BytesIO) -> None:
         """
         It is possible to use add a target to a database under a custom VWS
         URL.
@@ -129,8 +130,8 @@ class TestListTargets:
     Tests for listing targets.
     """
 
+    @staticmethod
     def test_list_targets(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -159,8 +160,8 @@ class TestDelete:
     Test for deleting a target.
     """
 
+    @staticmethod
     def test_delete_target(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -186,8 +187,8 @@ class TestGetTargetSummaryReport:
     Tests for getting a summary report for a target.
     """
 
+    @staticmethod
     def test_get_target_summary_report(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -226,7 +227,8 @@ class TestGetDatabaseSummaryReport:
     Tests for getting a summary report for a database.
     """
 
-    def test_get_target(self, vws_client: VWS) -> None:
+    @staticmethod
+    def test_get_target(vws_client: VWS) -> None:
         """
         Details of a database are returned by ``get_database_summary_report``.
         """
@@ -254,8 +256,8 @@ class TestGetTargetRecord:
     Tests for getting a record of a target.
     """
 
+    @staticmethod
     def test_get_target_record(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -289,8 +291,8 @@ class TestWaitForTargetProcessed:
     Tests for waiting for a target to be processed.
     """
 
+    @staticmethod
     def test_wait_for_target_processed(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -310,8 +312,8 @@ class TestWaitForTargetProcessed:
         report = vws_client.get_target_summary_report(target_id=target_id)
         assert report.status != TargetStatuses.PROCESSING
 
+    @staticmethod
     def test_default_seconds_between_requests(
-        self,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
@@ -362,8 +364,8 @@ class TestWaitForTargetProcessed:
             expected_requests = 0
             assert report.request_usage == expected_requests
 
+    @staticmethod
     def test_custom_seconds_between_requests(
-        self,
         high_quality_image: io.BytesIO,
     ) -> None:
         """
@@ -414,10 +416,8 @@ class TestWaitForTargetProcessed:
             expected_requests = 0
             assert report.request_usage == expected_requests
 
-    def test_custom_timeout(
-        self,
-        high_quality_image: io.BytesIO,
-    ) -> None:
+    @staticmethod
+    def test_custom_timeout(high_quality_image: io.BytesIO) -> None:
         """
         It is possible to set a maximum timeout.
         """
@@ -458,8 +458,8 @@ class TestGetDuplicateTargets:
     Tests for getting duplicate targets.
     """
 
+    @staticmethod
     def test_get_duplicate_targets(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -492,8 +492,8 @@ class TestUpdateTarget:
     Tests for updating a target.
     """
 
+    @staticmethod
     def test_update_target(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
         different_high_quality_image: io.BytesIO,
@@ -551,8 +551,8 @@ class TestUpdateTarget:
         assert target_details.target_record.width == new_width
         assert not target_details.target_record.active_flag
 
+    @staticmethod
     def test_no_fields_given(
-        self,
         vws_client: VWS,
         high_quality_image: io.BytesIO,
     ) -> None:
