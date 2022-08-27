@@ -17,8 +17,8 @@ class TestQuery:
     Tests for making image queries.
     """
 
+    @staticmethod
     def test_no_matches(
-        self,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
     ) -> None:
@@ -28,8 +28,8 @@ class TestQuery:
         result = cloud_reco_client.query(image=high_quality_image)
         assert result == []
 
+    @staticmethod
     def test_match(
-        self,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
@@ -54,7 +54,8 @@ class TestCustomBaseVWQURL:
     Tests for using a custom base VWQ URL.
     """
 
-    def test_custom_base_url(self, high_quality_image: io.BytesIO) -> None:
+    @staticmethod
+    def test_custom_base_url(high_quality_image: io.BytesIO) -> None:
         """
         It is possible to use query a target to a database under a custom VWQ
         URL.
@@ -95,8 +96,8 @@ class TestMaxNumResults:
     Tests for the ``max_num_results`` parameter of ``query``.
     """
 
+    @staticmethod
     def test_default(
-        self,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
@@ -123,8 +124,8 @@ class TestMaxNumResults:
         matches = cloud_reco_client.query(image=high_quality_image)
         assert len(matches) == 1
 
+    @staticmethod
     def test_custom(
-        self,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
@@ -168,8 +169,8 @@ class TestIncludeTargetData:
     Tests for the ``include_target_data`` parameter of ``query``.
     """
 
+    @staticmethod
     def test_default(
-        self,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
@@ -200,8 +201,8 @@ class TestIncludeTargetData:
         assert top_match.target_data is not None
         assert second_match.target_data is None
 
+    @staticmethod
     def test_top(
-        self,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
@@ -234,8 +235,8 @@ class TestIncludeTargetData:
         assert top_match.target_data is not None
         assert second_match.target_data is None
 
+    @staticmethod
     def test_none(
-        self,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
@@ -268,8 +269,8 @@ class TestIncludeTargetData:
         assert top_match.target_data is None
         assert second_match.target_data is None
 
+    @staticmethod
     def test_all(
-        self,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         high_quality_image: io.BytesIO,
