@@ -154,22 +154,15 @@ ignore_path = [
 
 [tool.mypy]
 
-check_untyped_defs = true
-disallow_incomplete_defs = true
-disallow_subclassing_any = true
-disallow_untyped_calls = true
-disallow_untyped_decorators = true
-disallow_untyped_defs = true
-follow_imports = "normal"
+strict = true
+
+[[tool.mypy.overrides]]
+
+module = [
+    "func_timeout",
+    "func_timeout.exceptions",
+]
 ignore_missing_imports = true
-no_implicit_optional = true
-strict_equality = true
-strict_optional = true
-warn_no_return = true
-warn_redundant_casts = true
-warn_return_any = true
-warn_unused_configs = true
-warn_unused_ignores = true
 
 [tool.pydocstyle]
 # We do not have summary lines, care about "mood", or need sections with

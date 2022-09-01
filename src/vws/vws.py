@@ -56,6 +56,7 @@ def _target_api_request(
     content: bytes,
     request_path: str,
     base_vws_url: str,
+    # timeout_seconds: int,
 ) -> Response:
     """
     Make a request to the Vuforia Target API.
@@ -71,6 +72,7 @@ def _target_api_request(
         request_path: The path to the endpoint which will be used in the
             request.
         base_vws_url: The base URL for the VWS API.
+        timeout_seconds: The number of seconds to wait for a response before
 
     Returns:
         The response to the request made by `requests`.
