@@ -94,6 +94,30 @@ class TestAddTarget:
                 application_metadata=None,
             )
 
+    @staticmethod
+    def test_timeout(
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        # TODO use a mock VWS with a custom "response_delay"
+        # (a feature which doesn't currently exist in the mock)
+        base_vws_url = 'http://example.com'
+        with MockVWS(base_vws_url=base_vws_url) as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                base_vws_url=base_vws_url,
+            )
+
+            vws_client.add_target(
+                name="example name",
+                width=1,
+                image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
+            )
+
 
 class TestCustomBaseVWSURL:
     """

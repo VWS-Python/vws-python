@@ -283,7 +283,7 @@ class VWS:
             content=content,
             request_path='/targets',
             expected_result_code='TargetCreated',
-            timeout_seconds=30,
+            timeout_seconds=5,
         )
 
         return str(response.json()['target_id'])
