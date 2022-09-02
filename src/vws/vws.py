@@ -56,7 +56,7 @@ def _target_api_request(
     content: bytes,
     request_path: str,
     base_vws_url: str,
-    # timeout_seconds: int,
+    timeout_seconds: int,
 ) -> Response:
     """
     Make a request to the Vuforia Target API.
@@ -73,9 +73,13 @@ def _target_api_request(
             request.
         base_vws_url: The base URL for the VWS API.
         timeout_seconds: The number of seconds to wait for a response before
+            raising an exception.
 
     Returns:
         The response to the request made by `requests`.
+
+    Raises:
+        requests.exceptions.Timeout: The request timed out.
     """
     date_string = rfc_1123_date()
     content_type = 'application/json'
@@ -103,6 +107,7 @@ def _target_api_request(
         url=url,
         headers=headers,
         data=content,
+        timeout=timeout_seconds,
     )
 
     return response
@@ -135,6 +140,7 @@ class VWS:
         content: bytes,
         request_path: str,
         expected_result_code: str,
+        timeout_seconds: int,
     ) -> Response:
         """
         Make a request to the Vuforia Target API.
@@ -149,6 +155,8 @@ class VWS:
                 request.
             expected_result_code: See
                 https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
+            timeout_seconds: The number of seconds to wait for a response
+                before raising an exception.
 
         Returns:
             The response to the request made by `requests`.
@@ -161,6 +169,7 @@ class VWS:
             json.decoder.JSONDecodeError: The server did not respond with valid
                 JSON. This may happen if the server address is not a valid
                 Vuforia server.
+            requests.exceptions.Timeout: The request timed out.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
@@ -169,6 +178,7 @@ class VWS:
             content=content,
             request_path=request_path,
             base_vws_url=self._base_vws_url,
+            timeout_seconds=timeout_seconds,
         )
 
         if 'Oops, an error occurred' in response.text:
@@ -253,6 +263,7 @@ class VWS:
                 Vuforia returns an HTML page with the text "Oops, an error
                 occurred". This has been seen to happen when the given name
                 includes a bad character.
+            requests.exceptions.Timeout: The request timed out.
         """
         image_data = image.getvalue()
         image_data_encoded = base64.b64encode(image_data).decode('ascii')
@@ -272,6 +283,7 @@ class VWS:
             content=content,
             request_path='/targets',
             expected_result_code='TargetCreated',
+            timeout_seconds=30,
         )
 
         return str(response.json()['target_id'])
@@ -299,12 +311,14 @@ class VWS:
                 does not match a target in the database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         response = self._make_request(
             method='GET',
             content=b'',
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
+            timeout_seconds=30,
         )
 
         result_data = response.json()
@@ -349,6 +363,7 @@ class VWS:
                 does not match a target in the database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         while True:
             report = self.get_target_summary_report(target_id=target_id)
@@ -391,6 +406,7 @@ class VWS:
                 does not match a target in the database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
 
         # func_timeout does not have type hints.
@@ -424,12 +440,14 @@ class VWS:
                 known database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         response = self._make_request(
             method='GET',
             content=b'',
             request_path='/targets',
             expected_result_code='Success',
+            timeout_seconds=30,
         )
 
         return list(response.json()['results'])
@@ -457,12 +475,14 @@ class VWS:
                 does not match a target in the database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         response = self._make_request(
             method='GET',
             content=b'',
             request_path=f'/summary/{target_id}',
             expected_result_code='Success',
+            timeout_seconds=30,
         )
 
         result_data = dict(response.json())
@@ -496,12 +516,14 @@ class VWS:
                 known database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         response = self._make_request(
             method='GET',
             content=b'',
             request_path='/summary',
             expected_result_code='Success',
+            timeout_seconds=30,
         )
 
         response_data = dict(response.json())
@@ -543,12 +565,14 @@ class VWS:
                 target is in the processing state.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         self._make_request(
             method='DELETE',
             content=b'',
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
+            timeout_seconds=30,
         )
 
     def get_duplicate_targets(self, target_id: str) -> list[str]:
@@ -576,12 +600,14 @@ class VWS:
                 inactive.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         response = self._make_request(
             method='GET',
             content=b'',
             request_path=f'/duplicates/{target_id}',
             expected_result_code='Success',
+            timeout_seconds=30,
         )
 
         return list(response.json()['similar_targets'])
@@ -635,6 +661,7 @@ class VWS:
                 inactive.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            requests.exceptions.Timeout: The request timed out.
         """
         data: Dict[str, str | bool | float | int] = {}
 
@@ -662,4 +689,5 @@ class VWS:
             content=content,
             request_path=f'/targets/{target_id}',
             expected_result_code='Success',
+            timeout_seconds=30,
         )

@@ -4,11 +4,10 @@ Changelog
 Next
 ----
 
-2021.03.28.2
-------------
+* Add optional timeout for all requests, defaulting to 30 seconds.
 
-2021.03.28.1
-------------
+# TODO: Add tests for timeout
+# TODO: Make customisable
 
 2021.03.28.0
 ------------
