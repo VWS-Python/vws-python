@@ -101,6 +101,8 @@ def _target_api_request(
         url=url,
         headers=headers,
         data=content,
+        # We should make the timeout customizable.
+        timeout=None,
     )
 
     return response

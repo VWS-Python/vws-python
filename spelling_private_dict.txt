@@ -32,6 +32,7 @@ changelog
 chunked
 cmyk
 connectionerror
+customizable
 dataclasses
 datetime
 decodable

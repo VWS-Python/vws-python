@@ -17,10 +17,10 @@ freezegun==1.2.2
 furo==2022.9.29
 isort==5.10.1  # Lint imports
 mypy==0.982  # Type checking
-pip_check_reqs==2.3.2
+pip_check_reqs==2.4.0
 pydocstyle==6.1.1  # Lint docstrings
 pyenchant==3.2.2  # Bindings for a spellchecking sytem
-pylint==2.14.5  # Lint
+pylint==2.15.5  # Lint
 pyroma==4.0  # Packaging best practices checker
 pytest-cov==4.0.0  # Measure code coverage
 pytest==7.2.0  # Test runners

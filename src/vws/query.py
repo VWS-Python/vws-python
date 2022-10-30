@@ -135,6 +135,8 @@ class CloudRecoService:
             url=urljoin(base=self._base_vwq_url, url=request_path),
             headers=headers,
             data=content,
+            # We should make the timeout customizable.
+            timeout=None,
         )
 
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
