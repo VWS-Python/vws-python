@@ -9,7 +9,6 @@ import io
 import json
 from datetime import date
 from time import sleep
-from typing import Dict
 from urllib.parse import urljoin
 
 import requests
@@ -636,7 +635,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
         """
-        data: Dict[str, str | bool | float | int] = {}
+        data: dict[str, str | bool | float | int] = {}
 
         if name is not None:
             data['name'] = name
