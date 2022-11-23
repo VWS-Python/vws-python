@@ -46,7 +46,6 @@ jobs:
           # issues - we have seen packages from this cache be cause trouble with
           # pip-extra-reqs.
           python -m pip install --ignore-installed --upgrade --editable .[dev]
-          sudo apt-get install -y enchant
 
       - name: "Lint"
         run: |
