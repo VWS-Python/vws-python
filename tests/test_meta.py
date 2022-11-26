@@ -12,11 +12,11 @@ def test_init_files() -> None:
     If ``__init__`` files are missing, linters may not run on all files that
     they should run on.
     """
-    directories = (Path('src'), Path('tests'))
+    directories = (Path("src"), Path("tests"))
 
     for directory in directories:
-        files = directory.glob('**/*.py')
+        files = directory.glob("**/*.py")
         for python_file in files:
             parent = python_file.parent
-            expected_init = parent / '__init__.py'
+            expected_init = parent / "__init__.py"
             assert expected_init.exists()

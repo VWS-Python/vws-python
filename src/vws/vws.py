@@ -75,7 +75,7 @@ def _target_api_request(
         The response to the request made by `requests`.
     """
     date_string = rfc_1123_date()
-    content_type = 'application/json'
+    content_type = "application/json"
 
     signature_string = authorization_header(
         access_key=server_access_key,
@@ -88,9 +88,9 @@ def _target_api_request(
     )
 
     headers = {
-        'Authorization': signature_string,
-        'Date': date_string,
-        'Content-Type': content_type,
+        "Authorization": signature_string,
+        "Date": date_string,
+        "Content-Type": content_type,
     }
 
     url = urljoin(base=base_vws_url, url=request_path)
@@ -116,7 +116,7 @@ class VWS:
         self,
         server_access_key: str,
         server_secret_key: str,
-        base_vws_url: str = 'https://vws.vuforia.com',
+        base_vws_url: str = "https://vws.vuforia.com",
     ) -> None:
         """
         Args:
@@ -170,31 +170,31 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        if 'Oops, an error occurred' in response.text:
+        if "Oops, an error occurred" in response.text:
             raise UnknownVWSErrorPossiblyBadName
 
-        result_code = response.json()['result_code']
+        result_code = response.json()["result_code"]
 
         if result_code == expected_result_code:
             return response
 
         exception = {
-            'AuthenticationFailure': AuthenticationFailure,
-            'BadImage': BadImage,
-            'DateRangeError': DateRangeError,
-            'Fail': Fail,
-            'ImageTooLarge': ImageTooLarge,
-            'MetadataTooLarge': MetadataTooLarge,
-            'ProjectHasNoAPIAccess': ProjectHasNoAPIAccess,
-            'ProjectInactive': ProjectInactive,
-            'ProjectSuspended': ProjectSuspended,
-            'RequestQuotaReached': RequestQuotaReached,
-            'RequestTimeTooSkewed': RequestTimeTooSkewed,
-            'TargetNameExist': TargetNameExist,
-            'TargetQuotaReached': TargetQuotaReached,
-            'TargetStatusNotSuccess': TargetStatusNotSuccess,
-            'TargetStatusProcessing': TargetStatusProcessing,
-            'UnknownTarget': UnknownTarget,
+            "AuthenticationFailure": AuthenticationFailure,
+            "BadImage": BadImage,
+            "DateRangeError": DateRangeError,
+            "Fail": Fail,
+            "ImageTooLarge": ImageTooLarge,
+            "MetadataTooLarge": MetadataTooLarge,
+            "ProjectHasNoAPIAccess": ProjectHasNoAPIAccess,
+            "ProjectInactive": ProjectInactive,
+            "ProjectSuspended": ProjectSuspended,
+            "RequestQuotaReached": RequestQuotaReached,
+            "RequestTimeTooSkewed": RequestTimeTooSkewed,
+            "TargetNameExist": TargetNameExist,
+            "TargetQuotaReached": TargetQuotaReached,
+            "TargetStatusNotSuccess": TargetStatusNotSuccess,
+            "TargetStatusProcessing": TargetStatusProcessing,
+            "UnknownTarget": UnknownTarget,
         }[result_code]
 
         raise exception(response=response)
@@ -254,26 +254,26 @@ class VWS:
                 includes a bad character.
         """
         image_data = image.getvalue()
-        image_data_encoded = base64.b64encode(image_data).decode('ascii')
+        image_data_encoded = base64.b64encode(image_data).decode("ascii")
 
         data = {
-            'name': name,
-            'width': width,
-            'image': image_data_encoded,
-            'active_flag': active_flag,
-            'application_metadata': application_metadata,
+            "name": name,
+            "width": width,
+            "image": image_data_encoded,
+            "active_flag": active_flag,
+            "application_metadata": application_metadata,
         }
 
-        content = bytes(json.dumps(data), encoding='utf-8')
+        content = bytes(json.dumps(data), encoding="utf-8")
 
         response = self._make_request(
-            method='POST',
+            method="POST",
             content=content,
-            request_path='/targets',
-            expected_result_code='TargetCreated',
+            request_path="/targets",
+            expected_result_code="TargetCreated",
         )
 
-        return str(response.json()['target_id'])
+        return str(response.json()["target_id"])
 
     def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
         """
@@ -300,22 +300,22 @@ class VWS:
                 error with the time sent to Vuforia.
         """
         response = self._make_request(
-            method='GET',
-            content=b'',
-            request_path=f'/targets/{target_id}',
-            expected_result_code='Success',
+            method="GET",
+            content=b"",
+            request_path=f"/targets/{target_id}",
+            expected_result_code="Success",
         )
 
         result_data = response.json()
-        status = TargetStatuses(result_data['status'])
-        target_record_dict = dict(result_data['target_record'])
+        status = TargetStatuses(result_data["status"])
+        target_record_dict = dict(result_data["target_record"])
         target_record = TargetRecord(
-            target_id=target_record_dict['target_id'],
-            active_flag=target_record_dict['active_flag'],
-            name=target_record_dict['name'],
-            width=target_record_dict['width'],
-            tracking_rating=target_record_dict['tracking_rating'],
-            reco_rating=target_record_dict['reco_rating'],
+            target_id=target_record_dict["target_id"],
+            active_flag=target_record_dict["active_flag"],
+            name=target_record_dict["name"],
+            width=target_record_dict["width"],
+            tracking_rating=target_record_dict["tracking_rating"],
+            reco_rating=target_record_dict["reco_rating"],
         )
         target_status_and_record = TargetStatusAndRecord(
             status=status,
@@ -425,13 +425,13 @@ class VWS:
                 error with the time sent to Vuforia.
         """
         response = self._make_request(
-            method='GET',
-            content=b'',
-            request_path='/targets',
-            expected_result_code='Success',
+            method="GET",
+            content=b"",
+            request_path="/targets",
+            expected_result_code="Success",
         )
 
-        return list(response.json()['results'])
+        return list(response.json()["results"])
 
     def get_target_summary_report(self, target_id: str) -> TargetSummaryReport:
         """
@@ -458,23 +458,23 @@ class VWS:
                 error with the time sent to Vuforia.
         """
         response = self._make_request(
-            method='GET',
-            content=b'',
-            request_path=f'/summary/{target_id}',
-            expected_result_code='Success',
+            method="GET",
+            content=b"",
+            request_path=f"/summary/{target_id}",
+            expected_result_code="Success",
         )
 
         result_data = dict(response.json())
         return TargetSummaryReport(
-            status=TargetStatuses(result_data['status']),
-            database_name=result_data['database_name'],
-            target_name=result_data['target_name'],
-            upload_date=date.fromisoformat(result_data['upload_date']),
-            active_flag=result_data['active_flag'],
-            tracking_rating=result_data['tracking_rating'],
-            total_recos=result_data['total_recos'],
-            current_month_recos=result_data['current_month_recos'],
-            previous_month_recos=result_data['previous_month_recos'],
+            status=TargetStatuses(result_data["status"]),
+            database_name=result_data["database_name"],
+            target_name=result_data["target_name"],
+            upload_date=date.fromisoformat(result_data["upload_date"]),
+            active_flag=result_data["active_flag"],
+            tracking_rating=result_data["tracking_rating"],
+            total_recos=result_data["total_recos"],
+            current_month_recos=result_data["current_month_recos"],
+            previous_month_recos=result_data["previous_month_recos"],
         )
 
     def get_database_summary_report(self) -> DatabaseSummaryReport:
@@ -497,26 +497,26 @@ class VWS:
                 error with the time sent to Vuforia.
         """
         response = self._make_request(
-            method='GET',
-            content=b'',
-            request_path='/summary',
-            expected_result_code='Success',
+            method="GET",
+            content=b"",
+            request_path="/summary",
+            expected_result_code="Success",
         )
 
         response_data = dict(response.json())
         database_summary_report = DatabaseSummaryReport(
-            active_images=response_data['active_images'],
-            current_month_recos=response_data['current_month_recos'],
-            failed_images=response_data['failed_images'],
-            inactive_images=response_data['inactive_images'],
-            name=response_data['name'],
-            previous_month_recos=response_data['previous_month_recos'],
-            processing_images=response_data['processing_images'],
-            reco_threshold=response_data['reco_threshold'],
-            request_quota=response_data['request_quota'],
-            request_usage=response_data['request_usage'],
-            target_quota=response_data['target_quota'],
-            total_recos=response_data['total_recos'],
+            active_images=response_data["active_images"],
+            current_month_recos=response_data["current_month_recos"],
+            failed_images=response_data["failed_images"],
+            inactive_images=response_data["inactive_images"],
+            name=response_data["name"],
+            previous_month_recos=response_data["previous_month_recos"],
+            processing_images=response_data["processing_images"],
+            reco_threshold=response_data["reco_threshold"],
+            request_quota=response_data["request_quota"],
+            request_usage=response_data["request_usage"],
+            target_quota=response_data["target_quota"],
+            total_recos=response_data["total_recos"],
         )
         return database_summary_report
 
@@ -544,10 +544,10 @@ class VWS:
                 error with the time sent to Vuforia.
         """
         self._make_request(
-            method='DELETE',
-            content=b'',
-            request_path=f'/targets/{target_id}',
-            expected_result_code='Success',
+            method="DELETE",
+            content=b"",
+            request_path=f"/targets/{target_id}",
+            expected_result_code="Success",
         )
 
     def get_duplicate_targets(self, target_id: str) -> list[str]:
@@ -577,13 +577,13 @@ class VWS:
                 error with the time sent to Vuforia.
         """
         response = self._make_request(
-            method='GET',
-            content=b'',
-            request_path=f'/duplicates/{target_id}',
-            expected_result_code='Success',
+            method="GET",
+            content=b"",
+            request_path=f"/duplicates/{target_id}",
+            expected_result_code="Success",
         )
 
-        return list(response.json()['similar_targets'])
+        return list(response.json()["similar_targets"])
 
     def update_target(
         self,
@@ -638,27 +638,27 @@ class VWS:
         data: dict[str, str | bool | float | int] = {}
 
         if name is not None:
-            data['name'] = name
+            data["name"] = name
 
         if width is not None:
-            data['width'] = width
+            data["width"] = width
 
         if image is not None:
             image_data = image.getvalue()
-            image_data_encoded = base64.b64encode(image_data).decode('ascii')
-            data['image'] = image_data_encoded
+            image_data_encoded = base64.b64encode(image_data).decode("ascii")
+            data["image"] = image_data_encoded
 
         if active_flag is not None:
-            data['active_flag'] = active_flag
+            data["active_flag"] = active_flag
 
         if application_metadata is not None:
-            data['application_metadata'] = application_metadata
+            data["application_metadata"] = application_metadata
 
-        content = bytes(json.dumps(data), encoding='utf-8')
+        content = bytes(json.dumps(data), encoding="utf-8")
 
         self._make_request(
-            method='PUT',
+            method="PUT",
             content=content,
-            request_path=f'/targets/{target_id}',
-            expected_result_code='Success',
+            request_path=f"/targets/{target_id}",
+            expected_result_code="Success",
         )

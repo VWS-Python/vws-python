@@ -38,7 +38,7 @@ class TestQuery:
         Details of matching targets are returned.
         """
         target_id = vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
@@ -60,7 +60,7 @@ class TestCustomBaseVWQURL:
         It is possible to use query a target to a database under a custom VWQ
         URL.
         """
-        base_vwq_url = 'http://example.com'
+        base_vwq_url = "http://example.com"
         with MockVWS(base_vwq_url=base_vwq_url) as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -70,7 +70,7 @@ class TestCustomBaseVWQURL:
             )
 
             target_id = vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,

@@ -37,7 +37,7 @@ class CloudRecoService:
         self,
         client_access_key: str,
         client_secret_key: str,
-        base_vwq_url: str = 'https://cloudreco.vuforia.com',
+        base_vwq_url: str = "https://cloudreco.vuforia.com",
     ) -> None:
         """
         Args:
@@ -95,23 +95,23 @@ class CloudRecoService:
         """  # noqa: E501
         image_content = image.getvalue()
         body = {
-            'image': ('image.jpeg', image_content, 'image/jpeg'),
-            'max_num_results': (None, int(max_num_results), 'text/plain'),
-            'include_target_data': (
+            "image": ("image.jpeg", image_content, "image/jpeg"),
+            "max_num_results": (None, int(max_num_results), "text/plain"),
+            "include_target_data": (
                 None,
                 include_target_data.value,
-                'text/plain',
+                "text/plain",
             ),
         }
         date = rfc_1123_date()
-        request_path = '/v1/query'
+        request_path = "/v1/query"
         (
             content,
             content_type_header,
         ) = encode_multipart_formdata(  # type:ignore
             fields=body,
         )
-        method = 'POST'
+        method = "POST"
 
         authorization_string = authorization_header(
             access_key=self._client_access_key,
@@ -119,15 +119,15 @@ class CloudRecoService:
             method=method,
             content=content,
             # Note that this is not the actual Content-Type header value sent.
-            content_type='multipart/form-data',
+            content_type="multipart/form-data",
             date=date,
             request_path=request_path,
         )
 
         headers = {
-            'Authorization': authorization_string,
-            'Date': date,
-            'Content-Type': content_type_header,
+            "Authorization": authorization_string,
+            "Date": date,
+            "Content-Type": content_type_header,
         }
 
         response = requests.request(
@@ -142,41 +142,41 @@ class CloudRecoService:
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
             raise RequestEntityTooLarge
 
-        if 'Integer out of range' in response.text:
+        if "Integer out of range" in response.text:
             raise MaxNumResultsOutOfRange(response=response)
 
-        if 'No content to map due to end-of-input' in response.text:
+        if "No content to map due to end-of-input" in response.text:
             raise ActiveMatchingTargetsDeleteProcessing
 
-        result_code = response.json()['result_code']
-        if result_code != 'Success':
+        result_code = response.json()["result_code"]
+        if result_code != "Success":
             exception = {
-                'AuthenticationFailure': AuthenticationFailure,
-                'BadImage': BadImage,
-                'InactiveProject': InactiveProject,
-                'RequestTimeTooSkewed': RequestTimeTooSkewed,
+                "AuthenticationFailure": AuthenticationFailure,
+                "BadImage": BadImage,
+                "InactiveProject": InactiveProject,
+                "RequestTimeTooSkewed": RequestTimeTooSkewed,
             }[result_code]
             raise exception(response=response)
 
         result = []
-        result_list = list(response.json()['results'])
+        result_list = list(response.json()["results"])
         for item in result_list:
             target_data: TargetData | None = None
-            if 'target_data' in item:
-                target_data_dict = item['target_data']
-                metadata = target_data_dict['application_metadata']
-                timestamp_string = target_data_dict['target_timestamp']
+            if "target_data" in item:
+                target_data_dict = item["target_data"]
+                metadata = target_data_dict["application_metadata"]
+                timestamp_string = target_data_dict["target_timestamp"]
                 target_timestamp = datetime.datetime.utcfromtimestamp(
                     timestamp_string,
                 )
                 target_data = TargetData(
-                    name=target_data_dict['name'],
+                    name=target_data_dict["name"],
                     application_metadata=metadata,
                     target_timestamp=target_timestamp,
                 )
 
             query_result = QueryResult(
-                target_id=item['target_id'],
+                target_id=item["target_id"],
                 target_data=target_data,
             )
 

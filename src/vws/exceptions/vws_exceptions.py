@@ -24,7 +24,7 @@ class UnknownTarget(VWSException):
         path = urlparse(self.response.url).path
         # Every HTTP path which can raise this error is in the format
         # `/something/{target_id}`.
-        return path.split(sep='/', maxsplit=2)[-1]
+        return path.split(sep="/", maxsplit=2)[-1]
 
 
 class Fail(VWSException):
@@ -70,7 +70,7 @@ class TargetStatusProcessing(VWSException):
         path = urlparse(self.response.url).path
         # Every HTTP path which can raise this error is in the format
         # `/something/{target_id}`.
-        return path.split(sep='/', maxsplit=2)[-1]
+        return path.split(sep="/", maxsplit=2)[-1]
 
 
 # This is not simulated by the mock.
@@ -137,9 +137,9 @@ class TargetNameExist(VWSException):
         """
         The target name which already exists.
         """
-        response_body = self.response.request.body or b''
+        response_body = self.response.request.body or b""
         request_json = json.loads(response_body)
-        return str(request_json['name'])
+        return str(request_json["name"])
 
 
 class ImageTooLarge(VWSException):
@@ -163,4 +163,4 @@ class TargetStatusNotSuccess(VWSException):
         path = urlparse(self.response.url).path
         # Every HTTP path which can raise this error is in the format
         # `/something/{target_id}`.
-        return path.split(sep='/', maxsplit=2)[-1]
+        return path.split(sep="/", maxsplit=2)[-1]

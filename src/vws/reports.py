@@ -38,9 +38,9 @@ class TargetStatuses(Enum):
     https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Retrieve-a-Target-Record
     """
 
-    PROCESSING = 'processing'
-    SUCCESS = 'success'
-    FAILED = 'failed'
+    PROCESSING = "processing"
+    SUCCESS = "success"
+    FAILED = "failed"
 
 
 @dataclass
