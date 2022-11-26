@@ -44,7 +44,7 @@ def test_image_too_large(
     """
     with pytest.raises(ImageTooLarge) as exc:
         vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=png_too_large,
             active_flag=True,
@@ -59,7 +59,7 @@ def test_invalid_given_id(vws_client: VWS) -> None:
     Giving an invalid ID to a helper which requires a target ID to be given
     causes an ``UnknownTarget`` exception to be raised.
     """
-    target_id = '12345abc'
+    target_id = "12345abc"
     with pytest.raises(UnknownTarget) as exc:
         vws_client.delete_target(target_id=target_id)
     assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
@@ -96,13 +96,13 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
     """
     with MockVWS():
         vws_client = VWS(
-            server_access_key='a',
-            server_secret_key='a',
+            server_access_key="a",
+            server_secret_key="a",
         )
 
         with pytest.raises(Fail) as exc:
             vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,
@@ -116,10 +116,10 @@ def test_bad_image(vws_client: VWS) -> None:
     """
     A ``BadImage`` exception is raised when a non-image is given.
     """
-    not_an_image = io.BytesIO(b'Not an image')
+    not_an_image = io.BytesIO(b"Not an image")
     with pytest.raises(BadImage) as exc:
         vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=not_an_image,
             active_flag=True,
@@ -138,7 +138,7 @@ def test_target_name_exist(
     the same name.
     """
     vws_client.add_target(
-        name='x',
+        name="x",
         width=1,
         image=high_quality_image,
         active_flag=True,
@@ -146,7 +146,7 @@ def test_target_name_exist(
     )
     with pytest.raises(TargetNameExist) as exc:
         vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
@@ -154,7 +154,7 @@ def test_target_name_exist(
         )
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
-    assert exc.value.target_name == 'x'
+    assert exc.value.target_name == "x"
 
 
 def test_project_inactive(high_quality_image: io.BytesIO) -> None:
@@ -172,7 +172,7 @@ def test_project_inactive(high_quality_image: io.BytesIO) -> None:
 
         with pytest.raises(ProjectInactive) as exc:
             vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,
@@ -191,7 +191,7 @@ def test_target_status_processing(
     target which is processing.
     """
     target_id = vws_client.add_target(
-        name='x',
+        name="x",
         width=1,
         image=high_quality_image,
         active_flag=True,
@@ -215,11 +215,11 @@ def test_metadata_too_large(
     """
     with pytest.raises(MetadataTooLarge) as exc:
         vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
-            application_metadata='a' * 1024 * 1024 * 10,
+            application_metadata="a" * 1024 * 1024 * 10,
         )
 
     assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
@@ -234,7 +234,7 @@ def test_request_time_too_skewed(
     more than five minutes different from the server time.
     """
     target_id = vws_client.add_target(
-        name='x',
+        name="x",
         width=1,
         image=high_quality_image,
         active_flag=True,
@@ -268,7 +268,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
 
     vws_client = VWS(
         server_access_key=database.server_access_key,
-        server_secret_key='a',
+        server_secret_key="a",
     )
 
     with MockVWS() as mock:
@@ -276,7 +276,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
 
         with pytest.raises(AuthenticationFailure) as exc:
             vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,
@@ -295,7 +295,7 @@ def test_target_status_not_success(
     which has a status which is not "Success".
     """
     target_id = vws_client.add_target(
-        name='x',
+        name="x",
         width=1,
         image=high_quality_image,
         active_flag=True,
@@ -343,12 +343,12 @@ def test_base_exception(
     ``VWSException``s has a response property.
     """
     with pytest.raises(VWSException) as exc:
-        vws_client.get_target_record(target_id='a')
+        vws_client.get_target_record(target_id="a")
 
     assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
 
     vws_client.add_target(
-        name='x',
+        name="x",
         width=1,
         image=high_quality_image,
         active_flag=True,

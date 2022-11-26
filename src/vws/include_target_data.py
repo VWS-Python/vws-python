@@ -11,6 +11,6 @@ class CloudRecoIncludeTargetData(Enum):
     ``CloudRecoService.query``.
     """
 
-    TOP = 'top'
-    NONE = 'none'
-    ALL = 'all'
+    TOP = "top"
+    NONE = "none"
+    ALL = "all"

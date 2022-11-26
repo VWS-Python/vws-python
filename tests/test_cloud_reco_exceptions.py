@@ -42,7 +42,7 @@ def test_too_many_max_results(
 
     expected_value = (
         "Integer out of range (51) in form data part 'max_result'. "
-        'Accepted range is from 1 to 50 (inclusive).'
+        "Accepted range is from 1 to 50 (inclusive)."
     )
     assert str(exc.value) == exc.value.response.text == expected_value
 
@@ -84,7 +84,7 @@ def test_active_matching_targets_delete_processing(
     target which has recently been deleted is matched.
     """
     target_id = vws_client.add_target(
-        name='x',
+        name="x",
         width=1,
         image=high_quality_image,
         active_flag=True,
@@ -105,7 +105,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     database = VuforiaDatabase()
     cloud_reco_client = CloudRecoService(
         client_access_key=database.client_access_key,
-        client_secret_key='a',
+        client_secret_key="a",
     )
     with MockVWS() as mock:
         mock.add_database(database=database)

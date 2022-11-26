@@ -31,8 +31,8 @@ class TestAddTarget:
     """
 
     @staticmethod
-    @pytest.mark.parametrize('application_metadata', [None, b'a'])
-    @pytest.mark.parametrize('active_flag', [True, False])
+    @pytest.mark.parametrize("application_metadata", [None, b"a"])
+    @pytest.mark.parametrize("active_flag", [True, False])
     def test_add_target(
         vws_client: VWS,
         high_quality_image: io.BytesIO,
@@ -43,13 +43,13 @@ class TestAddTarget:
         """
         No exception is raised when adding one target.
         """
-        name = 'x'
+        name = "x"
         width = 1
         if application_metadata is None:
             encoded_metadata = None
         else:
             encoded_metadata_bytes = base64.b64encode(application_metadata)
-            encoded_metadata = encoded_metadata_bytes.decode('utf-8')
+            encoded_metadata = encoded_metadata_bytes.decode("utf-8")
 
         target_id = vws_client.add_target(
             name=name,
@@ -85,7 +85,7 @@ class TestAddTarget:
 
         This demonstrates that the image seek position is not changed.
         """
-        for name in ('a', 'b'):
+        for name in ("a", "b"):
             vws_client.add_target(
                 name=name,
                 width=1,
@@ -106,7 +106,7 @@ class TestCustomBaseVWSURL:
         It is possible to use add a target to a database under a custom VWS
         URL.
         """
-        base_vws_url = 'http://example.com'
+        base_vws_url = "http://example.com"
         with MockVWS(base_vws_url=base_vws_url) as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -117,7 +117,7 @@ class TestCustomBaseVWSURL:
             )
 
             vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,
@@ -139,14 +139,14 @@ class TestListTargets:
         It is possible to get a list of target IDs.
         """
         id_1 = vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
             application_metadata=None,
         )
         id_2 = vws_client.add_target(
-            name='a',
+            name="a",
             width=1,
             image=high_quality_image,
             active_flag=True,
@@ -169,7 +169,7 @@ class TestDelete:
         It is possible to delete a target.
         """
         target_id = vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
@@ -195,7 +195,7 @@ class TestGetTargetSummaryReport:
         """
         Details of a target are returned by ``get_target_summary_report``.
         """
-        date = '2018-04-25'
+        date = "2018-04-25"
         target_name = uuid.uuid4().hex
         with freeze_time(date):
             target_id = vws_client.add_target(
@@ -265,7 +265,7 @@ class TestGetTargetRecord:
         Details of a target are returned by ``get_target_record``.
         """
         target_id = vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
@@ -276,10 +276,10 @@ class TestGetTargetRecord:
         expected_target_record = TargetRecord(
             target_id=target_id,
             active_flag=True,
-            name='x',
+            name="x",
             width=1,
             tracking_rating=-1,
-            reco_rating='',
+            reco_rating="",
         )
 
         assert result.target_record == expected_target_record
@@ -300,7 +300,7 @@ class TestWaitForTargetProcessed:
         It is possible to wait until a target is processed.
         """
         target_id = vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
@@ -328,7 +328,7 @@ class TestWaitForTargetProcessed:
             )
 
             target_id = vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,
@@ -380,7 +380,7 @@ class TestWaitForTargetProcessed:
             )
 
             target_id = vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,
@@ -430,7 +430,7 @@ class TestWaitForTargetProcessed:
             )
 
             target_id = vws_client.add_target(
-                name='x',
+                name="x",
                 width=1,
                 image=high_quality_image,
                 active_flag=True,
@@ -467,14 +467,14 @@ class TestGetDuplicateTargets:
         It is possible to get the IDs of similar targets.
         """
         target_id = vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
             application_metadata=None,
         )
         similar_target_id = vws_client.add_target(
-            name='a',
+            name="a",
             width=1,
             image=high_quality_image,
             active_flag=True,
@@ -521,7 +521,7 @@ class TestUpdateTarget:
 
         new_name = uuid.uuid4().hex
         new_width = random.uniform(a=0.01, b=50)
-        new_application_metadata = base64.b64encode(b'a').decode('ascii')
+        new_application_metadata = base64.b64encode(b"a").decode("ascii")
         vws_client.update_target(
             target_id=target_id,
             name=new_name,
@@ -560,7 +560,7 @@ class TestUpdateTarget:
         It is possible to give no update fields.
         """
         target_id = vws_client.add_target(
-            name='x',
+            name="x",
             width=1,
             image=high_quality_image,
             active_flag=True,
