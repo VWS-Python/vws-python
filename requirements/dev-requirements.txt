@@ -12,7 +12,7 @@ doc8==1.0.0
 dodgy==0.2.1  # Look for uploaded secrets
 flake8==6.0.0  # Lint
 freezegun==1.2.2
-furo==2022.9.29
+furo==2022.12.7
 isort==5.10.1  # Lint imports
 mypy==0.991  # Type checking
 pip_check_reqs==2.4.2
