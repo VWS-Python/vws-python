@@ -8,7 +8,7 @@ add-trailing-comma==2.4.0
 autoflake==2.0.0
 black==22.12.0
 check-manifest==0.49
-doc8==1.0.0
+doc8==1.1.1
 dodgy==0.2.1  # Look for uploaded secrets
 flake8==6.0.0  # Lint
 freezegun==1.2.2
