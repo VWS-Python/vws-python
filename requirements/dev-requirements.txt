@@ -16,7 +16,7 @@ furo==2022.12.7
 isort==5.11.4  # Lint imports
 mypy==0.991  # Type checking
 pip_check_reqs==2.4.3
-pydocstyle==6.1.1  # Lint docstrings
+pydocstyle==6.2.1  # Lint docstrings
 pyenchant==3.2.2  # Bindings for a spellchecking sytem
 pylint==2.15.5  # Lint
 pyroma==4.1  # Packaging best practices checker
