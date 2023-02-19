@@ -5,7 +5,6 @@ Classes for representing Vuforia reports.
 import datetime
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 
 @dataclass
@@ -32,8 +31,8 @@ class DatabaseSummaryReport:
 
 
 class TargetStatuses(Enum):
-    """
-    Constants representing VWS target statuses.
+    """Constants representing VWS target statuses.
+
     See the 'status' field in
     https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Retrieve-a-Target-Record
     """
@@ -87,7 +86,7 @@ class TargetData:
     """
 
     name: str
-    application_metadata: Optional[str]
+    application_metadata: str | None
     target_timestamp: datetime.datetime
 
 
@@ -101,7 +100,7 @@ class QueryResult:
     """
 
     target_id: str
-    target_data: Optional[TargetData]
+    target_data: TargetData | None
 
 
 @dataclass

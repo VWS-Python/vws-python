@@ -3,6 +3,7 @@ Tests for VWS exceptions.
 """
 
 import io
+import uuid
 from http import HTTPStatus
 
 import pytest
@@ -10,7 +11,6 @@ from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
-
 from vws import VWS
 from vws.exceptions.base_exceptions import VWSException
 from vws.exceptions.custom_exceptions import UnknownVWSErrorPossiblyBadName
@@ -96,8 +96,8 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
     """
     with MockVWS():
         vws_client = VWS(
-            server_access_key="a",
-            server_secret_key="a",
+            server_access_key=uuid.uuid4().hex,
+            server_secret_key=uuid.uuid4().hex,
         )
 
         with pytest.raises(Fail) as exc:
@@ -251,9 +251,11 @@ def test_request_time_too_skewed(
     # * At least one time check when processing the request
     #
     # >= 1 ticks are acceptable.
-    with freeze_time(auto_tick_seconds=time_difference_from_now):
-        with pytest.raises(RequestTimeTooSkewed) as exc:
-            vws_client.get_target_record(target_id=target_id)
+    with (
+        freeze_time(auto_tick_seconds=time_difference_from_now),
+        pytest.raises(RequestTimeTooSkewed) as exc,
+    ):
+        vws_client.get_target_record(target_id=target_id)
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
@@ -268,7 +270,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
 
     vws_client = VWS(
         server_access_key=database.server_access_key,
-        server_secret_key="a",
+        server_secret_key=uuid.uuid4().hex,
     )
 
     with MockVWS() as mock:

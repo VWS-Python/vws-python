@@ -95,7 +95,7 @@ def _target_api_request(
 
     url = urljoin(base=base_vws_url, url=request_path)
 
-    response = requests.request(
+    return requests.request(
         method=method,
         url=url,
         headers=headers,
@@ -103,8 +103,6 @@ def _target_api_request(
         # We should make the timeout customizable.
         timeout=None,
     )
-
-    return response
 
 
 class VWS:
@@ -204,8 +202,9 @@ class VWS:
         name: str,
         width: int | float,
         image: io.BytesIO,
-        active_flag: bool,
         application_metadata: str | None,
+        *,
+        active_flag: bool,
     ) -> str:
         """
         Add a target to a Vuforia Web Services database.
@@ -317,11 +316,10 @@ class VWS:
             tracking_rating=target_record_dict["tracking_rating"],
             reco_rating=target_record_dict["reco_rating"],
         )
-        target_status_and_record = TargetStatusAndRecord(
+        return TargetStatusAndRecord(
             status=status,
             target_record=target_record,
         )
-        return target_status_and_record
 
     def _wait_for_target_processed(
         self,
@@ -393,7 +391,7 @@ class VWS:
         """
 
         # func_timeout does not have type hints.
-        @func_set_timeout(timeout=timeout_seconds)  # type: ignore
+        @func_set_timeout(timeout=timeout_seconds)  # type: ignore[misc]
         def decorated() -> None:
             self._wait_for_target_processed(
                 target_id=target_id,
@@ -504,7 +502,7 @@ class VWS:
         )
 
         response_data = dict(response.json())
-        database_summary_report = DatabaseSummaryReport(
+        return DatabaseSummaryReport(
             active_images=response_data["active_images"],
             current_month_recos=response_data["current_month_recos"],
             failed_images=response_data["failed_images"],
@@ -518,7 +516,6 @@ class VWS:
             target_quota=response_data["target_quota"],
             total_recos=response_data["total_recos"],
         )
-        return database_summary_report
 
     def delete_target(self, target_id: str) -> None:
         """

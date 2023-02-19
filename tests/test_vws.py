@@ -14,7 +14,6 @@ import pytest
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
-
 from vws import VWS, CloudRecoService
 from vws.exceptions.custom_exceptions import TargetProcessingTimeout
 from vws.reports import (
@@ -36,9 +35,10 @@ class TestAddTarget:
     def test_add_target(
         vws_client: VWS,
         high_quality_image: io.BytesIO,
-        active_flag: bool,
         application_metadata: bytes | None,
         cloud_reco_client: CloudRecoService,
+        *,
+        active_flag: bool,
     ) -> None:
         """
         No exception is raised when adding one target.

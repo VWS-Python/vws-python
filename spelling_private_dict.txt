@@ -87,6 +87,7 @@ todo
 travis
 txt
 unmocked
+untyped
 url
 usefixtures
 validators

@@ -7,7 +7,6 @@ import uuid
 
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
-
 from vws import VWS, CloudRecoService
 from vws.include_target_data import CloudRecoIncludeTargetData
 
@@ -157,11 +156,12 @@ class TestMaxNumResults:
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
         vws_client.wait_for_target_processed(target_id=target_id_3)
+        max_num_results = 2
         matches = cloud_reco_client.query(
             image=high_quality_image,
-            max_num_results=2,
+            max_num_results=max_num_results,
         )
-        assert len(matches) == 2
+        assert len(matches) == max_num_results
 
 
 class TestIncludeTargetData:

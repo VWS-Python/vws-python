@@ -92,7 +92,7 @@ class CloudRecoService:
 
         Returns:
             An ordered list of target details of matching targets.
-        """  # noqa: E501
+        """
         image_content = image.getvalue()
         body = {
             "image": ("image.jpeg", image_content, "image/jpeg"),
@@ -108,7 +108,7 @@ class CloudRecoService:
         (
             content,
             content_type_header,
-        ) = encode_multipart_formdata(  # type:ignore
+        ) = encode_multipart_formdata(  # type:ignore[no-untyped-call]
             fields=body,
         )
         method = "POST"
@@ -166,8 +166,9 @@ class CloudRecoService:
                 target_data_dict = item["target_data"]
                 metadata = target_data_dict["application_metadata"]
                 timestamp_string = target_data_dict["target_timestamp"]
-                target_timestamp = datetime.datetime.utcfromtimestamp(
+                target_timestamp = datetime.datetime.fromtimestamp(
                     timestamp_string,
+                    tz=datetime.UTC,
                 )
                 target_data = TargetData(
                     name=target_data_dict["name"],
