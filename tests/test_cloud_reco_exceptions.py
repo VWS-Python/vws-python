@@ -4,13 +4,13 @@ Tests for exceptions raised when using the CloudRecoService.
 
 import io
 import time
+import uuid
 from http import HTTPStatus
 
 import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
-
 from vws import VWS, CloudRecoService
 from vws.exceptions.base_exceptions import CloudRecoException
 from vws.exceptions.cloud_reco_exceptions import (
@@ -105,7 +105,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     database = VuforiaDatabase()
     cloud_reco_client = CloudRecoService(
         client_access_key=database.client_access_key,
-        client_secret_key="a",
+        client_secret_key=uuid.uuid4().hex,
     )
     with MockVWS() as mock:
         mock.add_database(database=database)
