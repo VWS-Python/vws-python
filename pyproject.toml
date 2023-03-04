@@ -151,6 +151,9 @@ ignore_missing_imports = true
 requires = ["setuptools", "pip", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.distutils.bdist_wheel]
+universal = true
+
 [tool.ruff]
 select = ["ALL"]
 
@@ -194,3 +197,33 @@ ignore = [
     # Do not require tests to have a one-line summary.
     "D205",
 ]
+
+[project]
+authors = [ { name = "Adam Dangoor", email = "adamdangoor@gmail.com"} ]
+classifiers = [
+    "Operating System :: POSIX",
+    "Environment :: Web Environment",
+    "Programming Language :: Python :: 3.11",
+    "License :: OSI Approved :: MIT License",
+    "Development Status :: 5 - Production/Stable",
+]
+description = "Interact with the Vuforia Web Services (VWS) API."
+dynamic = ["version"]
+keywords = ["vuforia", "vws", "client"]
+license = { file = "LICENSE" }
+name = "vws-python"
+readme = { file = "README.rst", content-type = "text/x-rst"}
+requires-python = ">=3.10"
+
+[project.urls]
+Source = "https://github.com/VWS-Python/vws-python"
+Documentation = "https://vws-python.readthedocs.io/en/latest/"
+
+[tool.setuptools]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+vws = ["py.typed"]
