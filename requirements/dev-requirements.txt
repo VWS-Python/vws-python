@@ -10,7 +10,7 @@ doc8==1.1.1
 dodgy==0.2.1  # Look for uploaded secrets
 freezegun==1.2.2
 furo==2022.12.7
-mypy==1.0.1  # Type checking
+mypy==1.1.1  # Type checking
 pip_check_reqs==2.4.4
 pydocstyle==6.3.0  # Lint docstrings
 pyenchant==3.2.2  # Bindings for a spellchecking sytem
