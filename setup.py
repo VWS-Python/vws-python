@@ -4,5 +4,4 @@ from setuptools import setup
 
 setup(
     setup_requires=SETUP_REQUIRES,
-    extras_require={"dev": DEV_REQUIRES},
 )
