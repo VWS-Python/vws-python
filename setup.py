@@ -2,6 +2,4 @@
 
 from setuptools import setup
 
-setup(
-    setup_requires=SETUP_REQUIRES,
-)
+setup()
