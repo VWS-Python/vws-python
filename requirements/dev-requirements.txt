@@ -11,6 +11,7 @@ dodgy==0.2.1  # Look for uploaded secrets
 freezegun==1.2.2
 furo==2022.12.7
 mypy==1.1.1  # Type checking
+pdm==2.4.8
 pip_check_reqs==2.4.4
 pydocstyle==6.3.0  # Lint docstrings
 pyenchant==3.2.2  # Bindings for a spellchecking sytem
@@ -24,5 +25,4 @@ sphinx-prompt==1.5.0
 sphinxcontrib-spelling==8.0.0
 types-freezegun==1.1.10
 types-requests==2.28.11.15
-types-setuptools==67.6.0.0
 vulture==2.7

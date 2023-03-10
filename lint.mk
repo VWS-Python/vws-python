@@ -32,10 +32,12 @@ fix-ruff:
 
 .PHONY: pip-extra-reqs
 pip-extra-reqs:
+	pdm export --pyproject > requirements/requirements.txt
 	pip-extra-reqs --requirements-file=requirements/requirements.txt src/
 
 .PHONY: pip-missing-reqs
 pip-missing-reqs:
+	pdm export --pyproject > requirements/requirements.txt
 	pip-missing-reqs --requirements-file=requirements/requirements.txt src/
 
 .PHONY: pylint
