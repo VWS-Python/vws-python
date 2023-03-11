@@ -32,15 +32,15 @@ fix-ruff:
 
 .PHONY: pip-extra-reqs
 pip-extra-reqs:
-	pip-extra-reqs --requirements-file=requirements/requirements.txt src/
+	pdm export --pyproject | pip-extra-reqs --requirements-file=/dev/fd/0 src/
 
 .PHONY: pip-missing-reqs
 pip-missing-reqs:
-	pip-missing-reqs --requirements-file=requirements/requirements.txt src/
+	pdm export --pyproject | pip-missing-reqs --requirements-file=/dev/fd/0 src/
 
 .PHONY: pylint
 pylint:
-	pylint *.py src/ tests/ docs/
+	pylint src/ tests/ docs/
 
 .PHONY: pyroma
 pyroma:
