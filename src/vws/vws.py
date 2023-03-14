@@ -5,10 +5,10 @@ Tools for interacting with Vuforia APIs.
 from __future__ import annotations
 
 import base64
-import io
 import json
 from datetime import date
 from time import sleep
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 import requests
@@ -46,6 +46,9 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
+
+if TYPE_CHECKING:
+    import io
 
 
 def _target_api_request(

@@ -5,8 +5,8 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 from __future__ import annotations
 
 import datetime
-import io
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 import requests
@@ -26,6 +26,9 @@ from vws.exceptions.custom_exceptions import (
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
+
+if TYPE_CHECKING:
+    import io
 
 
 class CloudRecoService:
