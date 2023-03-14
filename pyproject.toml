@@ -218,7 +218,7 @@ dynamic = ["version"]
 keywords = ["vuforia", "vws", "client"]
 license = { file = "LICENSE" }
 name = "vws-python"
-readme = { file = "README.rst", content-type = "text/x-rst"}
+readme = { file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.10"
 dependencies = [
     "VWS-Auth-Tools",
