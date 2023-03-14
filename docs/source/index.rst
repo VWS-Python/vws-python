@@ -61,32 +61,57 @@ To write unit tests for code which uses this library, without using your Vuforia
 
    pip3 install vws-python-mock
 
-.. code:: python
+.. testsetup::
 
-   from mock_vws import MockVWS, VuforiaDatabase
+   import pathlib
+   import shutil
+
+   import vws_test_fixtures
+
+   # We rely on implementation details of the fixtures package.
+   image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
+   assert image.exists(), image.resolve()
+   new_image = pathlib.Path('high_quality_image.jpg')
+   shutil.copy(image, new_image)
+
+.. testcode::
+
+   import io
+   import pathlib
+
+   from mock_vws.database import VuforiaDatabase
+   from mock_vws import MockVWS
+   from vws import CloudRecoService, VWS
 
    with MockVWS() as mock:
        database = VuforiaDatabase()
        mock.add_database(database=database)
        vws_client = VWS(
-           server_access_key=server_access_key,
-           server_secret_key=server_secret_key,
+           server_access_key=database.server_access_key,
+           server_secret_key=database.server_secret_key,
        )
        cloud_reco_client = CloudRecoService(
-           client_access_key=client_access_key,
-           client_secret_key=client_secret_key,
+           client_access_key=database.client_access_key,
+           client_secret_key=database.client_secret_key,
        )
 
-       name = 'my_image_name'
 
-       with open('/path/to/image.png', 'rb') as my_image_file:
+       image = pathlib.Path('high_quality_image.jpg')
+       with image.open(mode='rb') as my_image_file:
            my_image = io.BytesIO(my_image_file.read())
 
        target_id = vws_client.add_target(
-           name=name,
+           name="example_image_name",
            width=1,
            image=my_image,
+           application_metadata=None,
+           active_flag=True,
        )
+
+.. testcleanup::
+
+   new_image = pathlib.Path('high_quality_image.jpg')
+   new_image.unlink()
 
 There are some differences between the mock and the real Vuforia.
 See https://vws-python-mock.readthedocs.io/en/latest/differences-to-vws.html for details.
