@@ -64,6 +64,19 @@ To write unit tests for code which uses this library, without using your Vuforia
 
    pip3 install vws-python-mock
 
+.. testsetup::
+
+   import pathlib
+   import shutil
+
+   import vws_test_fixtures
+
+   # We rely on implementation details of the fixtures package.
+   image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
+   assert image.exists(), image.resolve()
+   new_image = pathlib.Path('high_quality_image.jpg')
+   shutil.copy(image, new_image)
+
 .. testcode::
 
    import io
@@ -97,6 +110,11 @@ To write unit tests for code which uses this library, without using your Vuforia
            application_metadata=None,
            active_flag=True,
        )
+
+.. testcleanup::
+
+   new_image = pathlib.Path('high_quality_image.jpg')
+   new_image.unlink()
 
 There are some differences between the mock and the real Vuforia.
 See https://vws-python-mock.readthedocs.io/en/latest/differences-to-vws.html for details.
