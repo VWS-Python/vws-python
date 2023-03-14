@@ -61,3 +61,4 @@ spelling:
 .PHONY: doctest
 doctest:
 	$(MAKE) -C docs/ doctest SPHINXOPTS=$(SPHINXOPTS)
+	pytest --codeblocks README.md
