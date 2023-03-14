@@ -18,7 +18,11 @@ Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with a
 Getting Started
 ---------------
 
-.. code:: python
+.. testsetup:: simple
+
+   assert False
+   
+.. testcode:: simple
 
    import io
 
