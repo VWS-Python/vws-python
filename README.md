@@ -21,6 +21,33 @@ language.
 
 ## Getting Started
 
+<!--
+```python
+import pathlib
+import shutil
+
+import vws_test_fixtures
+from mock_vws import MockVWS
+from mock_vws.database import VuforiaDatabase
+
+mock = MockVWS(real_http=False)
+database = VuforiaDatabase(
+    server_access_key='[server-access-key]',
+    server_secret_key='[server-secret-key]',
+    client_access_key='[client-access-key]',
+    client_secret_key='[client-secret-key]',
+)
+mock.add_database(database=database)
+mock.__enter__()
+
+# We rely on implementation details of the fixtures package.
+image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
+assert image.exists(), image.resolve()
+new_image = pathlib.Path('high_quality_image.jpg')
+shutil.copy(image, new_image)
+```
+-->
+
 ```python
 import io
 import pathlib
@@ -58,6 +85,15 @@ matching_targets = cloud_reco_client.query(image=my_image)
 
 assert matching_targets[0].target_id == target_id
 ```
+
+<!--
+```python
+import pathlib
+
+new_image = pathlib.Path('high_quality_image.jpg')
+new_image.unlink()
+```
+-->
 
 ## Full Documentation
 
