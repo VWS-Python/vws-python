@@ -92,6 +92,9 @@ line-length = 79
 
 branch = true
 
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
+
 [tool.pytest.ini_options]
 
 xfail_strict = true
@@ -174,9 +177,6 @@ ignore = [
     "D205",
     "D212",
     "D213",
-    # Allow backslashes in a docstring.
-    # See https://click.palletsprojects.com/en/8.0.x/documentation/#preventing-rewrapping.
-    "D301",
     # It is too much work to make every docstring imperative.
     "D401",
     # We ignore some docstyle errors which do not apply to Google style
@@ -188,14 +188,9 @@ ignore = [
     "N818",
     # Ignore "too-many-*" errors as they seem to get in the way more than
     # helping.
-    "PLR0912",
     "PLR0913",
     # Allow 'assert' as we use it for tests.
     "S101",
-    # Allow imports which are only used for type checking to be outside type
-    # checking blocks.
-    "TCH002",
-    "TCH003",
 ]
 
 [tool.ruff.per-file-ignores]
