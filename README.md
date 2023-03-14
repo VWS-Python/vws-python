@@ -48,6 +48,8 @@ shutil.copy(image, new_image)
 ```
 -->
 
+<!--pytest-codeblocks:cont-->
+
 ```python
 import io
 import pathlib
@@ -86,12 +88,13 @@ matching_targets = cloud_reco_client.query(image=my_image)
 assert matching_targets[0].target_id == target_id
 ```
 
+<!--pytest-codeblocks:cont-->
+
 <!--
 ```python
-import pathlib
-
 new_image = pathlib.Path('high_quality_image.jpg')
 new_image.unlink()
+mock.__exit__()
 ```
 -->
 
