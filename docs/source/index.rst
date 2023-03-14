@@ -16,9 +16,6 @@ Usage
 
 See the :doc:`api-reference` for full usage details.
 
-.. TODO - make this a doctest with hidden mock as setup
-.. TODO - run doctest on CI
-
 .. code:: python
 
    import io

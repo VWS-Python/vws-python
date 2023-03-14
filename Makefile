@@ -10,6 +10,7 @@ lint: \
     black \
     check-manifest \
     doc8 \
+    doctest \
     linkcheck \
     mypy \
     ruff \
