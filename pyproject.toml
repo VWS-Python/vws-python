@@ -259,6 +259,8 @@ dev = [
     "vulture==2.7",
 ]
 
+# TODO add pytest-codeblocks here + add it to CI
+
 [project.urls]
 Source = "https://github.com/VWS-Python/vws-python"
 Documentation = "https://vws-python.readthedocs.io/en/latest/"
