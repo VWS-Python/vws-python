@@ -16,6 +16,8 @@ Usage
 
 See the :doc:`api-reference` for full usage details.
 
+.. TODO - make this a doctest with hidden mock as setup
+
 .. code:: python
 
    import io
@@ -61,20 +63,24 @@ To write unit tests for code which uses this library, without using your Vuforia
 
    pip3 install vws-python-mock
 
-.. code:: python
+.. testcode::
 
-   from mock_vws import MockVWS, VuforiaDatabase
+   import io
+
+   from mock_vws.database import VuforiaDatabase
+   from mock_vws import MockVWS
+   from vws import CloudRecoService, VWS
 
    with MockVWS() as mock:
        database = VuforiaDatabase()
        mock.add_database(database=database)
        vws_client = VWS(
-           server_access_key=server_access_key,
-           server_secret_key=server_secret_key,
+           server_access_key=database.server_access_key,
+           server_secret_key=database.server_secret_key,
        )
        cloud_reco_client = CloudRecoService(
-           client_access_key=client_access_key,
-           client_secret_key=client_secret_key,
+           client_access_key=database.client_access_key,
+           client_secret_key=database.client_secret_key,
        )
 
        name = 'my_image_name'
