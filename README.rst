@@ -18,13 +18,10 @@ Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with a
 Getting Started
 ---------------
 
-.. testsetup:: simple
-
-   assert False
-   
-.. testcode:: simple
+.. code:: python
 
    import io
+   import pathlib
 
    from vws import VWS, CloudRecoService
 
@@ -43,7 +40,8 @@ Getting Started
    )
    name = 'my_image_name'
 
-   with open('/path/to/image.png', 'rb') as my_image_file:
+   image = pathlib.Path('high_quality_image.jpg')
+   with image.open(mode='rb') as my_image_file:
       my_image = io.BytesIO(my_image_file.read())
 
    target_id = vws_client.add_target(
