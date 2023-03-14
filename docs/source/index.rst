@@ -17,6 +17,7 @@ Usage
 See the :doc:`api-reference` for full usage details.
 
 .. TODO - make this a doctest with hidden mock as setup
+.. TODO - run doctest on CI
 
 .. code:: python
 
@@ -85,7 +86,7 @@ To write unit tests for code which uses this library, without using your Vuforia
        )
 
 
-       image = pathlib.Path('high_quality_image.jpg').resolve()
+       image = pathlib.Path('high_quality_image.jpg')
        with image.open(mode='rb') as my_image_file:
            my_image = io.BytesIO(my_image_file.read())
 
