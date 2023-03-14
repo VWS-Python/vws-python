@@ -16,9 +16,35 @@ Usage
 
 See the :doc:`api-reference` for full usage details.
 
-.. code:: python
+.. testsetup:: simple
+
+   import pathlib
+   import shutil
+
+   import vws_test_fixtures
+   from mock_vws import MockVWS
+   from mock_vws.database import VuforiaDatabase
+
+   mock = MockVWS(real_http=False)
+   database = VuforiaDatabase(
+       server_access_key='[server-access-key]',
+       server_secret_key='[server-secret-key]',
+       client_access_key='[client-access-key]',
+       client_secret_key='[client-secret-key]',
+   )
+   mock.add_database(database=database)
+   mock.__enter__()
+
+   # We rely on implementation details of the fixtures package.
+   image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
+   assert image.exists(), image.resolve()
+   new_image = pathlib.Path('high_quality_image.jpg')
+   shutil.copy(image, new_image)
+
+.. testcode:: simple
 
    import io
+   import pathlib
 
    from vws import VWS, CloudRecoService
 
@@ -37,7 +63,8 @@ See the :doc:`api-reference` for full usage details.
    )
    name = 'my_image_name'
 
-   with open('/path/to/image.png', 'rb') as my_image_file:
+   image = pathlib.Path('high_quality_image.jpg')
+   with image.open(mode='rb') as my_image_file:
       my_image = io.BytesIO(my_image_file.read())
 
    target_id = vws_client.add_target(
@@ -52,6 +79,12 @@ See the :doc:`api-reference` for full usage details.
 
    assert matching_targets[0].target_id == target_id
 
+.. testcleanup:: simple
+
+   new_image = pathlib.Path('high_quality_image.jpg')
+   new_image.unlink()
+   mock.__exit__()
+
 Testing
 -------
 
@@ -61,7 +94,7 @@ To write unit tests for code which uses this library, without using your Vuforia
 
    pip3 install vws-python-mock
 
-.. testsetup::
+.. testsetup:: testing
 
    import pathlib
    import shutil
@@ -74,7 +107,7 @@ To write unit tests for code which uses this library, without using your Vuforia
    new_image = pathlib.Path('high_quality_image.jpg')
    shutil.copy(image, new_image)
 
-.. testcode::
+.. testcode:: testing
 
    import io
    import pathlib
@@ -108,7 +141,7 @@ To write unit tests for code which uses this library, without using your Vuforia
            active_flag=True,
        )
 
-.. testcleanup::
+.. testcleanup:: testing
 
    new_image = pathlib.Path('high_quality_image.jpg')
    new_image.unlink()
