@@ -66,6 +66,7 @@ To write unit tests for code which uses this library, without using your Vuforia
 .. testcode::
 
    import io
+   import pathlib
 
    from mock_vws.database import VuforiaDatabase
    from mock_vws import MockVWS
@@ -83,15 +84,17 @@ To write unit tests for code which uses this library, without using your Vuforia
            client_secret_key=database.client_secret_key,
        )
 
-       name = 'my_image_name'
 
-       with open('/path/to/image.png', 'rb') as my_image_file:
+       image = pathlib.Path('high_quality_image.jpg').resolve()
+       with image.open(mode='rb') as my_image_file:
            my_image = io.BytesIO(my_image_file.read())
 
        target_id = vws_client.add_target(
-           name=name,
+           name="example_image_name",
            width=1,
            image=my_image,
+           application_metadata=None,
+           active_flag=True,
        )
 
 There are some differences between the mock and the real Vuforia.
