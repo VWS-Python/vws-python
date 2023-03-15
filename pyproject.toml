@@ -246,7 +246,7 @@ dev = [
     "pytest-cov==4.0.0",
     "pytest_codeblocks==0.16.1",
     "pytest==7.2.2 ",
-    "ruff==0.0.255",
+    "ruff==0.0.256",
     "sphinx-autodoc-typehints==1.22",
     "sphinx-prompt==1.5.0",
     "sphinxcontrib-spelling==8.0.0",
