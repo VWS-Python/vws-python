@@ -3,7 +3,12 @@ Base exceptions for errors returned by Vuforia Web Services or the Vuforia
 Cloud Recognition Web API.
 """
 
-from requests import Response
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from requests import Response
 
 
 class CloudRecoException(Exception):

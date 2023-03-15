@@ -2,13 +2,18 @@
 Tests for the ``CloudRecoService`` querying functionality.
 """
 
-import io
+from __future__ import annotations
+
 import uuid
+from typing import TYPE_CHECKING
 
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from vws import VWS, CloudRecoService
 from vws.include_target_data import CloudRecoIncludeTargetData
+
+if TYPE_CHECKING:
+    import io
 
 
 class TestQuery:
