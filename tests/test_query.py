@@ -24,19 +24,19 @@ class TestQuery:
     @staticmethod
     def test_no_matches(
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         An empty list is returned if there are no matches.
         """
-        result = cloud_reco_client.query(image=high_quality_image)
+        result = cloud_reco_client.query(image=image)
         assert result == []
 
     @staticmethod
     def test_match(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         Details of matching targets are returned.
@@ -44,12 +44,12 @@ class TestQuery:
         target_id = vws_client.add_target(
             name="x",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
-        [matching_target] = cloud_reco_client.query(image=high_quality_image)
+        [matching_target] = cloud_reco_client.query(image=image)
         assert matching_target.target_id == target_id
 
 
@@ -59,7 +59,7 @@ class TestCustomBaseVWQURL:
     """
 
     @staticmethod
-    def test_custom_base_url(high_quality_image: io.BytesIO) -> None:
+    def test_custom_base_url(image: io.BytesIO) -> None:
         """
         It is possible to use query a target to a database under a custom VWQ
         URL.
@@ -76,7 +76,7 @@ class TestCustomBaseVWQURL:
             target_id = vws_client.add_target(
                 name="x",
                 width=1,
-                image=high_quality_image,
+                image=image,
                 active_flag=True,
                 application_metadata=None,
             )
@@ -89,7 +89,7 @@ class TestCustomBaseVWQURL:
                 base_vwq_url=base_vwq_url,
             )
 
-            matches = cloud_reco_client.query(image=high_quality_image)
+            matches = cloud_reco_client.query(image=image)
             assert len(matches) == 1
             match = matches[0]
             assert match.target_id == target_id
@@ -104,7 +104,7 @@ class TestMaxNumResults:
     def test_default(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         By default the maximum number of results is 1.
@@ -112,27 +112,27 @@ class TestMaxNumResults:
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
-        matches = cloud_reco_client.query(image=high_quality_image)
+        matches = cloud_reco_client.query(image=image)
         assert len(matches) == 1
 
     @staticmethod
     def test_custom(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         It is possible to set a custom ``max_num_results``.
@@ -140,21 +140,21 @@ class TestMaxNumResults:
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         target_id_3 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
@@ -163,7 +163,7 @@ class TestMaxNumResults:
         vws_client.wait_for_target_processed(target_id=target_id_3)
         max_num_results = 2
         matches = cloud_reco_client.query(
-            image=high_quality_image,
+            image=image,
             max_num_results=max_num_results,
         )
         assert len(matches) == max_num_results
@@ -178,7 +178,7 @@ class TestIncludeTargetData:
     def test_default(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         By default, target data is only returned in the top match.
@@ -186,21 +186,21 @@ class TestIncludeTargetData:
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
         top_match, second_match = cloud_reco_client.query(
-            image=high_quality_image,
+            image=image,
             max_num_results=2,
         )
         assert top_match.target_data is not None
@@ -210,7 +210,7 @@ class TestIncludeTargetData:
     def test_top(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         When ``CloudRecoIncludeTargetData.TOP`` is given, target data is only
@@ -219,21 +219,21 @@ class TestIncludeTargetData:
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
         top_match, second_match = cloud_reco_client.query(
-            image=high_quality_image,
+            image=image,
             max_num_results=2,
             include_target_data=CloudRecoIncludeTargetData.TOP,
         )
@@ -244,7 +244,7 @@ class TestIncludeTargetData:
     def test_none(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         When ``CloudRecoIncludeTargetData.NONE`` is given, target data is not
@@ -253,21 +253,21 @@ class TestIncludeTargetData:
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
         top_match, second_match = cloud_reco_client.query(
-            image=high_quality_image,
+            image=image,
             max_num_results=2,
             include_target_data=CloudRecoIncludeTargetData.NONE,
         )
@@ -278,7 +278,7 @@ class TestIncludeTargetData:
     def test_all(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         When ``CloudRecoIncludeTargetData.ALL`` is given, target data is
@@ -287,21 +287,21 @@ class TestIncludeTargetData:
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         target_id_2 = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.wait_for_target_processed(target_id=target_id_2)
         top_match, second_match = cloud_reco_client.query(
-            image=high_quality_image,
+            image=image,
             max_num_results=2,
             include_target_data=CloudRecoIncludeTargetData.ALL,
         )

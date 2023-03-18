@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import datetime
 from http import HTTPStatus
-from typing import TYPE_CHECKING
+from typing import BinaryIO
 from urllib.parse import urljoin
 
 import requests
@@ -27,8 +27,13 @@ from vws.exceptions.custom_exceptions import (
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 
-if TYPE_CHECKING:
-    import io
+
+def _get_image_data(image: BinaryIO) -> bytes:
+    original_tell = image.tell()
+    image.seek(0)
+    image_data = image.read()
+    image.seek(original_tell)
+    return image_data
 
 
 class CloudRecoService:
@@ -54,7 +59,7 @@ class CloudRecoService:
 
     def query(
         self,
-        image: io.BytesIO,
+        image: BinaryIO,
         max_num_results: int = 1,
         include_target_data: CloudRecoIncludeTargetData = (
             CloudRecoIncludeTargetData.TOP
@@ -96,7 +101,7 @@ class CloudRecoService:
         Returns:
             An ordered list of target details of matching targets.
         """
-        image_content = image.getvalue()
+        image_content = _get_image_data(image=image)
         body = {
             "image": ("image.jpeg", image_content, "image/jpeg"),
             "max_num_results": (None, int(max_num_results), "text/plain"),

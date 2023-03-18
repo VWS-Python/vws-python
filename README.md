@@ -51,7 +51,6 @@ shutil.copy(image, new_image)
 <!--pytest-codeblocks:cont-->
 
 ```python
-import io
 import pathlib
 
 from vws import VWS, CloudRecoService
@@ -73,17 +72,15 @@ name = 'my_image_name'
 
 image = pathlib.Path('high_quality_image.jpg')
 with image.open(mode='rb') as my_image_file:
-   my_image = io.BytesIO(my_image_file.read())
-
-target_id = vws_client.add_target(
-    name=name,
-    width=1,
-    image=my_image,
-    active_flag=True,
-    application_metadata=None,
-)
-vws_client.wait_for_target_processed(target_id=target_id)
-matching_targets = cloud_reco_client.query(image=my_image)
+    target_id = vws_client.add_target(
+        name=name,
+        width=1,
+        image=my_image_file,
+        active_flag=True,
+        application_metadata=None,
+    )
+    vws_client.wait_for_target_processed(target_id=target_id)
+    matching_targets = cloud_reco_client.query(image=my_image_file)
 
 assert matching_targets[0].target_id == target_id
 ```
