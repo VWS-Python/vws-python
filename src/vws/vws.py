@@ -8,7 +8,7 @@ import base64
 import json
 from datetime import date
 from time import sleep
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, BinaryIO
 from urllib.parse import urljoin
 
 import requests
@@ -49,6 +49,14 @@ from vws.reports import (
 
 if TYPE_CHECKING:
     import io
+
+
+def _get_image_data(image: BinaryIO) -> bytes:
+    original_tell = image.tell()
+    image.seek(0)
+    image_data = image.read()
+    image.seek(original_tell)
+    return image_data
 
 
 def _target_api_request(
@@ -204,7 +212,7 @@ class VWS:
         self,
         name: str,
         width: int | float,
-        image: io.BytesIO,
+        image: BinaryIO,
         application_metadata: str | None,
         *,
         active_flag: bool,
@@ -255,7 +263,7 @@ class VWS:
                 occurred". This has been seen to happen when the given name
                 includes a bad character.
         """
-        image_data = image.getvalue()
+        image_data = _get_image_data(image=image)
         image_data_encoded = base64.b64encode(image_data).decode("ascii")
 
         data = {
@@ -644,7 +652,7 @@ class VWS:
             data["width"] = width
 
         if image is not None:
-            image_data = image.getvalue()
+            image_data = _get_image_data(image=image)
             image_data_encoded = base64.b64encode(image_data).decode("ascii")
             data["image"] = image_data_encoded
 

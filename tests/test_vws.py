@@ -8,7 +8,7 @@ import base64
 import datetime
 import random
 import uuid
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, BinaryIO
 
 import pytest
 from freezegun import freeze_time
@@ -37,7 +37,7 @@ class TestAddTarget:
     @pytest.mark.parametrize("active_flag", [True, False])
     def test_add_target(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: BinaryIO,
         application_metadata: bytes | None,
         cloud_reco_client: CloudRecoService,
         *,
@@ -57,7 +57,7 @@ class TestAddTarget:
         target_id = vws_client.add_target(
             name=name,
             width=width,
-            image=high_quality_image,
+            image=image,
             application_metadata=encoded_metadata,
             active_flag=active_flag,
         )
@@ -68,7 +68,7 @@ class TestAddTarget:
         assert target_record.width == width
         assert target_record.active_flag is active_flag
         vws_client.wait_for_target_processed(target_id=target_id)
-        matching_targets = cloud_reco_client.query(image=high_quality_image)
+        matching_targets = cloud_reco_client.query(image=image)
         if active_flag:
             [matching_target] = matching_targets
             assert matching_target.target_id == target_id
@@ -81,7 +81,7 @@ class TestAddTarget:
     @staticmethod
     def test_add_two_targets(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         No exception is raised when adding two targets with different names.
@@ -92,7 +92,7 @@ class TestAddTarget:
             vws_client.add_target(
                 name=name,
                 width=1,
-                image=high_quality_image,
+                image=image,
                 active_flag=True,
                 application_metadata=None,
             )
@@ -104,7 +104,7 @@ class TestCustomBaseVWSURL:
     """
 
     @staticmethod
-    def test_custom_base_url(high_quality_image: io.BytesIO) -> None:
+    def test_custom_base_url(image: io.BytesIO) -> None:
         """
         It is possible to use add a target to a database under a custom VWS
         URL.
@@ -122,7 +122,7 @@ class TestCustomBaseVWSURL:
             vws_client.add_target(
                 name="x",
                 width=1,
-                image=high_quality_image,
+                image=image,
                 active_flag=True,
                 application_metadata=None,
             )
@@ -136,7 +136,7 @@ class TestListTargets:
     @staticmethod
     def test_list_targets(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         It is possible to get a list of target IDs.
@@ -144,14 +144,14 @@ class TestListTargets:
         id_1 = vws_client.add_target(
             name="x",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         id_2 = vws_client.add_target(
             name="a",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
@@ -166,7 +166,7 @@ class TestDelete:
     @staticmethod
     def test_delete_target(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         It is possible to delete a target.
@@ -174,7 +174,7 @@ class TestDelete:
         target_id = vws_client.add_target(
             name="x",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
@@ -193,7 +193,7 @@ class TestGetTargetSummaryReport:
     @staticmethod
     def test_get_target_summary_report(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         Details of a target are returned by ``get_target_summary_report``.
@@ -204,7 +204,7 @@ class TestGetTargetSummaryReport:
             target_id = vws_client.add_target(
                 name=target_name,
                 width=1,
-                image=high_quality_image,
+                image=image,
                 active_flag=True,
                 application_metadata=None,
             )
@@ -262,7 +262,7 @@ class TestGetTargetRecord:
     @staticmethod
     def test_get_target_record(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         Details of a target are returned by ``get_target_record``.
@@ -270,7 +270,7 @@ class TestGetTargetRecord:
         target_id = vws_client.add_target(
             name="x",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
@@ -297,7 +297,7 @@ class TestWaitForTargetProcessed:
     @staticmethod
     def test_wait_for_target_processed(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         It is possible to wait until a target is processed.
@@ -305,7 +305,7 @@ class TestWaitForTargetProcessed:
         target_id = vws_client.add_target(
             name="x",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
@@ -317,7 +317,7 @@ class TestWaitForTargetProcessed:
 
     @staticmethod
     def test_default_seconds_between_requests(
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         By default, 0.2 seconds are waited between polling requests.
@@ -333,7 +333,7 @@ class TestWaitForTargetProcessed:
             target_id = vws_client.add_target(
                 name="x",
                 width=1,
-                image=high_quality_image,
+                image=image,
                 active_flag=True,
                 application_metadata=None,
             )
@@ -369,7 +369,7 @@ class TestWaitForTargetProcessed:
 
     @staticmethod
     def test_custom_seconds_between_requests(
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         It is possible to customize the time waited between polling requests.
@@ -385,7 +385,7 @@ class TestWaitForTargetProcessed:
             target_id = vws_client.add_target(
                 name="x",
                 width=1,
-                image=high_quality_image,
+                image=image,
                 active_flag=True,
                 application_metadata=None,
             )
@@ -420,7 +420,7 @@ class TestWaitForTargetProcessed:
             assert report.request_usage == expected_requests
 
     @staticmethod
-    def test_custom_timeout(high_quality_image: io.BytesIO) -> None:
+    def test_custom_timeout(image: io.BytesIO) -> None:
         """
         It is possible to set a maximum timeout.
         """
@@ -435,7 +435,7 @@ class TestWaitForTargetProcessed:
             target_id = vws_client.add_target(
                 name="x",
                 width=1,
-                image=high_quality_image,
+                image=image,
                 active_flag=True,
                 application_metadata=None,
             )
@@ -464,7 +464,7 @@ class TestGetDuplicateTargets:
     @staticmethod
     def test_get_duplicate_targets(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         It is possible to get the IDs of similar targets.
@@ -472,14 +472,14 @@ class TestGetDuplicateTargets:
         target_id = vws_client.add_target(
             name="x",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         similar_target_id = vws_client.add_target(
             name="a",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
@@ -498,7 +498,7 @@ class TestUpdateTarget:
     @staticmethod
     def test_update_target(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
         different_high_quality_image: io.BytesIO,
         cloud_reco_client: CloudRecoService,
     ) -> None:
@@ -510,12 +510,12 @@ class TestUpdateTarget:
         target_id = vws_client.add_target(
             name=old_name,
             width=old_width,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
         vws_client.wait_for_target_processed(target_id=target_id)
-        [matching_target] = cloud_reco_client.query(image=high_quality_image)
+        [matching_target] = cloud_reco_client.query(image=image)
         assert matching_target.target_id == target_id
         query_target_data = matching_target.target_data
         assert query_target_data is not None
@@ -557,7 +557,7 @@ class TestUpdateTarget:
     @staticmethod
     def test_no_fields_given(
         vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        image: io.BytesIO,
     ) -> None:
         """
         It is possible to give no update fields.
@@ -565,7 +565,7 @@ class TestUpdateTarget:
         target_id = vws_client.add_target(
             name="x",
             width=1,
-            image=high_quality_image,
+            image=image,
             active_flag=True,
             application_metadata=None,
         )
