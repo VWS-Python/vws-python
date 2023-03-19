@@ -16,7 +16,7 @@ Usage
 
 See the :doc:`api-reference` for full usage details.
 
-.. testsetup:: simple
+.. invisible-code-block: python
 
    import pathlib
    import shutil
@@ -41,7 +41,7 @@ See the :doc:`api-reference` for full usage details.
    new_image = pathlib.Path('high_quality_image.jpg')
    shutil.copy(image, new_image)
 
-.. testcode:: simple
+.. code-block:: python
 
    import pathlib
 
@@ -76,7 +76,7 @@ See the :doc:`api-reference` for full usage details.
 
    assert matching_targets[0].target_id == target_id
 
-.. testcleanup:: simple
+.. invisible-code-block: python
 
    new_image = pathlib.Path('high_quality_image.jpg')
    new_image.unlink()
@@ -91,7 +91,14 @@ To write unit tests for code which uses this library, without using your Vuforia
 
    pip3 install vws-python-mock
 
-.. testsetup:: testing
+.. invisible-code-block: python
+
+   # Reset test
+   for i in list(globals().keys()):
+    if not i.startswith('_'):
+        exec('del ' + i)
+
+.. invisible-code-block: python
 
    import pathlib
    import shutil
@@ -104,7 +111,7 @@ To write unit tests for code which uses this library, without using your Vuforia
    new_image = pathlib.Path('high_quality_image.jpg')
    shutil.copy(image, new_image)
 
-.. testcode:: testing
+.. code-block:: python
 
    import pathlib
 
@@ -135,7 +142,7 @@ To write unit tests for code which uses this library, without using your Vuforia
             active_flag=True,
          )
 
-.. testcleanup:: testing
+.. invisible-code-block: python
 
    new_image = pathlib.Path('high_quality_image.jpg')
    new_image.unlink()

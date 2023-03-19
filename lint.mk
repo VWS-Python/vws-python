@@ -40,7 +40,7 @@ pip-missing-reqs:
 
 .PHONY: pylint
 pylint:
-	pylint src/ tests/ docs/
+	pylint *.py src/ tests/ docs/
 
 .PHONY: pyroma
 pyroma:
@@ -57,8 +57,3 @@ linkcheck:
 .PHONY: spelling
 spelling:
 	$(MAKE) -C docs/ spelling SPHINXOPTS=$(SPHINXOPTS)
-
-.PHONY: doctest
-doctest:
-	$(MAKE) -C docs/ doctest SPHINXOPTS=$(SPHINXOPTS)
-	pytest --codeblocks README.md
