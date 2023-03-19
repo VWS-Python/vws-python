@@ -144,8 +144,10 @@ strict = true
 [[tool.mypy.overrides]]
 
 module = [
-	"func_timeout",
-	"func_timeout.exceptions"
+    "func_timeout",
+    "func_timeout.exceptions",
+    "sybil",
+    "sybil.parsers.rest",
 ]
 
 ignore_missing_imports = true

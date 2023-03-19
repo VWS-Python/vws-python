@@ -1,3 +1,5 @@
+"""Setup for Sybil."""
+
 from doctest import ELLIPSIS
 
 from sybil import Sybil
