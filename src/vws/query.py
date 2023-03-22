@@ -166,7 +166,7 @@ class CloudRecoService:
             }[result_code]
             raise exception(response=response)
 
-        result = []
+        result: list[QueryResult] = []
         result_list = list(response.json()["results"])
         for item in result_list:
             target_data: TargetData | None = None

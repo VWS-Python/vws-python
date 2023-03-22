@@ -15,6 +15,7 @@ lint: \
     ruff \
     pip-extra-reqs \
     pip-missing-reqs \
+    pyright \
     pyroma \
     spelling \
     vulture \

@@ -243,6 +243,7 @@ dev = [
     "pip_check_reqs==2.4.4",
     "pydocstyle==6.3.0  ",
     "pyenchant==3.2.2 ",
+    "pyright==1.1.300",
     "pylint==2.17.0 ",
     "pyroma==4.2",
     "pytest-cov==4.0.0",
@@ -271,3 +272,5 @@ where = ["src"]
 vws = ["py.typed"]
 
 [tool.setuptools_scm]
+
+[tool.pyright]
