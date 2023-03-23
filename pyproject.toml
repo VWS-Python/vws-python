@@ -193,6 +193,8 @@ ignore = [
     "PLR0913",
     # Allow 'assert' as we use it for tests.
     "S101",
+    # Allow simple random numbers as we are not using them for cryptography.
+    "S311",
 ]
 
 [tool.ruff.per-file-ignores]
