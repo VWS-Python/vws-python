@@ -6,14 +6,12 @@ from __future__ import annotations
 
 import base64
 import json
+import time
 from datetime import date
-from time import sleep
 from typing import TYPE_CHECKING, BinaryIO
 from urllib.parse import urljoin
 
 import requests
-from func_timeout import func_set_timeout
-from func_timeout.exceptions import FunctionTimedOut
 from requests import Response
 from vws_auth_tools import authorization_header, rfc_1123_date
 
@@ -332,39 +330,6 @@ class VWS:
             target_record=target_record,
         )
 
-    def _wait_for_target_processed(
-        self,
-        target_id: str,
-        seconds_between_requests: float,
-    ) -> None:
-        """
-        Wait indefinitely for a target to get past the processing stage.
-
-        Args:
-            target_id: The ID of the target to wait for.
-            seconds_between_requests: The number of seconds to wait between
-                requests made while polling the target status.
-
-        Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
-                known database.
-            TimeoutError: The target remained in the processing stage for more
-                than five minutes.
-            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
-                does not match a target in the database.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
-        """
-        while True:
-            report = self.get_target_summary_report(target_id=target_id)
-            if report.status != TargetStatuses.PROCESSING:
-                return
-
-            sleep(seconds_between_requests)
-
     def wait_for_target_processed(
         self,
         target_id: str,
@@ -400,19 +365,18 @@ class VWS:
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
         """
+        start_time = time.monotonic()
+        while True:
+            report = self.get_target_summary_report(target_id=target_id)
+            if report.status != TargetStatuses.PROCESSING:
+                return
 
-        # func_timeout does not have type hints.
-        @func_set_timeout(timeout=timeout_seconds)  # type: ignore[misc]
-        def decorated() -> None:
-            self._wait_for_target_processed(
-                target_id=target_id,
-                seconds_between_requests=seconds_between_requests,
-            )
+            if timeout_seconds is not None:
+                elapsed_time = time.monotonic() - start_time
+                if elapsed_time > timeout_seconds:  # pragma: no cover
+                    raise TargetProcessingTimeout
 
-        try:
-            decorated()
-        except FunctionTimedOut as exc:
-            raise TargetProcessingTimeout from exc
+            time.sleep(seconds_between_requests)
 
     def list_targets(self) -> list[str]:
         """

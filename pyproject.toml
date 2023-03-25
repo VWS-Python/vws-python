@@ -144,8 +144,6 @@ strict = true
 [[tool.mypy.overrides]]
 
 module = [
-    "func_timeout",
-    "func_timeout.exceptions",
     "sybil",
     "sybil.parsers.rest",
 ]
@@ -221,7 +219,6 @@ readme = { file = "README.rst", content-type = "text/x-rst"}
 requires-python = ">=3.10"
 dependencies = [
     "VWS-Auth-Tools",
-    "func-timeout",
     "requests",
     "urllib3",
 ]
