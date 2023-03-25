@@ -334,7 +334,7 @@ class VWS:
         self,
         target_id: str,
         seconds_between_requests: float = 0.2,
-        timeout_seconds: float | None = 60 * 5,
+        timeout_seconds: float = 60 * 5,
     ) -> None:
         """
         Wait up to five minutes (arbitrary) for a target to get past the
@@ -348,8 +348,7 @@ class VWS:
                 decrease the number of calls made to the API, to decrease the
                 likelihood of hitting the request quota.
             timeout_seconds: The maximum number of seconds to wait for the
-                target to be processed. If ``None`` is given, no maximum is
-                applied.
+                target to be processed.
 
         Raises:
             ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
@@ -371,10 +370,9 @@ class VWS:
             if report.status != TargetStatuses.PROCESSING:
                 return
 
-            if timeout_seconds is not None:
-                elapsed_time = time.monotonic() - start_time
-                if elapsed_time > timeout_seconds:  # pragma: no cover
-                    raise TargetProcessingTimeout
+            elapsed_time = time.monotonic() - start_time
+            if elapsed_time > timeout_seconds:  # pragma: no cover
+                raise TargetProcessingTimeout
 
             time.sleep(seconds_between_requests)
 
