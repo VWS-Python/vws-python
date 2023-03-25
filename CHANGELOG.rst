@@ -4,6 +4,9 @@ Changelog
 Next
 ----
 
+2023.03.25
+------------
+
 * Support file-like objects in every method which accepts a file.
 
 2023.03.05
