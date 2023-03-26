@@ -75,6 +75,7 @@ See the :doc:`api-reference` for full usage details.
       matching_targets = cloud_reco_client.query(image=my_image_file)
 
    assert matching_targets[0].target_id == target_id
+   a = 1
 
 .. invisible-code-block: python
 
@@ -91,12 +92,7 @@ To write unit tests for code which uses this library, without using your Vuforia
 
    pip3 install vws-python-mock
 
-.. invisible-code-block: python
-
-   # Reset test
-   for i in list(globals().keys()):
-    if not i.startswith('_'):
-        exec('del ' + i)
+.. clear-namespace
 
 .. invisible-code-block: python
 
