@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import datetime
 from http import HTTPStatus
-from typing import BinaryIO
+from typing import Any, BinaryIO
 from urllib.parse import urljoin
 
 import requests
@@ -102,7 +102,7 @@ class CloudRecoService:
             An ordered list of target details of matching targets.
         """
         image_content = _get_image_data(image=image)
-        body = {
+        body: dict[str, Any] = {
             "image": ("image.jpeg", image_content, "image/jpeg"),
             "max_num_results": (None, int(max_num_results), "text/plain"),
             "include_target_data": (
@@ -113,12 +113,7 @@ class CloudRecoService:
         }
         date = rfc_1123_date()
         request_path = "/v1/query"
-        (
-            content,
-            content_type_header,
-        ) = encode_multipart_formdata(  # type:ignore[no-untyped-call]
-            fields=body,
-        )
+        content, content_type_header = encode_multipart_formdata(fields=body)
         method = "POST"
 
         authorization_string = authorization_header(
