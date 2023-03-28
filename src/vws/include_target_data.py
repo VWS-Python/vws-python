@@ -2,15 +2,16 @@
 Tools for managing ``CloudRecoService.query``'s ``include_target_data``.
 """
 
-from enum import Enum
+
+from enum import StrEnum, auto
 
 
-class CloudRecoIncludeTargetData(Enum):
+class CloudRecoIncludeTargetData(StrEnum):
     """
     Options for the ``include_target_data`` parameter of
     ``CloudRecoService.query``.
     """
 
-    TOP = "top"
-    NONE = "none"
-    ALL = "all"
+    TOP = auto()
+    NONE = auto()
+    ALL = auto()
