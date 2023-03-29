@@ -22,6 +22,7 @@ Getting Started
 
 .. invisible-code-block: python
 
+   import contextlib
    import pathlib
    import shutil
 
@@ -37,7 +38,8 @@ Getting Started
        client_secret_key='[client-secret-key]',
    )
    mock.add_database(database=database)
-   mock.__enter__()
+   stack = contextlib.ExitStack()
+   stack.enter_context(mock)
 
    # We rely on implementation details of the fixtures package.
    image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
@@ -84,7 +86,7 @@ Getting Started
 .. invisible-code-block: python
    new_image = pathlib.Path('high_quality_image.jpg')
    new_image.unlink()
-   mock.__exit__()
+   stack.close()
 
 Full Documentation
 ------------------
