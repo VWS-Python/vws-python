@@ -258,7 +258,7 @@ dev = [
     "sphinxcontrib-spelling==8.0.0",
     "sybil==5.0.0",
     "types-requests==2.28.11.16",
-    "types-urllib3==1.26.25.9",
+    "types-urllib3==1.26.25.10",
     "vulture==2.7",
 ]
 
