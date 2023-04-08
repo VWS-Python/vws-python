@@ -64,6 +64,7 @@ def _target_api_request(
     content: bytes,
     request_path: str,
     base_vws_url: str,
+    timeout: float | tuple[float, float] | tuple[float, None] | None,
 ) -> Response:
     """
     Make a request to the Vuforia Target API.
@@ -79,6 +80,8 @@ def _target_api_request(
         request_path: The path to the endpoint which will be used in the
             request.
         base_vws_url: The base URL for the VWS API.
+        timeout: See
+            https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
     Returns:
         The response to the request made by `requests`.
@@ -109,8 +112,7 @@ def _target_api_request(
         url=url,
         headers=headers,
         data=content,
-        # We should make the timeout customizable.
-        timeout=None,
+        timeout=timeout,
     )
 
 
@@ -141,6 +143,7 @@ class VWS:
         content: bytes,
         request_path: str,
         expected_result_code: str,
+        timeout: float | tuple[float, float] | tuple[float, None] | None,
     ) -> Response:
         """
         Make a request to the Vuforia Target API.
@@ -155,6 +158,8 @@ class VWS:
                 request.
             expected_result_code: See
                 https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Interperete-VWS-API-Result-Codes
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Returns:
             The response to the request made by `requests`.
@@ -175,6 +180,7 @@ class VWS:
             content=content,
             request_path=request_path,
             base_vws_url=self._base_vws_url,
+            timeout=timeout,
         )
 
         if "Oops, an error occurred" in response.text:
@@ -212,6 +218,10 @@ class VWS:
         width: int | float,
         image: BinaryIO,
         application_metadata: str | None,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
         *,
         active_flag: bool,
     ) -> str:
@@ -231,6 +241,9 @@ class VWS:
                 This must be base64 encoded, for example by using::
 
                     base64.b64encode('input_string').decode('ascii')
+
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Returns:
             The target ID of the new target.
@@ -279,11 +292,19 @@ class VWS:
             content=content,
             request_path="/targets",
             expected_result_code="TargetCreated",
+            timeout=timeout,
         )
 
         return str(response.json()["target_id"])
 
-    def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
+    def get_target_record(
+        self,
+        target_id: str,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
+    ) -> TargetStatusAndRecord:
         """
         Get a given target's target record from the Target Management System.
 
@@ -292,6 +313,8 @@ class VWS:
 
         Args:
             target_id: The ID of the target to get details of.
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Returns:
             Response details of a target from Vuforia.
@@ -312,6 +335,7 @@ class VWS:
             content=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
+            timeout=timeout,
         )
 
         result_data = response.json()
@@ -376,12 +400,23 @@ class VWS:
 
             time.sleep(seconds_between_requests)
 
-    def list_targets(self) -> list[str]:
+    def list_targets(
+        self,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
+    ) -> list[str]:
         """
         List target IDs.
 
         See
         https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Get-a-Target-List-for-a-Cloud-Database.
+
+
+        Args:
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Returns:
             The IDs of all targets in the database.
@@ -400,11 +435,19 @@ class VWS:
             content=b"",
             request_path="/targets",
             expected_result_code="Success",
+            timeout=timeout,
         )
 
         return list(response.json()["results"])
 
-    def get_target_summary_report(self, target_id: str) -> TargetSummaryReport:
+    def get_target_summary_report(
+        self,
+        target_id: str,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
+    ) -> TargetSummaryReport:
         """
         Get a summary report for a target.
 
@@ -413,6 +456,8 @@ class VWS:
 
         Args:
             target_id: The ID of the target to get a summary report for.
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Returns:
             Details of the target.
@@ -433,6 +478,7 @@ class VWS:
             content=b"",
             request_path=f"/summary/{target_id}",
             expected_result_code="Success",
+            timeout=timeout,
         )
 
         result_data = dict(response.json())
@@ -448,7 +494,13 @@ class VWS:
             previous_month_recos=result_data["previous_month_recos"],
         )
 
-    def get_database_summary_report(self) -> DatabaseSummaryReport:
+    def get_database_summary_report(
+        self,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
+    ) -> DatabaseSummaryReport:
         """
         Get a summary report for the database.
 
@@ -472,6 +524,7 @@ class VWS:
             content=b"",
             request_path="/summary",
             expected_result_code="Success",
+            timeout=timeout,
         )
 
         response_data = dict(response.json())
@@ -490,7 +543,14 @@ class VWS:
             total_recos=response_data["total_recos"],
         )
 
-    def delete_target(self, target_id: str) -> None:
+    def delete_target(
+        self,
+        target_id: str,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
+    ) -> None:
         """
         Delete a given target.
 
@@ -499,6 +559,8 @@ class VWS:
 
         Args:
             target_id: The ID of the target to delete.
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Raises:
             ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
@@ -518,9 +580,17 @@ class VWS:
             content=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
+            timeout=timeout,
         )
 
-    def get_duplicate_targets(self, target_id: str) -> list[str]:
+    def get_duplicate_targets(
+        self,
+        target_id: str,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
+    ) -> list[str]:
         """
         Get targets which may be considered duplicates of a given target.
 
@@ -529,6 +599,8 @@ class VWS:
 
         Args:
             target_id: The ID of the target to delete.
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Returns:
             The target IDs of duplicate targets.
@@ -551,6 +623,7 @@ class VWS:
             content=b"",
             request_path=f"/duplicates/{target_id}",
             expected_result_code="Success",
+            timeout=timeout,
         )
 
         return list(response.json()["similar_targets"])
@@ -563,6 +636,10 @@ class VWS:
         image: io.BytesIO | None = None,
         active_flag: bool | None = None,
         application_metadata: str | None = None,
+        timeout: float
+        | tuple[float, float]
+        | tuple[float, None]
+        | None = None,
     ) -> None:
         """
         Add a target to a Vuforia Web Services database.
@@ -583,6 +660,8 @@ class VWS:
                     base64.b64encode('input_string').decode('ascii')
 
                 Giving ``None`` will not change the application metadata.
+            timeout: See
+                https://requests.readthedocs.io/en/latest/user/advanced/#timeouts.
 
         Raises:
             ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
@@ -631,4 +710,5 @@ class VWS:
             content=content,
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
+            timeout=timeout,
         )

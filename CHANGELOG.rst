@@ -4,6 +4,8 @@ Changelog
 Next
 ----
 
+* Add ``timeout`` parameter to methods.
+
 2023.03.25
 ------------
 
