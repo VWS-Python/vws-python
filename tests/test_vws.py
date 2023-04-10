@@ -7,6 +7,7 @@ from __future__ import annotations
 import base64
 import datetime
 import random
+import time
 import uuid
 from typing import TYPE_CHECKING, BinaryIO
 
@@ -488,6 +489,49 @@ class TestGetDuplicateTargets:
         vws_client.wait_for_target_processed(target_id=similar_target_id)
         duplicates = vws_client.get_duplicate_targets(target_id=target_id)
         assert duplicates == [similar_target_id]
+
+    @staticmethod
+    def test_timeout(image: io.BytesIO) -> None:
+        """It is possible to set a timeout."""
+        base_vws_url = "http://example.com"
+
+        def delay_checker(
+            first_image_content: bytes,
+            second_image_content: bytes,
+        ) -> bool:
+            time.sleep(2.2)
+            return True
+
+        database = VuforiaDatabase()
+        vws_client = VWS(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+            base_vws_url=base_vws_url,
+        )
+        with MockVWS(
+            base_vws_url=base_vws_url,
+            duplicate_match_checker=delay_checker,
+        ) as mock:
+            mock.add_database(database=database)
+            target_id = vws_client.add_target(
+                name="x",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+            vws_client.add_target(
+                name="x2",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+            vws_client.wait_for_target_processed(target_id=target_id)
+            vws_client.get_duplicate_targets(
+                target_id=target_id,
+                timeout=(0.00001, 0.00001),
+            )
 
 
 class TestUpdateTarget:
