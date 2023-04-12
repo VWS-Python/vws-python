@@ -97,7 +97,10 @@ def test_active_matching_targets_delete_processing(
     )
     vws_client.wait_for_target_processed(target_id=target_id)
     vws_client.delete_target(target_id=target_id)
-    time.sleep(0.2)
+    # This matches the "query_recognizes_deletion_seconds" setting to
+    # ``MockVWS``.
+    query_recognizes_deletion_seconds = 2
+    time.sleep(query_recognizes_deletion_seconds)
     with pytest.raises(ActiveMatchingTargetsDeleteProcessing):
         cloud_reco_client.query(image=high_quality_image)
 
