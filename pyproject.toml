@@ -231,7 +231,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "PyYAML==6.0",
-    "Pygments==2.14.0",
+    "Pygments==2.15.0",
     "Sphinx-Substitution-Extensions==2022.2.16",
     "Sphinx==6.1.3",
     "VWS-Python-Mock==2023.3.26",
