@@ -4,6 +4,8 @@ Changelog
 Next
 ----
 
+* Breaking change: the ``vws.exceptions.custom_exceptions.ActiveMatchingTargetsDeleteProcessing`` exception has been removed as Vuforia no longer returns this error.
+
 2023.03.25
 ------------
 
