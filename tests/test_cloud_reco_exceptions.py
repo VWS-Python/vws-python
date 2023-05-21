@@ -4,7 +4,6 @@ Tests for exceptions raised when using the CloudRecoService.
 
 from __future__ import annotations
 
-import time
 import uuid
 from http import HTTPStatus
 from typing import TYPE_CHECKING
@@ -13,7 +12,7 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
-from vws import VWS, CloudRecoService
+from vws import CloudRecoService
 from vws.exceptions.base_exceptions import CloudRecoException
 from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailure,
@@ -23,7 +22,6 @@ from vws.exceptions.cloud_reco_exceptions import (
     RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
-    ActiveMatchingTargetsDeleteProcessing,
     RequestEntityTooLarge,
 )
 
@@ -77,32 +75,6 @@ def test_cloudrecoexception_inheritance() -> None:
     ]
     for subclass in subclasses:
         assert issubclass(subclass, CloudRecoException)
-
-
-def test_active_matching_targets_delete_processing(
-    vws_client: VWS,
-    cloud_reco_client: CloudRecoService,
-    high_quality_image: io.BytesIO,
-) -> None:
-    """
-    A ``ActiveMatchingTargetsDeleteProcessing`` exception is raised when a
-    target which has recently been deleted is matched.
-    """
-    target_id = vws_client.add_target(
-        name="x",
-        width=1,
-        image=high_quality_image,
-        active_flag=True,
-        application_metadata=None,
-    )
-    vws_client.wait_for_target_processed(target_id=target_id)
-    vws_client.delete_target(target_id=target_id)
-    # This matches the "query_recognizes_deletion_seconds" setting to
-    # ``MockVWS``.
-    query_recognizes_deletion_seconds = 2
-    time.sleep(query_recognizes_deletion_seconds)
-    with pytest.raises(ActiveMatchingTargetsDeleteProcessing):
-        cloud_reco_client.query(image=high_quality_image)
 
 
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:

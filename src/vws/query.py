@@ -21,7 +21,6 @@ from vws.exceptions.cloud_reco_exceptions import (
     RequestTimeTooSkewed,
 )
 from vws.exceptions.custom_exceptions import (
-    ActiveMatchingTargetsDeleteProcessing,
     RequestEntityTooLarge,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
@@ -95,8 +94,6 @@ class CloudRecoService:
                 file in the grayscale or RGB color space.
             ~vws.exceptions.custom_exceptions.RequestEntityTooLarge: The given
                 image is too large.
-            ~vws.exceptions.custom_exceptions.ActiveMatchingTargetsDeleteProcessing:
-                The given image matches a target which was recently deleted.
 
         Returns:
             An ordered list of target details of matching targets.
@@ -147,9 +144,6 @@ class CloudRecoService:
 
         if "Integer out of range" in response.text:
             raise MaxNumResultsOutOfRange(response=response)
-
-        if "No content to map due to end-of-input" in response.text:
-            raise ActiveMatchingTargetsDeleteProcessing
 
         result_code = response.json()["result_code"]
         if result_code != "Success":
