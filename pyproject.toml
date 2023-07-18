@@ -230,7 +230,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "PyYAML==6.0",
+    "PyYAML==6.0.1",
     "Pygments==2.15.1",
     "Sphinx-Substitution-Extensions==2022.2.16",
     "Sphinx==7.0.1",
