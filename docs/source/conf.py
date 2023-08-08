@@ -70,10 +70,6 @@ nitpick_ignore = [
 
 autoclass_content = "both"
 
-
-# Don't check anchors because many websites use #! for AJAX magic
-# http://sphinx-doc.org/config.html#confval-linkcheck_anchors
-linkcheck_anchors = False
 # Retry link checking to avoid transient network errors.
 linkcheck_retries = 5
 linkcheck_ignore = [
