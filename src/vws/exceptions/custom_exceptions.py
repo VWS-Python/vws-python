@@ -1,6 +1,6 @@
 """
 Exceptions which do not map to errors at
-https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Interperete-VWS-API-Result-Codes
+https://library.vuforia.com/web-api/cloud-targets-web-services-api#result-codes
 or simple errors given by the cloud recognition service.
 """
 

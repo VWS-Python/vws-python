@@ -37,7 +37,7 @@ class VWSException(Exception):
     Base class for Vuforia Web Services errors.
 
     These errors are defined at
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Interperete-VWS-API-Result-Codes.
+    https://library.vuforia.com/web-api/cloud-targets-web-services-api#result-codes.
     """
 
     def __init__(self, response: Response) -> None:

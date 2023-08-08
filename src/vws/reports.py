@@ -13,7 +13,7 @@ class DatabaseSummaryReport:
     A database summary report.
 
     See
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Get-a-Database-Summary-Report.
+    https://library.vuforia.com/web-api/cloud-targets-web-services-api#summary-report.
     """
 
     active_images: int
@@ -34,7 +34,7 @@ class TargetStatuses(Enum):
     """Constants representing VWS target statuses.
 
     See the 'status' field in
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API.html#How-To-Retrieve-a-Target-Record
+    https://library.vuforia.com/web-api/cloud-targets-web-services-api#target-record
     """
 
     PROCESSING = "processing"
@@ -48,7 +48,7 @@ class TargetSummaryReport:
     A target summary report.
 
     See
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Summary-Report.
+    https://library.vuforia.com/web-api/cloud-targets-web-services-api#summary-report.
     """
 
     status: TargetStatuses
@@ -68,7 +68,7 @@ class TargetRecord:
     A target record.
 
     See
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Record.
+    https://library.vuforia.com/web-api/cloud-targets-web-services-api#target-record.
     """
 
     target_id: str
@@ -96,7 +96,7 @@ class QueryResult:
     One query match result.
 
     See
-    https://library.vuforia.com/articles/Solution/How-To-Perform-an-Image-Recognition-Query.
+    https://library.vuforia.com/web-api/vuforia-query-web-api.
     """
 
     target_id: str
@@ -109,7 +109,7 @@ class TargetStatusAndRecord:
     The target status and a target record.
 
     See
-    https://library.vuforia.com/articles/Solution/How-To-Use-the-Vuforia-Web-Services-API#How-To-Retrieve-a-Target-Record.
+    https://library.vuforia.com/web-api/cloud-targets-web-services-api#target-record.
     """
 
     status: TargetStatuses
