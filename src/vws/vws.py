@@ -209,7 +209,7 @@ class VWS:
     def add_target(
         self,
         name: str,
-        width: int | float,
+        width: float,
         image: BinaryIO,
         application_metadata: str | None,
         *,
@@ -559,7 +559,7 @@ class VWS:
         self,
         target_id: str,
         name: str | None = None,
-        width: int | float | None = None,
+        width: float | None = None,
         image: io.BytesIO | None = None,
         active_flag: bool | None = None,
         application_metadata: str | None = None,
