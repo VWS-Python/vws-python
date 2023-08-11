@@ -242,7 +242,7 @@ dev = [
     "dodgy==0.2.1",
     "freezegun==1.2.2",
     "furo==2023.7.26",
-    "mypy==1.4.1",
+    "mypy==1.5.0",
     "pdm==2.8.2",
     "pip_check_reqs==2.4.4",
     "pydocstyle==6.3.0  ",
