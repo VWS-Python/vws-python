@@ -19,4 +19,4 @@ Perform a Release
 
       gh workflow run release.yml --repo |github-owner|/|github-repository|
 
-.. _Install GitHub CLI: https://cli.github.com/manual/installation
+.. _Install GitHub CLI: https://cli.github.com/
