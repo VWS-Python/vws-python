@@ -244,7 +244,7 @@ dev = [
     "furo==2023.8.19",
     "mypy==1.5.1",
     "pdm==2.9.1",
-    "pip_check_reqs==2.4.4",
+    "pip_check_reqs==2.5.1",
     "pydocstyle==6.3.0  ",
     "pyenchant==3.2.2 ",
     "pyright==1.1.326",
