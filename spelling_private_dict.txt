@@ -1,3 +1,4 @@
+
 AuthenticationFailure
 BadImage
 ConnectionErrorPossiblyImageTooLarge
@@ -72,6 +73,7 @@ plugins
 png
 pragma
 py
+pyright
 pytest
 readme
 readthedocs
@@ -79,6 +81,8 @@ recognitions
 refactoring
 regex
 reimplementation
+reportMissingTypeStubs
+reportUnknownVariableType
 rfc
 rgb
 str
