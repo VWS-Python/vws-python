@@ -257,7 +257,7 @@ dev = [
     "sphinx-prompt==1.8.0",
     "sphinxcontrib-spelling==8.0.0",
     "sybil==5.0.3",
-    "types-requests==2.31.0.7",
+    "types-requests==2.31.0.8",
     "vulture==2.9.1",
 ]
 
