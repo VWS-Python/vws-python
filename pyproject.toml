@@ -251,7 +251,7 @@ dev = [
     "pyroma==4.2",
     "pytest-cov==4.1.0",
     "pytest==7.4.2 ",
-    "ruff==0.1.0",
+    "ruff==0.1.1",
     "sphinx-autodoc-typehints==1.24.0",
     "sphinx-prompt==1.8.0",
     "sphinxcontrib-spelling==8.0.0",
