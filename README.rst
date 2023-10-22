@@ -13,7 +13,7 @@ Installation
 
    pip install vws-python
 
-This is tested on Python 3.11+. Get in touch with
+This is tested on Python 3.12+. Get in touch with
 ``adamdangoor@gmail.com`` if you would like to use this with another
 language.
 
