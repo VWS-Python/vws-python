@@ -52,6 +52,14 @@ vulture:
 linkcheck:
 	$(MAKE) -C docs/ linkcheck SPHINXOPTS=$(SPHINXOPTS)
 
+.PHONY: pyproject-fmt
+ pyproject-fmt:
+	pyproject-fmt --check --indent=4 pyproject.toml
+
+ .PHONY: fix-pyproject-fmt
+ fix-pyproject-fmt:
+	pyproject-fmt --indent=4 pyproject.toml
+
 .PHONY: spelling
 spelling:
 	$(MAKE) -C docs/ spelling SPHINXOPTS=$(SPHINXOPTS)
