@@ -242,7 +242,7 @@ dev = [
     "pip_check_reqs==2.5.3",
     "pydocstyle==6.3.0  ",
     "pyenchant==3.2.2 ",
-    "pyright==1.1.332",
+    "pyright==1.1.333",
     "pylint==3.0.2 ",
     "pyroma==4.2",
     "pytest-cov==4.1.0",
