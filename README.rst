@@ -96,7 +96,7 @@ documentation <https://vws-python.readthedocs.io/en/latest>`__.
 
 .. |Build Status| image:: https://github.com/VWS-Python/vws-python/workflows/CI/badge.svg
    :target: https://github.com/VWS-Python/vws-python/actions
-.. |codecov| image:: https://codecov.io/gh/VWS-Python/vws-python/branch/master/graph/badge.svg
+.. |codecov| image:: https://codecov.io/gh/VWS-Python/vws-python/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/VWS-Python/vws-python
 .. |PyPI| image:: https://badge.fury.io/py/VWS-Python.svg
    :target: https://badge.fury.io/py/VWS-Python
