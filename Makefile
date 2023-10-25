@@ -14,6 +14,7 @@ lint: \
     ruff \
     pip-extra-reqs \
     pip-missing-reqs \
+    pyproject-fmt \
     pyright \
     pyroma \
     spelling \
@@ -22,6 +23,7 @@ lint: \
 
 .PHONY: fix-lint
 fix-lint: \
+    fix-pyproject-fmt \
     fix-ruff
 
 .PHONY: docs
