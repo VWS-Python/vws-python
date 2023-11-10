@@ -254,7 +254,7 @@ dev = [
     "PyYAML==6.0.1",
     "ruff==0.1.5",
     "Sphinx==7.2.6",
-    "sphinx-autodoc-typehints==1.24.1",
+    "sphinx-autodoc-typehints==1.25.0",
     "sphinx-prompt==1.8",
     "Sphinx-Substitution-Extensions==2022.2.16",
     "sphinxcontrib-spelling==8",
