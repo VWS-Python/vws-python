@@ -7,7 +7,6 @@ SPHINXOPTS := -W
 
 .PHONY: lint
 lint: \
-    black \
     check-manifest \
     doc8 \
     linkcheck \
@@ -15,6 +14,7 @@ lint: \
     ruff \
     pip-extra-reqs \
     pip-missing-reqs \
+    pyproject-fmt \
     pyright \
     pyroma \
     spelling \
@@ -23,7 +23,7 @@ lint: \
 
 .PHONY: fix-lint
 fix-lint: \
-    fix-black \
+    fix-pyproject-fmt \
     fix-ruff
 
 .PHONY: docs
