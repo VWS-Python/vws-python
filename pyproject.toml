@@ -137,15 +137,6 @@ ignore_path = [
 
 strict = true
 
-[[tool.mypy.overrides]]
-
-module = [
-    "sybil",
-    "sybil.parsers.rest",
-]
-
-ignore_missing_imports = true
-
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
