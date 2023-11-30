@@ -235,7 +235,7 @@ dev = [
     "pyenchant==3.2.2",
     "Pygments==2.17.2",
     "pylint==3.0.2",
-    "pyproject-fmt==1.5.1",
+    "pyproject-fmt==1.5.2",
     "pyright==1.1.338",
     "pyroma==4.2",
     "pytest==7.4.3",
