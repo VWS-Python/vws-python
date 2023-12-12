@@ -234,7 +234,7 @@ dev = [
     "pydocstyle==6.3",
     "pyenchant==3.2.2",
     "Pygments==2.17.2",
-    "pylint==3.0.2",
+    "pylint==3.0.3",
     "pyproject-fmt==1.5.3",
     "pyright==1.1.339",
     "pyroma==4.2",
