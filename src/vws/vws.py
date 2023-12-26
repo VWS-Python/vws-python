@@ -126,16 +126,23 @@ class VWS:
         server_access_key: str,
         server_secret_key: str,
         base_vws_url: str = "https://vws.vuforia.com",
+        retry_after_too_many_requests_seconds: float | None = 15,
     ) -> None:
         """
         Args:
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
             base_vws_url: The base URL for the VWS API.
+            retry_after_too_many_requests_seconds: The number of seconds to
+                wait after receiving a 429 response from the Vuforia API.
+                If ``None``, no retries will be made.
         """
         self._server_access_key = server_access_key
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
+        self._retry_after_too_many_requests_seconds = (
+            retry_after_too_many_requests_seconds
+        )
 
     def _make_request(
         self,
@@ -166,6 +173,8 @@ class VWS:
                 HTML page with the text "Oops, an error occurred". This has
                 been seen to happen when the given name includes a bad
                 character.
+            ~vws.exceptions.vws_exceptions.TooManyRequests: The Vuforia API
+                returns a 429 response with no JSON body.
             json.decoder.JSONDecodeError: The server did not respond with valid
                 JSON. This may happen if the server address is not a valid
                 Vuforia server.
@@ -182,11 +191,19 @@ class VWS:
         if "Oops, an error occurred" in response.text:
             raise UnknownVWSErrorPossiblyBadName
 
+        # The Vuforia API returns a 429 response with no JSON body.
         if (
             response.status_code == HTTPStatus.TOO_MANY_REQUESTS
         ):  # pragma: no cover
-            # The Vuforia API returns a 429 response with no JSON body.
-            raise TooManyRequests(response=response)
+            if self._retry_after_too_many_requests_seconds is None:
+                raise TooManyRequests(response=response)
+            time.sleep(self._retry_after_too_many_requests_seconds)
+            self._make_request(
+                method=method,
+                content=content,
+                request_path=request_path,
+                expected_result_code=expected_result_code,
+            )
 
         result_code = response.json()["result_code"]
 
