@@ -8,6 +8,7 @@ import base64
 import json
 import time
 from datetime import date
+from http import HTTPStatus
 from typing import TYPE_CHECKING, BinaryIO
 from urllib.parse import urljoin
 
@@ -35,6 +36,7 @@ from vws.exceptions.vws_exceptions import (
     TargetQuotaReached,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
+    TooManyRequests,
     UnknownTarget,
 )
 from vws.reports import (
@@ -179,6 +181,12 @@ class VWS:
 
         if "Oops, an error occurred" in response.text:
             raise UnknownVWSErrorPossiblyBadName
+
+        if (
+            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
+        ):  # pragma: no cover
+            # The Vuforia API returns a 429 response with no JSON body.
+            raise TooManyRequests(response=response)
 
         result_code = response.json()["result_code"]
 
