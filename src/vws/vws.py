@@ -126,7 +126,7 @@ class VWS:
         server_access_key: str,
         server_secret_key: str,
         base_vws_url: str = "https://vws.vuforia.com",
-        retry_after_too_many_requests_seconds: float | None = 15,
+        retry_after_too_many_requests_seconds: float | None = None,
     ) -> None:
         """
         Args:
