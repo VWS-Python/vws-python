@@ -19,6 +19,7 @@ TargetProcessingTimeout
 TargetQuotaReached
 TargetStatusNotSuccess
 TargetStatusProcessing
+TooManyRequests
 Ubuntu
 UnknownTarget
 UnknownVWSErrorPossiblyBadName

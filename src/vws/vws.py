@@ -35,6 +35,7 @@ from vws.exceptions.vws_exceptions import (
     TargetQuotaReached,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
+    TooManyRequests,
     UnknownTarget,
 )
 from vws.reports import (
@@ -201,6 +202,7 @@ class VWS:
             "TargetQuotaReached": TargetQuotaReached,
             "TargetStatusNotSuccess": TargetStatusNotSuccess,
             "TargetStatusProcessing": TargetStatusProcessing,
+            "TooManyRequests": TooManyRequests,
             "UnknownTarget": UnknownTarget,
         }[result_code]
 
