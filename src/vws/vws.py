@@ -17,8 +17,8 @@ from requests import Response
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.custom_exceptions import (
+    OopsAnErrorOccurredPossiblyBadName,
     TargetProcessingTimeout,
-    UnknownVWSErrorPossiblyBadName,
 )
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
@@ -162,8 +162,8 @@ class VWS:
             The response to the request made by `requests`.
 
         Raises:
-            ~vws.exceptions.UnknownVWSErrorPossiblyBadName: Vuforia returns an
-                HTML page with the text "Oops, an error occurred". This has
+            ~vws.exceptions.OopsAnErrorOccurredPossiblyBadName: Vuforia returns
+                an HTML page with the text "Oops, an error occurred". This has
                 been seen to happen when the given name includes a bad
                 character.
             json.decoder.JSONDecodeError: The server did not respond with valid
@@ -180,7 +180,7 @@ class VWS:
         )
 
         if "Oops, an error occurred" in response.text:
-            raise UnknownVWSErrorPossiblyBadName
+            raise OopsAnErrorOccurredPossiblyBadName(response=response)
 
         if (
             response.status_code == HTTPStatus.TOO_MANY_REQUESTS
@@ -264,7 +264,7 @@ class VWS:
                 inactive.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
-            ~vws.exceptions.custom_exceptions.UnknownVWSErrorPossiblyBadName:
+            ~vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadName:
                 Vuforia returns an HTML page with the text "Oops, an error
                 occurred". This has been seen to happen when the given name
                 includes a bad character.

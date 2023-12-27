@@ -13,7 +13,7 @@ from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
 from vws import VWS
 from vws.exceptions.base_exceptions import VWSException
-from vws.exceptions.custom_exceptions import UnknownVWSErrorPossiblyBadName
+from vws.exceptions.custom_exceptions import OopsAnErrorOccurredPossiblyBadName
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
     BadImage,
@@ -69,11 +69,11 @@ def test_invalid_given_id(vws_client: VWS) -> None:
 def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
     """
     When a name with a bad character is given, an
-    ``UnknownVWSErrorPossiblyBadName`` exception is raised.
+    ``OopsAnErrorOccurredPossiblyBadName`` exception is raised.
     """
     max_char_value = 65535
     bad_name = chr(max_char_value + 1)
-    with pytest.raises(UnknownVWSErrorPossiblyBadName):
+    with pytest.raises(OopsAnErrorOccurredPossiblyBadName) as exc:
         vws_client.add_target(
             name=bad_name,
             width=1,
@@ -81,6 +81,8 @@ def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
             active_flag=True,
             application_metadata=None,
         )
+
+    assert exc.value.response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 def test_request_quota_reached() -> None:
