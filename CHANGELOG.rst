@@ -4,6 +4,9 @@ Changelog
 Next
 ----
 
+2023.12.27
+------------
+
 * Breaking change: The ``vws.exceptions.cloud_reco_exceptions.UnknownVWSErrorPossiblyBadName`` is now ``vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadName``.
 * ``vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadName`` now has a ``response`` parameter and attribute.
 
