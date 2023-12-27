@@ -22,7 +22,7 @@ TargetStatusProcessing
 TooManyRequests
 Ubuntu
 UnknownTarget
-UnknownVWSErrorPossiblyBadName
+OopsAnErrorOccurredPossiblyBadName
 admin
 api
 args
