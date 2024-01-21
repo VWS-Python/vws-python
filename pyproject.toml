@@ -249,7 +249,7 @@ dev = [
     "sphinxcontrib-spelling==8",
     "sybil==6.0.2",
     "types-requests==2.31.0.20240106",
-    "vulture==2.10",
+    "vulture==2.11",
     "VWS-Python-Mock==2024.1.21",
     "VWS-Test-Fixtures==2023.3.5",
 ]
