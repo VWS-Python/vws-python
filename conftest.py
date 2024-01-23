@@ -2,14 +2,14 @@
 
 from doctest import ELLIPSIS
 
-from sybil import Sybil  # pyright: ignore[reportMissingTypeStubs]
-from sybil.parsers.rest import (  # pyright: ignore[reportMissingTypeStubs]
+from sybil import Sybil
+from sybil.parsers.rest import (
     ClearNamespaceParser,
     DocTestParser,
     PythonCodeBlockParser,
 )
 
-pytest_collect_file = Sybil(  # pyright: ignore[reportUnknownVariableType]
+pytest_collect_file = Sybil(
     parsers=[
         ClearNamespaceParser(),
         DocTestParser(optionflags=ELLIPSIS),
