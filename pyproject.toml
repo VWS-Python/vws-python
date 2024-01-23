@@ -140,10 +140,10 @@ strict = true
 [build-system]
 build-backend = "setuptools.build_meta"
 requires = [
-    "pip",
-    "setuptools",
-    "setuptools_scm[toml]>=7.1",
-    "wheel",
+  "pip",
+  "setuptools",
+  "setuptools_scm[toml]>=7.1",
+  "wheel",
 ]
 
 [tool.distutils.bdist_wheel]
@@ -198,60 +198,60 @@ name = "vws-python"
 description = "Interact with the Vuforia Web Services (VWS) API."
 readme = { file = "README.rst", content-type = "text/x-rst"}
 keywords = [
-    "client",
-    "vuforia",
-    "vws",
+  "client",
+  "vuforia",
+  "vws",
 ]
 license = { file = "LICENSE" }
 authors = [ { name = "Adam Dangoor", email = "adamdangoor@gmail.com"} ]
 requires-python = ">=3.12"
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Web Environment",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: POSIX",
-    "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.12",
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Web Environment",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: POSIX",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
 ]
 dynamic = [
-    "version",
+  "version",
 ]
 dependencies = [
-    "requests",
-    "urllib3",
-    "VWS-Auth-Tools",
+  "requests",
+  "urllib3",
+  "VWS-Auth-Tools",
 ]
 [project.optional-dependencies]
 dev = [
-    "check-manifest==0.49",
-    "doc8==1.1.1",
-    "dodgy==0.2.1",
-    "freezegun==1.4.0",
-    "furo==2023.9.10",
-    "mypy==1.8.0",
-    "pdm==2.12.2",
-    "pip_check_reqs==2.5.3",
-    "pydocstyle==6.3",
-    "pyenchant==3.2.2",
-    "Pygments==2.17.2",
-    "pylint==3.0.3",
-    "pyproject-fmt==1.6.0",
-    "pyright==1.1.348",
-    "pyroma==4.2",
-    "pytest==7.4.4",
-    "pytest-cov==4.1",
-    "PyYAML==6.0.1",
-    "ruff==0.1.14",
-    "Sphinx==7.2.6",
-    "sphinx-autodoc-typehints==1.25.2",
-    "sphinx-prompt==1.8",
-    "Sphinx-Substitution-Extensions==2022.2.16",
-    "sphinxcontrib-spelling==8",
-    "sybil==6.0.2",
-    "types-requests==2.31.0.20240106",
-    "vulture==2.11",
-    "VWS-Python-Mock==2024.1.21",
-    "VWS-Test-Fixtures==2023.3.5",
+  "check-manifest==0.49",
+  "doc8==1.1.1",
+  "dodgy==0.2.1",
+  "freezegun==1.4",
+  "furo==2023.9.10",
+  "mypy==1.8",
+  "pdm==2.12.2",
+  "pip_check_reqs==2.5.3",
+  "pydocstyle==6.3",
+  "pyenchant==3.2.2",
+  "Pygments==2.17.2",
+  "pylint==3.0.3",
+  "pyproject-fmt==1.7",
+  "pyright==1.1.348",
+  "pyroma==4.2",
+  "pytest==7.4.4",
+  "pytest-cov==4.1",
+  "PyYAML==6.0.1",
+  "ruff==0.1.14",
+  "Sphinx==7.2.6",
+  "sphinx-autodoc-typehints==1.25.2",
+  "sphinx-prompt==1.8",
+  "Sphinx-Substitution-Extensions==2022.2.16",
+  "sphinxcontrib-spelling==8",
+  "sybil==6.0.2",
+  "types-requests==2.31.0.20240106",
+  "vulture==2.11",
+  "VWS-Python-Mock==2024.1.21",
+  "VWS-Test-Fixtures==2023.3.5",
 ]
 [project.urls]
 Documentation = "https://vws-python.readthedocs.io/en/latest/"
@@ -267,6 +267,10 @@ where = ["src"]
 vws = ["py.typed"]
 
 [tool.setuptools_scm]
+
+[tool.pyproject-fmt]
+indent = 4
+keep_full_version = false
 
 [tool.pyright]
 
