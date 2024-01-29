@@ -1,2 +1,0 @@
-include src/vws/py.typed
-include pyproject.toml
