@@ -241,7 +241,7 @@ dev = [
     "pytest==7.4.4",
     "pytest-cov==4.1",
     "PyYAML==6.0.1",
-    "ruff==0.1.14",
+    "ruff==0.1.15",
     "Sphinx==7.2.6",
     "sphinx-autodoc-typehints==1.25.3",
     "sphinx-prompt==1.8",
