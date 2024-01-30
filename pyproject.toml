@@ -170,6 +170,7 @@ ignore = [
     # docstrings.
     "D406",
     "D407",
+    "D413",
     # We have an existing interface to support and so we do not want to change
     # exception names.
     "N818",
