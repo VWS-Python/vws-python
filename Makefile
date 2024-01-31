@@ -7,6 +7,7 @@ SPHINXOPTS := -W
 
 .PHONY: lint
 lint: \
+    actionlint \
     check-manifest \
     doc8 \
     linkcheck \
