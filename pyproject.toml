@@ -231,7 +231,7 @@ dev = [
     "freezegun==1.4.0",
     "furo==2024.1.29",
     "mypy==1.8.0",
-    "pdm==2.12.2",
+    "pdm==2.12.3",
     "pip_check_reqs==2.5.3",
     "pydocstyle==6.3",
     "pyenchant==3.2.2",
