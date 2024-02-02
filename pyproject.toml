@@ -173,14 +173,18 @@ requires = [
 universal = true
 
 [tool.ruff]
-select = ["ALL"]
 line-length = 79
+
+[tool.ruff.lint]
+select = ["ALL"]
 
 ignore = [
     # We do not annotate the type of 'self'.
     "ANN101",
     # We are happy to manage our own "complexity".
     "C901",
+    # Ruff warns that this conflicts with the formatter.
+    "COM812",
     # Allow our chosen docstring line-style - no one-line summary.
     "D200",
     "D203",
@@ -194,6 +198,8 @@ ignore = [
     "D406",
     "D407",
     "D413",
+    # Ruff warns that this conflicts with the formatter.
+    "ISC001",
     # We have an existing interface to support and so we do not want to change
     # exception names.
     "N818",
@@ -211,7 +217,7 @@ ignore = [
 # is sometimes annoyingly removed.
 unfixable = ["ERA001"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/test_*.py" = [
     # Do not require tests to have a one-line summary.
     "D205",
@@ -266,7 +272,7 @@ dev = [
     "pytest==8.0.0",
     "pytest-cov==4.1",
     "PyYAML==6.0.1",
-    "ruff==0.1.15",
+    "ruff==0.2.0",
     "Sphinx==7.2.6",
     "sphinx-autodoc-typehints==1.25.3",
     "sphinx-prompt==1.8",
