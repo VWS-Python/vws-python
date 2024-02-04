@@ -22,6 +22,7 @@ from vws.exceptions.cloud_reco_exceptions import (
 )
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLarge,
+    ServerError,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
@@ -144,6 +145,11 @@ class CloudRecoService:
 
         if "Integer out of range" in response.text:
             raise MaxNumResultsOutOfRange(response=response)
+
+        if (
+            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+        ):  # pragma: no cover
+            raise ServerError(response=response)
 
         result_code = response.json()["result_code"]
         if result_code != "Success":

@@ -18,6 +18,7 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.custom_exceptions import (
     OopsAnErrorOccurredPossiblyBadName,
+    ServerError,
     TargetProcessingTimeout,
 )
 from vws.exceptions.vws_exceptions import (
@@ -187,6 +188,11 @@ class VWS:
         ):  # pragma: no cover
             # The Vuforia API returns a 429 response with no JSON body.
             raise TooManyRequests(response=response)
+
+        if (
+            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+        ):  # pragma: no cover
+            raise ServerError(response=response)
 
         result_code = response.json()["result_code"]
 
