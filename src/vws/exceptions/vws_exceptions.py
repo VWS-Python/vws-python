@@ -164,3 +164,10 @@ class TargetStatusNotSuccess(VWSException):
         # Every HTTP path which can raise this error is in the format
         # `/something/{target_id}`.
         return path.split(sep="/", maxsplit=2)[-1]
+
+
+class TooManyRequests(VWSException):  # pragma: no cover
+    """
+    Exception raised when Vuforia returns a response with a result code
+    'TooManyRequests'.
+    """
