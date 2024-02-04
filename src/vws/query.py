@@ -95,6 +95,8 @@ class CloudRecoService:
                 file in the grayscale or RGB color space.
             ~vws.exceptions.custom_exceptions.RequestEntityTooLarge: The given
                 image is too large.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
 
         Returns:
             An ordered list of target details of matching targets.

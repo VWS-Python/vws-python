@@ -56,13 +56,6 @@ class RequestQuotaReached(VWSException):  # pragma: no cover
     """
 
 
-class TooManyRequests(VWSException):  # pragma: no cover
-    """
-    Exception raised when Vuforia returns a response with a result code
-    'TooManyRequests'.
-    """
-
-
 class TargetStatusProcessing(VWSException):
     """
     Exception raised when Vuforia returns a response with a result code
