@@ -4,6 +4,9 @@ Changelog
 Next
 ----
 
+2024.02.04
+------------
+
 * Return a new error (``vws.custom_exceptions.ServerError``) when the server returns a 5xx status code.
 
 2023.12.27
