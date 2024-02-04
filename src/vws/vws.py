@@ -18,7 +18,9 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.custom_exceptions import (
     OopsAnErrorOccurredPossiblyBadName,
+    ServerError,
     TargetProcessingTimeout,
+    TooManyRequests,
 )
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailure,
@@ -36,7 +38,6 @@ from vws.exceptions.vws_exceptions import (
     TargetQuotaReached,
     TargetStatusNotSuccess,
     TargetStatusProcessing,
-    TooManyRequests,
     UnknownTarget,
 )
 from vws.reports import (
@@ -166,6 +167,10 @@ class VWS:
                 an HTML page with the text "Oops, an error occurred". This has
                 been seen to happen when the given name includes a bad
                 character.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
             json.decoder.JSONDecodeError: The server did not respond with valid
                 JSON. This may happen if the server address is not a valid
                 Vuforia server.
@@ -187,6 +192,11 @@ class VWS:
         ):  # pragma: no cover
             # The Vuforia API returns a 429 response with no JSON body.
             raise TooManyRequests(response=response)
+
+        if (
+            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+        ):  # pragma: no cover
+            raise ServerError(response=response)
 
         result_code = response.json()["result_code"]
 
@@ -268,6 +278,10 @@ class VWS:
                 Vuforia returns an HTML page with the text "Oops, an error
                 occurred". This has been seen to happen when the given name
                 includes a bad character.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         image_data = _get_image_data(image=image)
         image_data_encoded = base64.b64encode(image_data).decode("ascii")
@@ -314,6 +328,10 @@ class VWS:
                 does not match a target in the database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         response = self._make_request(
             method="GET",
@@ -371,6 +389,10 @@ class VWS:
                 does not match a target in the database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         start_time = time.monotonic()
         while True:
@@ -402,6 +424,10 @@ class VWS:
                 known database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         response = self._make_request(
             method="GET",
@@ -435,6 +461,10 @@ class VWS:
                 does not match a target in the database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         response = self._make_request(
             method="GET",
@@ -474,6 +504,10 @@ class VWS:
                 known database.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         response = self._make_request(
             method="GET",
@@ -520,6 +554,10 @@ class VWS:
                 target is in the processing state.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         self._make_request(
             method="DELETE",
@@ -553,6 +591,10 @@ class VWS:
                 inactive.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         response = self._make_request(
             method="GET",
@@ -612,6 +654,10 @@ class VWS:
                 inactive.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
                 error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.TooManyRequests: Vuforia is rate
+                limiting access.
         """
         data: dict[str, str | bool | float | int] = {}
 
