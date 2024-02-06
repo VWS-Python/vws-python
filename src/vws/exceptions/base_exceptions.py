@@ -5,7 +5,10 @@ Cloud Recognition Web API.
 
 from __future__ import annotations
 
-from .response import Response
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .response import Response
 
 
 class CloudRecoException(Exception):
