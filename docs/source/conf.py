@@ -59,13 +59,6 @@ intersphinx_mapping = {
 }
 nitpicky = True
 warning_is_error = True
-nitpick_ignore = [
-    ("py:class", "_io.BytesIO"),
-    # Requests documentation exposes ``requests.Response``, not
-    # ``requests.models.response``.
-    ("py:class", "requests.models.Response"),
-]
-
 
 autoclass_content = "both"
 
