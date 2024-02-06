@@ -5,6 +5,7 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 from __future__ import annotations
 
 import datetime
+import json
 from http import HTTPStatus
 from typing import Any, BinaryIO
 from urllib.parse import urljoin
@@ -24,6 +25,7 @@ from vws.exceptions.custom_exceptions import (
     RequestEntityTooLarge,
     ServerError,
 )
+from vws.exceptions.response import Response
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 
@@ -133,13 +135,20 @@ class CloudRecoService:
             "Content-Type": content_type_header,
         }
 
-        response = requests.request(
+        requests_response = requests.request(
             method=method,
             url=urljoin(base=self._base_vwq_url, url=request_path),
             headers=headers,
             data=content,
             # We should make the timeout customizable.
             timeout=None,
+        )
+        response = Response(
+            text=requests_response.text,
+            url=requests_response.url,
+            status_code=requests_response.status_code,
+            headers=dict(requests_response.headers),
+            request_body=requests_response.request.body,
         )
 
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
@@ -153,7 +162,7 @@ class CloudRecoService:
         ):  # pragma: no cover
             raise ServerError(response=response)
 
-        result_code = response.json()["result_code"]
+        result_code = json.loads(s=response.text)["result_code"]
         if result_code != "Success":
             exception = {
                 "AuthenticationFailure": AuthenticationFailure,
@@ -164,7 +173,7 @@ class CloudRecoService:
             raise exception(response=response)
 
         result: list[QueryResult] = []
-        result_list = list(response.json()["results"])
+        result_list = list(json.loads(s=response.text)["results"])
         for item in result_list:
             target_data: TargetData | None = None
             if "target_data" in item:

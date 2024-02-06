@@ -5,7 +5,7 @@ or simple errors given by the cloud recognition service.
 """
 
 
-from requests import Response
+from .response import Response
 
 
 class OopsAnErrorOccurredPossiblyBadName(Exception):

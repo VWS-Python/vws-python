@@ -137,8 +137,8 @@ class TargetNameExist(VWSException):
         """
         The target name which already exists.
         """
-        response_body = self.response.request.body or b""
-        request_json = json.loads(response_body)
+        response_body = self.response.request_body or b""
+        request_json = json.loads(s=response_body)
         return str(request_json["name"])
 
 
