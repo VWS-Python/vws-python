@@ -86,5 +86,3 @@ rst_prolog = f"""
 .. |github-owner| replace:: VWS-Python
 .. |github-repository| replace:: vws-python
 """
-
-always_document_param_types = True
