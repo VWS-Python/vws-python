@@ -15,7 +15,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
     "sphinx-prompt",
     "sphinx_substitution_extensions",
     "sphinxcontrib.spelling",
@@ -87,5 +86,3 @@ rst_prolog = f"""
 .. |github-owner| replace:: VWS-Python
 .. |github-repository| replace:: vws-python
 """
-
-always_document_param_types = True
