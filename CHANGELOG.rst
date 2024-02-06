@@ -4,6 +4,8 @@ Changelog
 Next
 ----
 
+* Exception response attributes are now ``vws.exceptions.response.Response`` instances rather than ``requests.Response`` objects.
+
 2024.02.04.1
 ------------
 

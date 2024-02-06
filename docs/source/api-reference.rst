@@ -5,10 +5,6 @@ API Reference
    :undoc-members:
    :members:
 
-.. automodule:: vws.exceptions.response
-   :undoc-members:
-   :members:
-
 .. automodule:: vws.reports
    :undoc-members:
    :members:
