@@ -13,7 +13,6 @@ from typing import TYPE_CHECKING, BinaryIO
 from urllib.parse import urljoin
 
 import requests
-from requests import Response
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.custom_exceptions import (
@@ -47,6 +46,8 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
+
+from .exceptions.response import Response
 
 if TYPE_CHECKING:
     import io
@@ -107,13 +108,21 @@ def _target_api_request(
 
     url = urljoin(base=base_vws_url, url=request_path)
 
-    return requests.request(
+    requests_response = requests.request(
         method=method,
         url=url,
         headers=headers,
         data=content,
         # We should make the timeout customizable.
         timeout=None,
+    )
+
+    return Response(
+        text=requests_response.text,
+        url=requests_response.url,
+        status_code=requests_response.status_code,
+        headers=dict(requests_response.headers),
+        request_body=requests_response.request.body,
     )
 
 
@@ -198,7 +207,7 @@ class VWS:
         ):  # pragma: no cover
             raise ServerError(response=response)
 
-        result_code = response.json()["result_code"]
+        result_code = json.loads(s=response.text)["result_code"]
 
         if result_code == expected_result_code:
             return response
@@ -303,7 +312,7 @@ class VWS:
             expected_result_code="TargetCreated",
         )
 
-        return str(response.json()["target_id"])
+        return str(json.loads(response.text)["target_id"])
 
     def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
         """
@@ -340,7 +349,7 @@ class VWS:
             expected_result_code="Success",
         )
 
-        result_data = response.json()
+        result_data = json.loads(s=response.text)
         status = TargetStatuses(result_data["status"])
         target_record_dict = dict(result_data["target_record"])
         target_record = TargetRecord(
@@ -436,7 +445,7 @@ class VWS:
             expected_result_code="Success",
         )
 
-        return list(response.json()["results"])
+        return list(json.loads(response.text)["results"])
 
     def get_target_summary_report(self, target_id: str) -> TargetSummaryReport:
         """
@@ -473,7 +482,7 @@ class VWS:
             expected_result_code="Success",
         )
 
-        result_data = dict(response.json())
+        result_data = dict(json.loads(response.text))
         return TargetSummaryReport(
             status=TargetStatuses(result_data["status"]),
             database_name=result_data["database_name"],
@@ -516,7 +525,7 @@ class VWS:
             expected_result_code="Success",
         )
 
-        response_data = dict(response.json())
+        response_data = dict(json.loads(response.text))
         return DatabaseSummaryReport(
             active_images=response_data["active_images"],
             current_month_recos=response_data["current_month_recos"],
@@ -603,7 +612,7 @@ class VWS:
             expected_result_code="Success",
         )
 
-        return list(response.json()["similar_targets"])
+        return list(json.loads(s=response.text)["similar_targets"])
 
     def update_target(
         self,
