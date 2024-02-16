@@ -41,11 +41,12 @@ jobs:
       - name: "Install dependencies"
         env:
           UV_CACHE_DIR: ~\AppData\Local\uv\Cache
+          VIRTUAL_ENV: ~\AppData\Local\.venv
         run: |
           irm https://astral.sh/uv/install.ps1 | iex
-          uv venv "~\AppData\Local\.venv"
-          "~\AppData\Local\.venv\Scripts\activate.ps1"
-          uv pip install --upgrade --editable ".[dev]"
+          uv venv ${{ env.VIRTUAL_ENV }}
+          "${{ env.VIRTUAL_ENV }}/Scripts\Activate.ps1"
+          uv pip install --upgrade --editable .[dev]
 
       - name: "Run tests"
         run: |
