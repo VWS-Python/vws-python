@@ -42,7 +42,7 @@ jobs:
         env:
           UV_CACHE_DIR: ~\AppData\Local\uv\Cache
         run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
+          irm https://astral.sh/uv/install.ps1 | iex
           uv venv "~\AppData\Local\.venv"
           source "~\AppData\Local\.venv"
           uv pip install --upgrade --editable ".[dev]"
