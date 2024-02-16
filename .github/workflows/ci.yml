@@ -42,10 +42,10 @@ jobs:
         env:
           UV_CACHE_DIR: ~/.cache/uv
         run: |
-          python -m pip install --upgrade uv
-          python -m uv venv
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv venv
           source ./.venv/bin/activate
-          python -m uv pip install --upgrade .[dev]
+          uv pip install --upgrade .[dev]
 
       - name: "Lint"
         run: |
