@@ -29,18 +29,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/cache@v4
-        env:
-          UV_CACHE_DIR: ~\AppData\Local\uv\Cache
-        with:
-          path: "${{ env.UV_CACHE_DIR }}"
-          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
-
       - name: "Install dependencies"
-        env:
-          UV_CACHE_DIR: ~\AppData\Local\uv\Cache
         run: |
           irm https://astral.sh/uv/install.ps1 | iex
           uv venv ${{ github.workspace }}/../.venv
