@@ -30,22 +30,26 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - uses: actions/cache@v4
+        env:
+          UV_CACHE_DIR: ~\AppData\Local\uv\Cache
         with:
-          path: ~\AppData\Local\pip\Cache
-          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+          path: "${{ env.UV_CACHE_DIR }}"
+          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
-            ${{ runner.os }}-pip-
+            ${{ runner.os }}-uv-
 
       - name: "Install dependencies"
+        env:
+          UV_CACHE_DIR: ~\AppData\Local\uv\Cache
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          # We use '--ignore-installed' to avoid GitHub's cache which can cause
-          # issues - we have seen packages from this cache be cause trouble with
-          # pip-extra-reqs.
-          python -m pip install --ignore-installed --upgrade --editable .[dev]
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv venv ~\AppData\Local\.venv
+          source ~\AppData\Local\.venv
+          uv pip install --upgrade --editable ".[dev]"
 
       - name: "Run tests"
         run: |
+          source ~\AppData\Local\.venv
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
           pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
