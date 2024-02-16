@@ -50,7 +50,7 @@ jobs:
 
       - name: "Lint"
         run: |
-          source /home/runner/.venv/bin/activate
+          source ${{ github.workspace }}/.venv/bin/activate
           make lint
 
       - name: "Run tests"
