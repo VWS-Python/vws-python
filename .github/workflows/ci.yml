@@ -44,7 +44,7 @@ jobs:
           UV_CACHE_DIR: /home/runner/.cache/uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv /home/runner/.venv
+          uv venv /home/runner/.venv
           source /home/runner/.venv/bin/activate
           uv pip install --upgrade --editable ".[dev]"
 
