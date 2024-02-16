@@ -40,10 +40,9 @@ jobs:
 
       - name: "Install dependencies"
         env:
-          UV_CACHE_DIR: ~/.cache/uv
+          # `/home/runner` is the result of running `readlink -f ~` on the runner.
+          UV_CACHE_DIR: /home/runner/.cache/uv
         run: |
-          readlink -f ~
-          echo "READLINK"
           curl -LsSf https://astral.sh/uv/install.sh | sh
           uv venv
           source ./.venv/bin/activate
