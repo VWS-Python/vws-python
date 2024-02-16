@@ -48,8 +48,6 @@ jobs:
           uv pip install --upgrade --editable .[dev]
 
       - name: "Run tests"
-        env:
-          VIRTUAL_ENV: ~\AppData\Local\.venv
         run: |
           ${{ github.workspace }}/.venv/Scripts/Activate.ps1
           # We run tests against "." and not the tests directory as we test the README
