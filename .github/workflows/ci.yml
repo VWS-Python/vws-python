@@ -42,6 +42,8 @@ jobs:
         env:
           UV_CACHE_DIR: ~/.cache/uv
         run: |
+          readlink -f ~
+          echo "READLINK"
           curl -LsSf https://astral.sh/uv/install.sh | sh
           uv venv
           source ./.venv/bin/activate
