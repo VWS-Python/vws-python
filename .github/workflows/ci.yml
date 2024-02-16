@@ -41,15 +41,21 @@ jobs:
       - name: "Install dependencies"
         env:
           UV_CACHE_DIR: ~/.cache/uv
+          VIRTUAL_ENV: ./.venv
         run: |
           python -m pip install --upgrade uv
+          uv venv
           python -m uv pip install --upgrade --editable .[dev]
 
       - name: "Lint"
+        env:
+          VIRTUAL_ENV: ./.venv
         run: |
           make lint
 
       - name: "Run tests"
+        env:
+          VIRTUAL_ENV: ./.venv
         run: |
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
