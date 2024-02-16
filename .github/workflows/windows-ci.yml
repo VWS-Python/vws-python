@@ -45,14 +45,12 @@ jobs:
         run: |
           irm https://astral.sh/uv/install.ps1 | iex
           uv venv ${{ env.VIRTUAL_ENV }}
-          "${{ env.VIRTUAL_ENV }}\Scripts\Activate.ps1"
           uv pip install --upgrade --editable .[dev]
 
       - name: "Run tests"
         env:
           VIRTUAL_ENV: ~\AppData\Local\.venv
         run: |
-          "${{ env.VIRTUAL_ENV }}\Scripts\Activate.ps1"
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
-          python -m pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
+          "${{ env.VIRTUAL_ENV }}\bin\python -m pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml"
