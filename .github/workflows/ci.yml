@@ -44,18 +44,18 @@ jobs:
           UV_CACHE_DIR: /home/runner/.cache/uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv venv ${{ github.workspace }}/.venv
-          source ${{ github.workspace }}/.venv/bin/activate
+          uv venv ${{ github.workspace }}/../.venv
+          source ${{ github.workspace }}/../.venv/bin/activate
           uv pip install --upgrade --editable .[dev]
 
       - name: "Lint"
         run: |
-          source ${{ github.workspace }}/.venv/bin/activate
+          source ${{ github.workspace }}/../.venv/bin/activate
           make lint
 
       - name: "Run tests"
         run: |
-          source ${{ github.workspace }}/.venv/bin/activate
+          source ${{ github.workspace }}/../.venv/bin/activate
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
           pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
