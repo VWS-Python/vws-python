@@ -41,17 +41,17 @@ jobs:
       - name: "Install dependencies"
         env:
           UV_CACHE_DIR: ~\AppData\Local\uv\Cache
-          VIRTUAL_ENV: ~\AppData\Local\.venv
         run: |
           irm https://astral.sh/uv/install.ps1 | iex
-          uv venv ${{ env.VIRTUAL_ENV }}
+          uv venv ${{ github.workspace }}/.venv
+          ${{ github.workspace }}/.venv/Scripts/Activate.ps1
           uv pip install --upgrade --editable .[dev]
 
       - name: "Run tests"
         env:
           VIRTUAL_ENV: ~\AppData\Local\.venv
         run: |
-          Import-Module ~
+          ${{ github.workspace }}/.venv/Scripts/Activate.ps1
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
           ${{ env.VIRTUAL_ENV}}/bin/python -m pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
