@@ -52,7 +52,7 @@ jobs:
           VIRTUAL_ENV: ~\AppData\Local\.venv
           ACTIVATE_SCRIPT: ~\AppData\Local\.venv\Scripts\Activate.ps1
         run: |
-          ~/AppData/Local/.venv/Scripts/Activate.ps1
+          ~\\AppData\\Local\\.venv\\Scripts\\Activate.ps1
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
           python -m pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
