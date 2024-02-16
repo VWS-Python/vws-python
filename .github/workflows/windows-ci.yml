@@ -44,7 +44,7 @@ jobs:
         run: |
           irm https://astral.sh/uv/install.ps1 | iex
           uv venv "~\AppData\Local\.venv"
-          source "~\AppData\Local\.venv"
+          "~\AppData\Local\.venv\Scripts\activate.ps1"
           uv pip install --upgrade --editable ".[dev]"
 
       - name: "Run tests"
