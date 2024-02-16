@@ -43,7 +43,7 @@ jobs:
           UV_CACHE_DIR: ~/.cache/uv
         run: |
           python -m pip install --upgrade uv
-          uv venv
+          python -m uv venv
           source ./.venv/bin/activate
           python -m uv pip install --upgrade .[dev]
 
