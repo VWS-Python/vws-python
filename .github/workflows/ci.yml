@@ -29,19 +29,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/cache@v4
-        env:
-          UV_CACHE_DIR: ~/.cache/uv
-        with:
-          path: "${{ env.UV_CACHE_DIR }}"
-          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
-
+      # We do not use the cache action as uv is faster than the cache action.
       - name: "Install dependencies"
-        env:
-          # `/home/runner` is the result of running `readlink -f ~` on the runner.
-          UV_CACHE_DIR: /home/runner/.cache/uv
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           uv venv /home/runner/.venv
