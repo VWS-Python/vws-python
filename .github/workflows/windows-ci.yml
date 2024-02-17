@@ -29,18 +29,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - uses: actions/cache@v4
-        env:
-          UV_CACHE_DIR: C:/Users/runner/.cache/
-        with:
-          path: "${{ env.UV_CACHE_DIR }}"
-          key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-uv-
-
+      # We do not use the cache action as uv is faster than the cache action.
       - name: "Install dependencies"
-        env:
-          UV_CACHE_DIR: C:/Users/runner/.cache/
         run: |
           irm https://astral.sh/uv/install.ps1 | iex
           uv venv C:/Users/runner/.venv
