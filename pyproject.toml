@@ -256,7 +256,6 @@ dev = [
     "actionlint-py==1.6.26.11",
     "check-manifest==0.49",
     "doc8==1.1.1",
-    "dodgy==0.2.1",
     "freezegun==1.4.0",
     "furo==2024.1.29",
     "mypy==1.8.0",
