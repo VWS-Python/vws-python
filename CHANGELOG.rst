@@ -7,6 +7,8 @@ Next
 2024.02.19
 ------------
 
+* Add exception response attribute to ``vws.exceptions.custom_exceptions.RequestEntityTooLarge``.
+
 2024.02.06
 ------------
 
