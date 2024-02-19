@@ -37,6 +37,21 @@ class RequestEntityTooLarge(Exception):
     Exception raised when the given image is too large.
     """
 
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response returned by Vuforia.
+        """
+        super().__init__(response.text)
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """
+        The response returned by Vuforia which included this error.
+        """
+        return self._response
+
 
 class TargetProcessingTimeout(Exception):
     """

@@ -152,7 +152,7 @@ class CloudRecoService:
         )
 
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
-            raise RequestEntityTooLarge
+            raise RequestEntityTooLarge(response=response)
 
         if "Integer out of range" in response.text:
             raise MaxNumResultsOutOfRange(response=response)

@@ -58,8 +58,12 @@ def test_image_too_large(
     A ``RequestEntityTooLarge`` exception is raised if an image which is too
     large is given.
     """
-    with pytest.raises(RequestEntityTooLarge):
+    with pytest.raises(RequestEntityTooLarge) as exc:
         cloud_reco_client.query(image=png_too_large)
+
+    assert (
+        exc.value.response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
+    )
 
 
 def test_cloudrecoexception_inheritance() -> None:
