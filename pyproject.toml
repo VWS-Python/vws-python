@@ -270,7 +270,7 @@ dev = [
     "pytest==8.0.2",
     "pytest-cov==4.1",
     "PyYAML==6.0.1",
-    "ruff==0.2.2",
+    "ruff==0.3.0",
     "Sphinx==7.2.6",
     "sphinx-prompt==1.8",
     "Sphinx-Substitution-Extensions==2024.2.25",
