@@ -33,18 +33,14 @@ jobs:
       - name: "Install dependencies"
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv venv /home/runner/.venv
-          source /home/runner/.venv/bin/activate
-          uv pip install --upgrade --editable .[dev]
+          uv pip install --system --upgrade --editable .[dev]
 
       - name: "Lint"
         run: |
-          source /home/runner/.venv/bin/activate
           make lint
 
       - name: "Run tests"
         run: |
-          source /home/runner/.venv/bin/activate
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
           pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
