@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import datetime
 import json
-from http import HTTPStatus
+from http import HTTPMethod, HTTPStatus
 from typing import Any, BinaryIO
 from urllib.parse import urljoin
 
@@ -116,7 +116,7 @@ class CloudRecoService:
         date = rfc_1123_date()
         request_path = "/v1/query"
         content, content_type_header = encode_multipart_formdata(fields=body)
-        method = "POST"
+        method = HTTPMethod.POST
 
         authorization_string = authorization_header(
             access_key=self._client_access_key,

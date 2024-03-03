@@ -8,7 +8,7 @@ import base64
 import json
 import time
 from datetime import date
-from http import HTTPStatus
+from http import HTTPMethod, HTTPStatus
 from typing import TYPE_CHECKING, BinaryIO
 from urllib.parse import urljoin
 
@@ -306,7 +306,7 @@ class VWS:
         content = bytes(json.dumps(data), encoding="utf-8")
 
         response = self._make_request(
-            method="POST",
+            method=HTTPMethod.POST,
             content=content,
             request_path="/targets",
             expected_result_code="TargetCreated",
@@ -343,7 +343,7 @@ class VWS:
                 limiting access.
         """
         response = self._make_request(
-            method="GET",
+            method=HTTPMethod.GET,
             content=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
@@ -439,7 +439,7 @@ class VWS:
                 limiting access.
         """
         response = self._make_request(
-            method="GET",
+            method=HTTPMethod.GET,
             content=b"",
             request_path="/targets",
             expected_result_code="Success",
@@ -476,7 +476,7 @@ class VWS:
                 limiting access.
         """
         response = self._make_request(
-            method="GET",
+            method=HTTPMethod.GET,
             content=b"",
             request_path=f"/summary/{target_id}",
             expected_result_code="Success",
@@ -519,7 +519,7 @@ class VWS:
                 limiting access.
         """
         response = self._make_request(
-            method="GET",
+            method=HTTPMethod.GET,
             content=b"",
             request_path="/summary",
             expected_result_code="Success",
@@ -569,7 +569,7 @@ class VWS:
                 limiting access.
         """
         self._make_request(
-            method="DELETE",
+            method=HTTPMethod.DELETE,
             content=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
@@ -606,7 +606,7 @@ class VWS:
                 limiting access.
         """
         response = self._make_request(
-            method="GET",
+            method=HTTPMethod.GET,
             content=b"",
             request_path=f"/duplicates/{target_id}",
             expected_result_code="Success",
@@ -690,7 +690,7 @@ class VWS:
         content = bytes(json.dumps(data), encoding="utf-8")
 
         self._make_request(
-            method="PUT",
+            method=HTTPMethod.PUT,
             content=content,
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
