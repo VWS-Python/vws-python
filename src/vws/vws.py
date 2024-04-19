@@ -172,14 +172,14 @@ class VWS:
             The response to the request made by `requests`.
 
         Raises:
-            ~vws.exceptions.OopsAnErrorOccurredPossiblyBadName: Vuforia returns
-                an HTML page with the text "Oops, an error occurred". This has
-                been seen to happen when the given name includes a bad
+            ~vws.exceptions.OopsAnErrorOccurredPossiblyBadNameError: Vuforia
+                returns an HTML page with the text "Oops, an error occurred".
+                This has been seen to happen when the given name includes a bad
                 character.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
             json.decoder.JSONDecodeError: The server did not respond with valid
                 JSON. This may happen if the server address is not a valid
                 Vuforia server.
@@ -263,34 +263,33 @@ class VWS:
             The target ID of the new target.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.BadImage: There is a problem with
-                the given image.
-                For example, it must be a JPEG or PNG file in the grayscale or
-                RGB color space.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.BadImageError: There is a problem
+                with the given image. For example, it must be a JPEG or PNG
+                file in the grayscale or RGB color space.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.MetadataTooLarge: The given metadata
-                is too large. The maximum size is 1 MB of data when Base64
-                encoded.
-            ~vws.exceptions.vws_exceptions.ImageTooLarge: The given image is
-                too large.
-            ~vws.exceptions.vws_exceptions.TargetNameExist: A target with the
-                given ``name`` already exists.
-            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
+            ~vws.exceptions.vws_exceptions.MetadataTooLargeError: The given
+                metadata is too large. The maximum size is 1 MB of data when
+                Base64 encoded.
+            ~vws.exceptions.vws_exceptions.ImageTooLargeError: The given image
+                is too large.
+            ~vws.exceptions.vws_exceptions.TargetNameExistError: A target with
+                the given ``name`` already exists.
+            ~vws.exceptions.vws_exceptions.ProjectInactiveError: The project is
                 inactive.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
-            ~vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadName:
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadNameError:
                 Vuforia returns an HTML page with the text "Oops, an error
                 occurred". This has been seen to happen when the given name
                 includes a bad character.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         image_data = _get_image_data(image=image)
         image_data_encoded = base64.b64encode(image_data).decode("ascii")
@@ -328,19 +327,19 @@ class VWS:
             Response details of a target from Vuforia.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
-                does not match a target in the database.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.UnknownTargetError: The given target
+                ID does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         response = self._make_request(
             method=HTTPMethod.GET,
@@ -426,17 +425,17 @@ class VWS:
             The IDs of all targets in the database.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         response = self._make_request(
             method=HTTPMethod.GET,
@@ -461,19 +460,19 @@ class VWS:
             Details of the target.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
-                does not match a target in the database.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.UnknownTargetError: The given target
+                ID does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         response = self._make_request(
             method=HTTPMethod.GET,
@@ -506,17 +505,17 @@ class VWS:
             Details of the database.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         response = self._make_request(
             method=HTTPMethod.GET,
@@ -552,21 +551,21 @@ class VWS:
             target_id: The ID of the target to delete.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
-                does not match a target in the database.
-            ~vws.exceptions.vws_exceptions.TargetStatusProcessing: The given
-                target is in the processing state.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.UnknownTargetError: The given target
+                ID does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.TargetStatusProcessingError: The
+                given target is in the processing state.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         self._make_request(
             method=HTTPMethod.DELETE,
@@ -589,21 +588,21 @@ class VWS:
             The target IDs of duplicate targets.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
-                does not match a target in the database.
-            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
+            ~vws.exceptions.vws_exceptions.UnknownTargetError: The given target
+                ID does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.ProjectInactiveError: The project is
                 inactive.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         response = self._make_request(
             method=HTTPMethod.GET,
@@ -644,29 +643,29 @@ class VWS:
                 Giving ``None`` will not change the application metadata.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.BadImage: There is a problem with
-                the given image.  For example, it must be a JPEG or PNG file in
-                the grayscale or RGB color space.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.BadImageError: There is a problem
+                with the given image.  For example, it must be a JPEG or PNG
+                file in the grayscale or RGB color space.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.vws_exceptions.MetadataTooLarge: The given metadata
-                is too large.  The maximum size is 1 MB of data when Base64
-                encoded.
-            ~vws.exceptions.vws_exceptions.ImageTooLarge: The given image is
-                too large.
-            ~vws.exceptions.vws_exceptions.TargetNameExist: A target with the
-                given ``name`` already exists.
-            ~vws.exceptions.vws_exceptions.ProjectInactive: The project is
+            ~vws.exceptions.vws_exceptions.MetadataTooLargeError: The given
+                metadata is too large. The maximum size is 1 MB of data when
+                Base64 encoded.
+            ~vws.exceptions.vws_exceptions.ImageTooLargeError: The given image
+                is too large.
+            ~vws.exceptions.vws_exceptions.TargetNameExistError: A target with
+                the given ``name`` already exists.
+            ~vws.exceptions.vws_exceptions.ProjectInactiveError: The project is
                 inactive.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         data: dict[str, str | bool | float | int] = {}
 
