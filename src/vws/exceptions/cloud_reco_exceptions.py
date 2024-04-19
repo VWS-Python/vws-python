@@ -2,38 +2,38 @@
 Exceptions which match errors raised by the Vuforia Cloud Recognition Web APIs.
 """
 
-from vws.exceptions.base_exceptions import CloudRecoException
+from vws.exceptions.base_exceptions import CloudRecoError
 
 
-class MaxNumResultsOutOfRange(CloudRecoException):
+class MaxNumResultsOutOfRangeError(CloudRecoError):
     """
     Exception raised when the ``max_num_results`` given to the Cloud
     Recognition Web API query endpoint is out of range.
     """
 
 
-class InactiveProject(CloudRecoException):
+class InactiveProjectError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code
     'InactiveProject'.
     """
 
 
-class BadImage(CloudRecoException):
+class BadImageError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code
     'BadImage'.
     """
 
 
-class AuthenticationFailure(CloudRecoException):
+class AuthenticationFailureError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code
     'AuthenticationFailure'.
     """
 
 
-class RequestTimeTooSkewed(CloudRecoException):
+class RequestTimeTooSkewedError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code
     'RequestTimeTooSkewed'.

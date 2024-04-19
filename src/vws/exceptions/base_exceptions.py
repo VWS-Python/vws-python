@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .response import Response
 
 
-class CloudRecoException(Exception):
+class CloudRecoError(Exception):
     """
     Base class for Vuforia Cloud Recognition Web API exceptions.
     """
@@ -32,7 +32,7 @@ class CloudRecoException(Exception):
         return self._response
 
 
-class VWSException(Exception):
+class VWSError(Exception):
     """
     Base class for Vuforia Web Services errors.
 

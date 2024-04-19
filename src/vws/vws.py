@@ -16,28 +16,28 @@ import requests
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.custom_exceptions import (
-    OopsAnErrorOccurredPossiblyBadName,
+    OopsAnErrorOccurredPossiblyBadNameError,
     ServerError,
-    TargetProcessingTimeout,
+    TargetProcessingTimeoutError,
 )
 from vws.exceptions.vws_exceptions import (
-    AuthenticationFailure,
-    BadImage,
+    AuthenticationFailureError,
+    BadImageError,
     DateRangeError,
-    Fail,
-    ImageTooLarge,
-    MetadataTooLarge,
-    ProjectHasNoAPIAccess,
-    ProjectInactive,
-    ProjectSuspended,
-    RequestQuotaReached,
-    RequestTimeTooSkewed,
-    TargetNameExist,
-    TargetQuotaReached,
-    TargetStatusNotSuccess,
-    TargetStatusProcessing,
-    TooManyRequests,
-    UnknownTarget,
+    FailError,
+    ImageTooLargeError,
+    MetadataTooLargeError,
+    ProjectHasNoAPIAccessError,
+    ProjectInactiveError,
+    ProjectSuspendedError,
+    RequestQuotaReachedError,
+    RequestTimeTooSkewedError,
+    TargetNameExistError,
+    TargetQuotaReachedError,
+    TargetStatusNotSuccessError,
+    TargetStatusProcessingError,
+    TooManyRequestsError,
+    UnknownTargetError,
 )
 from vws.reports import (
     DatabaseSummaryReport,
@@ -194,13 +194,13 @@ class VWS:
         )
 
         if "Oops, an error occurred" in response.text:
-            raise OopsAnErrorOccurredPossiblyBadName(response=response)
+            raise OopsAnErrorOccurredPossiblyBadNameError(response=response)
 
         if (
             response.status_code == HTTPStatus.TOO_MANY_REQUESTS
         ):  # pragma: no cover
             # The Vuforia API returns a 429 response with no JSON body.
-            raise TooManyRequests(response=response)
+            raise TooManyRequestsError(response=response)
 
         if (
             response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
@@ -213,22 +213,22 @@ class VWS:
             return response
 
         exception = {
-            "AuthenticationFailure": AuthenticationFailure,
-            "BadImage": BadImage,
+            "AuthenticationFailure": AuthenticationFailureError,
+            "BadImage": BadImageError,
             "DateRangeError": DateRangeError,
-            "Fail": Fail,
-            "ImageTooLarge": ImageTooLarge,
-            "MetadataTooLarge": MetadataTooLarge,
-            "ProjectHasNoAPIAccess": ProjectHasNoAPIAccess,
-            "ProjectInactive": ProjectInactive,
-            "ProjectSuspended": ProjectSuspended,
-            "RequestQuotaReached": RequestQuotaReached,
-            "RequestTimeTooSkewed": RequestTimeTooSkewed,
-            "TargetNameExist": TargetNameExist,
-            "TargetQuotaReached": TargetQuotaReached,
-            "TargetStatusNotSuccess": TargetStatusNotSuccess,
-            "TargetStatusProcessing": TargetStatusProcessing,
-            "UnknownTarget": UnknownTarget,
+            "Fail": FailError,
+            "ImageTooLarge": ImageTooLargeError,
+            "MetadataTooLarge": MetadataTooLargeError,
+            "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
+            "ProjectInactive": ProjectInactiveError,
+            "ProjectSuspended": ProjectSuspendedError,
+            "RequestQuotaReached": RequestQuotaReachedError,
+            "RequestTimeTooSkewed": RequestTimeTooSkewedError,
+            "TargetNameExist": TargetNameExistError,
+            "TargetQuotaReached": TargetQuotaReachedError,
+            "TargetStatusNotSuccess": TargetStatusNotSuccessError,
+            "TargetStatusProcessing": TargetStatusProcessingError,
+            "UnknownTarget": UnknownTargetError,
         }[result_code]
 
         raise exception(response=response)
@@ -386,22 +386,22 @@ class VWS:
                 target to be processed.
 
         Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailure: The secret
-                key is not correct.
-            ~vws.exceptions.vws_exceptions.Fail: There was an error with the
-                request. For example, the given access key does not match a
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
                 known database.
-            ~vws.exceptions.custom_exceptions.TargetProcessingTimeout: The
+            ~vws.exceptions.custom_exceptions.TargetProcessingTimeoutError: The
                 target remained in the processing stage for more than
                 ``timeout_seconds`` seconds.
-            ~vws.exceptions.vws_exceptions.UnknownTarget: The given target ID
-                does not match a target in the database.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewed: There is an
-                error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.UnknownTargetError: The given target
+                ID does not match a target in the database.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequests: Vuforia is rate
-                limiting access.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
         """
         start_time = time.monotonic()
         while True:
@@ -411,7 +411,7 @@ class VWS:
 
             elapsed_time = time.monotonic() - start_time
             if elapsed_time > timeout_seconds:  # pragma: no cover
-                raise TargetProcessingTimeout
+                raise TargetProcessingTimeoutError
 
             time.sleep(seconds_between_requests)
 

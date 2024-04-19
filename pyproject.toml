@@ -192,9 +192,6 @@ ignore = [
     "D415",
     # Ruff warns that this conflicts with the formatter.
     "ISC001",
-    # We have an existing interface to support and so we do not want to change
-    # exception names.
-    "N818",
     # Ignore "too-many-*" errors as they seem to get in the way more than
     # helping.
     "PLR0913",

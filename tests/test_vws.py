@@ -15,7 +15,7 @@ from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from vws import VWS, CloudRecoService
-from vws.exceptions.custom_exceptions import TargetProcessingTimeout
+from vws.exceptions.custom_exceptions import TargetProcessingTimeoutError
 from vws.reports import (
     DatabaseSummaryReport,
     TargetRecord,
@@ -442,7 +442,7 @@ class TestWaitForTargetProcessed:
 
             report = vws_client.get_target_summary_report(target_id=target_id)
             assert report.status == TargetStatuses.PROCESSING
-            with pytest.raises(TargetProcessingTimeout):
+            with pytest.raises(TargetProcessingTimeoutError):
                 vws_client.wait_for_target_processed(
                     target_id=target_id,
                     timeout_seconds=0.1,

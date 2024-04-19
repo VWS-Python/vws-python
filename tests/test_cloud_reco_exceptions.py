@@ -13,16 +13,16 @@ from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
 from vws import CloudRecoService
-from vws.exceptions.base_exceptions import CloudRecoException
+from vws.exceptions.base_exceptions import CloudRecoError
 from vws.exceptions.cloud_reco_exceptions import (
-    AuthenticationFailure,
-    BadImage,
-    InactiveProject,
-    MaxNumResultsOutOfRange,
-    RequestTimeTooSkewed,
+    AuthenticationFailureError,
+    BadImageError,
+    InactiveProjectError,
+    MaxNumResultsOutOfRangeError,
+    RequestTimeTooSkewedError,
 )
 from vws.exceptions.custom_exceptions import (
-    RequestEntityTooLarge,
+    RequestEntityTooLargeError,
 )
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ def test_too_many_max_results(
     A ``MaxNumResultsOutOfRange`` error is raised if the given
     ``max_num_results`` is out of range.
     """
-    with pytest.raises(MaxNumResultsOutOfRange) as exc:
+    with pytest.raises(MaxNumResultsOutOfRangeError) as exc:
         cloud_reco_client.query(
             image=high_quality_image,
             max_num_results=51,
@@ -58,7 +58,7 @@ def test_image_too_large(
     A ``RequestEntityTooLarge`` exception is raised if an image which is too
     large is given.
     """
-    with pytest.raises(RequestEntityTooLarge) as exc:
+    with pytest.raises(RequestEntityTooLargeError) as exc:
         cloud_reco_client.query(image=png_too_large)
 
     assert (
@@ -71,14 +71,14 @@ def test_cloudrecoexception_inheritance() -> None:
     CloudRecoService-specific exceptions inherit from CloudRecoException.
     """
     subclasses = [
-        MaxNumResultsOutOfRange,
-        InactiveProject,
-        BadImage,
-        AuthenticationFailure,
-        RequestTimeTooSkewed,
+        MaxNumResultsOutOfRangeError,
+        InactiveProjectError,
+        BadImageError,
+        AuthenticationFailureError,
+        RequestTimeTooSkewedError,
     ]
     for subclass in subclasses:
-        assert issubclass(subclass, CloudRecoException)
+        assert issubclass(subclass, CloudRecoError)
 
 
 def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
@@ -94,7 +94,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
     with MockVWS() as mock:
         mock.add_database(database=database)
 
-        with pytest.raises(AuthenticationFailure) as exc:
+        with pytest.raises(AuthenticationFailureError) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
@@ -113,7 +113,7 @@ def test_inactive_project(high_quality_image: io.BytesIO) -> None:
             client_secret_key=database.client_secret_key,
         )
 
-        with pytest.raises(InactiveProject) as exc:
+        with pytest.raises(InactiveProjectError) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
