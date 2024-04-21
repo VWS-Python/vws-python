@@ -23,6 +23,7 @@ TooManyRequests
 Ubuntu
 UnknownTarget
 OopsAnErrorOccurredPossiblyBadName
+OopsAnErrorOccurredPossiblyBadNameError
 admin
 api
 args

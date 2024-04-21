@@ -7,10 +7,10 @@ https://library.vuforia.com/web-api/cloud-targets-web-services-api#result-codes.
 import json
 from urllib.parse import urlparse
 
-from vws.exceptions.base_exceptions import VWSException
+from vws.exceptions.base_exceptions import VWSError
 
 
-class UnknownTarget(VWSException):
+class UnknownTargetError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'UnknownTarget'.
@@ -27,21 +27,21 @@ class UnknownTarget(VWSException):
         return path.split(sep="/", maxsplit=2)[-1]
 
 
-class Fail(VWSException):
+class FailError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'Fail'.
     """
 
 
-class BadImage(VWSException):
+class BadImageError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'BadImage'.
     """
 
 
-class AuthenticationFailure(VWSException):
+class AuthenticationFailureError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'AuthenticationFailure'.
@@ -49,14 +49,14 @@ class AuthenticationFailure(VWSException):
 
 
 # See https://github.com/VWS-Python/vws-python/issues/822.
-class RequestQuotaReached(VWSException):  # pragma: no cover
+class RequestQuotaReachedError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'RequestQuotaReached'.
     """
 
 
-class TargetStatusProcessing(VWSException):
+class TargetStatusProcessingError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetStatusProcessing'.
@@ -74,7 +74,7 @@ class TargetStatusProcessing(VWSException):
 
 
 # This is not simulated by the mock.
-class DateRangeError(VWSException):  # pragma: no cover
+class DateRangeError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'DateRangeError'.
@@ -82,7 +82,7 @@ class DateRangeError(VWSException):  # pragma: no cover
 
 
 # This is not simulated by the mock.
-class TargetQuotaReached(VWSException):  # pragma: no cover
+class TargetQuotaReachedError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetQuotaReached'.
@@ -90,7 +90,7 @@ class TargetQuotaReached(VWSException):  # pragma: no cover
 
 
 # This is not simulated by the mock.
-class ProjectSuspended(VWSException):  # pragma: no cover
+class ProjectSuspendedError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectSuspended'.
@@ -98,35 +98,35 @@ class ProjectSuspended(VWSException):  # pragma: no cover
 
 
 # This is not simulated by the mock.
-class ProjectHasNoAPIAccess(VWSException):  # pragma: no cover
+class ProjectHasNoAPIAccessError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectHasNoAPIAccess'.
     """
 
 
-class ProjectInactive(VWSException):
+class ProjectInactiveError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectInactive'.
     """
 
 
-class MetadataTooLarge(VWSException):
+class MetadataTooLargeError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'MetadataTooLarge'.
     """
 
 
-class RequestTimeTooSkewed(VWSException):
+class RequestTimeTooSkewedError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'RequestTimeTooSkewed'.
     """
 
 
-class TargetNameExist(VWSException):
+class TargetNameExistError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetNameExist'.
@@ -142,14 +142,14 @@ class TargetNameExist(VWSException):
         return str(request_json["name"])
 
 
-class ImageTooLarge(VWSException):
+class ImageTooLargeError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'ImageTooLarge'.
     """
 
 
-class TargetStatusNotSuccess(VWSException):
+class TargetStatusNotSuccessError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'TargetStatusNotSuccess'.
@@ -166,7 +166,7 @@ class TargetStatusNotSuccess(VWSException):
         return path.split(sep="/", maxsplit=2)[-1]
 
 
-class TooManyRequests(VWSException):  # pragma: no cover
+class TooManyRequestsError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
     'TooManyRequests'.

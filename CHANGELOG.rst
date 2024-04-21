@@ -4,6 +4,8 @@ Changelog
 Next
 ----
 
+* Breaking change: Exception names now end with ``Error``.
+
 2024.02.19
 ------------
 

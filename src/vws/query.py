@@ -15,14 +15,14 @@ from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.cloud_reco_exceptions import (
-    AuthenticationFailure,
-    BadImage,
-    InactiveProject,
-    MaxNumResultsOutOfRange,
-    RequestTimeTooSkewed,
+    AuthenticationFailureError,
+    BadImageError,
+    InactiveProjectError,
+    MaxNumResultsOutOfRangeError,
+    RequestTimeTooSkewedError,
 )
 from vws.exceptions.custom_exceptions import (
-    RequestEntityTooLarge,
+    RequestEntityTooLargeError,
     ServerError,
 )
 from vws.exceptions.response import Response
@@ -84,21 +84,21 @@ class CloudRecoService:
                 none (return no target_data), all (for all matched targets).
 
         Raises:
-            ~vws.exceptions.cloud_reco_exceptions.AuthenticationFailure: The
-                client access key pair is not correct.
-            ~vws.exceptions.cloud_reco_exceptions.MaxNumResultsOutOfRange:
+            ~vws.exceptions.cloud_reco_exceptions.AuthenticationFailureError:
+                The client access key pair is not correct.
+            ~vws.exceptions.cloud_reco_exceptions.MaxNumResultsOutOfRangeError:
                 ``max_num_results`` is not within the range (1, 50).
-            ~vws.exceptions.cloud_reco_exceptions.InactiveProject: The project
-                is inactive.
-            ~vws.exceptions.cloud_reco_exceptions.RequestTimeTooSkewed: There
-                is an error with the time sent to Vuforia.
-            ~vws.exceptions.cloud_reco_exceptions.BadImage: There is a problem
-                with the given image.  For example, it must be a JPEG or PNG
-                file in the grayscale or RGB color space.
-            ~vws.exceptions.custom_exceptions.RequestEntityTooLarge: The given
-                image is too large.
-            ~vws.exceptions.custom_exceptions.ServerError: There is an error
-                with Vuforia's servers.
+            ~vws.exceptions.cloud_reco_exceptions.InactiveProjectError: The
+                project is inactive.
+            ~vws.exceptions.cloud_reco_exceptions.RequestTimeTooSkewedError:
+                There is an error with the time sent to Vuforia.
+            ~vws.exceptions.cloud_reco_exceptions.BadImageError: There is a
+                problem with the given image. For example, it must be a JPEG or
+                PNG file in the grayscale or RGB color space.
+            ~vws.exceptions.custom_exceptions.RequestEntityTooLargeError: The
+                given image is too large.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an
+                error with Vuforia's servers.
 
         Returns:
             An ordered list of target details of matching targets.
@@ -152,10 +152,10 @@ class CloudRecoService:
         )
 
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
-            raise RequestEntityTooLarge(response=response)
+            raise RequestEntityTooLargeError(response=response)
 
         if "Integer out of range" in response.text:
-            raise MaxNumResultsOutOfRange(response=response)
+            raise MaxNumResultsOutOfRangeError(response=response)
 
         if (
             response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
@@ -165,10 +165,10 @@ class CloudRecoService:
         result_code = json.loads(s=response.text)["result_code"]
         if result_code != "Success":
             exception = {
-                "AuthenticationFailure": AuthenticationFailure,
-                "BadImage": BadImage,
-                "InactiveProject": InactiveProject,
-                "RequestTimeTooSkewed": RequestTimeTooSkewed,
+                "AuthenticationFailure": AuthenticationFailureError,
+                "BadImage": BadImageError,
+                "InactiveProject": InactiveProjectError,
+                "RequestTimeTooSkewed": RequestTimeTooSkewedError,
             }[result_code]
             raise exception(response=response)
 

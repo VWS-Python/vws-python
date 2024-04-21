@@ -7,7 +7,7 @@ or simple errors given by the cloud recognition service.
 from .response import Response
 
 
-class OopsAnErrorOccurredPossiblyBadName(Exception):
+class OopsAnErrorOccurredPossiblyBadNameError(Exception):
     """
     Exception raised when VWS returns an HTML page which says "Oops, an error
     occurred".
@@ -31,7 +31,7 @@ class OopsAnErrorOccurredPossiblyBadName(Exception):
         return self._response
 
 
-class RequestEntityTooLarge(Exception):
+class RequestEntityTooLargeError(Exception):
     """
     Exception raised when the given image is too large.
     """
@@ -52,7 +52,7 @@ class RequestEntityTooLarge(Exception):
         return self._response
 
 
-class TargetProcessingTimeout(Exception):
+class TargetProcessingTimeoutError(Exception):
     """
     Exception raised when waiting for a target to be processed times out.
     """
