@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import base64
 import datetime
-import random
+import secrets
 import uuid
 from typing import TYPE_CHECKING, BinaryIO
 
@@ -506,7 +506,7 @@ class TestUpdateTarget:
         It is possible to update a target.
         """
         old_name = uuid.uuid4().hex
-        old_width = random.uniform(a=0.01, b=50)
+        old_width = secrets.choice(seq=range(1, 5000)) / 100
         target_id = vws_client.add_target(
             name=old_name,
             width=old_width,
@@ -523,7 +523,7 @@ class TestUpdateTarget:
         assert query_metadata is None
 
         new_name = uuid.uuid4().hex
-        new_width = random.uniform(a=0.01, b=50)
+        new_width = secrets.choice(seq=range(1, 5000)) / 100
         new_application_metadata = base64.b64encode(b"a").decode("ascii")
         vws_client.update_target(
             target_id=target_id,
