@@ -46,6 +46,7 @@ optional-dependencies.dev = [
     "freezegun==1.5.1",
     "furo==2024.5.6",
     "mypy==1.10.0",
+    "pre-commit==3.7.1",
     "pydocstyle==6.3",
     "pyenchant==3.2.2",
     "pygments==2.18.0",
@@ -240,6 +241,7 @@ spelling-store-unknown-words = 'no'
 
 ignore = [
     "*.enc",
+    ".pre-commit-config.yaml",
     "readthedocs.yaml",
     "CHANGELOG.rst",
     "CODE_OF_CONDUCT.rst",
