@@ -31,6 +31,7 @@ from vws.reports import QueryResult, TargetData
 
 
 def _get_image_data(image: BinaryIO) -> bytes:
+    """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
     image_data = image.read()
