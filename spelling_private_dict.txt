@@ -1,4 +1,3 @@
-
 AuthenticationFailure
 BadImage
 ConnectionErrorPossiblyImageTooLarge
@@ -9,6 +8,8 @@ JSONDecodeError
 MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
+OopsAnErrorOccurredPossiblyBadName
+OopsAnErrorOccurredPossiblyBadNameError
 ProjectHasNoAPIAccess
 ProjectInactive
 ProjectSuspended
@@ -22,8 +23,6 @@ TargetStatusProcessing
 TooManyRequests
 Ubuntu
 UnknownTarget
-OopsAnErrorOccurredPossiblyBadName
-OopsAnErrorOccurredPossiblyBadNameError
 admin
 api
 args
