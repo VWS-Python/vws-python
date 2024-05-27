@@ -296,6 +296,11 @@ strict = true
 reportUnnecessaryTypeIgnoreComment = true
 typeCheckingMode = "strict"
 
+[tool.interrogate]
+fail-under = 100
+omit-covered-files = true
+verbose = 2
+
 [tool.doc8]
 
 max_line_length = 2000
