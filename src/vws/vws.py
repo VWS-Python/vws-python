@@ -115,7 +115,7 @@ def _target_api_request(
         headers=headers,
         data=content,
         # We should make the timeout customizable.
-        timeout=None,
+        timeout=30,
     )
 
     return Response(

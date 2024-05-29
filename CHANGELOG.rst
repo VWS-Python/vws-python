@@ -5,6 +5,7 @@ Next
 ----
 
 * Breaking change: Exception names now end with ``Error``.
+* Use a timeout (30 seconds) when making requests to the VWS API.
 
 2024.02.19
 ------------
