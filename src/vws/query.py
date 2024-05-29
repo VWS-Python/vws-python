@@ -142,7 +142,7 @@ class CloudRecoService:
             headers=headers,
             data=content,
             # We should make the timeout customizable.
-            timeout=None,
+            timeout=30,
         )
         response = Response(
             text=requests_response.text,
