@@ -167,7 +167,7 @@ class VWS:
             request_path: The path to the endpoint which will be used in the
                 request.
             expected_result_code: See
-                https://library.vuforia.com/web-api/cloud-targets-web-services-api#result-codes
+                https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes
 
         Returns:
             The response to the request made by `requests`.
@@ -247,7 +247,7 @@ class VWS:
         Add a target to a Vuforia Web Services database.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#add
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#add
         for parameter details.
 
         Args:
@@ -319,7 +319,7 @@ class VWS:
         Get a given target's target record from the Target Management System.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#target-record.
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#target-record.
 
         Args:
             target_id: The ID of the target to get details of.
@@ -420,7 +420,7 @@ class VWS:
         List target IDs.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#details-list.
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#details-list.
 
         Returns:
             The IDs of all targets in the database.
@@ -452,7 +452,7 @@ class VWS:
         Get a summary report for a target.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#summary-report.
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#summary-report.
 
         Args:
             target_id: The ID of the target to get a summary report for.
@@ -500,7 +500,7 @@ class VWS:
         Get a summary report for the database.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#summary-report.
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#summary-report.
 
         Returns:
             Details of the database.
@@ -546,7 +546,7 @@ class VWS:
         Delete a given target.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#delete.
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#delete.
 
         Args:
             target_id: The ID of the target to delete.
@@ -580,7 +580,7 @@ class VWS:
         Get targets which may be considered duplicates of a given target.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#check.
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#check.
 
         Args:
             target_id: The ID of the target to delete.
@@ -627,7 +627,7 @@ class VWS:
         Add a target to a Vuforia Web Services database.
 
         See
-        https://library.vuforia.com/web-api/cloud-targets-web-services-api#add
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#add
         for parameter details.
 
         Args:

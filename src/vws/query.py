@@ -72,7 +72,7 @@ class CloudRecoService:
         Use the Vuforia Web Query API to make an Image Recognition Query.
 
         See
-        https://library.vuforia.com/web-api/vuforia-query-web-api
+        https://developer.vuforia.com/library/web-api/vuforia-query-web-api
         for parameter details.
 
         Args:
