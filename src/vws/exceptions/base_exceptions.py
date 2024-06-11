@@ -37,7 +37,7 @@ class VWSError(Exception):
     Base class for Vuforia Web Services errors.
 
     These errors are defined at
-    https://library.vuforia.com/web-api/cloud-targets-web-services-api#result-codes.
+    https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes.
     """
 
     def __init__(self, response: Response) -> None:
