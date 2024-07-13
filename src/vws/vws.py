@@ -293,7 +293,9 @@ class VWS:
                 rate limiting access.
         """
         image_data = _get_image_data(image=image)
-        image_data_encoded = base64.b64encode(image_data).decode("ascii")
+        image_data_encoded = base64.b64encode(s=image_data).decode(
+            encoding="ascii",
+        )
 
         data = {
             "name": name,
@@ -303,7 +305,7 @@ class VWS:
             "application_metadata": application_metadata,
         }
 
-        content = bytes(json.dumps(data), encoding="utf-8")
+        content = json.dumps(obj=data).encode(encoding="utf-8")
 
         response = self._make_request(
             method=HTTPMethod.POST,
@@ -687,7 +689,7 @@ class VWS:
         if application_metadata is not None:
             data["application_metadata"] = application_metadata
 
-        content = bytes(json.dumps(data), encoding="utf-8")
+        content = json.dumps(obj=data).encode(encoding="utf-8")
 
         self._make_request(
             method=HTTPMethod.PUT,
