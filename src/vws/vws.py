@@ -626,14 +626,14 @@ class VWS:
         application_metadata: str | None = None,
     ) -> None:
         """
-        Add a target to a Vuforia Web Services database.
+        Update a target in a Vuforia Web Services database.
 
         See
-        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#add
+        https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#update
         for parameter details.
 
         Args:
-            target_id: The ID of the target to get details of.
+            target_id: The ID of the target to update.
             name: The name of the target.
             width: The width of the target.
             image: The image of the target.
