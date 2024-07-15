@@ -66,7 +66,7 @@ def _target_api_request(
     server_access_key: str,
     server_secret_key: str,
     method: str,
-    content: bytes,
+    data: bytes,
     request_path: str,
     base_vws_url: str,
 ) -> Response:
@@ -80,7 +80,7 @@ def _target_api_request(
         server_access_key: A VWS server access key.
         server_secret_key: A VWS server secret key.
         method: The HTTP method which will be used in the request.
-        content: The request body which will be used in the request.
+        data: The request body which will be used in the request.
         request_path: The path to the endpoint which will be used in the
             request.
         base_vws_url: The base URL for the VWS API.
@@ -95,7 +95,7 @@ def _target_api_request(
         access_key=server_access_key,
         secret_key=server_secret_key,
         method=method,
-        content=content,
+        content=data,
         content_type=content_type,
         date=date_string,
         request_path=request_path,
@@ -113,7 +113,7 @@ def _target_api_request(
         method=method,
         url=url,
         headers=headers,
-        data=content,
+        data=data,
         # We should make the timeout customizable.
         timeout=30,
     )
@@ -151,7 +151,7 @@ class VWS:
     def _make_request(
         self,
         method: str,
-        content: bytes,
+        data: bytes,
         request_path: str,
         expected_result_code: str,
     ) -> Response:
@@ -163,7 +163,7 @@ class VWS:
 
         Args:
             method: The HTTP method which will be used in the request.
-            content: The request body which will be used in the request.
+            data: The request body which will be used in the request.
             request_path: The path to the endpoint which will be used in the
                 request.
             expected_result_code: See
@@ -189,7 +189,7 @@ class VWS:
             server_access_key=self._server_access_key,
             server_secret_key=self._server_secret_key,
             method=method,
-            content=content,
+            data=data,
             request_path=request_path,
             base_vws_url=self._base_vws_url,
         )
@@ -309,7 +309,7 @@ class VWS:
 
         response = self._make_request(
             method=HTTPMethod.POST,
-            content=content,
+            data=content,
             request_path="/targets",
             expected_result_code="TargetCreated",
         )
@@ -346,7 +346,7 @@ class VWS:
         """
         response = self._make_request(
             method=HTTPMethod.GET,
-            content=b"",
+            data=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
         )
@@ -442,7 +442,7 @@ class VWS:
         """
         response = self._make_request(
             method=HTTPMethod.GET,
-            content=b"",
+            data=b"",
             request_path="/targets",
             expected_result_code="Success",
         )
@@ -479,7 +479,7 @@ class VWS:
         """
         response = self._make_request(
             method=HTTPMethod.GET,
-            content=b"",
+            data=b"",
             request_path=f"/summary/{target_id}",
             expected_result_code="Success",
         )
@@ -522,7 +522,7 @@ class VWS:
         """
         response = self._make_request(
             method=HTTPMethod.GET,
-            content=b"",
+            data=b"",
             request_path="/summary",
             expected_result_code="Success",
         )
@@ -572,7 +572,7 @@ class VWS:
         """
         self._make_request(
             method=HTTPMethod.DELETE,
-            content=b"",
+            data=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
         )
@@ -609,7 +609,7 @@ class VWS:
         """
         response = self._make_request(
             method=HTTPMethod.GET,
-            content=b"",
+            data=b"",
             request_path=f"/duplicates/{target_id}",
             expected_result_code="Success",
         )
@@ -693,7 +693,7 @@ class VWS:
 
         self._make_request(
             method=HTTPMethod.PUT,
-            content=content,
+            data=content,
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
         )
