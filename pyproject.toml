@@ -65,7 +65,7 @@ optional-dependencies.dev = [
     "sybil==6.1.1",
     "types-requests==2.32.0.20240712",
     "vulture==2.11",
-    "vws-python-mock==2024.7.2.1",
+    "vws-python-mock==2024.7.15",
     "vws-test-fixtures==2023.3.5",
 ]
 urls.Documentation = "https://vws-python.readthedocs.io/en/latest/"
