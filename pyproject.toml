@@ -57,7 +57,7 @@ optional-dependencies.dev = [
     "pytest==8.3.1",
     "pytest-cov==5.0.0",
     "pyyaml==6.0.1",
-    "ruff==0.5.4",
+    "ruff==0.5.5",
     "sphinx==7.4.7",
     "sphinx-prompt==1.8",
     "sphinx-substitution-extensions==2024.2.25",
