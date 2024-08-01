@@ -12,6 +12,7 @@ project = "VWS-Python"
 author = "Adam Dangoor"
 
 extensions = [
+    "sphinx_copybutton",
     "sphinx.ext.autodoc",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
@@ -25,6 +26,10 @@ master_doc = "index"
 
 year = datetime.datetime.now(tz=datetime.UTC).year
 project_copyright = f"{year}, {author}"
+
+# Exclude the prompt from copied code with sphinx_copybutton.
+# https://sphinx-copybutton.readthedocs.io/en/latest/use.html#automatic-exclusion-of-prompts-from-the-copies.
+copybutton_exclude = ".linenos, .gp"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
