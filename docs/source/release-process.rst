@@ -14,9 +14,9 @@ Perform a Release
 
 #. Perform a release:
 
-   .. prompt:: bash
+   .. code-block:: console
       :substitutions:
 
-      gh workflow run release.yml --repo |github-owner|/|github-repository|
+      $ gh workflow run release.yml --repo |github-owner|/|github-repository|
 
 .. _Install GitHub CLI: https://cli.github.com/

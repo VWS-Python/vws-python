@@ -4,9 +4,9 @@
 Installation
 ------------
 
-.. prompt:: bash
+.. code-block:: console
 
-   pip3 install vws-python
+   $ pip install vws-python
 
 This is tested on Python 3.8+.
 Get in touch with ``adamdangoor@gmail.com`` if you would like to use this with another language.
@@ -90,9 +90,9 @@ Testing
 
 To write unit tests for code which uses this library, without using your Vuforia quota, you can use the `VWS Python Mock`_ tool:
 
-.. prompt:: bash
+.. code-block:: console
 
-   pip3 install vws-python-mock
+   $ pip install vws-python-mock
 
 .. clear-namespace
 
