@@ -59,6 +59,7 @@ optional-dependencies.dev = [
     "pyyaml==6.0.1",
     "ruff==0.5.5",
     "sphinx==7.4.7",
+    "sphinx-copybutton==0.5.2",
     "sphinx-substitution-extensions==2024.2.25",
     "sphinxcontrib-spelling==8",
     "sybil==6.1.1",
