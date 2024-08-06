@@ -60,7 +60,7 @@ optional-dependencies.dev = [
     "ruff==0.5.6",
     "sphinx==7.4.7",
     "sphinx-copybutton==0.5.2",
-    "sphinx-substitution-extensions==2024.2.25",
+    "sphinx-substitution-extensions==2024.8.6",
     "sphinxcontrib-spelling==8",
     "sybil==6.1.1",
     "types-requests==2.32.0.20240712",
