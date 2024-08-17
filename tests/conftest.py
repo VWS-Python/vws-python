@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, BinaryIO
 import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
+
 from vws import VWS, CloudRecoService
 
 if TYPE_CHECKING:
@@ -28,7 +29,7 @@ def mock_database() -> Generator[VuforiaDatabase, None, None]:
         yield database
 
 
-@pytest.fixture()
+@pytest.fixture
 def vws_client(_mock_database: VuforiaDatabase) -> VWS:
     """
     A VWS client which connects to a mock database.
@@ -39,7 +40,7 @@ def vws_client(_mock_database: VuforiaDatabase) -> VWS:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
     """
     A ``CloudRecoService`` client which connects to a mock database.
@@ -50,7 +51,7 @@ def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def image_file(
     high_quality_image: io.BytesIO,
     tmp_path: Path,
