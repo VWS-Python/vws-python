@@ -11,6 +11,7 @@ from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 from mock_vws.states import States
+
 from vws import VWS
 from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import (

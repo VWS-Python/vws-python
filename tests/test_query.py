@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
+
 from vws import VWS, CloudRecoService
 from vws.include_target_data import CloudRecoIncludeTargetData
 

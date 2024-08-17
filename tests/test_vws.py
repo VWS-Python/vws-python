@@ -14,6 +14,7 @@ import pytest
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
+
 from vws import VWS, CloudRecoService
 from vws.exceptions.custom_exceptions import TargetProcessingTimeoutError
 from vws.reports import (
