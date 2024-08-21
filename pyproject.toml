@@ -63,11 +63,11 @@ optional-dependencies.dev = [
     "sphinx-substitution-extensions==2024.8.6",
     "sphinxcontrib-spelling==8",
     "sybil==6.1.1",
+    "typeguard==4.3.0",
     "types-requests==2.32.0.20240712",
     "vulture==2.11",
     "vws-python-mock==2024.7.15",
     "vws-test-fixtures==2023.3.5",
-    "typeguard==4.3.0",
 ]
 urls.Documentation = "https://vws-python.readthedocs.io/en/latest/"
 urls.Source = "https://github.com/VWS-Python/vws-python"
