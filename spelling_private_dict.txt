@@ -27,6 +27,7 @@ admin
 api
 args
 ascii
+beartype
 bool
 boolean
 bytesio
