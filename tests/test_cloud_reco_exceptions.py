@@ -2,11 +2,9 @@
 Tests for exceptions raised when using the CloudRecoService.
 """
 
-from __future__ import annotations
-
+import io
 import uuid
 from http import HTTPStatus
-from typing import TYPE_CHECKING
 
 import pytest
 from mock_vws import MockVWS
@@ -25,9 +23,6 @@ from vws.exceptions.cloud_reco_exceptions import (
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLargeError,
 )
-
-if TYPE_CHECKING:
-    import io
 
 
 def test_too_many_max_results(
