@@ -2,14 +2,13 @@
 Tools for interacting with Vuforia APIs.
 """
 
-from __future__ import annotations
-
 import base64
+import io
 import json
 import time
 from datetime import date
 from http import HTTPMethod, HTTPStatus
-from typing import TYPE_CHECKING
+from io import BufferedRandom, BytesIO
 from urllib.parse import urljoin
 
 import requests
@@ -48,10 +47,6 @@ from vws.reports import (
 )
 
 from .exceptions.response import Response
-
-if TYPE_CHECKING:
-    import io
-    from io import BufferedRandom, BytesIO
 
 
 def _get_image_data(image: BytesIO | BufferedRandom) -> bytes:

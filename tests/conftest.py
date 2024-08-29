@@ -2,20 +2,15 @@
 Configuration, plugins and fixtures for `pytest`.
 """
 
-from __future__ import annotations
-
 import io
-from typing import TYPE_CHECKING
+from collections.abc import Generator
+from pathlib import Path
 
 import pytest
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
 from vws import VWS, CloudRecoService
-
-if TYPE_CHECKING:
-    from collections.abc import Generator
-    from pathlib import Path
 
 
 @pytest.fixture(name="_mock_database")
