@@ -8,7 +8,7 @@ import base64
 import datetime
 import secrets
 import uuid
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING
 
 import pytest
 from freezegun import freeze_time
@@ -38,7 +38,7 @@ class TestAddTarget:
     @pytest.mark.parametrize("active_flag", [True, False])
     def test_add_target(
         vws_client: VWS,
-        image: BinaryIO,
+        image: io.BytesIO | io.BufferedRandom,
         application_metadata: bytes | None,
         cloud_reco_client: CloudRecoService,
         *,
@@ -82,7 +82,7 @@ class TestAddTarget:
     @staticmethod
     def test_add_two_targets(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         No exception is raised when adding two targets with different names.
@@ -105,7 +105,7 @@ class TestCustomBaseVWSURL:
     """
 
     @staticmethod
-    def test_custom_base_url(image: io.BytesIO) -> None:
+    def test_custom_base_url(image: io.BytesIO | io.BufferedRandom) -> None:
         """
         It is possible to use add a target to a database under a custom VWS
         URL.
@@ -137,7 +137,7 @@ class TestListTargets:
     @staticmethod
     def test_list_targets(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         It is possible to get a list of target IDs.
@@ -167,7 +167,7 @@ class TestDelete:
     @staticmethod
     def test_delete_target(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         It is possible to delete a target.
@@ -194,7 +194,7 @@ class TestGetTargetSummaryReport:
     @staticmethod
     def test_get_target_summary_report(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         Details of a target are returned by ``get_target_summary_report``.
@@ -263,7 +263,7 @@ class TestGetTargetRecord:
     @staticmethod
     def test_get_target_record(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         Details of a target are returned by ``get_target_record``.
@@ -298,7 +298,7 @@ class TestWaitForTargetProcessed:
     @staticmethod
     def test_wait_for_target_processed(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         It is possible to wait until a target is processed.
@@ -318,7 +318,7 @@ class TestWaitForTargetProcessed:
 
     @staticmethod
     def test_default_seconds_between_requests(
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         By default, 0.2 seconds are waited between polling requests.
@@ -370,7 +370,7 @@ class TestWaitForTargetProcessed:
 
     @staticmethod
     def test_custom_seconds_between_requests(
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         It is possible to customize the time waited between polling requests.
@@ -421,7 +421,7 @@ class TestWaitForTargetProcessed:
             assert report.request_usage == expected_requests
 
     @staticmethod
-    def test_custom_timeout(image: io.BytesIO) -> None:
+    def test_custom_timeout(image: io.BytesIO | io.BufferedRandom) -> None:
         """
         It is possible to set a maximum timeout.
         """
@@ -465,7 +465,7 @@ class TestGetDuplicateTargets:
     @staticmethod
     def test_get_duplicate_targets(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         It is possible to get the IDs of similar targets.
@@ -499,8 +499,8 @@ class TestUpdateTarget:
     @staticmethod
     def test_update_target(
         vws_client: VWS,
-        image: io.BytesIO,
-        different_high_quality_image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
+        different_high_quality_image: io.BytesIO | io.BufferedRandom,
         cloud_reco_client: CloudRecoService,
     ) -> None:
         """
@@ -558,7 +558,7 @@ class TestUpdateTarget:
     @staticmethod
     def test_no_fields_given(
         vws_client: VWS,
-        image: io.BytesIO,
+        image: io.BytesIO | io.BufferedRandom,
     ) -> None:
         """
         It is possible to give no update fields.

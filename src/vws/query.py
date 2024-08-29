@@ -7,7 +7,7 @@ from __future__ import annotations
 import datetime
 import json
 from http import HTTPMethod, HTTPStatus
-from typing import Any, BinaryIO
+from typing import TYPE_CHECKING, Any
 from urllib.parse import urljoin
 
 import requests
@@ -29,8 +29,11 @@ from vws.exceptions.response import Response
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 
+if TYPE_CHECKING:
+    from io import BufferedRandom, BytesIO
 
-def _get_image_data(image: BinaryIO) -> bytes:
+
+def _get_image_data(image: BytesIO | BufferedRandom) -> bytes:
     """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
@@ -62,7 +65,7 @@ class CloudRecoService:
 
     def query(
         self,
-        image: BinaryIO,
+        image: BytesIO | BufferedRandom,
         max_num_results: int = 1,
         include_target_data: CloudRecoIncludeTargetData = (
             CloudRecoIncludeTargetData.TOP

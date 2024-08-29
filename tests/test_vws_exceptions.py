@@ -39,7 +39,7 @@ from vws.exceptions.vws_exceptions import (
 
 def test_image_too_large(
     vws_client: VWS,
-    png_too_large: io.BytesIO,
+    png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     When giving an image which is too large, an ``ImageTooLarge`` exception is
@@ -69,7 +69,9 @@ def test_invalid_given_id(vws_client: VWS) -> None:
     assert exc.value.target_id == target_id
 
 
-def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
+def test_add_bad_name(
+    vws_client: VWS, high_quality_image: io.BytesIO | io.BufferedRandom
+) -> None:
     """
     When a name with a bad character is given, an
     ``OopsAnErrorOccurredPossiblyBadName`` exception is raised.
@@ -95,7 +97,7 @@ def test_request_quota_reached() -> None:
     """
 
 
-def test_fail(high_quality_image: io.BytesIO) -> None:
+def test_fail(high_quality_image: io.BytesIO | io.BufferedRandom) -> None:
     """
     A ``Fail`` exception is raised when the server access key does not exist.
     """
@@ -136,7 +138,7 @@ def test_bad_image(vws_client: VWS) -> None:
 
 def test_target_name_exist(
     vws_client: VWS,
-    high_quality_image: io.BytesIO,
+    high_quality_image: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``TargetNameExist`` exception is raised after adding two targets with
@@ -162,7 +164,9 @@ def test_target_name_exist(
     assert exc.value.target_name == "x"
 
 
-def test_project_inactive(high_quality_image: io.BytesIO) -> None:
+def test_project_inactive(
+    high_quality_image: io.BytesIO | io.BufferedRandom,
+) -> None:
     """
     A ``ProjectInactive`` exception is raised if adding a target to an
     inactive database.
@@ -189,7 +193,7 @@ def test_project_inactive(high_quality_image: io.BytesIO) -> None:
 
 def test_target_status_processing(
     vws_client: VWS,
-    high_quality_image: io.BytesIO,
+    high_quality_image: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``TargetStatusProcessing`` exception is raised if trying to delete a
@@ -212,7 +216,7 @@ def test_target_status_processing(
 
 def test_metadata_too_large(
     vws_client: VWS,
-    high_quality_image: io.BytesIO,
+    high_quality_image: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``MetadataTooLarge`` exception is raised if the metadata given is too
@@ -232,7 +236,7 @@ def test_metadata_too_large(
 
 def test_request_time_too_skewed(
     vws_client: VWS,
-    high_quality_image: io.BytesIO,
+    high_quality_image: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``RequestTimeTooSkewed`` exception is raised when the request time is
@@ -265,7 +269,9 @@ def test_request_time_too_skewed(
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
+def test_authentication_failure(
+    high_quality_image: io.BytesIO | io.BufferedRandom,
+) -> None:
     """
     An ``AuthenticationFailure`` exception is raised when the server access key
     exists but the server secret key is incorrect, or when a client key is
@@ -295,7 +301,7 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
 
 def test_target_status_not_success(
     vws_client: VWS,
-    high_quality_image: io.BytesIO,
+    high_quality_image: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``TargetStatusNotSuccess`` exception is raised when updating a target
@@ -344,7 +350,7 @@ def test_vwsexception_inheritance() -> None:
 
 def test_base_exception(
     vws_client: VWS,
-    high_quality_image: io.BytesIO,
+    high_quality_image: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     ``VWSException``s has a response property.

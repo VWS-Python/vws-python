@@ -9,7 +9,7 @@ import json
 import time
 from datetime import date
 from http import HTTPMethod, HTTPStatus
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING
 from urllib.parse import urljoin
 
 import requests
@@ -51,9 +51,10 @@ from .exceptions.response import Response
 
 if TYPE_CHECKING:
     import io
+    from io import BufferedRandom, BytesIO
 
 
-def _get_image_data(image: BinaryIO) -> bytes:
+def _get_image_data(image: BytesIO | BufferedRandom) -> bytes:
     """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
@@ -238,7 +239,7 @@ class VWS:
         self,
         name: str,
         width: float,
-        image: BinaryIO,
+        image: BytesIO | BufferedRandom,
         application_metadata: str | None,
         *,
         active_flag: bool,
@@ -621,7 +622,7 @@ class VWS:
         target_id: str,
         name: str | None = None,
         width: float | None = None,
-        image: io.BytesIO | None = None,
+        image: io.BytesIO | io.BufferedRandom | None = None,
         active_flag: bool | None = None,
         application_metadata: str | None = None,
     ) -> None:
