@@ -5,7 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 from __future__ import annotations
 
 import io
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING
 
 import pytest
 from mock_vws import MockVWS
@@ -68,7 +68,7 @@ def image_file(
 @pytest.fixture(params=["high_quality_image", "image_file"])
 def image(
     request: pytest.FixtureRequest,
-) -> BinaryIO:
+) -> io.BytesIO | io.BufferedRandom:
     """An image in any of the types that the API accepts."""
     result = request.getfixturevalue(request.param)
     assert isinstance(result, io.BytesIO | io.BufferedRandom)

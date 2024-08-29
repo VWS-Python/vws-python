@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 def test_too_many_max_results(
     cloud_reco_client: CloudRecoService,
-    high_quality_image: io.BytesIO,
+    high_quality_image: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``MaxNumResultsOutOfRange`` error is raised if the given
@@ -53,7 +53,7 @@ def test_too_many_max_results(
 
 def test_image_too_large(
     cloud_reco_client: CloudRecoService,
-    png_too_large: io.BytesIO,
+    png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``RequestEntityTooLarge`` exception is raised if an image which is too
@@ -82,7 +82,9 @@ def test_cloudrecoexception_inheritance() -> None:
         assert issubclass(subclass, CloudRecoError)
 
 
-def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
+def test_authentication_failure(
+    high_quality_image: io.BytesIO | io.BufferedRandom,
+) -> None:
     """
     An ``AuthenticationFailure`` exception is raised when the client access key
     exists but the client secret key is incorrect.
@@ -101,7 +103,9 @@ def test_authentication_failure(high_quality_image: io.BytesIO) -> None:
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
 
 
-def test_inactive_project(high_quality_image: io.BytesIO) -> None:
+def test_inactive_project(
+    high_quality_image: io.BytesIO | io.BufferedRandom,
+) -> None:
     """
     An ``InactiveProject`` exception is raised when querying an inactive
     database.
