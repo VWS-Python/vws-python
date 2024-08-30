@@ -54,11 +54,10 @@ def image_file(
 ) -> Generator[io.BufferedRandom, None, None]:
     """An image file object."""
     file = tmp_path / "image.jpg"
-    file.touch()
-    with file.open("r+b") as fileobj:
-        buffer = high_quality_image.getvalue()
-        fileobj.write(buffer)
-        yield fileobj
+    buffer = high_quality_image.getvalue()
+    file.write_bytes(data=buffer)
+    with file.open(mode="r+b") as file_obj:
+        yield file_obj
 
 
 @pytest.fixture(params=["high_quality_image", "image_file"])
