@@ -30,7 +30,8 @@ Getting Started
    from mock_vws import MockVWS
    from mock_vws.database import VuforiaDatabase
 
-   mock = MockVWS(real_http=False)
+   # We use a low processing time so that tests run quickly.
+   mock = MockVWS(processing_time_seconds=0.2)
    database = VuforiaDatabase(
        server_access_key='[server-access-key]',
        server_secret_key='[server-secret-key]',

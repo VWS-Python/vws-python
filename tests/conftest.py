@@ -5,6 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 import io
 from collections.abc import Generator
 from pathlib import Path
+from typing import BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
@@ -18,7 +19,8 @@ def mock_database() -> Generator[VuforiaDatabase, None, None]:
     """
     Yield a mock ``VuforiaDatabase``.
     """
-    with MockVWS() as mock:
+    # We use a low processing time so that tests run quickly.
+    with MockVWS(processing_time_seconds=0.2) as mock:
         database = VuforiaDatabase()
         mock.add_database(database=database)
         yield database
@@ -46,25 +48,28 @@ def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
     )
 
 
-@pytest.fixture
-def image_file(
+@pytest.fixture(name="image_file", params=["r+b", "rb"])
+def image_file_fixture(
     high_quality_image: io.BytesIO,
     tmp_path: Path,
-) -> Generator[io.BufferedRandom, None, None]:
+    request: pytest.FixtureRequest,
+) -> Generator[BinaryIO, None, None]:
     """An image file object."""
     file = tmp_path / "image.jpg"
-    file.touch()
-    with file.open("r+b") as fileobj:
-        buffer = high_quality_image.getvalue()
-        fileobj.write(buffer)
-        yield fileobj
+    buffer = high_quality_image.getvalue()
+    file.write_bytes(data=buffer)
+    mode: Literal["r+b", "rb"] = request.param
+    with file.open(mode=mode) as file_obj:
+        yield file_obj
 
 
 @pytest.fixture(params=["high_quality_image", "image_file"])
 def image(
     request: pytest.FixtureRequest,
-) -> io.BytesIO | io.BufferedRandom:
+    high_quality_image: io.BytesIO,
+    image_file: BinaryIO,
+) -> io.BytesIO | BinaryIO:
     """An image in any of the types that the API accepts."""
-    result = request.getfixturevalue(request.param)
-    assert isinstance(result, io.BytesIO | io.BufferedRandom)
-    return result
+    if request.param == "high_quality_image":
+        return high_quality_image
+    return image_file

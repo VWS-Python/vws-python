@@ -8,7 +8,7 @@ import json
 import time
 from datetime import date
 from http import HTTPMethod, HTTPStatus
-from io import BufferedRandom, BytesIO
+from typing import BinaryIO
 from urllib.parse import urljoin
 
 import requests
@@ -49,9 +49,11 @@ from vws.reports import (
 
 from .exceptions.response import Response
 
+_ImageType = io.BytesIO | BinaryIO
+
 
 @beartype
-def _get_image_data(image: BytesIO | BufferedRandom) -> bytes:
+def _get_image_data(image: _ImageType) -> bytes:
     """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
@@ -238,7 +240,7 @@ class VWS:
         self,
         name: str,
         width: float,
-        image: BytesIO | BufferedRandom,
+        image: _ImageType,
         application_metadata: str | None,
         *,
         active_flag: bool,
@@ -621,7 +623,7 @@ class VWS:
         target_id: str,
         name: str | None = None,
         width: float | None = None,
-        image: io.BytesIO | io.BufferedRandom | None = None,
+        image: _ImageType | None = None,
         active_flag: bool | None = None,
         application_metadata: str | None = None,
     ) -> None:
