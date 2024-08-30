@@ -2,8 +2,11 @@
 
 from dataclasses import dataclass
 
+from beartype import beartype
+
 
 @dataclass
+@beartype
 class Response:
     """
     A response from a request.

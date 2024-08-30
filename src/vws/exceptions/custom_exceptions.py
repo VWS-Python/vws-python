@@ -4,9 +4,12 @@ https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#res
 or simple errors given by the cloud recognition service.
 """
 
+from beartype import beartype
+
 from .response import Response
 
 
+@beartype
 class OopsAnErrorOccurredPossiblyBadNameError(Exception):
     """
     Exception raised when VWS returns an HTML page which says "Oops, an error
@@ -31,6 +34,7 @@ class OopsAnErrorOccurredPossiblyBadNameError(Exception):
         return self._response
 
 
+@beartype
 class RequestEntityTooLargeError(Exception):
     """
     Exception raised when the given image is too large.
@@ -52,12 +56,14 @@ class RequestEntityTooLargeError(Exception):
         return self._response
 
 
+@beartype
 class TargetProcessingTimeoutError(Exception):
     """
     Exception raised when waiting for a target to be processed times out.
     """
 
 
+@beartype
 class ServerError(Exception):  # pragma: no cover
     """
     Exception raised when VWS returns a server error.

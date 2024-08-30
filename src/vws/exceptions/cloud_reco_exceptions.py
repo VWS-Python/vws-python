@@ -2,9 +2,12 @@
 Exceptions which match errors raised by the Vuforia Cloud Recognition Web APIs.
 """
 
+from beartype import beartype
+
 from vws.exceptions.base_exceptions import CloudRecoError
 
 
+@beartype
 class MaxNumResultsOutOfRangeError(CloudRecoError):
     """
     Exception raised when the ``max_num_results`` given to the Cloud
@@ -12,6 +15,7 @@ class MaxNumResultsOutOfRangeError(CloudRecoError):
     """
 
 
+@beartype
 class InactiveProjectError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -19,6 +23,7 @@ class InactiveProjectError(CloudRecoError):
     """
 
 
+@beartype
 class BadImageError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -26,6 +31,7 @@ class BadImageError(CloudRecoError):
     """
 
 
+@beartype
 class AuthenticationFailureError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -33,6 +39,7 @@ class AuthenticationFailureError(CloudRecoError):
     """
 
 
+@beartype
 class RequestTimeTooSkewedError(CloudRecoError):
     """
     Exception raised when Vuforia returns a response with a result code

@@ -10,6 +10,7 @@ from typing import Any
 from urllib.parse import urljoin
 
 import requests
+from beartype import beartype
 from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
@@ -29,6 +30,7 @@ from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 
 
+@beartype
 def _get_image_data(image: BytesIO | BufferedRandom) -> bytes:
     """Get the data of an image file."""
     original_tell = image.tell()
@@ -38,6 +40,7 @@ def _get_image_data(image: BytesIO | BufferedRandom) -> bytes:
     return image_data
 
 
+@beartype
 class CloudRecoService:
     """
     An interface to the Vuforia Cloud Recognition Web APIs.

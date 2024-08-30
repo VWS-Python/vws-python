@@ -6,7 +6,10 @@ import datetime
 from dataclasses import dataclass
 from enum import Enum
 
+from beartype import BeartypeConf, beartype
 
+
+@beartype
 @dataclass
 class DatabaseSummaryReport:
     """
@@ -30,6 +33,7 @@ class DatabaseSummaryReport:
     total_recos: int
 
 
+@beartype
 class TargetStatuses(Enum):
     """Constants representing VWS target statuses.
 
@@ -42,6 +46,7 @@ class TargetStatuses(Enum):
     FAILED = "failed"
 
 
+@beartype
 @dataclass
 class TargetSummaryReport:
     """
@@ -62,6 +67,7 @@ class TargetSummaryReport:
     previous_month_recos: int
 
 
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
 @dataclass
 class TargetRecord:
     """
@@ -79,6 +85,7 @@ class TargetRecord:
     reco_rating: str
 
 
+@beartype
 @dataclass
 class TargetData:
     """
@@ -90,6 +97,7 @@ class TargetData:
     target_timestamp: datetime.datetime
 
 
+@beartype
 @dataclass
 class QueryResult:
     """
@@ -103,6 +111,7 @@ class QueryResult:
     target_data: TargetData | None
 
 
+@beartype
 @dataclass
 class TargetStatusAndRecord:
     """

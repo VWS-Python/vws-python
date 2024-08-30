@@ -7,9 +7,12 @@ https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#res
 import json
 from urllib.parse import urlparse
 
+from beartype import beartype
+
 from vws.exceptions.base_exceptions import VWSError
 
 
+@beartype
 class UnknownTargetError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -27,6 +30,7 @@ class UnknownTargetError(VWSError):
         return path.split(sep="/", maxsplit=2)[-1]
 
 
+@beartype
 class FailError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -34,6 +38,7 @@ class FailError(VWSError):
     """
 
 
+@beartype
 class BadImageError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -41,6 +46,7 @@ class BadImageError(VWSError):
     """
 
 
+@beartype
 class AuthenticationFailureError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -49,6 +55,7 @@ class AuthenticationFailureError(VWSError):
 
 
 # See https://github.com/VWS-Python/vws-python/issues/822.
+@beartype
 class RequestQuotaReachedError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
@@ -56,6 +63,7 @@ class RequestQuotaReachedError(VWSError):  # pragma: no cover
     """
 
 
+@beartype
 class TargetStatusProcessingError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -74,6 +82,7 @@ class TargetStatusProcessingError(VWSError):
 
 
 # This is not simulated by the mock.
+@beartype
 class DateRangeError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
@@ -82,6 +91,7 @@ class DateRangeError(VWSError):  # pragma: no cover
 
 
 # This is not simulated by the mock.
+@beartype
 class TargetQuotaReachedError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
@@ -90,6 +100,7 @@ class TargetQuotaReachedError(VWSError):  # pragma: no cover
 
 
 # This is not simulated by the mock.
+@beartype
 class ProjectSuspendedError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
@@ -98,6 +109,7 @@ class ProjectSuspendedError(VWSError):  # pragma: no cover
 
 
 # This is not simulated by the mock.
+@beartype
 class ProjectHasNoAPIAccessError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
@@ -105,6 +117,7 @@ class ProjectHasNoAPIAccessError(VWSError):  # pragma: no cover
     """
 
 
+@beartype
 class ProjectInactiveError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -112,6 +125,7 @@ class ProjectInactiveError(VWSError):
     """
 
 
+@beartype
 class MetadataTooLargeError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -119,6 +133,7 @@ class MetadataTooLargeError(VWSError):
     """
 
 
+@beartype
 class RequestTimeTooSkewedError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -126,6 +141,7 @@ class RequestTimeTooSkewedError(VWSError):
     """
 
 
+@beartype
 class TargetNameExistError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -142,6 +158,7 @@ class TargetNameExistError(VWSError):
         return str(request_json["name"])
 
 
+@beartype
 class ImageTooLargeError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -149,6 +166,7 @@ class ImageTooLargeError(VWSError):
     """
 
 
+@beartype
 class TargetStatusNotSuccessError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
@@ -166,6 +184,7 @@ class TargetStatusNotSuccessError(VWSError):
         return path.split(sep="/", maxsplit=2)[-1]
 
 
+@beartype
 class TooManyRequestsError(VWSError):  # pragma: no cover
     """
     Exception raised when Vuforia returns a response with a result code
