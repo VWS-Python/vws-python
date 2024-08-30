@@ -495,7 +495,7 @@ class TestUpdateTarget:
     def test_update_target(
         vws_client: VWS,
         image: io.BytesIO | io.BufferedRandom,
-        different_high_quality_image: io.BytesIO | io.BufferedRandom,
+        different_high_quality_image: io.BytesIO,
         cloud_reco_client: CloudRecoService,
     ) -> None:
         """
