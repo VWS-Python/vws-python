@@ -18,7 +18,8 @@ def mock_database() -> Generator[VuforiaDatabase, None, None]:
     """
     Yield a mock ``VuforiaDatabase``.
     """
-    with MockVWS() as mock:
+    # We use a low processing time so that tests run quickly.
+    with MockVWS(processing_time_seconds=0.2) as mock:
         database = VuforiaDatabase()
         mock.add_database(database=database)
         yield database
