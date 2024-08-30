@@ -47,8 +47,8 @@ def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
     )
 
 
-@pytest.fixture
-def image_file(
+@pytest.fixture(name="image_file")
+def image_file_fixture(
     high_quality_image: io.BytesIO,
     tmp_path: Path,
 ) -> Generator[io.BufferedRandom, None, None]:
@@ -63,8 +63,10 @@ def image_file(
 @pytest.fixture(params=["high_quality_image", "image_file"])
 def image(
     request: pytest.FixtureRequest,
+    high_quality_image: io.BytesIO,
+    image_file: io.BufferedRandom,
 ) -> io.BytesIO | io.BufferedRandom:
     """An image in any of the types that the API accepts."""
-    result = request.getfixturevalue(request.param)
-    assert isinstance(result, io.BytesIO | io.BufferedRandom)
-    return result
+    if request.param == "high_quality_image":
+        return high_quality_image
+    return image_file
