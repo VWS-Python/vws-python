@@ -6,7 +6,7 @@ import datetime
 import io
 import json
 from http import HTTPMethod, HTTPStatus
-from typing import Any
+from typing import Any, BinaryIO
 from urllib.parse import urljoin
 
 import requests
@@ -28,7 +28,7 @@ from vws.exceptions.response import Response
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 
-_ImageType = io.BytesIO | io.BufferedRandom
+_ImageType = io.BytesIO | BinaryIO
 
 
 def _get_image_data(image: _ImageType) -> bytes:

@@ -5,6 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 import io
 from collections.abc import Generator
 from pathlib import Path
+from typing import BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
@@ -47,16 +48,18 @@ def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
     )
 
 
-@pytest.fixture(name="image_file")
+@pytest.fixture(name="image_file", params=["r+b", "rb"])
 def image_file_fixture(
     high_quality_image: io.BytesIO,
     tmp_path: Path,
-) -> Generator[io.BufferedRandom, None, None]:
+    request: pytest.FixtureRequest,
+) -> Generator[BinaryIO, None, None]:
     """An image file object."""
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
     file.write_bytes(data=buffer)
-    with file.open(mode="r+b") as file_obj:
+    mode: Literal["r+b", "rb"] = request.param
+    with file.open(mode=mode) as file_obj:
         yield file_obj
 
 
@@ -64,8 +67,8 @@ def image_file_fixture(
 def image(
     request: pytest.FixtureRequest,
     high_quality_image: io.BytesIO,
-    image_file: io.BufferedRandom,
-) -> io.BytesIO | io.BufferedRandom:
+    image_file: BinaryIO,
+) -> io.BytesIO | BinaryIO:
     """An image in any of the types that the API accepts."""
     if request.param == "high_quality_image":
         return high_quality_image

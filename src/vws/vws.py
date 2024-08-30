@@ -8,6 +8,7 @@ import json
 import time
 from datetime import date
 from http import HTTPMethod, HTTPStatus
+from typing import BinaryIO
 from urllib.parse import urljoin
 
 import requests
@@ -47,7 +48,7 @@ from vws.reports import (
 
 from .exceptions.response import Response
 
-_ImageType = io.BytesIO | io.BufferedRandom
+_ImageType = io.BytesIO | BinaryIO
 
 
 def _get_image_data(image: _ImageType) -> bytes:
