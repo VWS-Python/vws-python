@@ -27,7 +27,7 @@ from vws.exceptions.custom_exceptions import (
 
 def test_too_many_max_results(
     cloud_reco_client: CloudRecoService,
-    high_quality_image: io.BytesIO | io.BufferedRandom,
+    high_quality_image: io.BytesIO,
 ) -> None:
     """
     A ``MaxNumResultsOutOfRange`` error is raised if the given
@@ -78,7 +78,7 @@ def test_cloudrecoexception_inheritance() -> None:
 
 
 def test_authentication_failure(
-    high_quality_image: io.BytesIO | io.BufferedRandom,
+    high_quality_image: io.BytesIO,
 ) -> None:
     """
     An ``AuthenticationFailure`` exception is raised when the client access key
@@ -99,7 +99,7 @@ def test_authentication_failure(
 
 
 def test_inactive_project(
-    high_quality_image: io.BytesIO | io.BufferedRandom,
+    high_quality_image: io.BytesIO,
 ) -> None:
     """
     An ``InactiveProject`` exception is raised when querying an inactive
