@@ -28,8 +28,10 @@ from vws.exceptions.response import Response
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 
+_ImageType = io.BytesIO | io.BufferedRandom
 
-def _get_image_data(image: io.BytesIO | io.BufferedRandom) -> bytes:
+
+def _get_image_data(image: _ImageType) -> bytes:
     """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
@@ -61,7 +63,7 @@ class CloudRecoService:
 
     def query(
         self,
-        image: io.BytesIO | io.BufferedRandom,
+        image: _ImageType,
         max_num_results: int = 1,
         include_target_data: CloudRecoIncludeTargetData = (
             CloudRecoIncludeTargetData.TOP
