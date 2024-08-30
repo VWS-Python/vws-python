@@ -56,7 +56,7 @@ def image_file(
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
     file.write_bytes(data=buffer)
-    with file.open("r+b") as file_obj:
+    with file.open(mode="r+b") as file_obj:
         yield file_obj
 
 
