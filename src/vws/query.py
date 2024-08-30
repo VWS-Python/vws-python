@@ -3,9 +3,9 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
 import datetime
+import io
 import json
 from http import HTTPMethod, HTTPStatus
-from io import BufferedRandom, BytesIO
 from typing import Any
 from urllib.parse import urljoin
 
@@ -29,7 +29,7 @@ from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 
 
-def _get_image_data(image: BytesIO | BufferedRandom) -> bytes:
+def _get_image_data(image: io.BytesIO | io.BufferedRandom) -> bytes:
     """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
@@ -61,7 +61,7 @@ class CloudRecoService:
 
     def query(
         self,
-        image: BytesIO | BufferedRandom,
+        image: io.BytesIO | io.BufferedRandom,
         max_num_results: int = 1,
         include_target_data: CloudRecoIncludeTargetData = (
             CloudRecoIncludeTargetData.TOP
