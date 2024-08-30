@@ -3,9 +3,12 @@ Base exceptions for errors returned by Vuforia Web Services or the Vuforia
 Cloud Recognition Web API.
 """
 
+from beartype import beartype
+
 from .response import Response
 
 
+@beartype
 class CloudRecoError(Exception):
     """
     Base class for Vuforia Cloud Recognition Web API exceptions.
@@ -27,6 +30,7 @@ class CloudRecoError(Exception):
         return self._response
 
 
+@beartype
 class VWSError(Exception):
     """
     Base class for Vuforia Web Services errors.

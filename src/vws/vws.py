@@ -12,6 +12,7 @@ from typing import BinaryIO
 from urllib.parse import urljoin
 
 import requests
+from beartype import BeartypeConf, beartype
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.custom_exceptions import (
@@ -51,6 +52,7 @@ from .exceptions.response import Response
 _ImageType = io.BytesIO | BinaryIO
 
 
+@beartype
 def _get_image_data(image: _ImageType) -> bytes:
     """Get the data of an image file."""
     original_tell = image.tell()
@@ -60,6 +62,7 @@ def _get_image_data(image: _ImageType) -> bytes:
     return image_data
 
 
+@beartype
 def _target_api_request(
     server_access_key: str,
     server_secret_key: str,
@@ -125,6 +128,7 @@ def _target_api_request(
     )
 
 
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
 class VWS:
     """
     An interface to Vuforia Web Services APIs.
