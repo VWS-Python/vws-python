@@ -11,8 +11,7 @@ from .response import Response
 @beartype
 class CloudRecoError(Exception):
     """
-    Base @beartype
-    class for Vuforia Cloud Recognition Web API exceptions.
+    Base class for Vuforia Cloud Recognition Web API exceptions.
     """
 
     def __init__(self, response: Response) -> None:
@@ -34,8 +33,7 @@ class CloudRecoError(Exception):
 @beartype
 class VWSError(Exception):
     """
-    Base @beartype
-    class for Vuforia Web Services errors.
+    Base class for Vuforia Web Services errors.
 
     These errors are defined at
     https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes.
