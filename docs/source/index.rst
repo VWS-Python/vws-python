@@ -16,33 +16,6 @@ Usage
 
 See the :doc:`api-reference` for full usage details.
 
-.. invisible-code-block: python
-
-   import contextlib
-   import pathlib
-   import shutil
-
-   import vws_test_fixtures
-   from mock_vws import MockVWS
-   from mock_vws.database import VuforiaDatabase
-
-   mock = MockVWS(real_http=False)
-   database = VuforiaDatabase(
-       server_access_key='[server-access-key]',
-       server_secret_key='[server-secret-key]',
-       client_access_key='[client-access-key]',
-       client_secret_key='[client-secret-key]',
-   )
-   mock.add_database(database=database)
-   stack = contextlib.ExitStack()
-   stack.enter_context(mock)
-
-   # We rely on implementation details of the fixtures package.
-   image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
-   assert image.exists(), image.resolve()
-   new_image = pathlib.Path('high_quality_image.jpg')
-   shutil.copy(image, new_image)
-
 .. code-block:: python
 
    import pathlib
@@ -62,7 +35,8 @@ See the :doc:`api-reference` for full usage details.
        client_access_key=client_access_key,
        client_secret_key=client_secret_key,
    )
-   name = 'my_image_name'
+   import uuid
+   name = 'my_image_name' + uuid.uuid4().hex
 
    image = pathlib.Path('high_quality_image.jpg')
    with image.open(mode='rb') as my_image_file:
@@ -79,12 +53,6 @@ See the :doc:`api-reference` for full usage details.
    assert matching_targets[0].target_id == target_id
    a = 1
 
-.. invisible-code-block: python
-
-   new_image = pathlib.Path('high_quality_image.jpg')
-   new_image.unlink()
-   stack.close()
-
 Testing
 -------
 
@@ -95,19 +63,6 @@ To write unit tests for code which uses this library, without using your Vuforia
    $ pip install vws-python-mock
 
 .. clear-namespace
-
-.. invisible-code-block: python
-
-   import pathlib
-   import shutil
-
-   import vws_test_fixtures
-
-   # We rely on implementation details of the fixtures package.
-   image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
-   assert image.exists(), image.resolve()
-   new_image = pathlib.Path('high_quality_image.jpg')
-   shutil.copy(image, new_image)
 
 .. code-block:: python
 
@@ -129,7 +84,6 @@ To write unit tests for code which uses this library, without using your Vuforia
            client_secret_key=database.client_secret_key,
        )
 
-
        image = pathlib.Path('high_quality_image.jpg')
        with image.open(mode='rb') as my_image_file:
          target_id = vws_client.add_target(
@@ -139,11 +93,6 @@ To write unit tests for code which uses this library, without using your Vuforia
             application_metadata=None,
             active_flag=True,
          )
-
-.. invisible-code-block: python
-
-   new_image = pathlib.Path('high_quality_image.jpg')
-   new_image.unlink()
 
 There are some differences between the mock and the real Vuforia.
 See https://vws-python-mock.readthedocs.io/en/latest/differences-to-vws.html for details.
