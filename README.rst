@@ -20,35 +20,6 @@ language.
 Getting Started
 ---------------
 
-.. invisible-code-block: python
-
-   import contextlib
-   import pathlib
-   import shutil
-
-   import vws_test_fixtures
-   from mock_vws import MockVWS
-   from mock_vws.database import VuforiaDatabase
-
-   # We use a low processing time so that tests run quickly.
-   mock = MockVWS(processing_time_seconds=0.2)
-   database = VuforiaDatabase(
-       server_access_key='[server-access-key]',
-       server_secret_key='[server-secret-key]',
-       client_access_key='[client-access-key]',
-       client_secret_key='[client-secret-key]',
-   )
-   mock.add_database(database=database)
-   stack = contextlib.ExitStack()
-   stack.enter_context(mock)
-
-   # We rely on implementation details of the fixtures package.
-   image = pathlib.Path(vws_test_fixtures.__path__[0]) / 'high_quality_image.jpg'
-   assert image.exists(), image.resolve()
-   new_image = pathlib.Path('high_quality_image.jpg')
-   shutil.copy(image, new_image)
-
-
 .. code-block:: python
 
    import pathlib
@@ -83,11 +54,6 @@ Getting Started
        matching_targets = cloud_reco_client.query(image=my_image_file)
 
    assert matching_targets[0].target_id == target_id
-
-.. invisible-code-block: python
-   new_image = pathlib.Path('high_quality_image.jpg')
-   new_image.unlink()
-   stack.close()
 
 Full Documentation
 ------------------
