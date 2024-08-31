@@ -85,6 +85,7 @@ Getting Started
    assert matching_targets[0].target_id == target_id
 
 .. invisible-code-block: python
+
    new_image = pathlib.Path('high_quality_image.jpg')
    new_image.unlink()
    stack.close()
