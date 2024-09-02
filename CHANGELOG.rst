@@ -4,6 +4,9 @@ Changelog
 Next
 ----
 
+2024.09.02
+------------
+
 * Breaking change: Exception names now end with ``Error``.
 * Use a timeout (30 seconds) when making requests to the VWS API.
 * Type hint changes: images are now ``io.BytesIO`` instances or ``io.BufferedRandom``.
