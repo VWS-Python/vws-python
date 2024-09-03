@@ -64,6 +64,8 @@ def _get_image_data(image: _ImageType) -> bytes:
 
 @beartype
 def _target_api_request(
+    *,
+    content_type: str,
     server_access_key: str,
     server_secret_key: str,
     method: str,
@@ -75,9 +77,9 @@ def _target_api_request(
     Make a request to the Vuforia Target API.
 
     This uses `requests` to make a request against https://vws.vuforia.com.
-    The content type of the request will be `application/json`.
 
     Args:
+        content_type: The content type of the request.
         server_access_key: A VWS server access key.
         server_secret_key: A VWS server secret key.
         method: The HTTP method which will be used in the request.
@@ -90,7 +92,6 @@ def _target_api_request(
         The response to the request made by `requests`.
     """
     date_string = rfc_1123_date()
-    content_type = "application/json"
 
     signature_string = authorization_header(
         access_key=server_access_key,
@@ -152,16 +153,17 @@ class VWS:
 
     def make_request(
         self,
+        *,
         method: str,
         data: bytes,
         request_path: str,
         expected_result_code: str,
+        content_type: str,
     ) -> Response:
         """
         Make a request to the Vuforia Target API.
 
         This uses `requests` to make a request against Vuforia.
-        The content type of the request will be `application/json`.
 
         Args:
             method: The HTTP method which will be used in the request.
@@ -170,6 +172,7 @@ class VWS:
                 request.
             expected_result_code: See "VWS API Result Codes" on
                 https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api.
+            content_type: The content type of the request.
 
         Returns:
             The response to the request made by `requests`.
@@ -190,6 +193,7 @@ class VWS:
                 server.
         """
         response = _target_api_request(
+            content_type=content_type,
             server_access_key=self._server_access_key,
             server_secret_key=self._server_secret_key,
             method=method,
@@ -316,6 +320,7 @@ class VWS:
             data=content,
             request_path="/targets",
             expected_result_code="TargetCreated",
+            content_type="application/json",
         )
 
         return str(json.loads(s=response.text)["target_id"])
@@ -353,6 +358,7 @@ class VWS:
             data=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
+            content_type="application/json",
         )
 
         result_data = json.loads(s=response.text)
@@ -449,6 +455,7 @@ class VWS:
             data=b"",
             request_path="/targets",
             expected_result_code="Success",
+            content_type="application/json",
         )
 
         return list(json.loads(s=response.text)["results"])
@@ -486,6 +493,7 @@ class VWS:
             data=b"",
             request_path=f"/summary/{target_id}",
             expected_result_code="Success",
+            content_type="application/json",
         )
 
         result_data = dict(json.loads(s=response.text))
@@ -529,6 +537,7 @@ class VWS:
             data=b"",
             request_path="/summary",
             expected_result_code="Success",
+            content_type="application/json",
         )
 
         response_data = dict(json.loads(s=response.text))
@@ -579,6 +588,7 @@ class VWS:
             data=b"",
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
+            content_type="application/json",
         )
 
     def get_duplicate_targets(self, target_id: str) -> list[str]:
@@ -616,6 +626,7 @@ class VWS:
             data=b"",
             request_path=f"/duplicates/{target_id}",
             expected_result_code="Success",
+            content_type="application/json",
         )
 
         return list(json.loads(s=response.text)["similar_targets"])
@@ -702,4 +713,5 @@ class VWS:
             data=content,
             request_path=f"/targets/{target_id}",
             expected_result_code="Success",
+            content_type="application/json",
         )
