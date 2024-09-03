@@ -150,7 +150,7 @@ class VWS:
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
 
-    def _make_request(
+    def make_request(
         self,
         method: str,
         data: bytes,
@@ -160,7 +160,7 @@ class VWS:
         """
         Make a request to the Vuforia Target API.
 
-        This uses `requests` to make a request against https://vws.vuforia.com.
+        This uses `requests` to make a request against Vuforia.
         The content type of the request will be `application/json`.
 
         Args:
@@ -168,24 +168,26 @@ class VWS:
             data: The request body which will be used in the request.
             request_path: The path to the endpoint which will be used in the
                 request.
-            expected_result_code: See
-                https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes
+            expected_result_code: See "VWS API Result Codes" on
+                https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api.
 
         Returns:
             The response to the request made by `requests`.
 
         Raises:
-            ~vws.exceptions.OopsAnErrorOccurredPossiblyBadNameError: Vuforia
-                returns an HTML page with the text "Oops, an error occurred".
+            ~vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadNameError:
+                Vuforia returns an HTML page with the text "Oops, an error
+                occurred".
+
                 This has been seen to happen when the given name includes a bad
                 character.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
-            json.decoder.JSONDecodeError: The server did not respond with valid
-                JSON. This may happen if the server address is not a valid
-                Vuforia server.
+            json.JSONDecodeError: The server did not respond with valid JSON.
+                This may happen if the server address is not a valid Vuforia
+                server.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
@@ -309,7 +311,7 @@ class VWS:
 
         content = json.dumps(obj=data).encode(encoding="utf-8")
 
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.POST,
             data=content,
             request_path="/targets",
@@ -346,7 +348,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path=f"/targets/{target_id}",
@@ -442,7 +444,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path="/targets",
@@ -479,7 +481,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path=f"/summary/{target_id}",
@@ -522,7 +524,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path="/summary",
@@ -572,7 +574,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        self._make_request(
+        self.make_request(
             method=HTTPMethod.DELETE,
             data=b"",
             request_path=f"/targets/{target_id}",
@@ -609,7 +611,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path=f"/duplicates/{target_id}",
@@ -695,7 +697,7 @@ class VWS:
 
         content = json.dumps(obj=data).encode(encoding="utf-8")
 
-        self._make_request(
+        self.make_request(
             method=HTTPMethod.PUT,
             data=content,
             request_path=f"/targets/{target_id}",
