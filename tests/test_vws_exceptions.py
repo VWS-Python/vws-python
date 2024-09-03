@@ -121,7 +121,7 @@ def test_bad_image(vws_client: VWS) -> None:
     """
     A ``BadImage`` exception is raised when a non-image is given.
     """
-    not_an_image = io.BytesIO(b"Not an image")
+    not_an_image = io.BytesIO(initial_bytes=b"Not an image")
     with pytest.raises(BadImageError) as exc:
         vws_client.add_target(
             name="x",
