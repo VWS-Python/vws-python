@@ -150,7 +150,7 @@ class VWS:
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
 
-    def _make_request(
+    def make_request(
         self,
         method: str,
         data: bytes,
@@ -309,7 +309,7 @@ class VWS:
 
         content = json.dumps(obj=data).encode(encoding="utf-8")
 
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.POST,
             data=content,
             request_path="/targets",
@@ -346,7 +346,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path=f"/targets/{target_id}",
@@ -442,7 +442,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path="/targets",
@@ -479,7 +479,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path=f"/summary/{target_id}",
@@ -522,7 +522,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path="/summary",
@@ -572,7 +572,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        self._make_request(
+        self.make_request(
             method=HTTPMethod.DELETE,
             data=b"",
             request_path=f"/targets/{target_id}",
@@ -609,7 +609,7 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        response = self._make_request(
+        response = self.make_request(
             method=HTTPMethod.GET,
             data=b"",
             request_path=f"/duplicates/{target_id}",
@@ -695,7 +695,7 @@ class VWS:
 
         content = json.dumps(obj=data).encode(encoding="utf-8")
 
-        self._make_request(
+        self.make_request(
             method=HTTPMethod.PUT,
             data=content,
             request_path=f"/targets/{target_id}",
