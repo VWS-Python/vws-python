@@ -186,7 +186,7 @@ class CloudRecoService:
                 metadata = target_data_dict["application_metadata"]
                 timestamp_string = target_data_dict["target_timestamp"]
                 target_timestamp = datetime.datetime.fromtimestamp(
-                    timestamp_string,
+                    timestamp=timestamp_string,
                     tz=datetime.UTC,
                 )
                 target_data = TargetData(

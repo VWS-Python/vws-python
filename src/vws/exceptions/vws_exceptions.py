@@ -24,7 +24,7 @@ class UnknownTargetError(VWSError):
         """
         The unknown target ID.
         """
-        path = urlparse(self.response.url).path
+        path = urlparse(url=self.response.url).path
         # Every HTTP path which can raise this error is in the format
         # `/something/{target_id}`.
         return path.split(sep="/", maxsplit=2)[-1]
@@ -75,7 +75,7 @@ class TargetStatusProcessingError(VWSError):
         """
         The processing target ID.
         """
-        path = urlparse(self.response.url).path
+        path = urlparse(url=self.response.url).path
         # Every HTTP path which can raise this error is in the format
         # `/something/{target_id}`.
         return path.split(sep="/", maxsplit=2)[-1]
@@ -178,7 +178,7 @@ class TargetStatusNotSuccessError(VWSError):
         """
         The unknown target ID.
         """
-        path = urlparse(self.response.url).path
+        path = urlparse(url=self.response.url).path
         # Every HTTP path which can raise this error is in the format
         # `/something/{target_id}`.
         return path.split(sep="/", maxsplit=2)[-1]

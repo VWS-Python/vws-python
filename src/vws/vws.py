@@ -316,7 +316,7 @@ class VWS:
             expected_result_code="TargetCreated",
         )
 
-        return str(json.loads(response.text)["target_id"])
+        return str(json.loads(s=response.text)["target_id"])
 
     def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
         """
@@ -354,7 +354,7 @@ class VWS:
         )
 
         result_data = json.loads(s=response.text)
-        status = TargetStatuses(result_data["status"])
+        status = TargetStatuses(value=result_data["status"])
         target_record_dict = dict(result_data["target_record"])
         target_record = TargetRecord(
             target_id=target_record_dict["target_id"],
@@ -449,7 +449,7 @@ class VWS:
             expected_result_code="Success",
         )
 
-        return list(json.loads(response.text)["results"])
+        return list(json.loads(s=response.text)["results"])
 
     def get_target_summary_report(self, target_id: str) -> TargetSummaryReport:
         """
@@ -486,9 +486,9 @@ class VWS:
             expected_result_code="Success",
         )
 
-        result_data = dict(json.loads(response.text))
+        result_data = dict(json.loads(s=response.text))
         return TargetSummaryReport(
-            status=TargetStatuses(result_data["status"]),
+            status=TargetStatuses(value=result_data["status"]),
             database_name=result_data["database_name"],
             target_name=result_data["target_name"],
             upload_date=date.fromisoformat(result_data["upload_date"]),
@@ -529,7 +529,7 @@ class VWS:
             expected_result_code="Success",
         )
 
-        response_data = dict(json.loads(response.text))
+        response_data = dict(json.loads(s=response.text))
         return DatabaseSummaryReport(
             active_images=response_data["active_images"],
             current_month_recos=response_data["current_month_recos"],
@@ -682,7 +682,9 @@ class VWS:
 
         if image is not None:
             image_data = _get_image_data(image=image)
-            image_data_encoded = base64.b64encode(image_data).decode("ascii")
+            image_data_encoded = base64.b64encode(s=image_data).decode(
+                encoding="ascii",
+            )
             data["image"] = image_data_encoded
 
         if active_flag is not None:

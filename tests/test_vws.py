@@ -48,8 +48,8 @@ class TestAddTarget:
         if application_metadata is None:
             encoded_metadata = None
         else:
-            encoded_metadata_bytes = base64.b64encode(application_metadata)
-            encoded_metadata = encoded_metadata_bytes.decode("utf-8")
+            encoded_metadata_bytes = base64.b64encode(s=application_metadata)
+            encoded_metadata = encoded_metadata_bytes.decode(encoding="utf-8")
 
         target_id = vws_client.add_target(
             name=name,
@@ -197,7 +197,7 @@ class TestGetTargetSummaryReport:
         """
         date = "2018-04-25"
         target_name = uuid.uuid4().hex
-        with freeze_time(date):
+        with freeze_time(time_to_freeze=date):
             target_id = vws_client.add_target(
                 name=target_name,
                 width=1,
@@ -521,7 +521,9 @@ class TestUpdateTarget:
 
         new_name = uuid.uuid4().hex
         new_width = secrets.choice(seq=range(1, 5000)) / 100
-        new_application_metadata = base64.b64encode(b"a").decode("ascii")
+        new_application_metadata = base64.b64encode(s=b"a").decode(
+            encoding="ascii",
+        )
         vws_client.update_target(
             target_id=target_id,
             name=new_name,
