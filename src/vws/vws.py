@@ -160,7 +160,7 @@ class VWS:
         """
         Make a request to the Vuforia Target API.
 
-        This uses `requests` to make a request against https://vws.vuforia.com.
+        This uses `requests` to make a request against Vuforia.
         The content type of the request will be `application/json`.
 
         Args:
@@ -168,8 +168,8 @@ class VWS:
             data: The request body which will be used in the request.
             request_path: The path to the endpoint which will be used in the
                 request.
-            expected_result_code: See
-                https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes
+            expected_result_code: See "VWS API Result Codes" on
+                https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api.
 
         Returns:
             The response to the request made by `requests`.
