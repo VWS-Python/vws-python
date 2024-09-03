@@ -4,6 +4,9 @@ Changelog
 Next
 ----
 
+2024.09.03
+------------
+
 * Make ``VWS.make_request`` a public method.
 
 2024.09.02
