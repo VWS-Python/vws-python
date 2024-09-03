@@ -175,17 +175,19 @@ class VWS:
             The response to the request made by `requests`.
 
         Raises:
-            ~vws.exceptions.OopsAnErrorOccurredPossiblyBadNameError: Vuforia
-                returns an HTML page with the text "Oops, an error occurred".
+            ~vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadNameError:
+                Vuforia returns an HTML page with the text "Oops, an error
+                occurred".
+
                 This has been seen to happen when the given name includes a bad
                 character.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
-            json.decoder.JSONDecodeError: The server did not respond with valid
-                JSON. This may happen if the server address is not a valid
-                Vuforia server.
+            json.JSONDecodeError: The server did not respond with valid JSON.
+                This may happen if the server address is not a valid Vuforia
+                server.
         """
         response = _target_api_request(
             server_access_key=self._server_access_key,
