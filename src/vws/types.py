@@ -1,7 +1,6 @@
 """Responses for requests to VWS and VWQ."""
 
 from dataclasses import dataclass
-from io import IOBase
 
 from beartype import beartype
 
@@ -18,4 +17,4 @@ class Response:
     status_code: int
     headers: dict[str, str]
     request_body: bytes | str | None
-    raw: IOBase
+    tell_position: int
