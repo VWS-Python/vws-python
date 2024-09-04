@@ -125,7 +125,7 @@ def _target_api_request(
         status_code=requests_response.status_code,
         headers=dict(requests_response.headers),
         request_body=requests_response.request.body,
-        raw=requests_response.raw,
+        tell_position=requests_response.raw.tell(),
     )
 
 
