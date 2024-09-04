@@ -25,9 +25,9 @@ from vws.exceptions.custom_exceptions import (
     RequestEntityTooLargeError,
     ServerError,
 )
-from vws.exceptions.response import Response
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
+from vws.types import Response
 
 _ImageType = io.BytesIO | BinaryIO
 

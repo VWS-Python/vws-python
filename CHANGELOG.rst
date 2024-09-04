@@ -4,8 +4,7 @@ Changelog
 Next
 ----
 
-2024.09.03.1
-------------
+* Move ``Response`` from ``vws.exceptions.response`` to ``vws.types``.
 
 2024.09.03
 ------------

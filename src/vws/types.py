@@ -1,4 +1,4 @@
-"""Responses for exceptions."""
+"""Responses for requests to VWS and VWQ."""
 
 from dataclasses import dataclass
 
