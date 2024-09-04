@@ -12,3 +12,7 @@ API Reference
 .. automodule:: vws.include_target_data
    :undoc-members:
    :members:
+
+.. automodule:: vws.types
+   :undoc-members:
+   :members:

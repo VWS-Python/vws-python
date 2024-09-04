@@ -36,10 +36,3 @@ Custom exceptions
    :show-inheritance:
    :inherited-members: Exception
    :exclude-members: errno, filename, filename2, strerror
-
-Response
---------
-
-.. automodule:: vws.exceptions.response
-   :undoc-members:
-   :members:

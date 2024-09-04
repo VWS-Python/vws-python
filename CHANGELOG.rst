@@ -5,6 +5,7 @@ Next
 ----
 
 * Move ``Response`` from ``vws.exceptions.response`` to ``vws.types``.
+* Add ``raw`` field to ``Response``.
 
 2024.09.03
 ------------
