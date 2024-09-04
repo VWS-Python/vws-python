@@ -1,4 +1,4 @@
-"""Responses for exceptions."""
+"""Responses for requests to VWS and VWQ."""
 
 from dataclasses import dataclass
 
@@ -17,3 +17,4 @@ class Response:
     status_code: int
     headers: dict[str, str]
     request_body: bytes | str | None
+    raw: bytes

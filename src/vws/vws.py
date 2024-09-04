@@ -46,8 +46,7 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
-
-from .exceptions.response import Response
+from vws.types import Response
 
 _ImageType = io.BytesIO | BinaryIO
 
@@ -126,6 +125,7 @@ def _target_api_request(
         status_code=requests_response.status_code,
         headers=dict(requests_response.headers),
         request_body=requests_response.request.body,
+        raw=requests_response.raw,
     )
 
 
