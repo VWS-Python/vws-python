@@ -4,6 +4,9 @@ Changelog
 Next
 ----
 
+2024.09.04
+------------
+
 * Move ``Response`` from ``vws.exceptions.response`` to ``vws.types``.
 * Add ``raw`` field to ``Response``.
 
