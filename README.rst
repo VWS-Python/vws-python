@@ -61,7 +61,7 @@ Full Documentation
 See the `full
 documentation <https://vws-python.readthedocs.io/en/latest>`__.
 
-.. |Build Status| image:: https://github.com/VWS-Python/vws-python/workflows/CI/badge.svg
+.. |Build Status| image:: https://github.com/VWS-Python/vws-python/actions/workflows/ci.yml/badge.svg?branch=main
    :target: https://github.com/VWS-Python/vws-python/actions
 .. |codecov| image:: https://codecov.io/gh/VWS-Python/vws-python/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/VWS-Python/vws-python
