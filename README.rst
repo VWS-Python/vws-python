@@ -9,7 +9,7 @@ Web Query API.
 Installation
 ------------
 
-.. code:: sh
+.. code-block:: sh
 
    pip install vws-python
 
