@@ -26,10 +26,10 @@ Getting Started
 
    from vws import VWS, CloudRecoService
 
-   server_access_key = '[server-access-key]'
-   server_secret_key = '[server-secret-key]'
-   client_access_key = '[client-access-key]'
-   client_secret_key = '[client-secret-key]'
+   server_access_key = "[server-access-key]"
+   server_secret_key = "[server-secret-key]"
+   client_access_key = "[client-access-key]"
+   client_secret_key = "[client-secret-key]"
 
    vws_client = VWS(
        server_access_key=server_access_key,
@@ -39,10 +39,10 @@ Getting Started
        client_access_key=client_access_key,
        client_secret_key=client_secret_key,
    )
-   name = 'my_image_name'
+   name = "my_image_name"
 
-   image = pathlib.Path('high_quality_image.jpg')
-   with image.open(mode='rb') as my_image_file:
+   image = pathlib.Path("high_quality_image.jpg")
+   with image.open(mode="rb") as my_image_file:
        target_id = vws_client.add_target(
            name=name,
            width=1,
