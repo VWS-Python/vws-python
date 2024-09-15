@@ -22,10 +22,10 @@ See the :doc:`api-reference` for full usage details.
 
    from vws import VWS, CloudRecoService
 
-   server_access_key = '[server-access-key]'
-   server_secret_key = '[server-secret-key]'
-   client_access_key = '[client-access-key]'
-   client_secret_key = '[client-secret-key]'
+   server_access_key = "[server-access-key]"
+   server_secret_key = "[server-secret-key]"
+   client_access_key = "[client-access-key]"
+   client_secret_key = "[client-secret-key]"
 
    vws_client = VWS(
        server_access_key=server_access_key,
@@ -36,19 +36,20 @@ See the :doc:`api-reference` for full usage details.
        client_secret_key=client_secret_key,
    )
    import uuid
-   name = 'my_image_name' + uuid.uuid4().hex
 
-   image = pathlib.Path('high_quality_image.jpg')
-   with image.open(mode='rb') as my_image_file:
-      target_id = vws_client.add_target(
-         name=name,
-         width=1,
-         image=my_image_file,
-         active_flag=True,
-         application_metadata=None,
-      )
-      vws_client.wait_for_target_processed(target_id=target_id)
-      matching_targets = cloud_reco_client.query(image=my_image_file)
+   name = "my_image_name" + uuid.uuid4().hex
+
+   image = pathlib.Path("high_quality_image.jpg")
+   with image.open(mode="rb") as my_image_file:
+       target_id = vws_client.add_target(
+           name=name,
+           width=1,
+           image=my_image_file,
+           active_flag=True,
+           application_metadata=None,
+       )
+       vws_client.wait_for_target_processed(target_id=target_id)
+       matching_targets = cloud_reco_client.query(image=my_image_file)
 
    assert matching_targets[0].target_id == target_id
    a = 1
@@ -84,15 +85,15 @@ To write unit tests for code which uses this library, without using your Vuforia
            client_secret_key=database.client_secret_key,
        )
 
-       image = pathlib.Path('high_quality_image.jpg')
-       with image.open(mode='rb') as my_image_file:
-         target_id = vws_client.add_target(
-            name="example_image_name",
-            width=1,
-            image=my_image_file,
-            application_metadata=None,
-            active_flag=True,
-         )
+       image = pathlib.Path("high_quality_image.jpg")
+       with image.open(mode="rb") as my_image_file:
+           target_id = vws_client.add_target(
+               name="example_image_name",
+               width=1,
+               image=my_image_file,
+               application_metadata=None,
+               active_flag=True,
+           )
 
 There are some differences between the mock and the real Vuforia.
 See https://vws-python-mock.readthedocs.io/en/latest/differences-to-vws.html for details.
