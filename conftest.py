@@ -1,7 +1,6 @@
 """Setup for Sybil."""
 
 import io
-import sys
 from collections.abc import Generator
 from doctest import ELLIPSIS
 from pathlib import Path
@@ -13,11 +12,9 @@ from mock_vws.database import VuforiaDatabase
 from sybil import Sybil
 from sybil.parsers.rest import (
     ClearNamespaceParser,
-    CodeBlockParser,
     DocTestParser,
     PythonCodeBlockParser,
 )
-from sybil_extras.evaluators.shell_evaluator import ShellCommandEvaluator
 
 
 def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
@@ -70,33 +67,5 @@ pytest_collect_file = Sybil(
         PythonCodeBlockParser(),
     ],
     patterns=["*.rst", "*.py"],
-).pytest()
-
-run_code_sybil = Sybil(
-    parsers=[
-        DocTestParser(optionflags=ELLIPSIS),
-        PythonCodeBlockParser(),
-    ],
-    patterns=["*.rst", "*.py"],
     fixtures=["make_image_file", "mock_vws"],
-)
-
-pytest_sybil = Sybil(
-    parsers=[
-        CodeBlockParser(
-            language="python",
-            evaluator=ShellCommandEvaluator(
-                args=[sys.executable, "-m", "pytest"],
-                tempfile_suffixes=[".py"],
-                pad_file=True,
-                write_to_file=False,
-            ),
-        ),
-    ],
-    patterns=["*.rst"],
-    fixtures=["make_image_file"],
-)
-
-sybils = run_code_sybil + pytest_sybil
-
-pytest_collect_file = sybils.pytest()
+).pytest()
