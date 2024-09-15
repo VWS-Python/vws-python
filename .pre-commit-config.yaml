@@ -132,7 +132,7 @@ repos:
 
     -   id: pylint-docs
         name: pylint-docs
-        entry: doccmd --language=python --command="pylint" --lowercase-file-name
+        entry: doccmd --language=python --command="pylint"
         language: system
         stages: [manual]
         types_or: [markdown, rst, python, toml]
