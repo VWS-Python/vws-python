@@ -236,6 +236,10 @@ disable = [
 
 # This format is described in the following issue:
 # https://github.com/christopherpickering/pylint-per-file-ignores/issues/160
+#
+# We ignore invalid names because:
+# - We want to use generated module names, which may not be valid, but are never seen.
+# - We want to use global variables in documentation, which may not be uppercase
 per-file-ignores = """
 docs/:invalid-name
 doccmd_README_rst.*.py:invalid-name
