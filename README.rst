@@ -22,7 +22,10 @@ Getting Started
 
 .. code-block:: python
 
+   """Add a target to VWS and then query it."""
+
    import pathlib
+   import uuid
 
    from vws import VWS, CloudRecoService
 
@@ -39,7 +42,8 @@ Getting Started
        client_access_key=client_access_key,
        client_secret_key=client_secret_key,
    )
-   name = "my_image_name"
+
+   name = "my_image_name_" + uuid.uuid4().hex
 
    image = pathlib.Path("high_quality_image.jpg")
    with image.open(mode="rb") as my_image_file:
@@ -54,6 +58,7 @@ Getting Started
        matching_targets = cloud_reco_client.query(image=my_image_file)
 
    assert matching_targets[0].target_id == target_id
+   a = 1
 
 Full Documentation
 ------------------

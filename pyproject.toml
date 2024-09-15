@@ -123,6 +123,11 @@ lint.per-file-ignores."conftest.py" = [
     "S106",
 ]
 
+lint.per-file-ignores."doccmd_*.py" = [
+    # Allow hardcoded secrets in documentation.
+    "S105",
+]
+
 lint.per-file-ignores."tests/*.py" = [
     # Do not require tests to have a one-line summary.
     "D205",

@@ -18,7 +18,10 @@ See the :doc:`api-reference` for full usage details.
 
 .. code-block:: python
 
+   """Add a target to VWS and then query it."""
+
    import pathlib
+   import uuid
 
    from vws import VWS, CloudRecoService
 
@@ -35,9 +38,8 @@ See the :doc:`api-reference` for full usage details.
        client_access_key=client_access_key,
        client_secret_key=client_secret_key,
    )
-   import uuid
 
-   name = "my_image_name" + uuid.uuid4().hex
+   name = "my_image_name_" + uuid.uuid4().hex
 
    image = pathlib.Path("high_quality_image.jpg")
    with image.open(mode="rb") as my_image_file:
@@ -67,11 +69,14 @@ To write unit tests for code which uses this library, without using your Vuforia
 
 .. code-block:: python
 
+   """Test adding a target to VWS."""
+
    import pathlib
 
-   from mock_vws.database import VuforiaDatabase
    from mock_vws import MockVWS
-   from vws import CloudRecoService, VWS
+   from mock_vws.database import VuforiaDatabase
+
+   from vws import VWS, CloudRecoService
 
    with MockVWS() as mock:
        database = VuforiaDatabase()
