@@ -109,3 +109,5 @@ secrets.tar
 
 # setuptools_scm
 src/*/_setuptools_scm_version.txt
+
+uv.lock
