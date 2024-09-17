@@ -248,6 +248,24 @@ class TestGetDatabaseSummaryReport:
             target_quota=1000,
             total_recos=0,
         )
+
+        assert report.active_images == expected_report.active_images
+        assert (
+            report.current_month_recos == expected_report.current_month_recos
+        )
+        assert report.failed_images == expected_report.failed_images
+        assert report.inactive_images == expected_report.inactive_images
+        assert report.name == expected_report.name
+        assert (
+            report.previous_month_recos == expected_report.previous_month_recos
+        )
+        assert report.processing_images == expected_report.processing_images
+        assert report.reco_threshold == expected_report.reco_threshold
+        assert report.request_quota == expected_report.request_quota
+        assert report.request_usage == expected_report.request_usage
+        assert report.target_quota == expected_report.target_quota
+        assert report.total_recos == expected_report.total_recos
+
         assert report == expected_report
 
 
