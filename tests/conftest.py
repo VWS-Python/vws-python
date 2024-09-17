@@ -15,7 +15,7 @@ from vws import VWS, CloudRecoService
 
 
 @pytest.fixture(name="_mock_database")
-def mock_database() -> Generator[VuforiaDatabase, None, None]:
+def fixture_mock_database() -> Generator[VuforiaDatabase, None, None]:
     """
     Yield a mock ``VuforiaDatabase``.
     """

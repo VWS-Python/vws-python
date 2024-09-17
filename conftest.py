@@ -26,8 +26,8 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
             item.obj = beartype(obj=item.obj)
 
 
-@pytest.fixture
-def make_image_file(
+@pytest.fixture(name="make_image_file")
+def fixture_make_image_file(
     high_quality_image: io.BytesIO,
 ) -> Generator[None, None, None]:
     """
@@ -41,8 +41,8 @@ def make_image_file(
     new_image.unlink()
 
 
-@pytest.fixture
-def mock_vws() -> Generator[None, None, None]:
+@pytest.fixture(name="mock_vws")
+def fixture_mock_vws() -> Generator[None, None, None]:
     """
     Yield a mock VWS.
 
