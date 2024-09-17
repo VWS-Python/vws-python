@@ -206,20 +206,35 @@ class TestGetTargetSummaryReport:
                 application_metadata=None,
             )
 
-        result = vws_client.get_target_summary_report(target_id=target_id)
+        report = vws_client.get_target_summary_report(target_id=target_id)
 
         expected_report = TargetSummaryReport(
             status=TargetStatuses.SUCCESS,
-            database_name=result.database_name,
+            database_name=report.database_name,
             target_name=target_name,
             upload_date=datetime.date(2018, 4, 25),
             active_flag=True,
-            tracking_rating=result.tracking_rating,
+            tracking_rating=report.tracking_rating,
             total_recos=0,
             current_month_recos=0,
             previous_month_recos=0,
         )
-        assert result == expected_report
+
+        assert report.status == expected_report.status
+        assert report.database_name == expected_report.database_name
+        assert report.target_name == expected_report.target_name
+        assert report.upload_date == expected_report.upload_date
+        assert report.active_flag == expected_report.active_flag
+        assert report.tracking_rating == expected_report.tracking_rating
+        assert report.total_recos == expected_report.total_recos
+        assert (
+            report.current_month_recos == expected_report.current_month_recos
+        )
+        assert (
+            report.previous_month_recos == expected_report.previous_month_recos
+        )
+
+        assert report == expected_report
 
 
 class TestGetDatabaseSummaryReport:
@@ -301,6 +316,25 @@ class TestGetTargetRecord:
         )
 
         assert result.target_record == expected_target_record
+
+        assert (
+            result.target_record.target_id == expected_target_record.target_id
+        )
+        assert (
+            result.target_record.active_flag
+            == expected_target_record.active_flag
+        )
+        assert result.target_record.name == expected_target_record.name
+        assert result.target_record.width == expected_target_record.width
+        assert (
+            result.target_record.tracking_rating
+            == expected_target_record.tracking_rating
+        )
+        assert (
+            result.target_record.reco_rating
+            == expected_target_record.reco_rating
+        )
+
         assert result.status == TargetStatuses.PROCESSING
 
 
