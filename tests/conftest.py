@@ -49,7 +49,7 @@ def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
 
 
 @pytest.fixture(name="image_file", params=["r+b", "rb"])
-def image_file_fixture(
+def fixture_image_file(
     high_quality_image: io.BytesIO,
     tmp_path: Path,
     request: pytest.FixtureRequest,
