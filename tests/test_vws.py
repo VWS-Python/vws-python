@@ -337,6 +337,27 @@ class TestGetTargetRecord:
 
         assert result.status == TargetStatuses.PROCESSING
 
+    @staticmethod
+    def test_get_failed(
+        vws_client: VWS,
+        image_file_failed_state: io.BytesIO,
+    ) -> None:
+        """
+        Check that the report works with a failed target.
+        """
+        target_id = vws_client.add_target(
+            name="x",
+            width=1,
+            image=image_file_failed_state,
+            active_flag=True,
+            application_metadata=None,
+        )
+
+        vws_client.wait_for_target_processed(target_id=target_id)
+        result = vws_client.get_target_record(target_id=target_id)
+
+        assert result.status == TargetStatuses.FAILED
+
 
 class TestWaitForTargetProcessed:
     """
