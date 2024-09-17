@@ -206,20 +206,35 @@ class TestGetTargetSummaryReport:
                 application_metadata=None,
             )
 
-        result = vws_client.get_target_summary_report(target_id=target_id)
+        report = vws_client.get_target_summary_report(target_id=target_id)
 
         expected_report = TargetSummaryReport(
             status=TargetStatuses.SUCCESS,
-            database_name=result.database_name,
+            database_name=report.database_name,
             target_name=target_name,
             upload_date=datetime.date(2018, 4, 25),
             active_flag=True,
-            tracking_rating=result.tracking_rating,
+            tracking_rating=report.tracking_rating,
             total_recos=0,
             current_month_recos=0,
             previous_month_recos=0,
         )
-        assert result == expected_report
+
+        assert report.status == expected_report.status
+        assert report.database_name == expected_report.database_name
+        assert report.target_name == expected_report.target_name
+        assert report.upload_date == expected_report.upload_date
+        assert report.active_flag == expected_report.active_flag
+        assert report.tracking_rating == expected_report.tracking_rating
+        assert report.total_recos == expected_report.total_recos
+        assert (
+            report.current_month_recos == expected_report.current_month_recos
+        )
+        assert (
+            report.previous_month_recos == expected_report.previous_month_recos
+        )
+
+        assert report == expected_report
 
 
 class TestGetDatabaseSummaryReport:
@@ -248,6 +263,24 @@ class TestGetDatabaseSummaryReport:
             target_quota=1000,
             total_recos=0,
         )
+
+        assert report.active_images == expected_report.active_images
+        assert (
+            report.current_month_recos == expected_report.current_month_recos
+        )
+        assert report.failed_images == expected_report.failed_images
+        assert report.inactive_images == expected_report.inactive_images
+        assert report.name == expected_report.name
+        assert (
+            report.previous_month_recos == expected_report.previous_month_recos
+        )
+        assert report.processing_images == expected_report.processing_images
+        assert report.reco_threshold == expected_report.reco_threshold
+        assert report.request_quota == expected_report.request_quota
+        assert report.request_usage == expected_report.request_usage
+        assert report.target_quota == expected_report.target_quota
+        assert report.total_recos == expected_report.total_recos
+
         assert report == expected_report
 
 
@@ -283,7 +316,47 @@ class TestGetTargetRecord:
         )
 
         assert result.target_record == expected_target_record
+
+        assert (
+            result.target_record.target_id == expected_target_record.target_id
+        )
+        assert (
+            result.target_record.active_flag
+            == expected_target_record.active_flag
+        )
+        assert result.target_record.name == expected_target_record.name
+        assert result.target_record.width == expected_target_record.width
+        assert (
+            result.target_record.tracking_rating
+            == expected_target_record.tracking_rating
+        )
+        assert (
+            result.target_record.reco_rating
+            == expected_target_record.reco_rating
+        )
+
         assert result.status == TargetStatuses.PROCESSING
+
+    @staticmethod
+    def test_get_failed(
+        vws_client: VWS,
+        image_file_failed_state: io.BytesIO,
+    ) -> None:
+        """
+        Check that the report works with a failed target.
+        """
+        target_id = vws_client.add_target(
+            name="x",
+            width=1,
+            image=image_file_failed_state,
+            active_flag=True,
+            application_metadata=None,
+        )
+
+        vws_client.wait_for_target_processed(target_id=target_id)
+        result = vws_client.get_target_record(target_id=target_id)
+
+        assert result.status == TargetStatuses.FAILED
 
 
 class TestWaitForTargetProcessed:

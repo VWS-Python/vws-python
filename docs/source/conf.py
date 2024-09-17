@@ -62,12 +62,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3.12", None),
 }
 nitpicky = True
-nitpick_ignore = (
-    ("py:class", "BytesIO"),
-    ("py:class", "BufferedRandom"),
-    ("py:class", "_io.BytesIO"),
-    ("py:class", "_io.BufferedRandom"),
-)
+nitpick_ignore = (("py:class", "_io.BytesIO"),)
 warning_is_error = True
 
 autoclass_content = "both"

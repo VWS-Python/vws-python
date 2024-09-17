@@ -116,4 +116,8 @@ def test_inactive_project(
         with pytest.raises(InactiveProjectError) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
-        assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
+        response = exc.value.response
+        assert response.status_code == HTTPStatus.FORBIDDEN
+        # We need one test which checks tell position
+        # and so we choose this one almost at random.
+        assert response.tell_position != 0
