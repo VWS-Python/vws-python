@@ -383,4 +383,4 @@ ignore_names = [
 ]
 
 # Duplicate some of .gitignore
-exclude = [".venv"]
+exclude = [ ".venv" ]
