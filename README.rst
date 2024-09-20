@@ -24,15 +24,16 @@ Getting Started
 
    """Add a target to VWS and then query it."""
 
+   import os
    import pathlib
    import uuid
 
    from vws import VWS, CloudRecoService
 
-   server_access_key = "[server-access-key]"
-   server_secret_key = "[server-secret-key]"
-   client_access_key = "[client-access-key]"
-   client_secret_key = "[client-secret-key]"
+   server_access_key = os.environ["VWS_SERVER_ACCESS_KEY"]
+   server_secret_key = os.environ["VWS_SERVER_SECRET_KEY"]
+   client_access_key = os.environ["VWS_CLIENT_ACCESS_KEY"]
+   client_secret_key = os.environ["VWS_CLIENT_SECRET_KEY"]
 
    vws_client = VWS(
        server_access_key=server_access_key,
