@@ -1,6 +1,7 @@
 """Setup for Sybil."""
 
 import io
+import uuid
 from collections.abc import Generator
 from doctest import ELLIPSIS
 from pathlib import Path
@@ -42,18 +43,30 @@ def fixture_make_image_file(
 
 
 @pytest.fixture(name="mock_vws")
-def fixture_mock_vws() -> Generator[None, None, None]:
+def fixture_mock_vws(
+    monkeypatch: pytest.MonkeyPatch,
+) -> Generator[None, None, None]:
     """
     Yield a mock VWS.
 
     The keys used here match the keys in the documentation.
     """
+    server_access_key = uuid.uuid4().hex
+    server_secret_key = uuid.uuid4().hex
+    client_access_key = uuid.uuid4().hex
+    client_secret_key = uuid.uuid4().hex
+
     database = VuforiaDatabase(
-        server_access_key="[server-access-key]",
-        server_secret_key="[server-secret-key]",
-        client_access_key="[client-access-key]",
-        client_secret_key="[client-secret-key]",
+        server_access_key=server_access_key,
+        server_secret_key=server_secret_key,
+        client_access_key=client_access_key,
+        client_secret_key=client_secret_key,
     )
+
+    monkeypatch.setenv(name="VWS_SERVER_ACCESS_KEY", value=server_access_key)
+    monkeypatch.setenv(name="VWS_SERVER_SECRET_KEY", value=server_secret_key)
+    monkeypatch.setenv(name="VWS_CLIENT_ACCESS_KEY", value=client_access_key)
+    monkeypatch.setenv(name="VWS_CLIENT_SECRET_KEY", value=client_secret_key)
     # We use a low processing time so that tests run quickly.
     with MockVWS(processing_time_seconds=0.2) as mock:
         mock.add_database(database=database)
