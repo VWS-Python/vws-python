@@ -30,6 +30,8 @@ ci:
         - spelling
         - vulture
         - vulture-docs
+        - shellcheck
+        - shellcheck-docs
 
 default_install_hook_types: [pre-commit, pre-push, commit-msg]
 repos:
