@@ -633,6 +633,7 @@ class VWS:
 
     def update_target(
         self,
+        *,
         target_id: str,
         name: str | None = None,
         width: float | None = None,

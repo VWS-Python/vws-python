@@ -15,7 +15,7 @@ from vws import VWS, CloudRecoService
 
 
 @pytest.fixture(name="_mock_database")
-def fixture_mock_database() -> Generator[VuforiaDatabase, None, None]:
+def fixture_mock_database() -> Generator[VuforiaDatabase]:
     """
     Yield a mock ``VuforiaDatabase``.
     """
@@ -53,7 +53,7 @@ def fixture_image_file(
     high_quality_image: io.BytesIO,
     tmp_path: Path,
     request: pytest.FixtureRequest,
-) -> Generator[BinaryIO, None, None]:
+) -> Generator[BinaryIO]:
     """An image file object."""
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
