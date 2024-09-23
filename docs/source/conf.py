@@ -3,8 +3,6 @@
 Configuration for Sphinx.
 """
 
-# pylint: disable=invalid-name
-
 import datetime
 import importlib.metadata
 
