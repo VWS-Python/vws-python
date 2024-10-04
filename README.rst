@@ -13,7 +13,7 @@ Installation
 
    pip install vws-python
 
-This is tested on Python 3.12+. Get in touch with
+This is tested on Python |minimum-python-version|\+. Get in touch with
 ``adamdangoor@gmail.com`` if you would like to use this with another
 language.
 
@@ -78,3 +78,4 @@ documentation <https://vws-python.readthedocs.io/en/latest>`__.
    :target: https://badge.fury.io/py/VWS-Python
 .. |Documentation Status| image:: https://readthedocs.org/projects/vws-python/badge/?version=latest
    :target: https://vws-python.readthedocs.io/en/latest/?badge=latest
+.. |minimum-python-version| replace:: 3.12
