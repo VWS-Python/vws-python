@@ -76,6 +76,7 @@ optional-dependencies.dev = [
     "vws-python-mock==2024.8.30",
     "vws-test-fixtures==2023.3.5",
 ]
+optional-dependencies.release = [ "build", "check-wheel-contents" ]
 urls.Documentation = "https://vws-python.readthedocs.io/en/latest/"
 urls.Source = "https://github.com/VWS-Python/vws-python"
 
@@ -286,6 +287,7 @@ ignore = [
 [tool.deptry]
 pep621_dev_dependency_groups = [
     "dev",
+    "release",
 ]
 
 [tool.pyproject-fmt]
