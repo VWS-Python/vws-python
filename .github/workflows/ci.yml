@@ -24,28 +24,31 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v3
         with:
-          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+
+      - name: Install Python 3.12
+        run: uv python install ${{ matrix.python-version }}
 
       # We do not use the cache action as uv is faster than the cache action.
       - name: "Install dependencies"
         run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
           uv pip install --system --upgrade --editable .[dev]
 
       - name: "Lint"
         run: |
-          pre-commit run --all-files --hook-stage commit --verbose
-          pre-commit run --all-files --hook-stage push --verbose
-          pre-commit run --all-files --hook-stage manual --verbose
+          uv run --all-extras pre-commit run --all-files --hook-stage commit --verbose
+          uv run --all-extras pre-commit run --all-files --hook-stage push --verbose
+          uv run --all-extras pre-commit run --all-files --hook-stage manual --verbose
 
       - name: "Run tests"
         run: |
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
-          pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
+          uv run --all-extras pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests/ . --cov-report=xml
 
       - name: "Upload coverage to Codecov"
         uses: "codecov/codecov-action@v4"
