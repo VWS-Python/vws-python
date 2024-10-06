@@ -77,6 +77,7 @@ optional-dependencies.dev = [
     "vws-test-fixtures==2023.3.5",
 ]
 urls.Documentation = "https://vws-python.readthedocs.io/en/latest/"
+optional-dependencies.release = ["build", "check-wheel-contents"]
 urls.Source = "https://github.com/VWS-Python/vws-python"
 
 [tool.setuptools]
