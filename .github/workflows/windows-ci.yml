@@ -35,4 +35,4 @@ jobs:
         run: |
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
-          uv run pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
+          uv run --all-extras pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
