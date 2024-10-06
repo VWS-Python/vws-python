@@ -7,7 +7,6 @@ ci:
     # We use system Python, with required dependencies specified in pyproject.toml.
     # We therefore cannot use those dependencies in pre-commit CI.
     skip:
-        - actionlint
         - check-manifest
         - deptry
         - doc8
@@ -61,8 +60,8 @@ repos:
   hooks:
     - id: actionlint
       name: actionlint
-      entry: actionlint
-      language: system
+      entry: uv run --all-extras actionlint
+      language: python
       pass_filenames: false
       types_or: [yaml]
 
