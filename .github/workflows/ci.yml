@@ -18,14 +18,14 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.12"]
-        platform: [ubuntu-latest]
+        platform: ["ubuntu-latest", "windows-latest"]
 
     runs-on: ${{ matrix.platform }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install the latest version of uv
+      - name: Install uv
         uses: astral-sh/setup-uv@v3
 
       - name: Install Python

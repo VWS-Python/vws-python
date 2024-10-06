@@ -24,20 +24,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: "Set up Python"
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
 
-      # TODO Here (or maybe get rid of this and use the ci yml?)
-      # We do not use the cache action as uv is faster than the cache action.
-      - name: "Install dependencies"
-        run: |
-          irm https://astral.sh/uv/install.ps1 | iex
-          uv pip install --system --upgrade --editable .[dev]
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install Python
+        run: uv python install ${{ matrix.python-version }}
 
       - name: "Run tests"
         run: |
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
-          python -m pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
+          uv run pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests . --cov-report=xml
