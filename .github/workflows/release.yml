@@ -34,9 +34,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
 
-      - name: Install Python
-        run: uv python install ${{ matrix.python-version }}
-
       - name: "Calver calculate version"
         uses: StephaneBour/actions-calver@master
         id: calver
