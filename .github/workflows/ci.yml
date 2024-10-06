@@ -31,11 +31,6 @@ jobs:
       - name: Install Python 3.12
         run: uv python install ${{ matrix.python-version }}
 
-      # We do not use the cache action as uv is faster than the cache action.
-      - name: "Install dependencies"
-        run: |
-          uv pip install --system --upgrade --editable .[dev]
-
       - name: "Lint"
         run: |
           uv run --all-extras pre-commit run --all-files --hook-stage commit --verbose
