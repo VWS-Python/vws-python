@@ -64,6 +64,7 @@ repos:
       language: python
       pass_filenames: false
       types_or: [yaml]
+      additional_dependencies: ["uv"]
 
     - id: shellcheck
       name: shellcheck
