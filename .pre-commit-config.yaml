@@ -98,7 +98,7 @@ repos:
 
     - id: mypy
       name: mypy
-      stages: [push]
+      stages: [pre-push]
       entry: uv run --extra=dev -m mypy .
       language: python
       types_or: [python, toml]
@@ -107,7 +107,7 @@ repos:
 
     - id: mypy-docs
       name: mypy-docs
-      stages: [push]
+      stages: [pre-push]
       entry: uv run --extra=dev doccmd --language=python --command="mypy"
       language: python
       types_or: [markdown, rst, python, toml]
@@ -115,7 +115,7 @@ repos:
 
     - id: check-manifest
       name: check-manifest
-      stages: [push]
+      stages: [pre-push]
       entry: uv run --extra=dev -m check_manifest .
       language: python
       pass_filenames: false
@@ -123,7 +123,7 @@ repos:
 
     - id: pyright
       name: pyright
-      stages: [push]
+      stages: [pre-push]
       entry: uv run --extra=dev -m pyright .
       language: python
       types_or: [python, toml]
@@ -132,7 +132,7 @@ repos:
 
     - id: pyright-docs
       name: pyright-docs
-      stages: [push]
+      stages: [pre-push]
       entry: uv run --extra=dev doccmd --language=python --command="pyright"
       language: python
       types_or: [markdown, rst, python, toml]
@@ -269,7 +269,7 @@ repos:
 
     - id: pyright-verifytypes
       name: pyright-verifytypes
-      stages: [push]
+      stages: [pre-push]
       entry: uv run --extra=dev -m pyright --verifytypes vws
       language: python
       pass_filenames: false
