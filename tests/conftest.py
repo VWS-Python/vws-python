@@ -54,7 +54,9 @@ def fixture_image_file(
     tmp_path: Path,
     request: pytest.FixtureRequest,
 ) -> Generator[BinaryIO]:
-    """An image file object."""
+    """
+    An image file object.
+    """
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
     file.write_bytes(data=buffer)
@@ -69,7 +71,9 @@ def image(
     high_quality_image: io.BytesIO,
     image_file: BinaryIO,
 ) -> io.BytesIO | BinaryIO:
-    """An image in any of the types that the API accepts."""
+    """
+    An image in any of the types that the API accepts.
+    """
     if request.param == "high_quality_image":
         return high_quality_image
     return image_file

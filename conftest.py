@@ -1,4 +1,6 @@
-"""Setup for Sybil."""
+"""
+Setup for Sybil.
+"""
 
 import io
 import uuid
@@ -31,8 +33,8 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
 def fixture_make_image_file(
     high_quality_image: io.BytesIO,
 ) -> Generator[None]:
-    """
-    Make an image file available in the test directory.
+    """Make an image file available in the test directory.
+
     The path of this file matches the path in the documentation.
     """
     new_image = Path("high_quality_image.jpg")
@@ -46,8 +48,7 @@ def fixture_make_image_file(
 def fixture_mock_vws(
     monkeypatch: pytest.MonkeyPatch,
 ) -> Generator[None]:
-    """
-    Yield a mock VWS.
+    """Yield a mock VWS.
 
     The keys used here match the keys in the documentation.
     """

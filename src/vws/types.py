@@ -1,4 +1,6 @@
-"""Responses for requests to VWS and VWQ."""
+"""
+Responses for requests to VWS and VWQ.
+"""
 
 from dataclasses import dataclass
 

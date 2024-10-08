@@ -34,7 +34,9 @@ _ImageType = io.BytesIO | BinaryIO
 
 @beartype
 def _get_image_data(image: _ImageType) -> bytes:
-    """Get the data of an image file."""
+    """
+    Get the data of an image file.
+    """
     original_tell = image.tell()
     image.seek(0)
     image_data = image.read()
@@ -72,8 +74,7 @@ class CloudRecoService:
             CloudRecoIncludeTargetData.TOP
         ),
     ) -> list[QueryResult]:
-        """
-        Use the Vuforia Web Query API to make an Image Recognition Query.
+        """Use the Vuforia Web Query API to make an Image Recognition Query.
 
         See
         https://developer.vuforia.com/library/web-api/vuforia-query-web-api

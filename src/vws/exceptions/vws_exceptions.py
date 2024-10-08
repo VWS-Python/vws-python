@@ -33,8 +33,7 @@ class UnknownTargetError(VWSError):
 @beartype
 class FailError(VWSError):
     """
-    Exception raised when Vuforia returns a response with a result code
-    'Fail'.
+    Exception raised when Vuforia returns a response with a result code 'Fail'.
     """
 
 

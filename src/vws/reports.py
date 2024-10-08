@@ -12,8 +12,7 @@ from beartype import BeartypeConf, beartype
 @beartype
 @dataclass(frozen=True)
 class DatabaseSummaryReport:
-    """
-    A database summary report.
+    """A database summary report.
 
     See
     https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#summary-report.
@@ -49,8 +48,7 @@ class TargetStatuses(Enum):
 @beartype
 @dataclass(frozen=True)
 class TargetSummaryReport:
-    """
-    A target summary report.
+    """A target summary report.
 
     See
     https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#summary-report.
@@ -70,8 +68,7 @@ class TargetSummaryReport:
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
 @dataclass(frozen=True)
 class TargetRecord:
-    """
-    A target record.
+    """A target record.
 
     See
     https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#target-record.
@@ -100,8 +97,7 @@ class TargetData:
 @beartype
 @dataclass(frozen=True)
 class QueryResult:
-    """
-    One query match result.
+    """One query match result.
 
     See
     https://developer.vuforia.com/library/web-api/vuforia-query-web-api.
@@ -114,8 +110,7 @@ class QueryResult:
 @beartype
 @dataclass(frozen=True)
 class TargetStatusAndRecord:
-    """
-    The target status and a target record.
+    """The target status and a target record.
 
     See
     https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#target-record.
