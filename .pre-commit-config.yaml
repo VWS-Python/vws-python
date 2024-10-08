@@ -58,6 +58,13 @@ repos:
       - id: file-contents-sorter
         files: spelling_private_dict\.txt$
       - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0 # Use the ref you want to point at
+    hooks:
+      - id: rst-directive-colons
+      - id: rst-inline-touching-normal
+      - id: text-unicode-replacement-char
+      - id: rst-backticks
   - repo: https://github.com/mrtazz/checkmake.git
     rev: 0.2.2
     hooks:
