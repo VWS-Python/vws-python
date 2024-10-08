@@ -58,6 +58,10 @@ repos:
       - id: file-contents-sorter
         files: spelling_private_dict\.txt$
       - id: trailing-whitespace
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.13.0
+    hooks:
+      - id: yamlfmt
   - repo: local
     hooks:
       - id: actionlint
