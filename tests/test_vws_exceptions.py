@@ -139,8 +139,8 @@ def test_target_name_exist(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetNameExist`` exception is raised after adding two targets with
-    the same name.
+    A ``TargetNameExist`` exception is raised after adding two targets with the
+    same name.
     """
     vws_client.add_target(
         name="x",
@@ -166,8 +166,8 @@ def test_project_inactive(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``ProjectInactive`` exception is raised if adding a target to an
-    inactive database.
+    A ``ProjectInactive`` exception is raised if adding a target to an inactive
+    database.
     """
     database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
     with MockVWS() as mock:

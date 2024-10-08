@@ -53,7 +53,9 @@ _ImageType = io.BytesIO | BinaryIO
 
 @beartype
 def _get_image_data(image: _ImageType) -> bytes:
-    """Get the data of an image file."""
+    """
+    Get the data of an image file.
+    """
     original_tell = image.tell()
     image.seek(0)
     image_data = image.read()
@@ -72,8 +74,7 @@ def _target_api_request(
     request_path: str,
     base_vws_url: str,
 ) -> Response:
-    """
-    Make a request to the Vuforia Target API.
+    """Make a request to the Vuforia Target API.
 
     This uses `requests` to make a request against https://vws.vuforia.com.
 
@@ -160,8 +161,7 @@ class VWS:
         expected_result_code: str,
         content_type: str,
     ) -> Response:
-        """
-        Make a request to the Vuforia Target API.
+        """Make a request to the Vuforia Target API.
 
         This uses `requests` to make a request against Vuforia.
 
@@ -251,8 +251,7 @@ class VWS:
         *,
         active_flag: bool,
     ) -> str:
-        """
-        Add a target to a Vuforia Web Services database.
+        """Add a target to a Vuforia Web Services database.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#add
@@ -326,8 +325,8 @@ class VWS:
         return str(json.loads(s=response.text)["target_id"])
 
     def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
-        """
-        Get a given target's target record from the Target Management System.
+        """Get a given target's target record from the Target Management
+        System.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#target-record.
@@ -383,8 +382,7 @@ class VWS:
         seconds_between_requests: float = 0.2,
         timeout_seconds: float = 60 * 5,
     ) -> None:
-        """
-        Wait up to five minutes (arbitrary) for a target to get past the
+        """Wait up to five minutes (arbitrary) for a target to get past the
         processing stage.
 
         Args:
@@ -428,8 +426,7 @@ class VWS:
             time.sleep(seconds_between_requests)
 
     def list_targets(self) -> list[str]:
-        """
-        List target IDs.
+        """List target IDs.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#details-list.
@@ -461,8 +458,7 @@ class VWS:
         return list(json.loads(s=response.text)["results"])
 
     def get_target_summary_report(self, target_id: str) -> TargetSummaryReport:
-        """
-        Get a summary report for a target.
+        """Get a summary report for a target.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#summary-report.
@@ -510,8 +506,7 @@ class VWS:
         )
 
     def get_database_summary_report(self) -> DatabaseSummaryReport:
-        """
-        Get a summary report for the database.
+        """Get a summary report for the database.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#summary-report.
@@ -557,8 +552,7 @@ class VWS:
         )
 
     def delete_target(self, target_id: str) -> None:
-        """
-        Delete a given target.
+        """Delete a given target.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#delete.
@@ -592,8 +586,7 @@ class VWS:
         )
 
     def get_duplicate_targets(self, target_id: str) -> list[str]:
-        """
-        Get targets which may be considered duplicates of a given target.
+        """Get targets which may be considered duplicates of a given target.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#check.
@@ -641,8 +634,7 @@ class VWS:
         active_flag: bool | None = None,
         application_metadata: str | None = None,
     ) -> None:
-        """
-        Update a target in a Vuforia Web Services database.
+        """Update a target in a Vuforia Web Services database.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#update

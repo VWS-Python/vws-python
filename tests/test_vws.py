@@ -80,8 +80,7 @@ class TestAddTarget:
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        No exception is raised when adding two targets with different names.
+        """No exception is raised when adding two targets with different names.
 
         This demonstrates that the image seek position is not changed.
         """

@@ -59,7 +59,7 @@ repos:
         files: spelling_private_dict\.txt$
       - id: trailing-whitespace
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0 # Use the ref you want to point at
+    rev: v1.10.0
     hooks:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
@@ -82,6 +82,13 @@ repos:
         language: python
         pass_filenames: false
         types_or: [yaml]
+        additional_dependencies: ["uv"]
+
+      - id: docformatter
+        name: docformatter
+        entry: uv run --extra=dev -m docformatter
+        language: python
+        types_or: [python]
         additional_dependencies: ["uv"]
 
       - id: shellcheck

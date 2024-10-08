@@ -32,8 +32,7 @@ class CloudRecoError(Exception):
 
 @beartype
 class VWSError(Exception):
-    """
-    Base class for Vuforia Web Services errors.
+    """Base class for Vuforia Web Services errors.
 
     These errors are defined at
     https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes.
