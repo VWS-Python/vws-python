@@ -12,6 +12,7 @@ ci:
     - check-manifest
     - deptry
     - doc8
+    - docformatter
     - docs
     - interrogate
     - interrogate-docs
@@ -28,13 +29,13 @@ ci:
     - ruff-check-fix-docs
     - ruff-format-fix
     - ruff-format-fix-docs
-    - spelling
-    - vulture
-    - vulture-docs
     - shellcheck
     - shellcheck-docs
     - shfmt
     - shfmt-docs
+    - spelling
+    - vulture
+    - vulture-docs
 
 default_install_hook_types: [pre-commit, pre-push, commit-msg]
 repos:
