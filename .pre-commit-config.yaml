@@ -58,6 +58,11 @@ repos:
       - id: file-contents-sorter
         files: spelling_private_dict\.txt$
       - id: trailing-whitespace
+  - repo: https://github.com/mrtazz/checkmake.git
+    rev: 0.2.2
+    hooks:
+      - id: checkmake
+        args: ["--config", ".checkmake-config.ini"]
   - repo: https://github.com/google/yamlfmt
     rev: v0.13.0
     hooks:
