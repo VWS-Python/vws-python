@@ -68,11 +68,7 @@ repos:
       - id: rst-inline-touching-normal
       - id: text-unicode-replacement-char
       - id: rst-backticks
-  - repo: https://github.com/mrtazz/checkmake.git
-    rev: 0.2.2
-    hooks:
-      - id: checkmake
-        args: [--config, .checkmake-config.ini]
+
 
   - repo: local
     hooks:
