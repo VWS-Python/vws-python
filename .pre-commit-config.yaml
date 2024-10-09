@@ -69,7 +69,6 @@ repos:
       - id: text-unicode-replacement-char
       - id: rst-backticks
 
-
   - repo: local
     hooks:
       - id: actionlint
