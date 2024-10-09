@@ -87,7 +87,7 @@ repos:
 
       - id: docformatter
         name: docformatter
-        entry: uv run --extra=dev -m docformatter
+        entry: uv run --extra=dev -m docformatter --in-place
         language: python
         types_or: [python]
         additional_dependencies: ["uv"]
