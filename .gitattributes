@@ -1,2 +1,2 @@
 .git_archival.txt  export-subst
-*.txt text eol=lf
+* text=auto eol=lf
