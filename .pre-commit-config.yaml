@@ -88,7 +88,7 @@ repos:
 
       - id: shellcheck
         name: shellcheck
-        entry: uv run --extra=dev shellcheck --shell=bash --exclude=SC1017
+        entry: uv run --extra=dev shellcheck --shell=bash
         language: python
         pass_filenames: false
         types_or: [shell]
@@ -97,7 +97,7 @@ repos:
       - id: shellcheck-docs
         name: shellcheck-docs
         entry: uv run --extra=dev doccmd --language=shell --language=console --command="shellcheck
-          --shell=bash --exclude=SC1017"
+          --shell=bash"
         language: python
         types_or: [markdown, rst]
         additional_dependencies: [uv]
