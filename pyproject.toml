@@ -301,6 +301,7 @@ pep621_dev_dependency_groups = [
 [tool.pyproject-fmt]
 indent = 4
 keep_full_version = true
+max_supported_python = "3.12"
 
 [tool.pytest.ini_options]
 
