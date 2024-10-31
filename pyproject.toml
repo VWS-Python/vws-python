@@ -71,7 +71,7 @@ optional-dependencies.dev = [
     "sphinx-copybutton==0.5.2",
     "sphinx-substitution-extensions==2024.10.17",
     "sphinxcontrib-spelling==8",
-    "sybil==8.0.0",
+    "sybil==8.0.1",
     "types-requests==2.32.0.20241016",
     "vulture==2.13",
     "vws-python-mock==2024.8.30",
