@@ -4,7 +4,7 @@ Classes for representing Vuforia reports.
 
 import datetime
 from dataclasses import dataclass
-from enum import Enum
+from enum import Enum, unique
 
 from beartype import BeartypeConf, beartype
 
@@ -33,6 +33,7 @@ class DatabaseSummaryReport:
 
 
 @beartype
+@unique
 class TargetStatuses(Enum):
     """Constants representing VWS target statuses.
 
