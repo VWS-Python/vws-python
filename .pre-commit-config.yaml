@@ -131,7 +131,7 @@ repos:
         stages: [pre-push]
         entry: uv run --extra=dev doccmd --language=python --command="mypy"
         language: python
-        types_or: [markdown, rst, python, toml]
+        types_or: [markdown, rst]
         additional_dependencies: [uv==0.4.25]
 
       - id: check-manifest
@@ -156,7 +156,7 @@ repos:
         stages: [pre-push]
         entry: uv run --extra=dev doccmd --language=python --command="pyright"
         language: python
-        types_or: [markdown, rst, python, toml]
+        types_or: [markdown, rst]
         additional_dependencies: [uv==0.4.25]
 
       - id: vulture
@@ -202,7 +202,7 @@ repos:
         entry: uv run --extra=dev doccmd --language=python --command="pylint"
         language: python
         stages: [manual]
-        types_or: [markdown, rst, python, toml]
+        types_or: [markdown, rst]
         additional_dependencies: [uv==0.4.25]
 
       - id: ruff-check-fix
