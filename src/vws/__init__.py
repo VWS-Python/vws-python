@@ -6,6 +6,6 @@ from .query import CloudRecoService
 from .vws import VWS
 
 __all__ = [
-    "CloudRecoService",
     "VWS",
+    "CloudRecoService",
 ]
