@@ -132,11 +132,6 @@ lint.ignore = [
     "S101",
 ]
 
-lint.per-file-ignores."tests/*.py" = [
-    # Do not require tests to have a one-line summary.
-    "D205",
-]
-
 # Do not automatically remove commented out code.
 # We comment out code during development, and with VSCode auto-save, this code
 # is sometimes annoyingly removed.
