@@ -33,7 +33,7 @@ def test_too_many_max_results(
     A ``MaxNumResultsOutOfRange`` error is raised if the given
     ``max_num_results`` is out of range.
     """
-    with pytest.raises(MaxNumResultsOutOfRangeError) as exc:
+    with pytest.raises(expected_exception=MaxNumResultsOutOfRangeError) as exc:
         cloud_reco_client.query(
             image=high_quality_image,
             max_num_results=51,
@@ -43,7 +43,7 @@ def test_too_many_max_results(
         "Integer out of range (51) in form data part 'max_result'. "
         "Accepted range is from 1 to 50 (inclusive)."
     )
-    assert str(exc.value) == exc.value.response.text == expected_value
+    assert str(object=exc.value) == exc.value.response.text == expected_value
 
 
 def test_image_too_large(
@@ -54,7 +54,7 @@ def test_image_too_large(
     A ``RequestEntityTooLarge`` exception is raised if an image which is too
     large is given.
     """
-    with pytest.raises(RequestEntityTooLargeError) as exc:
+    with pytest.raises(expected_exception=RequestEntityTooLargeError) as exc:
         cloud_reco_client.query(image=png_too_large)
 
     assert (
@@ -92,7 +92,9 @@ def test_authentication_failure(
     with MockVWS() as mock:
         mock.add_database(database=database)
 
-        with pytest.raises(AuthenticationFailureError) as exc:
+        with pytest.raises(
+            expected_exception=AuthenticationFailureError
+        ) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
@@ -113,7 +115,7 @@ def test_inactive_project(
             client_secret_key=database.client_secret_key,
         )
 
-        with pytest.raises(InactiveProjectError) as exc:
+        with pytest.raises(expected_exception=InactiveProjectError) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
         response = exc.value.response
