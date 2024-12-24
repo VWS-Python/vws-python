@@ -114,27 +114,32 @@ lint.select = [
     "ALL",
 ]
 lint.ignore = [
-    # We are happy to manage our own "complexity".
-    "C901",
     # Ruff warns that this conflicts with the formatter.
     "COM812",
     # Allow our chosen docstring line-style - no one-line summary.
     "D200",
     "D205",
     "D212",
-    "D415",
     # Ruff warns that this conflicts with the formatter.
     "ISC001",
     # Ignore "too-many-*" errors as they seem to get in the way more than
     # helping.
     "PLR0913",
-    # Allow 'assert' as we use it for tests.
+]
+
+lint.per-file-ignores."doccmd_*.py" = [
+    # Allow asserts in docs.
+    "S101",
+]
+
+lint.per-file-ignores."docs/source/*.py" = [
+    # Allow asserts in docs.
     "S101",
 ]
 
 lint.per-file-ignores."tests/*.py" = [
-    # Do not require tests to have a one-line summary.
-    "D205",
+    # Allow asserts in tests.
+    "S101",
 ]
 
 # Do not automatically remove commented out code.
