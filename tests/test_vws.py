@@ -30,8 +30,11 @@ class TestAddTarget:
     """
 
     @staticmethod
-    @pytest.mark.parametrize("application_metadata", [None, b"a"])
-    @pytest.mark.parametrize("active_flag", [True, False])
+    @pytest.mark.parametrize(
+        argnames="application_metadata",
+        argvalues=[None, b"a"],
+    )
+    @pytest.mark.parametrize(argnames="active_flag", argvalues=[True, False])
     def test_add_target(
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
@@ -211,7 +214,7 @@ class TestGetTargetSummaryReport:
             status=TargetStatuses.SUCCESS,
             database_name=report.database_name,
             target_name=target_name,
-            upload_date=datetime.date(2018, 4, 25),
+            upload_date=datetime.date(year=2018, month=4, day=25),
             active_flag=True,
             tracking_rating=report.tracking_rating,
             total_recos=0,
@@ -511,7 +514,9 @@ class TestWaitForTargetProcessed:
 
             report = vws_client.get_target_summary_report(target_id=target_id)
             assert report.status == TargetStatuses.PROCESSING
-            with pytest.raises(TargetProcessingTimeoutError):
+            with pytest.raises(
+                expected_exception=TargetProcessingTimeoutError
+            ):
                 vws_client.wait_for_target_processed(
                     target_id=target_id,
                     timeout_seconds=0.1,

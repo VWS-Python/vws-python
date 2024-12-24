@@ -154,7 +154,7 @@ class TargetNameExistError(VWSError):
         """
         response_body = self.response.request_body or b""
         request_json = json.loads(s=response_body)
-        return str(request_json["name"])
+        return str(object=request_json["name"])
 
 
 @beartype

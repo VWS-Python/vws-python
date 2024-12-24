@@ -322,7 +322,7 @@ class VWS:
             content_type="application/json",
         )
 
-        return str(json.loads(s=response.text)["target_id"])
+        return str(object=json.loads(s=response.text)["target_id"])
 
     def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
         """Get a given target's target record from the Target Management
