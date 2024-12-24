@@ -120,7 +120,6 @@ lint.ignore = [
     "D200",
     "D205",
     "D212",
-    "D415",
     # Ruff warns that this conflicts with the formatter.
     "ISC001",
     # Ignore "too-many-*" errors as they seem to get in the way more than
