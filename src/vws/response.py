@@ -46,7 +46,7 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
-from vws.types import Response
+from vws.response import Response
 
 _ImageType = io.BytesIO | BinaryIO
 
