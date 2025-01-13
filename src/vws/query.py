@@ -27,7 +27,7 @@ from vws.exceptions.custom_exceptions import (
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
-from vws.response import Response
+from vws.types import Response
 
 _ImageType = io.BytesIO | BinaryIO
 

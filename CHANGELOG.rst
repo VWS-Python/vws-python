@@ -4,12 +4,16 @@ Changelog
 Next
 ----
 
-* Move ``Response`` from ``vws.response`` to ``vws.response``.
+2024.09.21
+------------
+
+2024.09.04.1
+------------
 
 2024.09.04
 ------------
 
-* Move ``Response`` from ``vws.exceptions.response`` to ``vws.response``.
+* Move ``Response`` from ``vws.exceptions.response`` to ``vws.types``.
 * Add ``raw`` field to ``Response``.
 
 2024.09.03
