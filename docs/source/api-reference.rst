@@ -13,6 +13,6 @@ API Reference
    :undoc-members:
    :members:
 
-.. automodule:: vws.types
+.. automodule:: vws.response
    :undoc-members:
    :members:
