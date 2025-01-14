@@ -6,7 +6,7 @@ or simple errors given by the cloud recognition service.
 
 from beartype import beartype
 
-from vws.types import Response
+from vws.response import Response
 
 
 @beartype

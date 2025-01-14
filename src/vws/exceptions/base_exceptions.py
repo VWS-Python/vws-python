@@ -5,7 +5,7 @@ Cloud Recognition Web API.
 
 from beartype import beartype
 
-from vws.types import Response
+from vws.response import Response
 
 
 @beartype
