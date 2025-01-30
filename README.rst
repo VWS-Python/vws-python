@@ -67,6 +67,8 @@ Getting Started
 Full Documentation
 ------------------
 
+Ignore this.
+
 See the `full
 documentation <https://vws-python.readthedocs.io/en/latest>`__.
 
