@@ -90,6 +90,7 @@ rgb
 str
 timestamp
 todo
+traceback
 travis
 txt
 unmocked
