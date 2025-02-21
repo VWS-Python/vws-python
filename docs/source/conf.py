@@ -6,7 +6,6 @@ Configuration for Sphinx.
 import importlib.metadata
 
 from packaging.specifiers import SpecifierSet
-from packaging.version import Version
 
 project = "VWS-Python"
 author = "Adam Dangoor"
@@ -29,19 +28,6 @@ project_copyright = f"%Y, {author}"
 # Exclude the prompt from copied code with sphinx_copybutton.
 # https://sphinx-copybutton.readthedocs.io/en/latest/use.html#automatic-exclusion-of-prompts-from-the-copies.
 copybutton_exclude = ".linenos, .gp"
-
-# The version info for the project you're documenting, acts as replacement for
-# |release|, also used in various other places throughout the
-# built documents.
-#
-# Use ``importlib.metadata.version`` as per
-# https://setuptools-scm.readthedocs.io/en/latest/usage/#usage-from-sphinx.
-_version_string = importlib.metadata.version(distribution_name=project)
-_version = Version(version=_version_string)
-# GitHub release tags have the format YYYY.MM.DD, while Python requirement
-# versions may have the format YYYY.M.D for single digit months and days.
-release = ".".join(f"{part:02d}" for part in _version.release)
-
 
 project_metadata = importlib.metadata.metadata(distribution_name=project)
 requires_python = project_metadata["Requires-Python"]
@@ -89,7 +75,6 @@ autodoc_member_order = "bysource"
 
 rst_prolog = f"""
 .. |project| replace:: {project}
-.. |release| replace:: {release}
 .. |minimum-python-version| replace:: {minimum_python_version}
 .. |github-owner| replace:: VWS-Python
 .. |github-repository| replace:: vws-python
