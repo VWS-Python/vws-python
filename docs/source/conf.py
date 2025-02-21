@@ -56,7 +56,6 @@ html_theme_options = {
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "VWSPYTHONdoc"
-autoclass_content = "init"
 intersphinx_mapping = {
     "python": (f"https://docs.python.org/{minimum_python_version}", None),
 }
