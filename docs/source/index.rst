@@ -114,7 +114,6 @@ See https://vws-python-mock.readthedocs.io/en/latest/differences-to-vws.html for
 
 .. _VWS Python Mock: https://github.com/VWS-Python/vws-python-mock
 
-
 Reference
 ---------
 
