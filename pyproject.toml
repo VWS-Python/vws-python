@@ -82,7 +82,7 @@ optional-dependencies.dev = [
     "yamlfix==1.17.0",
 ]
 optional-dependencies.release = [ "check-wheel-contents==0.6.1" ]
-urls.Documentation = "https://vws-python.readthedocs.io/en/latest/"
+urls.Documentation = "https://vws-python.github.io/vws-python/"
 urls.Source = "https://github.com/VWS-Python/vws-python"
 
 [tool.setuptools]
@@ -283,7 +283,6 @@ ignore = [
     ".yamlfmt",
     "*.enc",
     ".pre-commit-config.yaml",
-    "readthedocs.yaml",
     "CHANGELOG.rst",
     "CODE_OF_CONDUCT.rst",
     "CONTRIBUTING.rst",
