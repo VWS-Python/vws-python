@@ -110,7 +110,7 @@ To write unit tests for code which uses this library, without using your Vuforia
         assert matching_targets[0].target_id == target_id
 
 There are some differences between the mock and the real Vuforia.
-See https://vws-python-mock.readthedocs.io/en/latest/differences-to-vws.html for details.
+See https://vws-python.github.io/vws-python-mock/differences-to-vws for details.
 
 .. _VWS Python Mock: https://github.com/VWS-Python/vws-python-mock
 
