@@ -4,11 +4,19 @@ Configuration for Sphinx.
 """
 
 import importlib.metadata
+from pathlib import Path
 
 from packaging.specifiers import SpecifierSet
+from sphinx_pyproject import SphinxConfig
 
-project = "VWS-Python"
-author = "Adam Dangoor"
+_pyproject_file = Path(__file__).parent.parent.parent / "pyproject.toml"
+_pyproject_config = SphinxConfig(
+    pyproject_file=_pyproject_file,
+    config_overrides={"version": None},
+)
+
+project = _pyproject_config.name
+author = _pyproject_config.author
 
 extensions = [
     "sphinx_copybutton",
@@ -28,19 +36,6 @@ project_copyright = f"%Y, {author}"
 # Exclude the prompt from copied code with sphinx_copybutton.
 # https://sphinx-copybutton.readthedocs.io/en/latest/use.html#automatic-exclusion-of-prompts-from-the-copies.
 copybutton_exclude = ".linenos, .gp"
-
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-#
-# Use ``importlib.metadata.version`` as per
-# https://setuptools-scm.readthedocs.io/en/latest/usage/#usage-from-sphinx
-version = importlib.metadata.version(distribution_name=project)
-# This method of getting the release from the version goes hand in hand with
-# the ``post-release`` versioning scheme chosen in the ``setuptools-scm``
-# configuration.
-release = version.split(sep=".post")[0]
-
 
 project_metadata = importlib.metadata.metadata(distribution_name=project)
 requires_python = project_metadata["Requires-Python"]
@@ -69,7 +64,6 @@ html_theme_options = {
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "VWSPYTHONdoc"
-autoclass_content = "init"
 intersphinx_mapping = {
     "python": (f"https://docs.python.org/{minimum_python_version}", None),
 }
@@ -88,7 +82,6 @@ autodoc_member_order = "bysource"
 
 rst_prolog = f"""
 .. |project| replace:: {project}
-.. |release| replace:: {release}
 .. |minimum-python-version| replace:: {minimum_python_version}
 .. |github-owner| replace:: VWS-Python
 .. |github-repository| replace:: vws-python

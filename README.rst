@@ -1,4 +1,4 @@
-|Build Status| |codecov| |PyPI| |Documentation Status|
+|Build Status| |codecov| |PyPI|
 
 vws-python
 ==========
@@ -67,8 +67,7 @@ Getting Started
 Full Documentation
 ------------------
 
-See the `full
-documentation <https://vws-python.readthedocs.io/en/latest>`__.
+See the `full documentation <https://vws-python.github.io/vws-python/>`__.
 
 .. |Build Status| image:: https://github.com/VWS-Python/vws-python/actions/workflows/ci.yml/badge.svg?branch=main
    :target: https://github.com/VWS-Python/vws-python/actions
@@ -76,6 +75,4 @@ documentation <https://vws-python.readthedocs.io/en/latest>`__.
    :target: https://codecov.io/gh/VWS-Python/vws-python
 .. |PyPI| image:: https://badge.fury.io/py/VWS-Python.svg
    :target: https://badge.fury.io/py/VWS-Python
-.. |Documentation Status| image:: https://readthedocs.org/projects/vws-python/badge/?version=latest
-   :target: https://vws-python.readthedocs.io/en/latest/?badge=latest
-.. |minimum-python-version| replace:: 3.12
+.. |minimum-python-version| replace:: 3.13
