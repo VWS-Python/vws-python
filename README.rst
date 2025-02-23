@@ -75,4 +75,4 @@ See the `full documentation <https://vws-python.github.io/vws-python/>`__.
    :target: https://codecov.io/gh/VWS-Python/vws-python
 .. |PyPI| image:: https://badge.fury.io/py/VWS-Python.svg
    :target: https://badge.fury.io/py/VWS-Python
-.. |minimum-python-version| replace:: 3.12
+.. |minimum-python-version| replace:: 3.13
