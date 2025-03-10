@@ -15,7 +15,7 @@ from mock_vws.states import States
 from vws import VWS
 from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import (
-    OopsAnErrorOccurredPossiblyBadNameError,
+    ServerError,
 )
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
@@ -71,13 +71,13 @@ def test_invalid_given_id(vws_client: VWS) -> None:
 
 def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
     """
-    When a name with a bad character is given, an
-    ``OopsAnErrorOccurredPossiblyBadName`` exception is raised.
+    When a name with a bad character is given, a ``ServerError`` exception is
+    raised.
     """
     max_char_value = 65535
     bad_name = chr(max_char_value + 1)
     with pytest.raises(
-        expected_exception=OopsAnErrorOccurredPossiblyBadNameError
+        expected_exception=ServerError,
     ) as exc:
         vws_client.add_target(
             name=bad_name,

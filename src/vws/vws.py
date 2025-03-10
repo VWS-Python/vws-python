@@ -16,7 +16,6 @@ from beartype import BeartypeConf, beartype
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.exceptions.custom_exceptions import (
-    OopsAnErrorOccurredPossiblyBadNameError,
     ServerError,
     TargetProcessingTimeoutError,
 )
@@ -178,12 +177,6 @@ class VWS:
             The response to the request made by `requests`.
 
         Raises:
-            ~vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadNameError:
-                Vuforia returns an HTML page with the text "Oops, an error
-                occurred".
-
-                This has been seen to happen when the given name includes a bad
-                character.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
                 with Vuforia's servers.
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
@@ -201,9 +194,6 @@ class VWS:
             request_path=request_path,
             base_vws_url=self._base_vws_url,
         )
-
-        if "Oops, an error occurred" in response.text:
-            raise OopsAnErrorOccurredPossiblyBadNameError(response=response)
 
         if (
             response.status_code == HTTPStatus.TOO_MANY_REQUESTS
@@ -290,12 +280,9 @@ class VWS:
                 inactive.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
                 an error with the time sent to Vuforia.
-            ~vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadNameError:
-                Vuforia returns an HTML page with the text "Oops, an error
-                occurred". This has been seen to happen when the given name
-                includes a bad character.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
-                with Vuforia's servers.
+                with Vuforia's servers. This has been seen to happen when the
+                given name includes a bad character.
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
