@@ -4,6 +4,9 @@ Changelog
 Next
 ----
 
+2025.03.10
+----------
+
 * Removed ``vws.exceptions.custom_exceptions.OopsAnErrorOccurredPossiblyBadName`` which now does not occur in VWS.
 
 2024.09.21
