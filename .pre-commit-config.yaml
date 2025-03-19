@@ -91,7 +91,6 @@ repos:
         name: shellcheck
         entry: uv run --extra=dev shellcheck --shell=bash
         language: python
-        pass_filenames: false
         types_or: [shell]
         additional_dependencies: [uv==0.6.3]
 
