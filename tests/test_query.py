@@ -2,8 +2,9 @@
 Tests for the ``CloudRecoService`` querying functionality.
 """
 
+import io
 import uuid
-from typing import IO
+from typing import BinaryIO
 
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
@@ -20,7 +21,7 @@ class TestQuery:
     @staticmethod
     def test_no_matches(
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         An empty list is returned if there are no matches.
@@ -32,7 +33,7 @@ class TestQuery:
     def test_match(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         Details of matching targets are returned.
@@ -55,7 +56,7 @@ class TestCustomBaseVWQURL:
     """
 
     @staticmethod
-    def test_custom_base_url(image: IO[bytes]) -> None:
+    def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         """
         It is possible to use query a target to a database under a custom VWQ
         URL.
@@ -100,7 +101,7 @@ class TestMaxNumResults:
     def test_default(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         By default the maximum number of results is 1.
@@ -128,7 +129,7 @@ class TestMaxNumResults:
     def test_custom(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         It is possible to set a custom ``max_num_results``.
@@ -174,7 +175,7 @@ class TestIncludeTargetData:
     def test_default(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         By default, target data is only returned in the top match.
@@ -206,7 +207,7 @@ class TestIncludeTargetData:
     def test_top(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         When ``CloudRecoIncludeTargetData.TOP`` is given, target data is only
@@ -240,7 +241,7 @@ class TestIncludeTargetData:
     def test_none(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         When ``CloudRecoIncludeTargetData.NONE`` is given, target data is not
@@ -274,7 +275,7 @@ class TestIncludeTargetData:
     def test_all(
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
-        image: IO[bytes],
+        image: io.BytesIO | BinaryIO,
     ) -> None:
         """
         When ``CloudRecoIncludeTargetData.ALL`` is given, target data is

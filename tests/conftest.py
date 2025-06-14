@@ -5,7 +5,7 @@ Configuration, plugins and fixtures for `pytest`.
 import io
 from collections.abc import Generator
 from pathlib import Path
-from typing import IO, BinaryIO, Literal
+from typing import BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
@@ -70,7 +70,7 @@ def image(
     request: pytest.FixtureRequest,
     high_quality_image: io.BytesIO,
     image_file: BinaryIO,
-) -> IO[bytes]:
+) -> io.BytesIO | BinaryIO:
     """
     An image in any of the types that the API accepts.
     """

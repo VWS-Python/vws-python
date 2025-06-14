@@ -3,11 +3,12 @@ Tools for interacting with Vuforia APIs.
 """
 
 import base64
+import io
 import json
 import time
 from datetime import date
 from http import HTTPMethod, HTTPStatus
-from typing import IO
+from typing import BinaryIO
 from urllib.parse import urljoin
 
 import requests
@@ -46,7 +47,7 @@ from vws.reports import (
 )
 from vws.response import Response
 
-_ImageType = IO[bytes]
+_ImageType = io.BytesIO | BinaryIO
 
 
 @beartype
