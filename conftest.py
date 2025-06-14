@@ -30,9 +30,7 @@ def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
 
 
 @pytest.fixture(name="make_image_file")
-def fixture_make_image_file(
-    high_quality_image: io.BytesIO,
-) -> Generator[None]:
+def fixture_make_image_file(high_quality_image: io.BytesIO) -> Generator[None]:
     """Make an image file available in the test directory.
 
     The path of this file matches the path in the documentation.
@@ -45,9 +43,7 @@ def fixture_make_image_file(
 
 
 @pytest.fixture(name="mock_vws")
-def fixture_mock_vws(
-    monkeypatch: pytest.MonkeyPatch,
-) -> Generator[None]:
+def fixture_mock_vws(monkeypatch: pytest.MonkeyPatch) -> Generator[None]:
     """Yield a mock VWS.
 
     The keys used here match the keys in the documentation.
