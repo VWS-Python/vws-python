@@ -4,8 +4,7 @@ Changelog
 Next
 ----
 
-2025.03.10.1
-------------
+* Be more flexible in the types of images accepted.
 
 2025.03.10
 ----------

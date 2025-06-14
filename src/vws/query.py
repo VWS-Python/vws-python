@@ -3,10 +3,9 @@ Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
 import datetime
-import io
 import json
 from http import HTTPMethod, HTTPStatus
-from typing import Any, BinaryIO
+from typing import IO, Any
 from urllib.parse import urljoin
 
 import requests
@@ -29,7 +28,7 @@ from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 from vws.response import Response
 
-_ImageType = io.BytesIO | BinaryIO
+_ImageType = IO[bytes]
 
 
 @beartype
