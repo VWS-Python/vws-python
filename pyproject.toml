@@ -65,7 +65,7 @@ optional-dependencies.dev = [
     # We add shellcheck-py not only for shell scripts and shell code blocks,
     # but also because having it installed means that ``actionlint-py`` will
     # use it to lint shell commands in GitHub workflow files.
-    "shellcheck-py==0.10.0.1",
+    "shellcheck-py==0.11.0.1",
     "shfmt-py==3.12.0.2",
     "sphinx==8.2.3",
     "sphinx-copybutton==0.5.2",
