@@ -249,6 +249,7 @@ disable = [
 # - conf.py is a Sphinx configuration file which requires lowercase global variable names.
 per-file-ignores = [
     "docs/source/conf.py:invalid-name",
+    "docs/source/doccmd*.py:invalid-name",
     "doccmd_README_rst.*.py:invalid-name",
 ]
 
