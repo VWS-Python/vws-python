@@ -53,7 +53,7 @@ optional-dependencies.dev = [
     "pyenchant==3.3.0rc1",
     "pygments==2.19.2",
     "pylint==3.3.8",
-    "pylint-per-file-ignores==1.4.0",
+    "pylint-per-file-ignores==2.0.3",
     "pyproject-fmt==2.6.0",
     "pyright==1.1.404",
     "pyroma==5.0",
@@ -248,7 +248,8 @@ disable = [
 # - We want to use global variables in documentation, which may not be uppercase.
 # - conf.py is a Sphinx configuration file which requires lowercase global variable names.
 per-file-ignores = [
-    "docs/:invalid-name",
+    "docs/source/conf.py:invalid-name",
+    "docs/source/doccmd_*.py:invalid-name",
     "doccmd_README_rst.*.py:invalid-name",
 ]
 
