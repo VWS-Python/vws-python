@@ -36,7 +36,7 @@ class TestAddTarget:
     )
     @pytest.mark.parametrize(argnames="active_flag", argvalues=[True, False])
     def test_add_target(
-        vws_client: VWS,
+        vws_client: int,
         image: io.BytesIO | BinaryIO,
         application_metadata: bytes | None,
         cloud_reco_client: CloudRecoService,
