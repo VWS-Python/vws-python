@@ -57,6 +57,7 @@ optional-dependencies.dev = [
     "pyright==1.1.405",
     "pyroma==5.0",
     "pytest==8.4.2",
+    "pytest-beartype>=0.2.0",
     "pytest-cov==7.0.0",
     "pyyaml==6.0.2",
     "ruff==0.13.0",
@@ -316,6 +317,7 @@ max_supported_python = "3.13"
 
 xfail_strict = true
 log_cli = true
+addopts = "--beartype-packages=tests"
 
 [tool.coverage.run]
 
