@@ -60,6 +60,7 @@ html_show_sphinx = False
 html_show_sourcelink = False
 html_theme_options = {
     "sidebar_hide_name": False,
+    "top_of_page_buttons": ["view", "edit"],
 }
 
 # Output file base name for HTML help builder.
