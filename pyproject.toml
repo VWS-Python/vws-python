@@ -69,7 +69,7 @@ optional-dependencies.dev = [
     "sphinx-copybutton==0.5.2",
     "sphinx-lint==1.0.1",
     "sphinx-pyproject==0.3.0",
-    "sphinx-substitution-extensions==2025.10.24",
+    "sphinx-substitution-extensions==2025.11.17",
     "sphinxcontrib-spelling==8.0.1",
     "sybil==9.2.0",
     "types-requests==2.32.4.20250913",
