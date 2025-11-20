@@ -41,3 +41,4 @@ class RequestTimeTooSkewedError(CloudRecoError):
     Exception raised when Vuforia returns a response with a result code
     'RequestTimeTooSkewed'.
     """
+

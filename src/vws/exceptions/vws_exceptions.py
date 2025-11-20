@@ -63,6 +63,7 @@ class TargetStatusProcessingError(VWSError):
     Exception raised when Vuforia returns a response with a result code
     'TargetStatusProcessing'.
     """
+
     @property
     def target_id(self) -> str:
         """
@@ -81,6 +82,7 @@ class DateRangeError(VWSError):  # pragma: no cover
     Exception raised when Vuforia returns a response with a result code
     'DateRangeError'.
     """
+
 # This is not simulated by the mock.
 @beartype
 class TargetQuotaReachedError(VWSError):  # pragma: no cover
@@ -88,6 +90,7 @@ class TargetQuotaReachedError(VWSError):  # pragma: no cover
     Exception raised when Vuforia returns a response with a result code
     'TargetQuotaReached'.
     """
+
 # This is not simulated by the mock.
 @beartype
 class ProjectSuspendedError(VWSError):  # pragma: no cover
@@ -95,6 +98,7 @@ class ProjectSuspendedError(VWSError):  # pragma: no cover
     Exception raised when Vuforia returns a response with a result code
     'ProjectSuspended'.
     """
+
 # This is not simulated by the mock.
 @beartype
 class ProjectHasNoAPIAccessError(VWSError):  # pragma: no cover
@@ -102,12 +106,14 @@ class ProjectHasNoAPIAccessError(VWSError):  # pragma: no cover
     Exception raised when Vuforia returns a response with a result code
     'ProjectHasNoAPIAccess'.
     """
+
 @beartype
 class ProjectInactiveError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectInactive'.
     """
+
 @beartype
 class MetadataTooLargeError(VWSError):
     """
