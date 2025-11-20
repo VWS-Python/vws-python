@@ -2,6 +2,7 @@
 Tests for helper functions for managing a Vuforia database.
 """
 
+
 import base64
 import datetime
 import io
@@ -105,8 +106,7 @@ class TestCustomBaseVWSURL:
     @staticmethod
     def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         """
-        It is possible to use add a target to a database under a custom VWS
-        URL.
+        It is possible to use add a target to a database under a custom VWS URL.
         """
         base_vws_url = "http://example.com"
         with MockVWS(base_vws_url=base_vws_url) as mock:

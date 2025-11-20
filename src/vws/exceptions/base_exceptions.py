@@ -1,7 +1,8 @@
 """
-Base exceptions for errors returned by Vuforia Web Services or the Vuforia
-Cloud Recognition Web API.
+Base exceptions for errors returned by Vuforia Web Services or the Vuforia Cloud
+Recognition Web API.
 """
+
 
 from beartype import beartype
 

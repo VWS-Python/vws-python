@@ -2,6 +2,7 @@
 Tests for the ``CloudRecoService`` querying functionality.
 """
 
+
 import io
 import uuid
 from typing import BinaryIO
@@ -58,8 +59,7 @@ class TestCustomBaseVWQURL:
     @staticmethod
     def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         """
-        It is possible to use query a target to a database under a custom VWQ
-        URL.
+        It is possible to use query a target to a database under a custom VWQ URL.
         """
         base_vwq_url = "http://example.com"
         with MockVWS(base_vwq_url=base_vwq_url) as mock:
@@ -210,8 +210,8 @@ class TestIncludeTargetData:
         image: io.BytesIO | BinaryIO,
     ) -> None:
         """
-        When ``CloudRecoIncludeTargetData.TOP`` is given, target data is only
-        returned in the top match.
+        When ``CloudRecoIncludeTargetData.TOP`` is given, target data is only returned
+        in the top match.
         """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
@@ -244,8 +244,8 @@ class TestIncludeTargetData:
         image: io.BytesIO | BinaryIO,
     ) -> None:
         """
-        When ``CloudRecoIncludeTargetData.NONE`` is given, target data is not
-        returned in any match.
+        When ``CloudRecoIncludeTargetData.NONE`` is given, target data is not returned
+        in any match.
         """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
@@ -278,8 +278,8 @@ class TestIncludeTargetData:
         image: io.BytesIO | BinaryIO,
     ) -> None:
         """
-        When ``CloudRecoIncludeTargetData.ALL`` is given, target data is
-        returned in all matches.
+        When ``CloudRecoIncludeTargetData.ALL`` is given, target data is returned in all
+        matches.
         """
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,

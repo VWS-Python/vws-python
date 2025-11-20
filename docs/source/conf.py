@@ -3,6 +3,7 @@
 Configuration for Sphinx.
 """
 
+
 import importlib.metadata
 from pathlib import Path
 

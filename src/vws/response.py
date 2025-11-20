@@ -2,6 +2,7 @@
 Responses for requests to VWS and VWQ.
 """
 
+
 from dataclasses import dataclass
 
 from beartype import beartype

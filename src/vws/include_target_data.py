@@ -2,6 +2,7 @@
 Tools for managing ``CloudRecoService.query``'s ``include_target_data``.
 """
 
+
 from enum import StrEnum, auto, unique
 
 from beartype import beartype
@@ -11,8 +12,7 @@ from beartype import beartype
 @unique
 class CloudRecoIncludeTargetData(StrEnum):
     """
-    Options for the ``include_target_data`` parameter of
-    ``CloudRecoService.query``.
+    Options for the ``include_target_data`` parameter of ``CloudRecoService.query``.
     """
 
     TOP = auto()

@@ -2,6 +2,7 @@
 Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
+
 import datetime
 import io
 import json

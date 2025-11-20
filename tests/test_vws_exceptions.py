@@ -2,6 +2,7 @@
 Tests for VWS exceptions.
 """
 
+
 import io
 import uuid
 from http import HTTPStatus
@@ -42,8 +43,7 @@ def test_image_too_large(
     png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
-    When giving an image which is too large, an ``ImageTooLarge`` exception is
-    raised.
+    When giving an image which is too large, an ``ImageTooLarge`` exception is raised.
     """
     with pytest.raises(expected_exception=ImageTooLargeError) as exc:
         vws_client.add_target(
@@ -59,8 +59,8 @@ def test_image_too_large(
 
 def test_invalid_given_id(vws_client: VWS) -> None:
     """
-    Giving an invalid ID to a helper which requires a target ID to be given
-    causes an ``UnknownTarget`` exception to be raised.
+    Giving an invalid ID to a helper which requires a target ID to be given causes an
+    ``UnknownTarget`` exception to be raised.
     """
     target_id = "12345abc"
     with pytest.raises(expected_exception=UnknownTargetError) as exc:
@@ -71,8 +71,7 @@ def test_invalid_given_id(vws_client: VWS) -> None:
 
 def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
     """
-    When a name with a bad character is given, a ``ServerError`` exception is
-    raised.
+    When a name with a bad character is given, a ``ServerError`` exception is raised.
     """
     max_char_value = 65535
     bad_name = chr(max_char_value + 1)
@@ -141,8 +140,8 @@ def test_target_name_exist(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetNameExist`` exception is raised after adding two targets with the
-    same name.
+    A ``TargetNameExist`` exception is raised after adding two targets with the same
+    name.
     """
     vws_client.add_target(
         name="x",
@@ -196,8 +195,8 @@ def test_target_status_processing(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetStatusProcessing`` exception is raised if trying to delete a
-    target which is processing.
+    A ``TargetStatusProcessing`` exception is raised if trying to delete a target which
+    is processing.
     """
     target_id = vws_client.add_target(
         name="x",
@@ -219,8 +218,7 @@ def test_metadata_too_large(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``MetadataTooLarge`` exception is raised if the metadata given is too
-    large.
+    A ``MetadataTooLarge`` exception is raised if the metadata given is too large.
     """
     with pytest.raises(expected_exception=MetadataTooLargeError) as exc:
         vws_client.add_target(
@@ -239,8 +237,8 @@ def test_request_time_too_skewed(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``RequestTimeTooSkewed`` exception is raised when the request time is
-    more than five minutes different from the server time.
+    A ``RequestTimeTooSkewed`` exception is raised when the request time is more than
+    five minutes different from the server time.
     """
     target_id = vws_client.add_target(
         name="x",
@@ -273,9 +271,8 @@ def test_authentication_failure(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    An ``AuthenticationFailure`` exception is raised when the server access key
-    exists but the server secret key is incorrect, or when a client key is
-    incorrect.
+    An ``AuthenticationFailure`` exception is raised when the server access key exists
+    but the server secret key is incorrect, or when a client key is incorrect.
     """
     database = VuforiaDatabase()
 
@@ -304,8 +301,8 @@ def test_target_status_not_success(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetStatusNotSuccess`` exception is raised when updating a target
-    which has a status which is not "Success".
+    A ``TargetStatusNotSuccess`` exception is raised when updating a target which has a
+    status which is not "Success".
     """
     target_id = vws_client.add_target(
         name="x",
