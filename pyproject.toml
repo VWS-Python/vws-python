@@ -107,6 +107,9 @@ universal = true
 # Code to match this is in ``conf.py``.
 version_scheme = "post-release"
 
+[tool.uv.sources]
+docformatter = { git = "https://github.com/PyCQA/docformatter.git", branch = "master" }
+
 [tool.ruff]
 line-length = 79
 

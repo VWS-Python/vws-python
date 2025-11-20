@@ -195,15 +195,11 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        if (
-            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
-        ):  # pragma: no cover
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:  # pragma: no cover
             # The Vuforia API returns a 429 response with no JSON body.
             raise TooManyRequestsError(response=response)
 
-        if (
-            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-        ):  # pragma: no cover
+        if response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR:  # pragma: no cover
             raise ServerError(response=response)
 
         result_code = json.loads(s=response.text)["result_code"]

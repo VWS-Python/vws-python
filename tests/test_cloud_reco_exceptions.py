@@ -57,9 +57,7 @@ def test_image_too_large(
     with pytest.raises(expected_exception=RequestEntityTooLargeError) as exc:
         cloud_reco_client.query(image=png_too_large)
 
-    assert (
-        exc.value.response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
-    )
+    assert exc.value.response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
 
 
 def test_cloudrecoexception_inheritance() -> None:
@@ -92,9 +90,7 @@ def test_authentication_failure(
     with MockVWS() as mock:
         mock.add_database(database=database)
 
-        with pytest.raises(
-            expected_exception=AuthenticationFailureError
-        ) as exc:
+        with pytest.raises(expected_exception=AuthenticationFailureError) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED

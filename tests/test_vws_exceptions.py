@@ -287,9 +287,7 @@ def test_authentication_failure(
     with MockVWS() as mock:
         mock.add_database(database=database)
 
-        with pytest.raises(
-            expected_exception=AuthenticationFailureError
-        ) as exc:
+        with pytest.raises(expected_exception=AuthenticationFailureError) as exc:
             vws_client.add_target(
                 name="x",
                 width=1,
