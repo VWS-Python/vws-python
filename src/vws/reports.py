@@ -2,7 +2,6 @@
 Classes for representing Vuforia reports.
 """
 
-
 import datetime
 from dataclasses import dataclass
 from enum import Enum, unique

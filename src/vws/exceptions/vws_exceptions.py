@@ -4,7 +4,6 @@ one of those documented at
 https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes.
 """
 
-
 import json
 from urllib.parse import urlparse
 
@@ -16,7 +15,8 @@ from vws.exceptions.base_exceptions import VWSError
 @beartype
 class UnknownTargetError(VWSError):
     """
-    Exception raised when Vuforia returns a response with a result code 'UnknownTarget'.
+    Exception raised when Vuforia returns a response with a result code
+    'UnknownTarget'.
     """
 
     @property
@@ -36,11 +36,14 @@ class FailError(VWSError):
     Exception raised when Vuforia returns a response with a result code 'Fail'.
     """
 
+
 @beartype
 class BadImageError(VWSError):
     """
-    Exception raised when Vuforia returns a response with a result code 'BadImage'.
+    Exception raised when Vuforia returns a response with a result code
+    'BadImage'.
     """
+
 
 @beartype
 class AuthenticationFailureError(VWSError):
@@ -56,6 +59,7 @@ class RequestQuotaReachedError(VWSError):  # pragma: no cover
     Exception raised when Vuforia returns a response with a result code
     'RequestQuotaReached'.
     """
+
 
 @beartype
 class TargetStatusProcessingError(VWSError):
@@ -107,12 +111,14 @@ class ProjectHasNoAPIAccessError(VWSError):  # pragma: no cover
     'ProjectHasNoAPIAccess'.
     """
 
+
 @beartype
 class ProjectInactiveError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'ProjectInactive'.
     """
+
 
 @beartype
 class MetadataTooLargeError(VWSError):
@@ -121,12 +127,14 @@ class MetadataTooLargeError(VWSError):
     'MetadataTooLarge'.
     """
 
+
 @beartype
 class RequestTimeTooSkewedError(VWSError):
     """
     Exception raised when Vuforia returns a response with a result code
     'RequestTimeTooSkewed'.
     """
+
 
 @beartype
 class TargetNameExistError(VWSError):
@@ -148,8 +156,10 @@ class TargetNameExistError(VWSError):
 @beartype
 class ImageTooLargeError(VWSError):
     """
-    Exception raised when Vuforia returns a response with a result code 'ImageTooLarge'.
+    Exception raised when Vuforia returns a response with a result code
+    'ImageTooLarge'.
     """
+
 
 @beartype
 class TargetStatusNotSuccessError(VWSError):
@@ -175,4 +185,3 @@ class TooManyRequestsError(VWSError):  # pragma: no cover
     Exception raised when Vuforia returns a response with a result code
     'TooManyRequests'.
     """
-

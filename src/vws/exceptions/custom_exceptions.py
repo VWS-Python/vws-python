@@ -4,7 +4,6 @@ https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#res
 or simple errors given by the cloud recognition service.
 """
 
-
 from beartype import beartype
 
 from vws.response import Response
@@ -37,6 +36,7 @@ class TargetProcessingTimeoutError(Exception):
     """
     Exception raised when waiting for a target to be processed times out.
     """
+
 
 @beartype
 class ServerError(Exception):  # pragma: no cover

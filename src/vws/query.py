@@ -2,7 +2,6 @@
 Tools for interacting with the Vuforia Cloud Recognition Web APIs.
 """
 
-
 import datetime
 import io
 import json
@@ -165,7 +164,9 @@ class CloudRecoService:
         if "Integer out of range" in response.text:
             raise MaxNumResultsOutOfRangeError(response=response)
 
-        if response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR:  # pragma: no cover
+        if (
+            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+        ):  # pragma: no cover
             raise ServerError(response=response)
 
         result_code = json.loads(s=response.text)["result_code"]

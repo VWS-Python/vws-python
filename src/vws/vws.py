@@ -2,7 +2,6 @@
 Tools for interacting with Vuforia APIs.
 """
 
-
 import base64
 import io
 import json
@@ -196,11 +195,15 @@ class VWS:
             base_vws_url=self._base_vws_url,
         )
 
-        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:  # pragma: no cover
+        if (
+            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
+        ):  # pragma: no cover
             # The Vuforia API returns a 429 response with no JSON body.
             raise TooManyRequestsError(response=response)
 
-        if response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR:  # pragma: no cover
+        if (
+            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+        ):  # pragma: no cover
             raise ServerError(response=response)
 
         result_code = json.loads(s=response.text)["result_code"]
@@ -309,7 +312,8 @@ class VWS:
         return str(object=json.loads(s=response.text)["target_id"])
 
     def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
-        """Get a given target's target record from the Target Management System.
+        """Get a given target's target record from the Target Management
+        System.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#target-record.
@@ -365,8 +369,8 @@ class VWS:
         seconds_between_requests: float = 0.2,
         timeout_seconds: float = 60 * 5,
     ) -> None:
-        """Wait up to five minutes (arbitrary) for a target to get past the processing
-        stage.
+        """Wait up to five minutes (arbitrary) for a target to get past the
+        processing stage.
 
         Args:
             target_id: The ID of the target to wait for.

@@ -2,7 +2,6 @@
 Tests for exceptions raised when using the CloudRecoService.
 """
 
-
 import io
 import uuid
 from http import HTTPStatus
@@ -31,8 +30,8 @@ def test_too_many_max_results(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``MaxNumResultsOutOfRange`` error is raised if the given ``max_num_results`` is
-    out of range.
+    A ``MaxNumResultsOutOfRange`` error is raised if the given
+    ``max_num_results`` is out of range.
     """
     with pytest.raises(expected_exception=MaxNumResultsOutOfRangeError) as exc:
         cloud_reco_client.query(
@@ -52,13 +51,15 @@ def test_image_too_large(
     png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
-    A ``RequestEntityTooLarge`` exception is raised if an image which is too large is
-    given.
+    A ``RequestEntityTooLarge`` exception is raised if an image which is too
+    large is given.
     """
     with pytest.raises(expected_exception=RequestEntityTooLargeError) as exc:
         cloud_reco_client.query(image=png_too_large)
 
-    assert exc.value.response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
+    assert (
+        exc.value.response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
+    )
 
 
 def test_cloudrecoexception_inheritance() -> None:
@@ -80,8 +81,8 @@ def test_authentication_failure(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    An ``AuthenticationFailure`` exception is raised when the client access key exists
-    but the client secret key is incorrect.
+    An ``AuthenticationFailure`` exception is raised when the client access key
+    exists but the client secret key is incorrect.
     """
     database = VuforiaDatabase()
     cloud_reco_client = CloudRecoService(
@@ -91,7 +92,9 @@ def test_authentication_failure(
     with MockVWS() as mock:
         mock.add_database(database=database)
 
-        with pytest.raises(expected_exception=AuthenticationFailureError) as exc:
+        with pytest.raises(
+            expected_exception=AuthenticationFailureError
+        ) as exc:
             cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
@@ -101,7 +104,8 @@ def test_inactive_project(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    An ``InactiveProject`` exception is raised when querying an inactive database.
+    An ``InactiveProject`` exception is raised when querying an inactive
+    database.
     """
     database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
     with MockVWS() as mock:

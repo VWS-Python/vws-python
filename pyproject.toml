@@ -108,7 +108,7 @@ universal = true
 version_scheme = "post-release"
 
 [tool.uv.sources]
-docformatter = { git = "https://github.com/PyCQA/docformatter.git", branch = "master" }
+docformatter = { git = "https://github.com/finswimmer/docformatter.git", branch = "fix-new-lines" }
 
 [tool.ruff]
 line-length = 79
@@ -276,6 +276,7 @@ spelling-store-unknown-words = 'no'
 
 [tool.docformatter]
 make-summary-multi-line = true
+style = "black"
 
 [tool.check-manifest]
 

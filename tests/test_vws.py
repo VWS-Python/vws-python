@@ -2,7 +2,6 @@
 Tests for helper functions for managing a Vuforia database.
 """
 
-
 import base64
 import datetime
 import io
@@ -106,7 +105,8 @@ class TestCustomBaseVWSURL:
     @staticmethod
     def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         """
-        It is possible to use add a target to a database under a custom VWS URL.
+        It is possible to use add a target to a database under a custom VWS
+        URL.
         """
         base_vws_url = "http://example.com"
         with MockVWS(base_vws_url=base_vws_url) as mock:
@@ -229,8 +229,12 @@ class TestGetTargetSummaryReport:
         assert report.active_flag == expected_report.active_flag
         assert report.tracking_rating == expected_report.tracking_rating
         assert report.total_recos == expected_report.total_recos
-        assert report.current_month_recos == expected_report.current_month_recos
-        assert report.previous_month_recos == expected_report.previous_month_recos
+        assert (
+            report.current_month_recos == expected_report.current_month_recos
+        )
+        assert (
+            report.previous_month_recos == expected_report.previous_month_recos
+        )
 
         assert report == expected_report
 
@@ -263,11 +267,15 @@ class TestGetDatabaseSummaryReport:
         )
 
         assert report.active_images == expected_report.active_images
-        assert report.current_month_recos == expected_report.current_month_recos
+        assert (
+            report.current_month_recos == expected_report.current_month_recos
+        )
         assert report.failed_images == expected_report.failed_images
         assert report.inactive_images == expected_report.inactive_images
         assert report.name == expected_report.name
-        assert report.previous_month_recos == expected_report.previous_month_recos
+        assert (
+            report.previous_month_recos == expected_report.previous_month_recos
+        )
         assert report.processing_images == expected_report.processing_images
         assert report.reco_threshold == expected_report.reco_threshold
         assert report.request_quota == expected_report.request_quota
@@ -311,15 +319,23 @@ class TestGetTargetRecord:
 
         assert result.target_record == expected_target_record
 
-        assert result.target_record.target_id == expected_target_record.target_id
-        assert result.target_record.active_flag == expected_target_record.active_flag
+        assert (
+            result.target_record.target_id == expected_target_record.target_id
+        )
+        assert (
+            result.target_record.active_flag
+            == expected_target_record.active_flag
+        )
         assert result.target_record.name == expected_target_record.name
         assert result.target_record.width == expected_target_record.width
         assert (
             result.target_record.tracking_rating
             == expected_target_record.tracking_rating
         )
-        assert result.target_record.reco_rating == expected_target_record.reco_rating
+        assert (
+            result.target_record.reco_rating
+            == expected_target_record.reco_rating
+        )
 
         assert result.status == TargetStatuses.PROCESSING
 
@@ -498,7 +514,9 @@ class TestWaitForTargetProcessed:
 
             report = vws_client.get_target_summary_report(target_id=target_id)
             assert report.status == TargetStatuses.PROCESSING
-            with pytest.raises(expected_exception=TargetProcessingTimeoutError):
+            with pytest.raises(
+                expected_exception=TargetProcessingTimeoutError
+            ):
                 vws_client.wait_for_target_processed(
                     target_id=target_id,
                     timeout_seconds=0.1,
