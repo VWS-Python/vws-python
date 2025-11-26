@@ -108,7 +108,7 @@ universal = true
 version_scheme = "post-release"
 
 [tool.uv.sources]
-docformatter = { git = "https://github.com/finswimmer/docformatter.git", branch = "fix-new-lines" }
+docformatter = { git = "https://github.com/finswimmer/docformatter.git", rev = "948c28a5d43106bad3ec796fdf26f87cbdaee085" }
 
 [tool.ruff]
 line-length = 79

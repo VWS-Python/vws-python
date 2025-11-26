@@ -52,6 +52,7 @@ class AuthenticationFailureError(VWSError):
     'AuthenticationFailure'.
     """
 
+
 # See https://github.com/VWS-Python/vws-python/issues/822.
 @beartype
 class RequestQuotaReachedError(VWSError):  # pragma: no cover
@@ -87,6 +88,7 @@ class DateRangeError(VWSError):  # pragma: no cover
     'DateRangeError'.
     """
 
+
 # This is not simulated by the mock.
 @beartype
 class TargetQuotaReachedError(VWSError):  # pragma: no cover
@@ -95,6 +97,7 @@ class TargetQuotaReachedError(VWSError):  # pragma: no cover
     'TargetQuotaReached'.
     """
 
+
 # This is not simulated by the mock.
 @beartype
 class ProjectSuspendedError(VWSError):  # pragma: no cover
@@ -102,6 +105,7 @@ class ProjectSuspendedError(VWSError):  # pragma: no cover
     Exception raised when Vuforia returns a response with a result code
     'ProjectSuspended'.
     """
+
 
 # This is not simulated by the mock.
 @beartype
