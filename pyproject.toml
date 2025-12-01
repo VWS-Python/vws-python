@@ -70,7 +70,7 @@ optional-dependencies.dev = [
     "sphinx-lint==1.0.2",
     "sphinx-pyproject==0.3.0",
     "sphinx-substitution-extensions==2025.11.17",
-    "sphinxcontrib-spelling==8.0.1",
+    "sphinxcontrib-spelling==8.0.2",
     "sybil==9.2.0",
     "types-requests==2.32.4.20250913",
     "vulture==2.14",
