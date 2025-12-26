@@ -528,7 +528,7 @@ class VWS:
             current_month_recos=int(response_data["current_month_recos"]),
             failed_images=int(response_data["failed_images"]),
             inactive_images=int(response_data["inactive_images"]),
-            name=str(response_data["name"]),
+            name=str(object=response_data["name"]),
             previous_month_recos=int(response_data["previous_month_recos"]),
             processing_images=int(response_data["processing_images"]),
             reco_threshold=int(response_data["reco_threshold"]),
