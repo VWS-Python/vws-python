@@ -1,5 +1,4 @@
 ---
-
 name: Release
 
 on: workflow_dispatch
@@ -22,7 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        with:
+        with:  # zizmor: ignore[artipacked] git-auto-commit-action requires credentials
           # See
           # https://github.com/stefanzweifel/git-auto-commit-action?tab=readme-ov-file#push-to-protected-branches
           token: ${{ secrets.RELEASE_PAT }}
