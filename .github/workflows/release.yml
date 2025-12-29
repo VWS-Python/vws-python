@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        with:
+        with:  # zizmor: ignore[artipacked] git-auto-commit-action requires credentials
           # See
           # https://github.com/stefanzweifel/git-auto-commit-action?tab=readme-ov-file#push-to-protected-branches
           token: ${{ secrets.RELEASE_PAT }}
@@ -31,7 +31,6 @@ jobs:
           # Also, avoids
           # https://github.com/stefanzweifel/git-auto-commit-action/issues/99.
           fetch-depth: 0
-          persist-credentials: false
 
       - name: Install uv
         uses: astral-sh/setup-uv@v7
@@ -59,8 +58,8 @@ jobs:
         uses: jacobtomlinson/gha-find-replace@v3
         with:
           find: "Next\n----"
-          replace: |
-            "Next\n----\n\n${{ steps.calver.outputs.release }}\n${{ steps.changelog_underline.outputs.underline }}"
+          replace: "Next\n----\n\n${{ steps.calver.outputs.release }}\n${{ steps.changelog_underline.outputs.underline\
+            \ }}"
           include: CHANGELOG.rst
           regex: false
 
