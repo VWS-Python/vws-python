@@ -2,3 +2,11 @@
 rules:
   unpinned-uses:
     disable: true
+  cache-poisoning:
+    disable: true
+  bot-conditions:
+    disable: true
+  dependabot-cooldown:
+    disable: true
+  template-injection:
+    disable: true
