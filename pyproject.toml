@@ -302,6 +302,7 @@ ignore = [
     "tests/**",
     "vuforia_secrets.env.example",
     "lint.mk",
+    "zizmor.yml",
 ]
 
 [tool.deptry]
