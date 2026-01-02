@@ -1,58 +1,14 @@
 ---
 fail_fast: true
 
-# See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
+# See https://prek.j178.dev for more information
 
-ci:
-  # We use system Python, with required dependencies specified in pyproject.toml.
-  # We therefore cannot use those dependencies in pre-commit CI.
-  skip:
-    - actionlint
-    - sphinx-lint
-    - check-manifest
-    - deptry
-    - doc8
-    - docformatter
-    - docs
-    - interrogate
-    - interrogate-docs
-    - linkcheck
-    - mypy
-    - mypy-docs
-    - pylint
-    - pyproject-fmt-fix
-    - pyright
-    - pyright-docs
-    - pyright-verifytypes
-    - ty
-    - ty-docs
-    - pyroma
-    - ruff-check-fix
-    - ruff-check-fix-docs
-    - ruff-format-fix
-    - ruff-format-fix-docs
-    - shellcheck
-    - shellcheck-docs
-    - shfmt
-    - shfmt-docs
-    - spelling
-    - vulture
-    - vulture-docs
-    - yamlfix
-    - zizmor
-    - pyrefly
-    - pyrefly-docs
+
 
 default_install_hook_types: [pre-commit, pre-push, commit-msg]
 
 repos:
-  - repo: meta
-    hooks:
-      - id: check-useless-excludes
-        stages: [pre-commit]
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
+  - repo: builtin
     hooks:
       - id: check-added-large-files
         stages: [pre-commit]
@@ -76,10 +32,13 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
+      - id: trailing-whitespace
+        stages: [pre-commit]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
       - id: file-contents-sorter
         files: spelling_private_dict\.txt$
-        stages: [pre-commit]
-      - id: trailing-whitespace
         stages: [pre-commit]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
