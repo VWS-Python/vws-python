@@ -3,8 +3,6 @@ fail_fast: true
 
 # See https://prek.j178.dev for more information
 
-
-
 default_install_hook_types: [pre-commit, pre-push, commit-msg]
 
 repos:
@@ -32,13 +30,10 @@ repos:
         stages: [pre-commit]
       - id: end-of-file-fixer
         stages: [pre-commit]
-      - id: trailing-whitespace
-        stages: [pre-commit]
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v6.0.0
-    hooks:
       - id: file-contents-sorter
         files: spelling_private_dict\.txt$
+        stages: [pre-commit]
+      - id: trailing-whitespace
         stages: [pre-commit]
   - repo: https://github.com/pre-commit/pygrep-hooks
     rev: v1.10.0
@@ -81,7 +76,8 @@ repos:
 
       - id: shellcheck-docs
         name: shellcheck-docs
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=shell
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=shell
           --language=console --command="shellcheck --shell=bash"
         language: python
         types_or: [markdown, rst]
@@ -98,7 +94,8 @@ repos:
 
       - id: shfmt-docs
         name: shfmt-docs
-        entry: uv run --extra=dev doccmd --language=shell --language=console --skip-marker=shfmt
+        entry:
+          uv run --extra=dev doccmd --language=shell --language=console --skip-marker=shfmt
           --no-pad-file --command="shfmt --write --space-redirects --indent=4"
         language: python
         types_or: [markdown, rst]
@@ -117,7 +114,8 @@ repos:
       - id: mypy-docs
         name: mypy-docs
         stages: [pre-push]
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="mypy"
         language: python
         types_or: [markdown, rst]
@@ -143,7 +141,8 @@ repos:
       - id: pyright-docs
         name: pyright-docs
         stages: [pre-push]
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="pyright"
         language: python
         types_or: [markdown, rst]
@@ -160,7 +159,8 @@ repos:
 
       - id: vulture-docs
         name: vulture docs
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="vulture"
         language: python
         types_or: [markdown, rst]
@@ -194,7 +194,8 @@ repos:
 
       - id: pylint-docs
         name: pylint-docs
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="pylint"
         language: python
         stages: [manual]
@@ -227,7 +228,8 @@ repos:
 
       - id: ruff-format-fix-docs
         name: Ruff format docs
-        entry: uv run --extra=dev doccmd --language=python --no-pad-file --command="ruff
+        entry:
+          uv run --extra=dev doccmd --language=python --no-pad-file --command="ruff
           format"
         language: python
         types_or: [markdown, rst]
@@ -252,7 +254,8 @@ repos:
 
       - id: interrogate-docs
         name: interrogate docs
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="interrogate"
         language: python
         types_or: [markdown, rst]
@@ -270,7 +273,8 @@ repos:
 
       - id: linkcheck
         name: linkcheck
-        entry: uv run --extra=dev sphinx-build -M linkcheck docs/source docs/build
+        entry:
+          uv run --extra=dev sphinx-build -M linkcheck docs/source docs/build
           -W
         language: python
         types_or: [rst]
@@ -280,7 +284,8 @@ repos:
 
       - id: spelling
         name: spelling
-        entry: uv run --extra=dev sphinx-build -M spelling docs/source docs/build
+        entry:
+          uv run --extra=dev sphinx-build -M spelling docs/source docs/build
           -W
         language: python
         types_or: [rst]
@@ -317,7 +322,8 @@ repos:
       - id: ty-docs
         name: ty-docs
         stages: [pre-push]
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="ty check"
         language: python
         types_or: [markdown, rst]
@@ -360,7 +366,8 @@ repos:
       - id: pyrefly-docs
         name: pyrefly-docs
         stages: [pre-push]
-        entry: uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
+        entry:
+          uv run --extra=dev doccmd --no-write-to-file --example-workers 0 --language=python
           --command="pyrefly check"
         language: python
         types_or: [markdown, rst]
