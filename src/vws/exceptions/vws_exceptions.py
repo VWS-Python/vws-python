@@ -127,7 +127,7 @@ class ProjectInactiveError(VWSError):
 @beartype
 class MetadataTooLargeError(VWSError):
     """
-    Exception raised when Vuforia returns a response with a result code
+    Exception raised when Vuforia returns responses with a result code
     'MetadataTooLarge'.
     """
 
