@@ -37,7 +37,7 @@ dependencies = [
     "vws-auth-tools>=2024.7.12",
 ]
 optional-dependencies.dev = [
-    "actionlint-py==1.7.9.24",
+    "actionlint-py==1.7.10.24",
     "check-manifest==0.51",
     "deptry==0.24.0",
     "doc8==2.0.0",
