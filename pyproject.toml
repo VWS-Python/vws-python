@@ -74,7 +74,7 @@ optional-dependencies.dev = [
     "sphinxcontrib-spelling==8.0.2",
     "sybil==9.3.0",
     "ty==0.0.9",
-    "types-requests==2.32.4.20250913",
+    "types-requests==2.32.4.20260107",
     "vulture==2.14",
     "vws-python-mock==2025.3.10.1",
     "vws-test-fixtures==2023.3.5",
