@@ -1,6 +1,4 @@
-"""
-Tests for exceptions raised when using the CloudRecoService.
-"""
+"""Tests for exceptions raised when using the CloudRecoService."""
 
 import io
 import uuid
@@ -63,9 +61,7 @@ def test_image_too_large(
 
 
 def test_cloudrecoexception_inheritance() -> None:
-    """
-    CloudRecoService-specific exceptions inherit from CloudRecoException.
-    """
+    """CloudRecoService-specific exceptions inherit from CloudRecoException."""
     subclasses = [
         MaxNumResultsOutOfRangeError,
         InactiveProjectError,

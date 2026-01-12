@@ -10,9 +10,7 @@ from vws.response import Response
 
 @beartype
 class CloudRecoError(Exception):
-    """
-    Base class for Vuforia Cloud Recognition Web API exceptions.
-    """
+    """Base class for Vuforia Cloud Recognition Web API exceptions."""
 
     def __init__(self, response: Response) -> None:
         """
@@ -24,9 +22,7 @@ class CloudRecoError(Exception):
 
     @property
     def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
+        """The response returned by Vuforia which included this error."""
         return self._response
 
 
@@ -48,7 +44,5 @@ class VWSError(Exception):
 
     @property
     def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
+        """The response returned by Vuforia which included this error."""
         return self._response

@@ -1,6 +1,4 @@
-"""
-Configuration, plugins and fixtures for `pytest`.
-"""
+"""Configuration, plugins and fixtures for `pytest`."""
 
 import io
 from collections.abc import Generator
@@ -16,9 +14,7 @@ from vws import VWS, CloudRecoService
 
 @pytest.fixture(name="_mock_database")
 def fixture_mock_database() -> Generator[VuforiaDatabase]:
-    """
-    Yield a mock ``VuforiaDatabase``.
-    """
+    """Yield a mock ``VuforiaDatabase``."""
     # We use a low processing time so that tests run quickly.
     with MockVWS(processing_time_seconds=0.2) as mock:
         database = VuforiaDatabase()
@@ -28,9 +24,7 @@ def fixture_mock_database() -> Generator[VuforiaDatabase]:
 
 @pytest.fixture
 def vws_client(_mock_database: VuforiaDatabase) -> VWS:
-    """
-    A VWS client which connects to a mock database.
-    """
+    """A VWS client which connects to a mock database."""
     return VWS(
         server_access_key=_mock_database.server_access_key,
         server_secret_key=_mock_database.server_secret_key,
@@ -39,9 +33,7 @@ def vws_client(_mock_database: VuforiaDatabase) -> VWS:
 
 @pytest.fixture
 def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
-    """
-    A ``CloudRecoService`` client which connects to a mock database.
-    """
+    """A ``CloudRecoService`` client which connects to a mock database."""
     return CloudRecoService(
         client_access_key=_mock_database.client_access_key,
         client_secret_key=_mock_database.client_secret_key,
@@ -54,9 +46,7 @@ def fixture_image_file(
     tmp_path: Path,
     request: pytest.FixtureRequest,
 ) -> Generator[BinaryIO]:
-    """
-    An image file object.
-    """
+    """An image file object."""
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
     file.write_bytes(data=buffer)
@@ -71,9 +61,7 @@ def image(
     high_quality_image: io.BytesIO,
     image_file: BinaryIO,
 ) -> io.BytesIO | BinaryIO:
-    """
-    An image in any of the types that the API accepts.
-    """
+    """An image in any of the types that the API accepts."""
     if request.param == "high_quality_image":
         return high_quality_image
     return image_file
