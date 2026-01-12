@@ -1,1 +1,3 @@
-"""Tests for ``vws``."""
+"""
+Tests for ``vws``.
+"""

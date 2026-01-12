@@ -1,4 +1,6 @@
-"""Setup for Sybil."""
+"""
+Setup for Sybil.
+"""
 
 import io
 import uuid
@@ -19,7 +21,9 @@ from sybil.parsers.rest import (
 
 
 def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
-    """Apply the beartype decorator to all collected test functions."""
+    """
+    Apply the beartype decorator to all collected test functions.
+    """
     for item in items:
         if isinstance(item, pytest.Function):
             item.obj = beartype(obj=item.obj)

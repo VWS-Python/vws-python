@@ -346,8 +346,6 @@ typeCheckingMode = "strict"
 [tool.pydocstringformatter]
 write = true
 split-summary-body = false
-beginning-quotes = false
-closing-quotes = false
 
 [tool.interrogate]
 fail-under = 100

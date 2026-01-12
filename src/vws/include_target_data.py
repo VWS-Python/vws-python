@@ -1,4 +1,6 @@
-"""Tools for managing ``CloudRecoService.query``'s ``include_target_data``."""
+"""
+Tools for managing ``CloudRecoService.query``'s ``include_target_data``.
+"""
 
 from enum import StrEnum, auto, unique
 

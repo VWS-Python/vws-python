@@ -1,4 +1,6 @@
-"""Tests for VWS exceptions."""
+"""
+Tests for VWS exceptions.
+"""
 
 import io
 import uuid
@@ -96,7 +98,9 @@ def test_request_quota_reached() -> None:
 
 
 def test_fail(high_quality_image: io.BytesIO) -> None:
-    """A ``Fail`` exception is raised when the server access key does not exist."""
+    """
+    A ``Fail`` exception is raised when the server access key does not exist.
+    """
     with MockVWS():
         vws_client = VWS(
             server_access_key=uuid.uuid4().hex,
@@ -116,7 +120,9 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
 
 
 def test_bad_image(vws_client: VWS) -> None:
-    """A ``BadImage`` exception is raised when a non-image is given."""
+    """
+    A ``BadImage`` exception is raised when a non-image is given.
+    """
     not_an_image = io.BytesIO(initial_bytes=b"Not an image")
     with pytest.raises(expected_exception=BadImageError) as exc:
         vws_client.add_target(
@@ -319,7 +325,9 @@ def test_target_status_not_success(
 
 
 def test_vwsexception_inheritance() -> None:
-    """VWS-related exceptions should inherit from VWSException."""
+    """
+    VWS-related exceptions should inherit from VWSException.
+    """
     subclasses = [
         AuthenticationFailureError,
         BadImageError,
@@ -346,7 +354,9 @@ def test_base_exception(
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
-    """``VWSException``s has a response property."""
+    """
+    ``VWSException``s has a response property.
+    """
     with pytest.raises(expected_exception=VWSError) as exc:
         vws_client.get_target_record(target_id="a")
 

@@ -1,4 +1,6 @@
-"""Classes for representing Vuforia reports."""
+"""
+Classes for representing Vuforia reports.
+"""
 
 import datetime
 from dataclasses import dataclass
@@ -84,7 +86,9 @@ class TargetRecord:
 @beartype
 @dataclass(frozen=True)
 class TargetData:
-    """The target data optionally included with a query match."""
+    """
+    The target data optionally included with a query match.
+    """
 
     name: str
     application_metadata: str | None
