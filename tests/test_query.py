@@ -1,6 +1,4 @@
-"""
-Tests for the ``CloudRecoService`` querying functionality.
-"""
+"""Tests for the ``CloudRecoService`` querying functionality."""
 
 import io
 import uuid
@@ -14,18 +12,14 @@ from vws.include_target_data import CloudRecoIncludeTargetData
 
 
 class TestQuery:
-    """
-    Tests for making image queries.
-    """
+    """Tests for making image queries."""
 
     @staticmethod
     def test_no_matches(
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        An empty list is returned if there are no matches.
-        """
+        """An empty list is returned if there are no matches."""
         result = cloud_reco_client.query(image=image)
         assert result == []
 
@@ -35,9 +29,7 @@ class TestQuery:
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        Details of matching targets are returned.
-        """
+        """Details of matching targets are returned."""
         target_id = vws_client.add_target(
             name="x",
             width=1,
@@ -51,9 +43,7 @@ class TestQuery:
 
 
 class TestCustomBaseVWQURL:
-    """
-    Tests for using a custom base VWQ URL.
-    """
+    """Tests for using a custom base VWQ URL."""
 
     @staticmethod
     def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
@@ -93,9 +83,7 @@ class TestCustomBaseVWQURL:
 
 
 class TestMaxNumResults:
-    """
-    Tests for the ``max_num_results`` parameter of ``query``.
-    """
+    """Tests for the ``max_num_results`` parameter of ``query``."""
 
     @staticmethod
     def test_default(
@@ -103,9 +91,7 @@ class TestMaxNumResults:
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        By default the maximum number of results is 1.
-        """
+        """By default the maximum number of results is 1."""
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
@@ -131,9 +117,7 @@ class TestMaxNumResults:
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        It is possible to set a custom ``max_num_results``.
-        """
+        """It is possible to set a custom ``max_num_results``."""
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
@@ -167,9 +151,7 @@ class TestMaxNumResults:
 
 
 class TestIncludeTargetData:
-    """
-    Tests for the ``include_target_data`` parameter of ``query``.
-    """
+    """Tests for the ``include_target_data`` parameter of ``query``."""
 
     @staticmethod
     def test_default(
@@ -177,9 +159,7 @@ class TestIncludeTargetData:
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        By default, target data is only returned in the top match.
-        """
+        """By default, target data is only returned in the top match."""
         target_id = vws_client.add_target(
             name=uuid.uuid4().hex,
             width=1,
