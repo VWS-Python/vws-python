@@ -40,7 +40,8 @@ def test_image_too_large(
     png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
-    When giving an image which is too large, an ``ImageTooLarge`` exception is
+    When giving an image which is too large, an ``ImageTooLarge`` exception
+    is
     raised.
     """
     with pytest.raises(expected_exception=ImageTooLargeError) as exc:
@@ -69,7 +70,8 @@ def test_invalid_given_id(vws_client: VWS) -> None:
 
 def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
     """
-    When a name with a bad character is given, a ``ServerError`` exception is
+    When a name with a bad character is given, a ``ServerError`` exception
+    is
     raised.
     """
     max_char_value = 65535
@@ -96,7 +98,9 @@ def test_request_quota_reached() -> None:
 
 
 def test_fail(high_quality_image: io.BytesIO) -> None:
-    """A ``Fail`` exception is raised when the server access key does not exist."""
+    """A ``Fail`` exception is raised when the server access key does not
+    exist.
+    """
     with MockVWS():
         vws_client = VWS(
             server_access_key=uuid.uuid4().hex,
@@ -135,7 +139,8 @@ def test_target_name_exist(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetNameExist`` exception is raised after adding two targets with the
+    A ``TargetNameExist`` exception is raised after adding two targets with
+    the
     same name.
     """
     vws_client.add_target(
@@ -162,7 +167,8 @@ def test_project_inactive(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``ProjectInactive`` exception is raised if adding a target to an inactive
+    A ``ProjectInactive`` exception is raised if adding a target to an
+    inactive
     database.
     """
     database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
@@ -267,7 +273,8 @@ def test_authentication_failure(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    An ``AuthenticationFailure`` exception is raised when the server access key
+    An ``AuthenticationFailure`` exception is raised when the server access
+    key
     exists but the server secret key is incorrect, or when a client key is
     incorrect.
     """

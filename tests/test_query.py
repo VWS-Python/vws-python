@@ -48,7 +48,8 @@ class TestCustomBaseVWQURL:
     @staticmethod
     def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         """
-        It is possible to use query a target to a database under a custom VWQ
+        It is possible to use query a target to a database under a custom
+        VWQ
         URL.
         """
         base_vwq_url = "http://example.com"
@@ -190,7 +191,8 @@ class TestIncludeTargetData:
         image: io.BytesIO | BinaryIO,
     ) -> None:
         """
-        When ``CloudRecoIncludeTargetData.TOP`` is given, target data is only
+        When ``CloudRecoIncludeTargetData.TOP`` is given, target data is
+        only
         returned in the top match.
         """
         target_id = vws_client.add_target(
@@ -224,7 +226,8 @@ class TestIncludeTargetData:
         image: io.BytesIO | BinaryIO,
     ) -> None:
         """
-        When ``CloudRecoIncludeTargetData.NONE`` is given, target data is not
+        When ``CloudRecoIncludeTargetData.NONE`` is given, target data is
+        not
         returned in any match.
         """
         target_id = vws_client.add_target(

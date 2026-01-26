@@ -1,4 +1,6 @@
-"""Exceptions which match errors raised by the Vuforia Cloud Recognition Web APIs."""
+"""Exceptions which match errors raised by the Vuforia Cloud Recognition Web
+APIs.
+"""
 
 from beartype import beartype
 

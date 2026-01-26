@@ -61,7 +61,9 @@ def test_image_too_large(
 
 
 def test_cloudrecoexception_inheritance() -> None:
-    """CloudRecoService-specific exceptions inherit from CloudRecoException."""
+    """CloudRecoService-specific exceptions inherit from
+    CloudRecoException.
+    """
     subclasses = [
         MaxNumResultsOutOfRangeError,
         InactiveProjectError,
@@ -77,7 +79,8 @@ def test_authentication_failure(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    An ``AuthenticationFailure`` exception is raised when the client access key
+    An ``AuthenticationFailure`` exception is raised when the client access
+    key
     exists but the client secret key is incorrect.
     """
     database = VuforiaDatabase()

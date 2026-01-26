@@ -176,7 +176,9 @@ class TestGetTargetSummaryReport:
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """Details of a target are returned by ``get_target_summary_report``."""
+        """Details of a target are returned by
+        ``get_target_summary_report``.
+        """
         date = "2018-04-25"
         target_name = uuid.uuid4().hex
         with freeze_time(time_to_freeze=date):
@@ -224,7 +226,9 @@ class TestGetDatabaseSummaryReport:
 
     @staticmethod
     def test_get_target(vws_client: VWS) -> None:
-        """Details of a database are returned by ``get_database_summary_report``."""
+        """Details of a database are returned by
+        ``get_database_summary_report``.
+        """
         report = vws_client.get_database_summary_report()
 
         expected_report = DatabaseSummaryReport(
@@ -407,7 +411,9 @@ class TestWaitForTargetProcessed:
     def test_custom_seconds_between_requests(
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """It is possible to customize the time waited between polling requests."""
+        """It is possible to customize the time waited between polling
+        requests.
+        """
         with MockVWS(processing_time_seconds=0.5) as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
