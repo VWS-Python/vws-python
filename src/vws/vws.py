@@ -1,6 +1,4 @@
-"""
-Tools for interacting with Vuforia APIs.
-"""
+"""Tools for interacting with Vuforia APIs."""
 
 import base64
 import io
@@ -52,9 +50,7 @@ _ImageType = io.BytesIO | BinaryIO
 
 @beartype
 def _get_image_data(image: _ImageType) -> bytes:
-    """
-    Get the data of an image file.
-    """
+    """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
     image_data = image.read()
@@ -131,9 +127,7 @@ def _target_api_request(
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
 class VWS:
-    """
-    An interface to Vuforia Web Services APIs.
-    """
+    """An interface to Vuforia Web Services APIs."""
 
     def __init__(
         self,
@@ -573,7 +567,8 @@ class VWS:
         )
 
     def get_duplicate_targets(self, target_id: str) -> list[str]:
-        """Get targets which may be considered duplicates of a given target.
+        """Get targets which may be considered duplicates of a given
+        target.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#check.

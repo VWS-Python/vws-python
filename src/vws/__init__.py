@@ -1,6 +1,4 @@
-"""
-A library for Vuforia Web Services.
-"""
+"""A library for Vuforia Web Services."""
 
 from .query import CloudRecoService
 from .vws import VWS

@@ -1,3 +1,1 @@
-"""
-Custom exceptions raised by this package.
-"""
+"""Custom exceptions raised by this package."""

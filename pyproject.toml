@@ -42,13 +42,13 @@ optional-dependencies.dev = [
     "deptry==0.24.0",
     "doc8==2.0.0",
     "doccmd==2026.1.22.1",
-    "docformatter==1.7.7",
     "freezegun==1.5.5",
     "furo==2025.12.19",
     "interrogate==1.7.0",
     "mypy[faster-cache]==1.19.1",
     "mypy-strict-kwargs==2026.1.12",
     "prek==0.3.0",
+    "pydocstringformatter==0.7.3",
     "pydocstyle==6.3",
     "pygments==2.19.2",
     "pylint[spelling]==4.0.4",
@@ -119,8 +119,8 @@ lint.select = [
 lint.ignore = [
     # Ruff warns that this conflicts with the formatter.
     "COM812",
-    # Allow our chosen docstring line-style - no one-line summary.
-    "D200",
+    # Allow our chosen docstring line-style - pydocstringformatter handles formatting
+    # but doesn't enforce D205 (blank line after summary) or D212 (summary on first line).
     "D205",
     "D212",
     # Ruff warns that this conflicts with the formatter.
@@ -274,9 +274,6 @@ spelling-private-dict-file = 'spelling_private_dict.txt'
 # --spelling-private-dict-file option instead of raising a message.
 spelling-store-unknown-words = 'no'
 
-[tool.docformatter]
-make-summary-multi-line = true
-
 [tool.check-manifest]
 
 ignore = [
@@ -345,6 +342,15 @@ plugins = [
 enableTypeIgnoreComments = false
 reportUnnecessaryTypeIgnoreComment = true
 typeCheckingMode = "strict"
+
+[tool.pydocstringformatter]
+write = true
+split-summary-body = false
+# Use a lower line length than ruff (79) to avoid conflicts with D200 -
+# pydocstringformatter would otherwise split docstrings at exactly 79 chars
+# which ruff considers should stay on one line.
+max-line-length = 75
+linewrap-full-docstring = true
 
 [tool.interrogate]
 fail-under = 100

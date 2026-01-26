@@ -1,6 +1,4 @@
-"""
-Tests for helper functions for managing a Vuforia database.
-"""
+"""Tests for helper functions for managing a Vuforia database."""
 
 import base64
 import datetime
@@ -25,9 +23,7 @@ from vws.reports import (
 
 
 class TestAddTarget:
-    """
-    Tests for adding a target.
-    """
+    """Tests for adding a target."""
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -43,9 +39,7 @@ class TestAddTarget:
         *,
         active_flag: bool,
     ) -> None:
-        """
-        No exception is raised when adding one target.
-        """
+        """No exception is raised when adding one target."""
         name = "x"
         width = 1
         if application_metadata is None:
@@ -83,7 +77,8 @@ class TestAddTarget:
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """No exception is raised when adding two targets with different names.
+        """No exception is raised when adding two targets with different
+        names.
 
         This demonstrates that the image seek position is not changed.
         """
@@ -98,14 +93,13 @@ class TestAddTarget:
 
 
 class TestCustomBaseVWSURL:
-    """
-    Tests for using a custom base VWS URL.
-    """
+    """Tests for using a custom base VWS URL."""
 
     @staticmethod
     def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         """
-        It is possible to use add a target to a database under a custom VWS
+        It is possible to use add a target to a database under a custom
+        VWS
         URL.
         """
         base_vws_url = "http://example.com"
@@ -128,18 +122,14 @@ class TestCustomBaseVWSURL:
 
 
 class TestListTargets:
-    """
-    Tests for listing targets.
-    """
+    """Tests for listing targets."""
 
     @staticmethod
     def test_list_targets(
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        It is possible to get a list of target IDs.
-        """
+        """It is possible to get a list of target IDs."""
         id_1 = vws_client.add_target(
             name="x",
             width=1,
@@ -158,18 +148,14 @@ class TestListTargets:
 
 
 class TestDelete:
-    """
-    Test for deleting a target.
-    """
+    """Test for deleting a target."""
 
     @staticmethod
     def test_delete_target(
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        It is possible to delete a target.
-        """
+        """It is possible to delete a target."""
         target_id = vws_client.add_target(
             name="x",
             width=1,
@@ -185,17 +171,15 @@ class TestDelete:
 
 
 class TestGetTargetSummaryReport:
-    """
-    Tests for getting a summary report for a target.
-    """
+    """Tests for getting a summary report for a target."""
 
     @staticmethod
     def test_get_target_summary_report(
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        Details of a target are returned by ``get_target_summary_report``.
+        """Details of a target are returned by
+        ``get_target_summary_report``.
         """
         date = "2018-04-25"
         target_name = uuid.uuid4().hex
@@ -240,14 +224,12 @@ class TestGetTargetSummaryReport:
 
 
 class TestGetDatabaseSummaryReport:
-    """
-    Tests for getting a summary report for a database.
-    """
+    """Tests for getting a summary report for a database."""
 
     @staticmethod
     def test_get_target(vws_client: VWS) -> None:
-        """
-        Details of a database are returned by ``get_database_summary_report``.
+        """Details of a database are returned by
+        ``get_database_summary_report``.
         """
         report = vws_client.get_database_summary_report()
 
@@ -287,18 +269,14 @@ class TestGetDatabaseSummaryReport:
 
 
 class TestGetTargetRecord:
-    """
-    Tests for getting a record of a target.
-    """
+    """Tests for getting a record of a target."""
 
     @staticmethod
     def test_get_target_record(
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        Details of a target are returned by ``get_target_record``.
-        """
+        """Details of a target are returned by ``get_target_record``."""
         target_id = vws_client.add_target(
             name="x",
             width=1,
@@ -344,9 +322,7 @@ class TestGetTargetRecord:
         vws_client: VWS,
         image_file_failed_state: io.BytesIO,
     ) -> None:
-        """
-        Check that the report works with a failed target.
-        """
+        """Check that the report works with a failed target."""
         target_id = vws_client.add_target(
             name="x",
             width=1,
@@ -362,18 +338,14 @@ class TestGetTargetRecord:
 
 
 class TestWaitForTargetProcessed:
-    """
-    Tests for waiting for a target to be processed.
-    """
+    """Tests for waiting for a target to be processed."""
 
     @staticmethod
     def test_wait_for_target_processed(
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        It is possible to wait until a target is processed.
-        """
+        """It is possible to wait until a target is processed."""
         target_id = vws_client.add_target(
             name="x",
             width=1,
@@ -391,9 +363,7 @@ class TestWaitForTargetProcessed:
     def test_default_seconds_between_requests(
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        By default, 0.2 seconds are waited between polling requests.
-        """
+        """By default, 0.2 seconds are waited between polling requests."""
         with MockVWS(processing_time_seconds=0.5) as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -443,8 +413,8 @@ class TestWaitForTargetProcessed:
     def test_custom_seconds_between_requests(
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        It is possible to customize the time waited between polling requests.
+        """It is possible to customize the time waited between polling
+        requests.
         """
         with MockVWS(processing_time_seconds=0.5) as mock:
             database = VuforiaDatabase()
@@ -493,9 +463,7 @@ class TestWaitForTargetProcessed:
 
     @staticmethod
     def test_custom_timeout(image: io.BytesIO | BinaryIO) -> None:
-        """
-        It is possible to set a maximum timeout.
-        """
+        """It is possible to set a maximum timeout."""
         with MockVWS(processing_time_seconds=0.5) as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -531,18 +499,14 @@ class TestWaitForTargetProcessed:
 
 
 class TestGetDuplicateTargets:
-    """
-    Tests for getting duplicate targets.
-    """
+    """Tests for getting duplicate targets."""
 
     @staticmethod
     def test_get_duplicate_targets(
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        It is possible to get the IDs of similar targets.
-        """
+        """It is possible to get the IDs of similar targets."""
         target_id = vws_client.add_target(
             name="x",
             width=1,
@@ -565,9 +529,7 @@ class TestGetDuplicateTargets:
 
 
 class TestUpdateTarget:
-    """
-    Tests for updating a target.
-    """
+    """Tests for updating a target."""
 
     @staticmethod
     def test_update_target(
@@ -576,9 +538,7 @@ class TestUpdateTarget:
         different_high_quality_image: io.BytesIO,
         cloud_reco_client: CloudRecoService,
     ) -> None:
-        """
-        It is possible to update a target.
-        """
+        """It is possible to update a target."""
         old_name = uuid.uuid4().hex
         old_width = secrets.choice(seq=range(1, 5000)) / 100
         target_id = vws_client.add_target(
@@ -635,9 +595,7 @@ class TestUpdateTarget:
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """
-        It is possible to give no update fields.
-        """
+        """It is possible to give no update fields."""
         target_id = vws_client.add_target(
             name="x",
             width=1,

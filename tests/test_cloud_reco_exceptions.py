@@ -1,6 +1,4 @@
-"""
-Tests for exceptions raised when using the CloudRecoService.
-"""
+"""Tests for exceptions raised when using the CloudRecoService."""
 
 import io
 import uuid
@@ -51,7 +49,8 @@ def test_image_too_large(
     png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
-    A ``RequestEntityTooLarge`` exception is raised if an image which is too
+    A ``RequestEntityTooLarge`` exception is raised if an image which is
+    too
     large is given.
     """
     with pytest.raises(expected_exception=RequestEntityTooLargeError) as exc:
@@ -63,8 +62,8 @@ def test_image_too_large(
 
 
 def test_cloudrecoexception_inheritance() -> None:
-    """
-    CloudRecoService-specific exceptions inherit from CloudRecoException.
+    """CloudRecoService-specific exceptions inherit from
+    CloudRecoException.
     """
     subclasses = [
         MaxNumResultsOutOfRangeError,
@@ -81,7 +80,9 @@ def test_authentication_failure(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    An ``AuthenticationFailure`` exception is raised when the client access key
+    An ``AuthenticationFailure`` exception is raised when the client
+    access
+    key
     exists but the client secret key is incorrect.
     """
     database = VuforiaDatabase()

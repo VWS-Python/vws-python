@@ -1,6 +1,4 @@
-"""
-Tools for interacting with the Vuforia Cloud Recognition Web APIs.
-"""
+"""Tools for interacting with the Vuforia Cloud Recognition Web APIs."""
 
 import datetime
 import io
@@ -34,9 +32,7 @@ _ImageType = io.BytesIO | BinaryIO
 
 @beartype
 def _get_image_data(image: _ImageType) -> bytes:
-    """
-    Get the data of an image file.
-    """
+    """Get the data of an image file."""
     original_tell = image.tell()
     image.seek(0)
     image_data = image.read()
@@ -46,9 +42,7 @@ def _get_image_data(image: _ImageType) -> bytes:
 
 @beartype
 class CloudRecoService:
-    """
-    An interface to the Vuforia Cloud Recognition Web APIs.
-    """
+    """An interface to the Vuforia Cloud Recognition Web APIs."""
 
     def __init__(
         self,
@@ -74,7 +68,8 @@ class CloudRecoService:
             CloudRecoIncludeTargetData.TOP
         ),
     ) -> list[QueryResult]:
-        """Use the Vuforia Web Query API to make an Image Recognition Query.
+        """Use the Vuforia Web Query API to make an Image Recognition
+        Query.
 
         See
         https://developer.vuforia.com/library/web-api/vuforia-query-web-api

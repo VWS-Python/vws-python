@@ -1,7 +1,7 @@
-"""
-Exceptions which do not map to errors at
+"""Exceptions which do not map to errors at the following URL, or simple
+errors given by the cloud recognition service.
+
 https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes
-or simple errors given by the cloud recognition service.
 """
 
 from beartype import beartype
@@ -11,9 +11,7 @@ from vws.response import Response
 
 @beartype
 class RequestEntityTooLargeError(Exception):
-    """
-    Exception raised when the given image is too large.
-    """
+    """Exception raised when the given image is too large."""
 
     def __init__(self, response: Response) -> None:
         """
@@ -25,24 +23,20 @@ class RequestEntityTooLargeError(Exception):
 
     @property
     def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
+        """The response returned by Vuforia which included this error."""
         return self._response
 
 
 @beartype
 class TargetProcessingTimeoutError(Exception):
-    """
-    Exception raised when waiting for a target to be processed times out.
+    """Exception raised when waiting for a target to be processed times
+    out.
     """
 
 
 @beartype
 class ServerError(Exception):  # pragma: no cover
-    """
-    Exception raised when VWS returns a server error.
-    """
+    """Exception raised when VWS returns a server error."""
 
     def __init__(self, response: Response) -> None:
         """
@@ -54,7 +48,5 @@ class ServerError(Exception):  # pragma: no cover
 
     @property
     def response(self) -> Response:
-        """
-        The response returned by Vuforia which included this error.
-        """
+        """The response returned by Vuforia which included this error."""
         return self._response

@@ -1,6 +1,4 @@
-"""
-Tests for VWS exceptions.
-"""
+"""Tests for VWS exceptions."""
 
 import io
 import uuid
@@ -42,7 +40,9 @@ def test_image_too_large(
     png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
-    When giving an image which is too large, an ``ImageTooLarge`` exception is
+    When giving an image which is too large, an ``ImageTooLarge``
+    exception
+    is
     raised.
     """
     with pytest.raises(expected_exception=ImageTooLargeError) as exc:
@@ -59,7 +59,8 @@ def test_image_too_large(
 
 def test_invalid_given_id(vws_client: VWS) -> None:
     """
-    Giving an invalid ID to a helper which requires a target ID to be given
+    Giving an invalid ID to a helper which requires a target ID to be
+    given
     causes an ``UnknownTarget`` exception to be raised.
     """
     target_id = "12345abc"
@@ -71,7 +72,9 @@ def test_invalid_given_id(vws_client: VWS) -> None:
 
 def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
     """
-    When a name with a bad character is given, a ``ServerError`` exception is
+    When a name with a bad character is given, a ``ServerError``
+    exception
+    is
     raised.
     """
     max_char_value = 65535
@@ -98,8 +101,8 @@ def test_request_quota_reached() -> None:
 
 
 def test_fail(high_quality_image: io.BytesIO) -> None:
-    """
-    A ``Fail`` exception is raised when the server access key does not exist.
+    """A ``Fail`` exception is raised when the server access key does not
+    exist.
     """
     with MockVWS():
         vws_client = VWS(
@@ -120,9 +123,7 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
 
 
 def test_bad_image(vws_client: VWS) -> None:
-    """
-    A ``BadImage`` exception is raised when a non-image is given.
-    """
+    """A ``BadImage`` exception is raised when a non-image is given."""
     not_an_image = io.BytesIO(initial_bytes=b"Not an image")
     with pytest.raises(expected_exception=BadImageError) as exc:
         vws_client.add_target(
@@ -141,7 +142,9 @@ def test_target_name_exist(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetNameExist`` exception is raised after adding two targets with the
+    A ``TargetNameExist`` exception is raised after adding two targets
+    with
+    the
     same name.
     """
     vws_client.add_target(
@@ -168,7 +171,8 @@ def test_project_inactive(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``ProjectInactive`` exception is raised if adding a target to an inactive
+    A ``ProjectInactive`` exception is raised if adding a target to an
+    inactive
     database.
     """
     database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
@@ -196,7 +200,8 @@ def test_target_status_processing(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetStatusProcessing`` exception is raised if trying to delete a
+    A ``TargetStatusProcessing`` exception is raised if trying to delete
+    a
     target which is processing.
     """
     target_id = vws_client.add_target(
@@ -219,7 +224,8 @@ def test_metadata_too_large(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``MetadataTooLarge`` exception is raised if the metadata given is too
+    A ``MetadataTooLarge`` exception is raised if the metadata given is
+    too
     large.
     """
     with pytest.raises(expected_exception=MetadataTooLargeError) as exc:
@@ -239,7 +245,8 @@ def test_request_time_too_skewed(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``RequestTimeTooSkewed`` exception is raised when the request time is
+    A ``RequestTimeTooSkewed`` exception is raised when the request time
+    is
     more than five minutes different from the server time.
     """
     target_id = vws_client.add_target(
@@ -273,7 +280,9 @@ def test_authentication_failure(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    An ``AuthenticationFailure`` exception is raised when the server access key
+    An ``AuthenticationFailure`` exception is raised when the server
+    access
+    key
     exists but the server secret key is incorrect, or when a client key is
     incorrect.
     """
@@ -306,7 +315,8 @@ def test_target_status_not_success(
     high_quality_image: io.BytesIO,
 ) -> None:
     """
-    A ``TargetStatusNotSuccess`` exception is raised when updating a target
+    A ``TargetStatusNotSuccess`` exception is raised when updating a
+    target
     which has a status which is not "Success".
     """
     target_id = vws_client.add_target(
@@ -325,9 +335,7 @@ def test_target_status_not_success(
 
 
 def test_vwsexception_inheritance() -> None:
-    """
-    VWS-related exceptions should inherit from VWSException.
-    """
+    """VWS-related exceptions should inherit from VWSException."""
     subclasses = [
         AuthenticationFailureError,
         BadImageError,
@@ -354,9 +362,7 @@ def test_base_exception(
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
-    """
-    ``VWSException``s has a response property.
-    """
+    """``VWSException``s has a response property."""
     with pytest.raises(expected_exception=VWSError) as exc:
         vws_client.get_target_record(target_id="a")
 

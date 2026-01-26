@@ -1,5 +1,6 @@
-"""
-Exceptions which match errors raised by the Vuforia Cloud Recognition Web APIs.
+"""Exceptions which match errors raised by the Vuforia Cloud Recognition
+Web
+APIs.
 """
 
 from beartype import beartype
@@ -17,31 +18,27 @@ class MaxNumResultsOutOfRangeError(CloudRecoError):
 
 @beartype
 class InactiveProjectError(CloudRecoError):
-    """
-    Exception raised when Vuforia returns a response with a result code
+    """Exception raised when Vuforia returns a response with a result code
     'InactiveProject'.
     """
 
 
 @beartype
 class BadImageError(CloudRecoError):
-    """
-    Exception raised when Vuforia returns a response with a result code
+    """Exception raised when Vuforia returns a response with a result code
     'BadImage'.
     """
 
 
 @beartype
 class AuthenticationFailureError(CloudRecoError):
-    """
-    Exception raised when Vuforia returns a response with a result code
+    """Exception raised when Vuforia returns a response with a result code
     'AuthenticationFailure'.
     """
 
 
 @beartype
 class RequestTimeTooSkewedError(CloudRecoError):
-    """
-    Exception raised when Vuforia returns a response with a result code
+    """Exception raised when Vuforia returns a response with a result code
     'RequestTimeTooSkewed'.
     """
