@@ -344,7 +344,7 @@ reportUnnecessaryTypeIgnoreComment = true
 typeCheckingMode = "strict"
 
 [tool.pydocstringformatter]
-write = true
+write = false
 split-summary-body = false
 max-line-length = 79
 linewrap-full-docstring = true

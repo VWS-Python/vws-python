@@ -1,7 +1,6 @@
 """
 Exceptions which do not map to errors at
-https://developer.vuforia.com/library/web-api/cloud-targets-web-services-
-api#result-codes
+https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes
 or simple errors given by the cloud recognition service.
 """
 
