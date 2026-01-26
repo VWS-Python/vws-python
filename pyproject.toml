@@ -119,8 +119,8 @@ lint.select = [
 lint.ignore = [
     # Ruff warns that this conflicts with the formatter.
     "COM812",
-    # Allow our chosen docstring line-style - no one-line summary.
-    "D200",
+    # Allow our chosen docstring line-style - pydocstringformatter handles formatting
+    # but doesn't enforce D205 (blank line after summary) or D212 (summary on first line).
     "D205",
     "D212",
     # Ruff warns that this conflicts with the formatter.
