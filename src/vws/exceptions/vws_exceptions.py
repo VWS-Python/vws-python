@@ -1,7 +1,9 @@
 """
-Exception raised when Vuforia returns a response with a result code matching
+Exception raised when Vuforia returns a response with a result code
+matching
 one of those documented at
-https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes.
+https://developer.vuforia.com/library/web-api/cloud-targets-web-services-
+api#result-codes.
 """
 
 import json

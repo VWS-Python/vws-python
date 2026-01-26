@@ -120,9 +120,7 @@ lint.ignore = [
     # Ruff warns that this conflicts with the formatter.
     "COM812",
     # Allow our chosen docstring line-style - pydocstringformatter handles formatting
-    # but may conflict with D200 at the line-length boundary, and doesn't enforce
-    # D205 (blank line after summary) or D212 (summary on first line).
-    "D200",
+    # but doesn't enforce D205 (blank line after summary) or D212 (summary on first line).
     "D205",
     "D212",
     # Ruff warns that this conflicts with the formatter.
@@ -348,7 +346,10 @@ typeCheckingMode = "strict"
 [tool.pydocstringformatter]
 write = true
 split-summary-body = false
-max-line-length = 79
+# Use a lower line length than ruff (79) to avoid conflicts with D200 -
+# pydocstringformatter would otherwise split docstrings at exactly 79 chars
+# which ruff considers should stay on one line.
+max-line-length = 75
 linewrap-full-docstring = true
 
 [tool.interrogate]

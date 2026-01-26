@@ -68,7 +68,8 @@ class CloudRecoService:
             CloudRecoIncludeTargetData.TOP
         ),
     ) -> list[QueryResult]:
-        """Use the Vuforia Web Query API to make an Image Recognition Query.
+        """Use the Vuforia Web Query API to make an Image Recognition
+        Query.
 
         See
         https://developer.vuforia.com/library/web-api/vuforia-query-web-api

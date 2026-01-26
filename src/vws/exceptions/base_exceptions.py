@@ -1,5 +1,6 @@
 """
-Base exceptions for errors returned by Vuforia Web Services or the Vuforia
+Base exceptions for errors returned by Vuforia Web Services or the
+Vuforia
 Cloud Recognition Web API.
 """
 

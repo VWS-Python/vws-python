@@ -1,4 +1,5 @@
-"""Exceptions which match errors raised by the Vuforia Cloud Recognition Web
+"""Exceptions which match errors raised by the Vuforia Cloud Recognition
+Web
 APIs.
 """
 

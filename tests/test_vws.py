@@ -77,7 +77,8 @@ class TestAddTarget:
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
-        """No exception is raised when adding two targets with different names.
+        """No exception is raised when adding two targets with different
+        names.
 
         This demonstrates that the image seek position is not changed.
         """
@@ -97,7 +98,8 @@ class TestCustomBaseVWSURL:
     @staticmethod
     def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         """
-        It is possible to use add a target to a database under a custom VWS
+        It is possible to use add a target to a database under a custom
+        VWS
         URL.
         """
         base_vws_url = "http://example.com"

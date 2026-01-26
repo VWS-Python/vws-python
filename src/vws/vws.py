@@ -567,7 +567,8 @@ class VWS:
         )
 
     def get_duplicate_targets(self, target_id: str) -> list[str]:
-        """Get targets which may be considered duplicates of a given target.
+        """Get targets which may be considered duplicates of a given
+        target.
 
         See
         https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#check.
