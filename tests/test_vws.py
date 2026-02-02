@@ -166,11 +166,11 @@ class TestCustomRequestTimeout:
 
             with (
                 patch.object(
-                    requests,
-                    "request",
+                    target=requests,
+                    attribute="request",
                     side_effect=slow_request,
                 ),
-                pytest.raises(requests.exceptions.Timeout),
+                pytest.raises(expected_exception=requests.exceptions.Timeout),
             ):
                 vws_client.add_target(
                     name="x",
@@ -208,8 +208,8 @@ class TestCustomRequestTimeout:
                 return original_request(*args, **kwargs)  # type: ignore[arg-type]
 
             with patch.object(
-                requests,
-                "request",
+                target=requests,
+                attribute="request",
                 side_effect=slow_request,
             ):
                 # This should succeed because timeout is 1.0 > 0.5
