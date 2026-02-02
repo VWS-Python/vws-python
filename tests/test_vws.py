@@ -162,7 +162,7 @@ class TestCustomRequestTimeout:
                 if timeout is not None and timeout < simulated_slow_threshold:
                     time.sleep(0.2)
                     raise requests.exceptions.Timeout
-                return original_request(*args, **kwargs)  # type: ignore[arg-type]
+                return original_request(*args, **kwargs)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
 
             with (
                 patch.object(
@@ -205,7 +205,7 @@ class TestCustomRequestTimeout:
                 if timeout is not None and timeout < simulated_slow_threshold:
                     time.sleep(0.2)
                     raise requests.exceptions.Timeout
-                return original_request(*args, **kwargs)  # type: ignore[arg-type]
+                return original_request(*args, **kwargs)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
 
             with patch.object(
                 target=requests,
