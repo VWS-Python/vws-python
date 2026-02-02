@@ -4,10 +4,13 @@ import base64
 import datetime
 import io
 import secrets
+import time
 import uuid
 from typing import BinaryIO
+from unittest.mock import patch
 
 import pytest
+import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
@@ -131,6 +134,92 @@ class TestCustomRequestTimeout:
                 active_flag=True,
                 application_metadata=None,
             )
+
+    @staticmethod
+    def test_timeout_raises_on_slow_response(
+        image: io.BytesIO | BinaryIO,
+    ) -> None:
+        """A short timeout raises an error when the server is slow."""
+        simulated_slow_threshold = 0.5
+
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=0.1,
+            )
+
+            original_request = requests.request
+
+            def slow_request(
+                *args: object,
+                **kwargs: float | None,
+            ) -> requests.Response:
+                """Simulate a slow server response."""
+                timeout = kwargs.get("timeout")
+                if timeout is not None and timeout < simulated_slow_threshold:
+                    time.sleep(0.2)
+                    raise requests.exceptions.Timeout
+                return original_request(*args, **kwargs)  # type: ignore[arg-type]
+
+            with (
+                patch.object(
+                    requests,
+                    "request",
+                    side_effect=slow_request,
+                ),
+                pytest.raises(requests.exceptions.Timeout),
+            ):
+                vws_client.add_target(
+                    name="x",
+                    width=1,
+                    image=image,
+                    active_flag=True,
+                    application_metadata=None,
+                )
+
+    @staticmethod
+    def test_longer_timeout_succeeds(image: io.BytesIO | BinaryIO) -> None:
+        """A longer timeout allows slow responses to complete."""
+        simulated_slow_threshold = 0.5
+
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=1.0,
+            )
+
+            original_request = requests.request
+
+            def slow_request(
+                *args: object,
+                **kwargs: float | None,
+            ) -> requests.Response:
+                """Simulate a slow server response."""
+                timeout = kwargs.get("timeout")
+                if timeout is not None and timeout < simulated_slow_threshold:
+                    time.sleep(0.2)
+                    raise requests.exceptions.Timeout
+                return original_request(*args, **kwargs)  # type: ignore[arg-type]
+
+            with patch.object(
+                requests,
+                "request",
+                side_effect=slow_request,
+            ):
+                # This should succeed because timeout is 1.0 > 0.5
+                vws_client.add_target(
+                    name="x",
+                    width=1,
+                    image=image,
+                    active_flag=True,
+                    application_metadata=None,
+                )
 
 
 class TestCustomBaseVWSURL:
