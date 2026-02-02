@@ -42,6 +42,54 @@ class TestQuery:
         assert matching_target.target_id == target_id
 
 
+class TestCustomRequestTimeout:
+    """Tests for using a custom request timeout."""
+
+    @staticmethod
+    def test_default_timeout() -> None:
+        """By default, the request timeout is 30 seconds."""
+        default_timeout_seconds = 30.0
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            cloud_reco_client = CloudRecoService(
+                client_access_key=database.client_access_key,
+                client_secret_key=database.client_secret_key,
+            )
+            expected = default_timeout_seconds
+            assert cloud_reco_client.request_timeout_seconds == expected
+
+    @staticmethod
+    def test_custom_timeout(image: io.BytesIO | BinaryIO) -> None:
+        """It is possible to set a custom request timeout."""
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+            custom_timeout = 60.5
+            cloud_reco_client = CloudRecoService(
+                client_access_key=database.client_access_key,
+                client_secret_key=database.client_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+            assert cloud_reco_client.request_timeout_seconds == custom_timeout
+
+            # Verify requests work with the custom timeout
+            target_id = vws_client.add_target(
+                name="x",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+            vws_client.wait_for_target_processed(target_id=target_id)
+            matches = cloud_reco_client.query(image=image)
+            assert len(matches) == 1
+
+
 class TestCustomBaseVWQURL:
     """Tests for using a custom base VWQ URL."""
 
