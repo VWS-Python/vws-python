@@ -49,16 +49,20 @@ class CloudRecoService:
         client_access_key: str,
         client_secret_key: str,
         base_vwq_url: str = "https://cloudreco.vuforia.com",
+        request_timeout_seconds: float = 30.0,
     ) -> None:
         """
         Args:
             client_access_key: A VWS client access key.
             client_secret_key: A VWS client secret key.
             base_vwq_url: The base URL for the VWQ API.
+            request_timeout_seconds: The timeout in seconds for each HTTP
+                request made to the Cloud Reco API.
         """
         self._client_access_key = client_access_key
         self._client_secret_key = client_secret_key
         self._base_vwq_url = base_vwq_url
+        self.request_timeout_seconds = request_timeout_seconds
 
     def query(
         self,
@@ -141,8 +145,7 @@ class CloudRecoService:
             url=urljoin(base=self._base_vwq_url, url=request_path),
             headers=headers,
             data=content,
-            # We should make the timeout customizable.
-            timeout=30,
+            timeout=self.request_timeout_seconds,
         )
         response = Response(
             text=requests_response.text,
