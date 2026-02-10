@@ -288,10 +288,10 @@ ini_options.xfail_strict = true
 ini_options.log_cli = true
 
 [tool.coverage]
+run.branch = true
 report.exclude_also = [
     "if TYPE_CHECKING:",
 ]
-run.branch = true
 
 [tool.mypy]
 strict = true
