@@ -54,7 +54,7 @@ optional-dependencies.dev = [
     "pygments==2.19.2",
     "pylint[spelling]==4.0.4",
     "pylint-per-file-ignores==3.2.0",
-    "pyproject-fmt==2.14.2",
+    "pyproject-fmt==2.15.1",
     "pyrefly==0.52.0",
     "pyright==1.1.408",
     "pyroma==5.0.1",
@@ -288,10 +288,10 @@ ini_options.xfail_strict = true
 ini_options.log_cli = true
 
 [tool.coverage]
+run.branch = true
 report.exclude_also = [
     "if TYPE_CHECKING:",
 ]
-run.branch = true
 
 [tool.mypy]
 strict = true
