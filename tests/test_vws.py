@@ -150,6 +150,72 @@ class TestDefaultRequestTimeout:
                 )
 
 
+class TestCustomRequestTimeout:
+    """Tests for custom request timeout values."""
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        argnames=(
+            "custom_timeout",
+            "response_delay_seconds",
+            "expect_timeout",
+        ),
+        argvalues=[
+            (0.1, 0.09, False),
+            (0.1, 0.11, True),
+            ((5.0, 0.1), 0.09, False),
+            ((5.0, 0.1), 0.11, True),
+        ],
+    )
+    def test_custom_timeout(
+        image: io.BytesIO | BinaryIO,
+        *,
+        custom_timeout: float | tuple[float, float],
+        response_delay_seconds: float,
+        expect_timeout: bool,
+    ) -> None:
+        """Custom timeouts are honored for both float and tuple forms."""
+        with (
+            freeze_time() as frozen_datetime,
+            MockVWS(
+                response_delay_seconds=response_delay_seconds,
+                sleep_fn=lambda seconds: (
+                    frozen_datetime.tick(
+                        delta=datetime.timedelta(seconds=seconds),
+                    ),
+                    None,
+                )[1],
+            ) as mock,
+        ):
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+
+            if expect_timeout:
+                with pytest.raises(
+                    expected_exception=requests.exceptions.Timeout,
+                ):
+                    vws_client.add_target(
+                        name="x",
+                        width=1,
+                        image=image,
+                        active_flag=True,
+                        application_metadata=None,
+                    )
+            else:
+                vws_client.add_target(
+                    name="x",
+                    width=1,
+                    image=image,
+                    active_flag=True,
+                    application_metadata=None,
+                )
+
+
 class TestCustomBaseVWSURL:
     """Tests for using a custom base VWS URL."""
 

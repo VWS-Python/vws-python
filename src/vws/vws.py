@@ -58,7 +58,7 @@ def _get_image_data(image: _ImageType) -> bytes:
     return image_data
 
 
-@beartype
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
 def _target_api_request(
     *,
     content_type: str,
@@ -68,6 +68,7 @@ def _target_api_request(
     data: bytes,
     request_path: str,
     base_vws_url: str,
+    request_timeout_seconds: float | tuple[float, float],
 ) -> Response:
     """Make a request to the Vuforia Target API.
 
@@ -82,6 +83,9 @@ def _target_api_request(
         request_path: The path to the endpoint which will be used in the
             request.
         base_vws_url: The base URL for the VWS API.
+        request_timeout_seconds: The timeout for the request, as used by
+            ``requests.request``. This can be a float to set both the
+            connect and read timeouts, or a (connect, read) tuple.
 
     Returns:
         The response to the request made by `requests`.
@@ -111,8 +115,7 @@ def _target_api_request(
         url=url,
         headers=headers,
         data=data,
-        # We should make the timeout customizable.
-        timeout=30,
+        timeout=request_timeout_seconds,
     )
 
     return Response(
@@ -134,16 +137,22 @@ class VWS:
         server_access_key: str,
         server_secret_key: str,
         base_vws_url: str = "https://vws.vuforia.com",
+        request_timeout_seconds: float | tuple[float, float] = 30.0,
     ) -> None:
         """
         Args:
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
             base_vws_url: The base URL for the VWS API.
+            request_timeout_seconds: The timeout for each HTTP request, as
+                used by ``requests.request``. This can be a float to set
+                both the connect and read timeouts, or a (connect, read)
+                tuple.
         """
         self._server_access_key = server_access_key
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
+        self._request_timeout_seconds = request_timeout_seconds
 
     def make_request(
         self,
@@ -187,6 +196,7 @@ class VWS:
             data=data,
             request_path=request_path,
             base_vws_url=self._base_vws_url,
+            request_timeout_seconds=self._request_timeout_seconds,
         )
 
         if (

@@ -8,7 +8,7 @@ from typing import Any, BinaryIO
 from urllib.parse import urljoin
 
 import requests
-from beartype import beartype
+from beartype import BeartypeConf, beartype
 from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
@@ -40,7 +40,7 @@ def _get_image_data(image: _ImageType) -> bytes:
     return image_data
 
 
-@beartype
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
 class CloudRecoService:
     """An interface to the Vuforia Cloud Recognition Web APIs."""
 
@@ -49,16 +49,22 @@ class CloudRecoService:
         client_access_key: str,
         client_secret_key: str,
         base_vwq_url: str = "https://cloudreco.vuforia.com",
+        request_timeout_seconds: float | tuple[float, float] = 30.0,
     ) -> None:
         """
         Args:
             client_access_key: A VWS client access key.
             client_secret_key: A VWS client secret key.
             base_vwq_url: The base URL for the VWQ API.
+            request_timeout_seconds: The timeout for each HTTP request, as
+                used by ``requests.request``. This can be a float to set
+                both the connect and read timeouts, or a (connect, read)
+                tuple.
         """
         self._client_access_key = client_access_key
         self._client_secret_key = client_secret_key
         self._base_vwq_url = base_vwq_url
+        self._request_timeout_seconds = request_timeout_seconds
 
     def query(
         self,
@@ -141,8 +147,7 @@ class CloudRecoService:
             url=urljoin(base=self._base_vwq_url, url=request_path),
             headers=headers,
             data=content,
-            # We should make the timeout customizable.
-            timeout=30,
+            timeout=self._request_timeout_seconds,
         )
         response = Response(
             text=requests_response.text,
