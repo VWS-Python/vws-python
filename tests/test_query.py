@@ -92,6 +92,61 @@ class TestDefaultRequestTimeout:
                 assert not matches
 
 
+class TestCustomRequestTimeout:
+    """Tests for custom request timeout values."""
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        argnames=(
+            "custom_timeout",
+            "response_delay_seconds",
+            "expect_timeout",
+        ),
+        argvalues=[
+            (0.1, 0.09, False),
+            (0.1, 0.11, True),
+            ((5.0, 0.1), 0.09, False),
+            ((5.0, 0.1), 0.11, True),
+        ],
+    )
+    def test_custom_timeout(
+        image: io.BytesIO | BinaryIO,
+        *,
+        custom_timeout: float | tuple[float, float],
+        response_delay_seconds: float,
+        expect_timeout: bool,
+    ) -> None:
+        """Custom timeouts are honored for both float and tuple forms."""
+        with (
+            freeze_time() as frozen_datetime,
+            MockVWS(
+                response_delay_seconds=response_delay_seconds,
+                sleep_fn=lambda seconds: (
+                    frozen_datetime.tick(
+                        delta=datetime.timedelta(seconds=seconds),
+                    ),
+                    None,
+                )[1],
+            ) as mock,
+        ):
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            cloud_reco_client = CloudRecoService(
+                client_access_key=database.client_access_key,
+                client_secret_key=database.client_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+
+            if expect_timeout:
+                with pytest.raises(
+                    expected_exception=requests.exceptions.Timeout,
+                ):
+                    cloud_reco_client.query(image=image)
+            else:
+                matches = cloud_reco_client.query(image=image)
+                assert not matches
+
+
 class TestCustomBaseVWQURL:
     """Tests for using a custom base VWQ URL."""
 
