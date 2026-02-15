@@ -67,9 +67,12 @@ class TestCustomRequestTimeout:
             freeze_time() as frozen_datetime,
             MockVWS(
                 response_delay_seconds=response_delay_seconds,
-                sleep_fn=lambda seconds: frozen_datetime.tick(
-                    delta=datetime.timedelta(seconds=seconds),
-                ),
+                sleep_fn=lambda seconds: (
+                    frozen_datetime.tick(
+                        delta=datetime.timedelta(seconds=seconds),
+                    ),
+                    None,
+                )[1],
             ) as mock,
         ):
             database = VuforiaDatabase()
