@@ -58,7 +58,7 @@ def _get_image_data(image: _ImageType) -> bytes:
     return image_data
 
 
-@beartype
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
 def _target_api_request(
     *,
     content_type: str,

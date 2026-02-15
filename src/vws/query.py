@@ -8,7 +8,7 @@ from typing import Any, BinaryIO
 from urllib.parse import urljoin
 
 import requests
-from beartype import beartype
+from beartype import BeartypeConf, beartype
 from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
@@ -40,7 +40,7 @@ def _get_image_data(image: _ImageType) -> bytes:
     return image_data
 
 
-@beartype
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
 class CloudRecoService:
     """An interface to the Vuforia Cloud Recognition Web APIs."""
 
