@@ -80,16 +80,16 @@ class TestCustomRequestTimeout:
                     cloud_reco_client.query(image=image)
             else:
                 matches = cloud_reco_client.query(image=image)
-                assert matches == []
+                assert not matches
 
     @staticmethod
     @pytest.mark.parametrize(
         argnames="custom_timeout",
-        argvalues=[60.5, 60, (5.0, 30.0)],
+        argvalues=[60.5, 60.0, (5.0, 30.0)],
     )
     def test_custom_timeout(
         image: io.BytesIO | BinaryIO,
-        custom_timeout: int | float | tuple[float, float],  # noqa: PYI041
+        custom_timeout: float | tuple[float, float],
     ) -> None:
         """It is possible to set a custom request timeout."""
         with MockVWS() as mock:
