@@ -6,7 +6,6 @@ import io
 import secrets
 import uuid
 from typing import BinaryIO
-from unittest.mock import patch
 
 import pytest
 import requests
@@ -183,31 +182,16 @@ class TestCustomRequestTimeout:
         image: io.BytesIO | BinaryIO,
     ) -> None:
         """A short timeout raises an error when the server is slow."""
-        custom_timeout = 0.1
-        with MockVWS() as mock:
+        with MockVWS(response_delay_seconds=0.5) as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
-                request_timeout_seconds=custom_timeout,
+                request_timeout_seconds=0.1,
             )
 
-            def slow_request(
-                **kwargs: float | None,
-            ) -> requests.Response:
-                """Simulate a server that is too slow to respond."""
-                assert kwargs["timeout"] == custom_timeout
-                raise requests.exceptions.Timeout
-
-            with (
-                patch.object(
-                    target=requests,
-                    attribute="request",
-                    side_effect=slow_request,
-                ),
-                pytest.raises(expected_exception=requests.exceptions.Timeout),
-            ):
+            with pytest.raises(expected_exception=requests.exceptions.Timeout):
                 vws_client.add_target(
                     name="x",
                     width=1,
