@@ -6,8 +6,10 @@ import io
 import secrets
 import uuid
 from typing import BinaryIO
+from unittest.mock import patch
 
 import pytest
+import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
@@ -90,6 +92,129 @@ class TestAddTarget:
                 active_flag=True,
                 application_metadata=None,
             )
+
+
+class TestCustomRequestTimeout:
+    """Tests for using a custom request timeout."""
+
+    @staticmethod
+    def test_default_timeout() -> None:
+        """By default, the request timeout is 30 seconds."""
+        default_timeout_seconds = 30.0
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+            expected = default_timeout_seconds
+            assert vws_client.request_timeout_seconds == expected
+
+    @staticmethod
+    def test_custom_timeout(image: io.BytesIO | BinaryIO) -> None:
+        """It is possible to set a custom request timeout as a float."""
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            custom_timeout = 60.5
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+            assert vws_client.request_timeout_seconds == custom_timeout
+
+            # Verify requests work with the custom timeout
+            vws_client.add_target(
+                name="x",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+
+    @staticmethod
+    def test_custom_timeout_int(image: io.BytesIO | BinaryIO) -> None:
+        """It is possible to set a custom request timeout as an int."""
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            custom_timeout = 60
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+            assert vws_client.request_timeout_seconds == custom_timeout
+
+            vws_client.add_target(
+                name="x",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+
+    @staticmethod
+    def test_custom_timeout_tuple(image: io.BytesIO | BinaryIO) -> None:
+        """It is possible to set separate connect and read timeouts."""
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            custom_timeout = (5.0, 30.0)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+            assert vws_client.request_timeout_seconds == custom_timeout
+
+            vws_client.add_target(
+                name="x",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+
+    @staticmethod
+    def test_timeout_raises_on_slow_response(
+        image: io.BytesIO | BinaryIO,
+    ) -> None:
+        """A short timeout raises an error when the server is slow."""
+        custom_timeout = 0.1
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+
+            def slow_request(
+                **kwargs: float | None,
+            ) -> requests.Response:
+                """Simulate a server that is too slow to respond."""
+                assert kwargs["timeout"] == custom_timeout
+                raise requests.exceptions.Timeout
+
+            with (
+                patch.object(
+                    target=requests,
+                    attribute="request",
+                    side_effect=slow_request,
+                ),
+                pytest.raises(expected_exception=requests.exceptions.Timeout),
+            ):
+                vws_client.add_target(
+                    name="x",
+                    width=1,
+                    image=image,
+                    active_flag=True,
+                    application_metadata=None,
+                )
 
 
 class TestCustomBaseVWSURL:
