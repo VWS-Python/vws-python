@@ -4,6 +4,10 @@ Changelog
 Next
 ----
 
+2026.02.15
+----------
+
+
 * Add ``request_timeout_seconds`` parameter to ``VWS`` and ``CloudRecoService``, allowing customization of the request timeout. This accepts a float or a ``(connect, read)`` tuple, matching the ``requests`` library's timeout interface. The default remains 30 seconds.
 
 2025.03.10.1
