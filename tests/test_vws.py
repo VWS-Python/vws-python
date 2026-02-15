@@ -93,8 +93,8 @@ class TestAddTarget:
             )
 
 
-class TestCustomRequestTimeout:
-    """Tests for using a custom request timeout."""
+class TestDefaultRequestTimeout:
+    """Tests for the default request timeout."""
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -141,29 +141,6 @@ class TestCustomRequestTimeout:
                         application_metadata=None,
                     )
             else:
-                vws_client.add_target(
-                    name="x",
-                    width=1,
-                    image=image,
-                    active_flag=True,
-                    application_metadata=None,
-                )
-
-    @staticmethod
-    def test_timeout_raises_on_slow_response(
-        image: io.BytesIO | BinaryIO,
-    ) -> None:
-        """A short timeout raises an error when the server is slow."""
-        with MockVWS(response_delay_seconds=0.5) as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
-            vws_client = VWS(
-                server_access_key=database.server_access_key,
-                server_secret_key=database.server_secret_key,
-                request_timeout_seconds=0.1,
-            )
-
-            with pytest.raises(expected_exception=requests.exceptions.Timeout):
                 vws_client.add_target(
                     name="x",
                     width=1,

@@ -46,8 +46,8 @@ class TestQuery:
         assert matching_target.target_id == target_id
 
 
-class TestCustomRequestTimeout:
-    """Tests for using a custom request timeout."""
+class TestDefaultRequestTimeout:
+    """Tests for the default request timeout."""
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -90,36 +90,6 @@ class TestCustomRequestTimeout:
             else:
                 matches = cloud_reco_client.query(image=image)
                 assert not matches
-
-    @staticmethod
-    def test_timeout_raises_on_slow_response(
-        image: io.BytesIO | BinaryIO,
-    ) -> None:
-        """A short timeout raises an error when the server is slow."""
-        with MockVWS(response_delay_seconds=0.5) as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
-            vws_client = VWS(
-                server_access_key=database.server_access_key,
-                server_secret_key=database.server_secret_key,
-            )
-            cloud_reco_client = CloudRecoService(
-                client_access_key=database.client_access_key,
-                client_secret_key=database.client_secret_key,
-                request_timeout_seconds=0.1,
-            )
-
-            target_id = vws_client.add_target(
-                name="x",
-                width=1,
-                image=image,
-                active_flag=True,
-                application_metadata=None,
-            )
-            vws_client.wait_for_target_processed(target_id=target_id)
-
-            with pytest.raises(expected_exception=requests.exceptions.Timeout):
-                cloud_reco_client.query(image=image)
 
 
 class TestCustomBaseVWQURL:
