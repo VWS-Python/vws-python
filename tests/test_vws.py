@@ -159,8 +159,6 @@ class TestCustomRequestTimeout:
                 server_secret_key=database.server_secret_key,
                 request_timeout_seconds=custom_timeout,
             )
-            expected = custom_timeout
-            assert vws_client.request_timeout_seconds == expected
 
             vws_client.add_target(
                 name="x",

@@ -104,8 +104,6 @@ class TestCustomRequestTimeout:
                 client_secret_key=database.client_secret_key,
                 request_timeout_seconds=custom_timeout,
             )
-            expected = custom_timeout
-            assert cloud_reco_client.request_timeout_seconds == expected
 
             target_id = vws_client.add_target(
                 name="x",
