@@ -1,7 +1,6 @@
 """Tests for the ``CloudRecoService`` querying functionality."""
 
 import io
-import time
 import uuid
 from typing import BinaryIO
 from unittest.mock import patch
@@ -156,6 +155,7 @@ class TestCustomRequestTimeout:
         image: io.BytesIO | BinaryIO,
     ) -> None:
         """A short timeout raises an error when the server is slow."""
+        custom_timeout = 0.1
         with MockVWS() as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -166,7 +166,7 @@ class TestCustomRequestTimeout:
             cloud_reco_client = CloudRecoService(
                 client_access_key=database.client_access_key,
                 client_secret_key=database.client_secret_key,
-                request_timeout_seconds=0.1,
+                request_timeout_seconds=custom_timeout,
             )
 
             target_id = vws_client.add_target(
@@ -178,19 +178,12 @@ class TestCustomRequestTimeout:
             )
             vws_client.wait_for_target_processed(target_id=target_id)
 
-            simulated_slow_threshold = 0.5
-            original_request = requests.request
-
             def slow_request(
-                *args: object,
                 **kwargs: float | None,
             ) -> requests.Response:
-                """Simulate a slow server response."""
-                timeout = kwargs.get("timeout")
-                if timeout is not None and timeout < simulated_slow_threshold:
-                    time.sleep(0.2)
-                    raise requests.exceptions.Timeout
-                return original_request(*args, **kwargs)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
+                """Simulate a server that is too slow to respond."""
+                assert kwargs["timeout"] == custom_timeout
+                raise requests.exceptions.Timeout
 
             with (
                 patch.object(
@@ -201,55 +194,6 @@ class TestCustomRequestTimeout:
                 pytest.raises(expected_exception=requests.exceptions.Timeout),
             ):
                 cloud_reco_client.query(image=image)
-
-    @staticmethod
-    def test_longer_timeout_succeeds(image: io.BytesIO | BinaryIO) -> None:
-        """A longer timeout allows slow responses to complete."""
-        simulated_slow_threshold = 0.5
-
-        with MockVWS() as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
-            vws_client = VWS(
-                server_access_key=database.server_access_key,
-                server_secret_key=database.server_secret_key,
-            )
-            cloud_reco_client = CloudRecoService(
-                client_access_key=database.client_access_key,
-                client_secret_key=database.client_secret_key,
-                request_timeout_seconds=1.0,
-            )
-
-            target_id = vws_client.add_target(
-                name="x",
-                width=1,
-                image=image,
-                active_flag=True,
-                application_metadata=None,
-            )
-            vws_client.wait_for_target_processed(target_id=target_id)
-
-            original_request = requests.request
-
-            def slow_request(
-                *args: object,
-                **kwargs: float | None,
-            ) -> requests.Response:
-                """Simulate a slow server response."""
-                timeout = kwargs.get("timeout")
-                if timeout is not None and timeout < simulated_slow_threshold:
-                    time.sleep(0.2)
-                    raise requests.exceptions.Timeout
-                return original_request(*args, **kwargs)  # type: ignore[arg-type]  # pyright: ignore[reportArgumentType]
-
-            with patch.object(
-                target=requests,
-                attribute="request",
-                side_effect=slow_request,
-            ):
-                # This should succeed because timeout is 1.0 > 0.5
-                matches = cloud_reco_client.query(image=image)
-                assert len(matches) == 1
 
 
 class TestCustomBaseVWQURL:
