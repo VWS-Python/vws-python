@@ -8,6 +8,7 @@ import uuid
 from typing import BinaryIO
 
 import pytest
+import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
@@ -90,6 +91,63 @@ class TestAddTarget:
                 active_flag=True,
                 application_metadata=None,
             )
+
+
+class TestDefaultRequestTimeout:
+    """Tests for the default request timeout."""
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        argnames=("response_delay_seconds", "expect_timeout"),
+        argvalues=[(29, False), (31, True)],
+    )
+    def test_default_timeout(
+        image: io.BytesIO | BinaryIO,
+        *,
+        response_delay_seconds: int,
+        expect_timeout: bool,
+    ) -> None:
+        """At 29 seconds there is no error; at 31 seconds there is a
+        timeout.
+        """
+        with (
+            freeze_time() as frozen_datetime,
+            MockVWS(
+                response_delay_seconds=response_delay_seconds,
+                sleep_fn=lambda seconds: (
+                    frozen_datetime.tick(
+                        delta=datetime.timedelta(seconds=seconds),
+                    ),
+                    None,
+                )[1],
+            ) as mock,
+        ):
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+
+            if expect_timeout:
+                with pytest.raises(
+                    expected_exception=requests.exceptions.Timeout,
+                ):
+                    vws_client.add_target(
+                        name="x",
+                        width=1,
+                        image=image,
+                        active_flag=True,
+                        application_metadata=None,
+                    )
+            else:
+                vws_client.add_target(
+                    name="x",
+                    width=1,
+                    image=image,
+                    active_flag=True,
+                    application_metadata=None,
+                )
 
 
 class TestCustomBaseVWSURL:

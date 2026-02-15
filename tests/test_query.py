@@ -1,9 +1,13 @@
 """Tests for the ``CloudRecoService`` querying functionality."""
 
+import datetime
 import io
 import uuid
 from typing import BinaryIO
 
+import pytest
+import requests
+from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
@@ -40,6 +44,52 @@ class TestQuery:
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=image)
         assert matching_target.target_id == target_id
+
+
+class TestDefaultRequestTimeout:
+    """Tests for the default request timeout."""
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        argnames=("response_delay_seconds", "expect_timeout"),
+        argvalues=[(29, False), (31, True)],
+    )
+    def test_default_timeout(
+        image: io.BytesIO | BinaryIO,
+        *,
+        response_delay_seconds: int,
+        expect_timeout: bool,
+    ) -> None:
+        """At 29 seconds there is no error; at 31 seconds there is a
+        timeout.
+        """
+        with (
+            freeze_time() as frozen_datetime,
+            MockVWS(
+                response_delay_seconds=response_delay_seconds,
+                sleep_fn=lambda seconds: (
+                    frozen_datetime.tick(
+                        delta=datetime.timedelta(seconds=seconds),
+                    ),
+                    None,
+                )[1],
+            ) as mock,
+        ):
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            cloud_reco_client = CloudRecoService(
+                client_access_key=database.client_access_key,
+                client_secret_key=database.client_secret_key,
+            )
+
+            if expect_timeout:
+                with pytest.raises(
+                    expected_exception=requests.exceptions.Timeout,
+                ):
+                    cloud_reco_client.query(image=image)
+            else:
+                matches = cloud_reco_client.query(image=image)
+                assert not matches
 
 
 class TestCustomBaseVWQURL:
