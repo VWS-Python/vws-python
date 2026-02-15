@@ -49,15 +49,17 @@ class CloudRecoService:
         client_access_key: str,
         client_secret_key: str,
         base_vwq_url: str = "https://cloudreco.vuforia.com",
-        request_timeout_seconds: float = 30.0,
+        request_timeout_seconds: float | tuple[float, float] = 30.0,
     ) -> None:
         """
         Args:
             client_access_key: A VWS client access key.
             client_secret_key: A VWS client secret key.
             base_vwq_url: The base URL for the VWQ API.
-            request_timeout_seconds: The timeout in seconds for each HTTP
-                request made to the Cloud Reco API.
+            request_timeout_seconds: The timeout for each HTTP request, as
+                used by ``requests.request``. This can be a float to set
+                both the connect and read timeouts, or a (connect, read)
+                tuple.
         """
         self._client_access_key = client_access_key
         self._client_secret_key = client_secret_key

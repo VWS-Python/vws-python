@@ -114,7 +114,7 @@ class TestCustomRequestTimeout:
 
     @staticmethod
     def test_custom_timeout(image: io.BytesIO | BinaryIO) -> None:
-        """It is possible to set a custom request timeout."""
+        """It is possible to set a custom request timeout as a float."""
         with MockVWS() as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -127,6 +127,28 @@ class TestCustomRequestTimeout:
             assert vws_client.request_timeout_seconds == custom_timeout
 
             # Verify requests work with the custom timeout
+            vws_client.add_target(
+                name="x",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+
+    @staticmethod
+    def test_custom_timeout_tuple(image: io.BytesIO | BinaryIO) -> None:
+        """It is possible to set separate connect and read timeouts."""
+        with MockVWS() as mock:
+            database = VuforiaDatabase()
+            mock.add_database(database=database)
+            custom_timeout = (5.0, 30.0)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=custom_timeout,
+            )
+            assert vws_client.request_timeout_seconds == custom_timeout
+
             vws_client.add_target(
                 name="x",
                 width=1,
