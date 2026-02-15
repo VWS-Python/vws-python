@@ -62,8 +62,15 @@ class TestCustomRequestTimeout:
             assert cloud_reco_client.request_timeout_seconds == expected
 
     @staticmethod
-    def test_custom_timeout(image: io.BytesIO | BinaryIO) -> None:
-        """It is possible to set a custom request timeout as a float."""
+    @pytest.mark.parametrize(
+        argnames="custom_timeout",
+        argvalues=[60.5, 60, (5.0, 30.0)],
+    )
+    def test_custom_timeout(
+        image: io.BytesIO | BinaryIO,
+        custom_timeout: int | float | tuple[float, float],  # noqa: PYI041
+    ) -> None:
+        """It is possible to set a custom request timeout."""
         with MockVWS() as mock:
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -71,72 +78,13 @@ class TestCustomRequestTimeout:
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
             )
-            custom_timeout = 60.5
             cloud_reco_client = CloudRecoService(
                 client_access_key=database.client_access_key,
                 client_secret_key=database.client_secret_key,
                 request_timeout_seconds=custom_timeout,
             )
-            assert cloud_reco_client.request_timeout_seconds == custom_timeout
-
-            # Verify requests work with the custom timeout
-            target_id = vws_client.add_target(
-                name="x",
-                width=1,
-                image=image,
-                active_flag=True,
-                application_metadata=None,
-            )
-            vws_client.wait_for_target_processed(target_id=target_id)
-            matches = cloud_reco_client.query(image=image)
-            assert len(matches) == 1
-
-    @staticmethod
-    def test_custom_timeout_int(image: io.BytesIO | BinaryIO) -> None:
-        """It is possible to set a custom request timeout as an int."""
-        with MockVWS() as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
-            vws_client = VWS(
-                server_access_key=database.server_access_key,
-                server_secret_key=database.server_secret_key,
-            )
-            custom_timeout = 60
-            cloud_reco_client = CloudRecoService(
-                client_access_key=database.client_access_key,
-                client_secret_key=database.client_secret_key,
-                request_timeout_seconds=custom_timeout,
-            )
-            assert cloud_reco_client.request_timeout_seconds == custom_timeout
-
-            target_id = vws_client.add_target(
-                name="x",
-                width=1,
-                image=image,
-                active_flag=True,
-                application_metadata=None,
-            )
-            vws_client.wait_for_target_processed(target_id=target_id)
-            matches = cloud_reco_client.query(image=image)
-            assert len(matches) == 1
-
-    @staticmethod
-    def test_custom_timeout_tuple(image: io.BytesIO | BinaryIO) -> None:
-        """It is possible to set separate connect and read timeouts."""
-        with MockVWS() as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
-            vws_client = VWS(
-                server_access_key=database.server_access_key,
-                server_secret_key=database.server_secret_key,
-            )
-            custom_timeout = (5.0, 30.0)
-            cloud_reco_client = CloudRecoService(
-                client_access_key=database.client_access_key,
-                client_secret_key=database.client_secret_key,
-                request_timeout_seconds=custom_timeout,
-            )
-            assert cloud_reco_client.request_timeout_seconds == custom_timeout
+            expected = custom_timeout
+            assert cloud_reco_client.request_timeout_seconds == expected
 
             target_id = vws_client.add_target(
                 name="x",
