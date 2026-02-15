@@ -97,18 +97,49 @@ class TestCustomRequestTimeout:
     """Tests for using a custom request timeout."""
 
     @staticmethod
-    def test_default_timeout() -> None:
-        """By default, the request timeout is 30 seconds."""
-        default_timeout_seconds = 30.0
-        with MockVWS() as mock:
+    @pytest.mark.parametrize(
+        argnames=("response_delay_seconds", "expect_timeout"),
+        argvalues=[(29, False), (31, True)],
+    )
+    def test_default_timeout(
+        image: io.BytesIO | BinaryIO,
+        *,
+        response_delay_seconds: int,
+        expect_timeout: bool,
+    ) -> None:
+        """At 29 seconds there is no error; at 31 seconds there is a
+        timeout.
+        """
+        with (
+            freeze_time(auto_tick_seconds=1),
+            MockVWS(response_delay_seconds=response_delay_seconds) as mock,
+        ):
             database = VuforiaDatabase()
             mock.add_database(database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
             )
-            expected = default_timeout_seconds
-            assert vws_client.request_timeout_seconds == expected
+
+            if expect_timeout:
+                with pytest.raises(
+                    expected_exception=requests.exceptions.Timeout,
+                ):
+                    vws_client.add_target(
+                        name="x",
+                        width=1,
+                        image=image,
+                        active_flag=True,
+                        application_metadata=None,
+                    )
+            else:
+                vws_client.add_target(
+                    name="x",
+                    width=1,
+                    image=image,
+                    active_flag=True,
+                    application_metadata=None,
+                )
 
     @staticmethod
     @pytest.mark.parametrize(

@@ -152,7 +152,7 @@ class VWS:
         self._server_access_key = server_access_key
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
-        self.request_timeout_seconds = request_timeout_seconds
+        self._request_timeout_seconds = request_timeout_seconds
 
     def make_request(
         self,
@@ -196,7 +196,7 @@ class VWS:
             data=data,
             request_path=request_path,
             base_vws_url=self._base_vws_url,
-            request_timeout_seconds=self.request_timeout_seconds,
+            request_timeout_seconds=self._request_timeout_seconds,
         )
 
         if (

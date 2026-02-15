@@ -6,6 +6,7 @@ from typing import BinaryIO
 
 import pytest
 import requests
+from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import VuforiaDatabase
 
@@ -48,18 +49,38 @@ class TestCustomRequestTimeout:
     """Tests for using a custom request timeout."""
 
     @staticmethod
-    def test_default_timeout() -> None:
-        """By default, the request timeout is 30 seconds."""
-        default_timeout_seconds = 30.0
-        with MockVWS() as mock:
+    @pytest.mark.parametrize(
+        argnames=("response_delay_seconds", "expect_timeout"),
+        argvalues=[(29, False), (31, True)],
+    )
+    def test_default_timeout(
+        image: io.BytesIO | BinaryIO,
+        *,
+        response_delay_seconds: int,
+        expect_timeout: bool,
+    ) -> None:
+        """At 29 seconds there is no error; at 31 seconds there is a
+        timeout.
+        """
+        with (
+            freeze_time(auto_tick_seconds=1),
+            MockVWS(response_delay_seconds=response_delay_seconds) as mock,
+        ):
             database = VuforiaDatabase()
             mock.add_database(database=database)
             cloud_reco_client = CloudRecoService(
                 client_access_key=database.client_access_key,
                 client_secret_key=database.client_secret_key,
             )
-            expected = default_timeout_seconds
-            assert cloud_reco_client.request_timeout_seconds == expected
+
+            if expect_timeout:
+                with pytest.raises(
+                    expected_exception=requests.exceptions.Timeout,
+                ):
+                    cloud_reco_client.query(image=image)
+            else:
+                matches = cloud_reco_client.query(image=image)
+                assert matches == []
 
     @staticmethod
     @pytest.mark.parametrize(
