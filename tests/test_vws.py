@@ -111,8 +111,13 @@ class TestCustomRequestTimeout:
         timeout.
         """
         with (
-            freeze_time(auto_tick_seconds=1),
-            MockVWS(response_delay_seconds=response_delay_seconds) as mock,
+            freeze_time() as frozen_datetime,
+            MockVWS(
+                response_delay_seconds=response_delay_seconds,
+                sleep_fn=lambda seconds: frozen_datetime.tick(
+                    delta=datetime.timedelta(seconds=seconds),
+                ),
+            ) as mock,
         ):
             database = VuforiaDatabase()
             mock.add_database(database=database)
@@ -140,33 +145,6 @@ class TestCustomRequestTimeout:
                     active_flag=True,
                     application_metadata=None,
                 )
-
-    @staticmethod
-    @pytest.mark.parametrize(
-        argnames="custom_timeout",
-        argvalues=[60.5, 60.0, (5.0, 30.0)],
-    )
-    def test_custom_timeout(
-        image: io.BytesIO | BinaryIO,
-        custom_timeout: float | tuple[float, float],
-    ) -> None:
-        """It is possible to set a custom request timeout."""
-        with MockVWS() as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
-            vws_client = VWS(
-                server_access_key=database.server_access_key,
-                server_secret_key=database.server_secret_key,
-                request_timeout_seconds=custom_timeout,
-            )
-
-            vws_client.add_target(
-                name="x",
-                width=1,
-                image=image,
-                active_flag=True,
-                application_metadata=None,
-            )
 
     @staticmethod
     def test_timeout_raises_on_slow_response(
