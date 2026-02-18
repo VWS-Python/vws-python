@@ -74,6 +74,11 @@ optional-dependencies.dev = [
     "sphinx-substitution-extensions==2026.1.12",
     "sphinxcontrib-spelling==8.0.2",
     "sybil==9.3.0",
+    # Listed explicitly (despite being transitive via vws-python-mock) so that
+    # [tool.uv.sources] can redirect to the CPU-only PyTorch index.
+    # See: https://vws-python.github.io/vws-python-mock/installation.html#faster-installation
+    "torch>=2.5.1",
+    "torchvision>=0.20.1",
     "ty==0.0.17",
     "types-requests==2.32.4.20260107",
     "vulture==2.14",
@@ -105,6 +110,11 @@ bdist_wheel.universal = true
 #
 # Code to match this is in ``conf.py``.
 version_scheme = "post-release"
+
+[tool.uv]
+sources.torch = { index = "pytorch-cpu" }
+sources.torchvision = { index = "pytorch-cpu" }
+index = [ { name = "pytorch-cpu", url = "https://download.pytorch.org/whl/cpu", explicit = true } ]
 
 [tool.ruff]
 line-length = 79
@@ -276,6 +286,13 @@ ignore = [
 pep621_dev_dependency_groups = [
     "dev",
     "release",
+]
+# torch and torchvision are listed explicitly in dev deps to allow
+# [tool.uv.sources] to redirect them to the CPU-only PyTorch index,
+# but they are not directly imported in the vws-python source code.
+per_rule_ignores.DEP002 = [
+    "torch",
+    "torchvision",
 ]
 
 [tool.pyproject-fmt]
