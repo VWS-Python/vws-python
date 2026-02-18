@@ -21,6 +21,8 @@ from vws.exceptions.vws_exceptions import (
     DateRangeError,
     FailError,
     ImageTooLargeError,
+    InvalidAcceptHeaderError,
+    InvalidInstanceIdError,
     MetadataTooLargeError,
     ProjectHasNoAPIAccessError,
     ProjectInactiveError,
@@ -342,6 +344,8 @@ def test_vwsexception_inheritance() -> None:
         DateRangeError,
         FailError,
         ImageTooLargeError,
+        InvalidAcceptHeaderError,
+        InvalidInstanceIdError,
         MetadataTooLargeError,
         ProjectInactiveError,
         ProjectHasNoAPIAccessError,
@@ -356,6 +360,31 @@ def test_vwsexception_inheritance() -> None:
     ]
     for subclass in subclasses:
         assert issubclass(subclass, VWSError)
+
+
+def test_invalid_instance_id(
+    vws_client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    An ``InvalidInstanceId`` exception is raised when an empty instance
+    ID is given.
+    """
+    target_id = vws_client.add_target(
+        name="x",
+        width=1,
+        image=high_quality_image,
+        active_flag=True,
+        application_metadata=None,
+    )
+    vws_client.wait_for_target_processed(target_id=target_id)
+    with pytest.raises(expected_exception=InvalidInstanceIdError) as exc:
+        vws_client.generate_vumark_instance(
+            target_id=target_id,
+            instance_id="",
+        )
+
+    assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 def test_base_exception(
