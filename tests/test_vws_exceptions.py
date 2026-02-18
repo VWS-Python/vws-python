@@ -18,6 +18,7 @@ from vws.exceptions.custom_exceptions import (
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
     BadImageError,
+    BadRequestError,
     DateRangeError,
     FailError,
     ImageTooLargeError,
@@ -341,6 +342,7 @@ def test_vwsexception_inheritance() -> None:
     subclasses = [
         AuthenticationFailureError,
         BadImageError,
+        BadRequestError,
         DateRangeError,
         FailError,
         ImageTooLargeError,

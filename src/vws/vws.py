@@ -20,6 +20,7 @@ from vws.exceptions.custom_exceptions import (
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
     BadImageError,
+    BadRequestError,
     DateRangeError,
     FailError,
     ImageTooLargeError,
@@ -806,6 +807,7 @@ class VWS:
 
         exception = {
             "AuthenticationFailure": AuthenticationFailureError,
+            "BadRequest": BadRequestError,
             "DateRangeError": DateRangeError,
             "Fail": FailError,
             "InvalidAcceptHeader": InvalidAcceptHeaderError,
