@@ -167,3 +167,19 @@ class TooManyRequestsError(VWSError):  # pragma: no cover
     """Exception raised when Vuforia returns a response with a result code
     'TooManyRequests'.
     """
+
+
+# This is not simulated by client code because the accept parameter uses
+# the VuMarkAccept enum, which only allows valid values.
+@beartype
+class InvalidAcceptHeaderError(VWSError):  # pragma: no cover
+    """Exception raised when Vuforia returns a response with a result code
+    'InvalidAcceptHeader'.
+    """
+
+
+@beartype
+class InvalidInstanceIdError(VWSError):
+    """Exception raised when Vuforia returns a response with a result code
+    'InvalidInstanceId'.
+    """

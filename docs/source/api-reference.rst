@@ -13,6 +13,10 @@ API Reference
    :undoc-members:
    :members:
 
+.. automodule:: vws.vumark_accept
+   :undoc-members:
+   :members:
+
 .. automodule:: vws.response
    :undoc-members:
    :members:

@@ -21,6 +21,7 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
+from vws.vumark_accept import VuMarkAccept
 
 
 class TestAddTarget:
@@ -729,3 +730,55 @@ class TestUpdateTarget:
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.update_target(target_id=target_id)
+
+
+class TestGenerateVumarkInstance:
+    """Tests for generating VuMark instances."""
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        argnames="accept",
+        argvalues=list(VuMarkAccept),
+    )
+    def test_generate_vumark_instance(
+        vws_client: VWS,
+        high_quality_image: io.BytesIO,
+        accept: VuMarkAccept,
+    ) -> None:
+        """Bytes are returned when generating a VuMark instance."""
+        target_id = vws_client.add_target(
+            name="x",
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
+        )
+        vws_client.wait_for_target_processed(target_id=target_id)
+        result = vws_client.generate_vumark_instance(
+            target_id=target_id,
+            instance_id="12345",
+            accept=accept,
+        )
+        assert isinstance(result, bytes)
+        assert len(result) > 0
+
+    @staticmethod
+    def test_generate_vumark_default_accept(
+        vws_client: VWS,
+        high_quality_image: io.BytesIO,
+    ) -> None:
+        """By default, PNG is returned."""
+        target_id = vws_client.add_target(
+            name="x",
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
+        )
+        vws_client.wait_for_target_processed(target_id=target_id)
+        result = vws_client.generate_vumark_instance(
+            target_id=target_id,
+            instance_id="12345",
+        )
+        assert isinstance(result, bytes)
+        assert len(result) > 0

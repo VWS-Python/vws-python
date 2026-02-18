@@ -23,6 +23,8 @@ from vws.exceptions.vws_exceptions import (
     DateRangeError,
     FailError,
     ImageTooLargeError,
+    InvalidAcceptHeaderError,
+    InvalidInstanceIdError,
     MetadataTooLargeError,
     ProjectHasNoAPIAccessError,
     ProjectInactiveError,
@@ -44,6 +46,7 @@ from vws.reports import (
     TargetSummaryReport,
 )
 from vws.response import Response
+from vws.vumark_accept import VuMarkAccept
 
 _ImageType = io.BytesIO | BinaryIO
 
@@ -700,3 +703,116 @@ class VWS:
             expected_result_code="Success",
             content_type="application/json",
         )
+
+    def generate_vumark_instance(
+        self,
+        *,
+        target_id: str,
+        instance_id: str,
+        accept: VuMarkAccept = VuMarkAccept.PNG,
+    ) -> bytes:
+        """Generate a VuMark instance image.
+
+        See
+        https://developer.vuforia.com/library/vuforia-engine/web-api/vumark-generation-web-api/
+        for parameter details.
+
+        Args:
+            target_id: The ID of the VuMark target.
+            instance_id: The instance ID to encode in the VuMark.
+            accept: The image format to return.
+
+        Returns:
+            The VuMark instance image bytes.
+
+        Raises:
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given access key does not match a
+                known database.
+            ~vws.exceptions.vws_exceptions.InvalidAcceptHeaderError: The
+                Accept header value is not supported.
+            ~vws.exceptions.vws_exceptions.InvalidInstanceIdError: The
+                instance ID is invalid. For example, it may be empty.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
+            ~vws.exceptions.vws_exceptions.TargetStatusNotSuccessError: The
+                target is not in the success state.
+            ~vws.exceptions.vws_exceptions.UnknownTargetError: The given target
+                ID does not match a target in the database.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
+        """
+        request_path = f"/targets/{target_id}/instances"
+        content_type = "application/json"
+        request_data = json.dumps(obj={"instance_id": instance_id}).encode(
+            encoding="utf-8",
+        )
+        date_string = rfc_1123_date()
+
+        signature_string = authorization_header(
+            access_key=self._server_access_key,
+            secret_key=self._server_secret_key,
+            method=HTTPMethod.POST,
+            content=request_data,
+            content_type=content_type,
+            date=date_string,
+            request_path=request_path,
+        )
+
+        headers = {
+            "Authorization": signature_string,
+            "Date": date_string,
+            "Content-Type": content_type,
+            "Accept": accept,
+        }
+
+        url = urljoin(base=self._base_vws_url, url=request_path)
+
+        requests_response = requests.request(
+            method=HTTPMethod.POST,
+            url=url,
+            headers=headers,
+            data=request_data,
+            timeout=self._request_timeout_seconds,
+        )
+
+        if requests_response.status_code == HTTPStatus.OK:
+            return bytes(requests_response.content)
+
+        response = Response(
+            text=requests_response.text,
+            url=requests_response.url,
+            status_code=requests_response.status_code,
+            headers=dict(requests_response.headers),
+            request_body=requests_response.request.body,
+            tell_position=requests_response.raw.tell(),
+        )
+
+        if (
+            requests_response.status_code == HTTPStatus.TOO_MANY_REQUESTS
+        ):  # pragma: no cover
+            raise TooManyRequestsError(response=response)
+
+        if (
+            requests_response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+        ):  # pragma: no cover
+            raise ServerError(response=response)
+
+        result_code = json.loads(s=response.text)["result_code"]
+
+        exception = {
+            "AuthenticationFailure": AuthenticationFailureError,
+            "DateRangeError": DateRangeError,
+            "Fail": FailError,
+            "InvalidAcceptHeader": InvalidAcceptHeaderError,
+            "InvalidInstanceId": InvalidInstanceIdError,
+            "RequestTimeTooSkewed": RequestTimeTooSkewedError,
+            "TargetStatusNotSuccess": TargetStatusNotSuccessError,
+            "UnknownTarget": UnknownTargetError,
+        }[result_code]
+
+        raise exception(response=response)
