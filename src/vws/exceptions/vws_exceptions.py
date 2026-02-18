@@ -183,3 +183,12 @@ class InvalidInstanceIdError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'InvalidInstanceId'.
     """
+
+
+# This is not simulated by client code because the request body
+# is always valid JSON when using this client.
+@beartype
+class BadRequestError(VWSError):  # pragma: no cover
+    """Exception raised when Vuforia returns a response with a result code
+    'BadRequest'.
+    """
