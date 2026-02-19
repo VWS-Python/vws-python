@@ -95,12 +95,6 @@ def _target_api_request(
 
     Returns:
         The response to the request made by `requests`.
-
-    Raises:
-        ~vws.exceptions.custom_exceptions.ServerError: There is an error
-            with Vuforia's servers.
-        ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
-            rate limiting access.
     """
     date_string = rfc_1123_date()
 
@@ -131,7 +125,7 @@ def _target_api_request(
         timeout=request_timeout_seconds,
     )
 
-    response = Response(
+    return Response(
         text=requests_response.text,
         url=requests_response.url,
         status_code=requests_response.status_code,
@@ -140,19 +134,6 @@ def _target_api_request(
         tell_position=requests_response.raw.tell(),
         content=bytes(requests_response.content),
     )
-
-    if (
-        response.status_code == HTTPStatus.TOO_MANY_REQUESTS
-    ):  # pragma: no cover
-        # The Vuforia API returns a 429 response with no JSON body.
-        raise TooManyRequestsError(response=response)
-
-    if (
-        response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-    ):  # pragma: no cover
-        raise ServerError(response=response)
-
-    return response
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
@@ -231,6 +212,17 @@ class VWS:
             request_timeout_seconds=self._request_timeout_seconds,
             extra_headers=extra_headers,
         )
+
+        if (
+            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
+        ):  # pragma: no cover
+            # The Vuforia API returns a 429 response with no JSON body.
+            raise TooManyRequestsError(response=response)
+
+        if (
+            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+        ):  # pragma: no cover
+            raise ServerError(response=response)
 
         if (
             response.status_code == HTTPStatus.OK
