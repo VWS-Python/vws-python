@@ -7,7 +7,7 @@ from typing import BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
-from mock_vws.database import CloudDatabase
+from mock_vws.database import CloudDatabase, VuMarkDatabase, VuMarkTarget
 
 from vws import VWS, CloudRecoService
 
@@ -20,6 +20,32 @@ def fixture_mock_database() -> Generator[CloudDatabase]:
         database = CloudDatabase()
         mock.add_cloud_database(cloud_database=database)
         yield database
+
+
+@pytest.fixture(name="_mock_vumark_database")
+def fixture_mock_vumark_database() -> Generator[VuMarkDatabase]:
+    """Yield a mock ``VuMarkDatabase`` with a template target."""
+    vumark_target = VuMarkTarget(name="vumark-template")
+    with MockVWS() as mock:
+        database = VuMarkDatabase(vumark_targets={vumark_target})
+        mock.add_vumark_database(vumark_database=database)
+        yield database
+
+
+@pytest.fixture
+def vumark_vws_client(_mock_vumark_database: VuMarkDatabase) -> VWS:
+    """A VWS client which connects to a mock VuMark database."""
+    return VWS(
+        server_access_key=_mock_vumark_database.server_access_key,
+        server_secret_key=_mock_vumark_database.server_secret_key,
+    )
+
+
+@pytest.fixture
+def vumark_target_id(_mock_vumark_database: VuMarkDatabase) -> str:
+    """The ID of the VuMark template target."""
+    (target,) = _mock_vumark_database.vumark_targets
+    return target.target_id
 
 
 @pytest.fixture
