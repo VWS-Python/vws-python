@@ -16,3 +16,4 @@ class Response:
     headers: dict[str, str]
     request_body: bytes | str | None
     tell_position: int
+    content: bytes

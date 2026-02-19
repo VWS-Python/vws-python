@@ -156,6 +156,7 @@ class CloudRecoService:
             headers=dict(requests_response.headers),
             request_body=requests_response.request.body,
             tell_position=requests_response.raw.tell(),
+            content=bytes(requests_response.content),
         )
 
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:
