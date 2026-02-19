@@ -42,6 +42,7 @@ decodable
 dev
 dict
 docstring
+enum
 filename
 foo
 formdata
