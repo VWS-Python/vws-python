@@ -737,15 +737,20 @@ class TestGenerateVumarkInstance:
 
     @staticmethod
     @pytest.mark.parametrize(
-        argnames="accept",
-        argvalues=list(VuMarkAccept),
+        argnames=("accept", "expected_prefix"),
+        argvalues=[
+            pytest.param(VuMarkAccept.PNG, b"\x89PNG\r\n\x1a\n", id="png"),
+            pytest.param(VuMarkAccept.SVG, b"<", id="svg"),
+            pytest.param(VuMarkAccept.PDF, b"%PDF", id="pdf"),
+        ],
     )
     def test_generate_vumark_instance(
         vws_client: VWS,
         high_quality_image: io.BytesIO,
         accept: VuMarkAccept,
+        expected_prefix: bytes,
     ) -> None:
-        """Bytes are returned when generating a VuMark instance."""
+        """The returned bytes match the requested format."""
         target_id = vws_client.add_target(
             name="x",
             width=1,
@@ -759,8 +764,7 @@ class TestGenerateVumarkInstance:
             instance_id="12345",
             accept=accept,
         )
-        assert isinstance(result, bytes)
-        assert len(result) > 0
+        assert result.startswith(expected_prefix)
 
     @staticmethod
     def test_generate_vumark_default_accept(
@@ -780,5 +784,4 @@ class TestGenerateVumarkInstance:
             target_id=target_id,
             instance_id="12345",
         )
-        assert isinstance(result, bytes)
-        assert len(result) > 0
+        assert result.startswith(b"\x89PNG\r\n\x1a\n")
