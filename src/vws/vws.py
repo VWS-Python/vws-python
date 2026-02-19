@@ -187,8 +187,9 @@ class VWS:
         method: str,
         data: bytes,
         request_path: str,
-        expected_result_code: str,
+        expected_result_code: str | None,
         content_type: str,
+        extra_headers: dict[str, str] | None = None,
     ) -> Response:
         """Make a request to the Vuforia Target API.
 
@@ -201,7 +202,11 @@ class VWS:
                 request.
             expected_result_code: See "VWS API Result Codes" on
                 https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api.
+                Pass ``None`` for endpoints that return a non-JSON success
+                response (e.g. binary data); success is then determined by an
+                HTTP 200 status code.
             content_type: The content type of the request.
+            extra_headers: Additional headers to include in the request.
 
         Returns:
             The response to the request made by `requests`.
@@ -224,7 +229,14 @@ class VWS:
             request_path=request_path,
             base_vws_url=self._base_vws_url,
             request_timeout_seconds=self._request_timeout_seconds,
+            extra_headers=extra_headers,
         )
+
+        if (
+            response.status_code == HTTPStatus.OK
+            and expected_result_code is None
+        ):
+            return response
 
         result_code = json.loads(s=response.text)["result_code"]
 
@@ -234,9 +246,12 @@ class VWS:
         exception = {
             "AuthenticationFailure": AuthenticationFailureError,
             "BadImage": BadImageError,
+            "BadRequest": BadRequestError,
             "DateRangeError": DateRangeError,
             "Fail": FailError,
             "ImageTooLarge": ImageTooLargeError,
+            "InvalidAcceptHeader": InvalidAcceptHeaderError,
+            "InvalidInstanceId": InvalidInstanceIdError,
             "MetadataTooLarge": MetadataTooLargeError,
             "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
             "ProjectInactive": ProjectInactiveError,
@@ -765,33 +780,13 @@ class VWS:
             encoding="utf-8",
         )
 
-        response = _target_api_request(
-            content_type=content_type,
-            server_access_key=self._server_access_key,
-            server_secret_key=self._server_secret_key,
+        response = self.make_request(
             method=HTTPMethod.POST,
             data=request_data,
             request_path=request_path,
-            base_vws_url=self._base_vws_url,
-            request_timeout_seconds=self._request_timeout_seconds,
+            expected_result_code=None,
+            content_type=content_type,
             extra_headers={"Accept": accept},
         )
 
-        if response.status_code == HTTPStatus.OK:
-            return response.content
-
-        result_code = json.loads(s=response.text)["result_code"]
-
-        exception = {
-            "AuthenticationFailure": AuthenticationFailureError,
-            "BadRequest": BadRequestError,
-            "DateRangeError": DateRangeError,
-            "Fail": FailError,
-            "InvalidAcceptHeader": InvalidAcceptHeaderError,
-            "InvalidInstanceId": InvalidInstanceIdError,
-            "RequestTimeTooSkewed": RequestTimeTooSkewedError,
-            "TargetStatusNotSuccess": TargetStatusNotSuccessError,
-            "UnknownTarget": UnknownTargetError,
-        }[result_code]
-
-        raise exception(response=response)
+        return response.content
