@@ -73,7 +73,7 @@ def _target_api_request(
     request_path: str,
     base_vws_url: str,
     request_timeout_seconds: float | tuple[float, float],
-    extra_headers: dict[str, str] | None = None,
+    extra_headers: dict[str, str],
 ) -> Response:
     """Make a request to the Vuforia Target API.
 
@@ -112,7 +112,7 @@ def _target_api_request(
         "Authorization": signature_string,
         "Date": date_string,
         "Content-Type": content_type,
-        **(extra_headers or {}),
+        **extra_headers,
     }
 
     url = urljoin(base=base_vws_url, url=request_path)
@@ -210,7 +210,7 @@ class VWS:
             request_path=request_path,
             base_vws_url=self._base_vws_url,
             request_timeout_seconds=self._request_timeout_seconds,
-            extra_headers=extra_headers,
+            extra_headers=extra_headers or {},
         )
 
         if (
