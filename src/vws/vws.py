@@ -710,7 +710,7 @@ class VWS:
         *,
         target_id: str,
         instance_id: str,
-        accept: VuMarkAccept = VuMarkAccept.PNG,
+        accept: VuMarkAccept,
     ) -> bytes:
         """Generate a VuMark instance image.
 

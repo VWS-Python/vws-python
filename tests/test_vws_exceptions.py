@@ -36,6 +36,7 @@ from vws.exceptions.vws_exceptions import (
     TargetStatusProcessingError,
     UnknownTargetError,
 )
+from vws.vumark_accept import VuMarkAccept
 
 
 def test_image_too_large(
@@ -384,6 +385,7 @@ def test_invalid_instance_id(
         vws_client.generate_vumark_instance(
             target_id=target_id,
             instance_id="",
+            accept=VuMarkAccept.PNG,
         )
 
     assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
