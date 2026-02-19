@@ -10,7 +10,7 @@ from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
-from vws import VWS
+from vws import VWS, VuMarkService
 from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import (
     ServerError,
@@ -368,7 +368,7 @@ def test_vwsexception_inheritance() -> None:
 
 
 def test_invalid_instance_id(
-    vumark_vws_client: VWS,
+    vumark_service_client: VuMarkService,
     vumark_target_id: str,
 ) -> None:
     """
@@ -376,7 +376,7 @@ def test_invalid_instance_id(
     ID is given.
     """
     with pytest.raises(expected_exception=InvalidInstanceIdError) as exc:
-        vumark_vws_client.generate_vumark_instance(
+        vumark_service_client.generate_vumark_instance(
             target_id=vumark_target_id,
             instance_id="",
             accept=VuMarkAccept.PNG,
@@ -386,27 +386,37 @@ def test_invalid_instance_id(
 
 
 def test_invalid_target_type(
-    vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
     """
     An ``InvalidTargetType`` exception is raised when trying to generate
     a VuMark instance from a non-VuMark target.
     """
-    target_id = vws_client.add_target(
-        name="x",
-        width=1,
-        image=high_quality_image,
-        active_flag=True,
-        application_metadata=None,
-    )
-    vws_client.wait_for_target_processed(target_id=target_id)
-    with pytest.raises(expected_exception=InvalidTargetTypeError) as exc:
-        vws_client.generate_vumark_instance(
-            target_id=target_id,
-            instance_id="12345",
-            accept=VuMarkAccept.PNG,
+    database = VuforiaDatabase()
+    with MockVWS(processing_time_seconds=0.2) as mock:
+        mock.add_database(database=database)
+        vws_client = VWS(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
         )
+        target_id = vws_client.add_target(
+            name="x",
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
+        )
+        vws_client.wait_for_target_processed(target_id=target_id)
+        vumark_client = VuMarkService(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+        )
+        with pytest.raises(expected_exception=InvalidTargetTypeError) as exc:
+            vumark_client.generate_vumark_instance(
+                target_id=target_id,
+                instance_id="12345",
+                accept=VuMarkAccept.PNG,
+            )
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 

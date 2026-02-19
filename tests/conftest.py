@@ -9,7 +9,7 @@ import pytest
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase, VuMarkDatabase, VuMarkTarget
 
-from vws import VWS, CloudRecoService
+from vws import VWS, CloudRecoService, VuMarkService
 
 
 @pytest.fixture(name="_mock_database")
@@ -33,9 +33,11 @@ def fixture_mock_vumark_database() -> Generator[VuMarkDatabase]:
 
 
 @pytest.fixture
-def vumark_vws_client(_mock_vumark_database: VuMarkDatabase) -> VWS:
-    """A VWS client which connects to a mock VuMark database."""
-    return VWS(
+def vumark_service_client(
+    _mock_vumark_database: VuMarkDatabase,
+) -> VuMarkService:
+    """A ``VuMarkService`` client which connects to a mock VuMark database."""
+    return VuMarkService(
         server_access_key=_mock_vumark_database.server_access_key,
         server_secret_key=_mock_vumark_database.server_secret_key,
     )

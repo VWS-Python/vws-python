@@ -24,9 +24,6 @@ from vws.exceptions.vws_exceptions import (
     DateRangeError,
     FailError,
     ImageTooLargeError,
-    InvalidAcceptHeaderError,
-    InvalidInstanceIdError,
-    InvalidTargetTypeError,
     MetadataTooLargeError,
     ProjectHasNoAPIAccessError,
     ProjectInactiveError,
@@ -48,7 +45,6 @@ from vws.reports import (
     TargetSummaryReport,
 )
 from vws.response import Response
-from vws.vumark_accept import VuMarkAccept
 
 _ImageType = io.BytesIO | BinaryIO
 
@@ -243,9 +239,6 @@ class VWS:
             "DateRangeError": DateRangeError,
             "Fail": FailError,
             "ImageTooLarge": ImageTooLargeError,
-            "InvalidAcceptHeader": InvalidAcceptHeaderError,
-            "InvalidInstanceId": InvalidInstanceIdError,
-            "InvalidTargetType": InvalidTargetTypeError,
             "MetadataTooLarge": MetadataTooLargeError,
             "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
             "ProjectInactive": ProjectInactiveError,
@@ -725,64 +718,3 @@ class VWS:
             expected_result_code="Success",
             content_type="application/json",
         )
-
-    def generate_vumark_instance(
-        self,
-        *,
-        target_id: str,
-        instance_id: str,
-        accept: VuMarkAccept,
-    ) -> bytes:
-        """Generate a VuMark instance image.
-
-        See
-        https://developer.vuforia.com/library/vuforia-engine/web-api/vumark-generation-web-api/
-        for parameter details.
-
-        Args:
-            target_id: The ID of the VuMark target.
-            instance_id: The instance ID to encode in the VuMark.
-            accept: The image format to return.
-
-        Returns:
-            The VuMark instance image bytes.
-
-        Raises:
-            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
-                secret key is not correct.
-            ~vws.exceptions.vws_exceptions.FailError: There was an error with
-                the request. For example, the given access key does not match a
-                known database.
-            ~vws.exceptions.vws_exceptions.InvalidAcceptHeaderError: The
-                Accept header value is not supported.
-            ~vws.exceptions.vws_exceptions.InvalidInstanceIdError: The
-                instance ID is invalid. For example, it may be empty.
-            ~vws.exceptions.vws_exceptions.InvalidTargetTypeError: The target
-                is not a VuMark template target.
-            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
-                an error with the time sent to Vuforia.
-            ~vws.exceptions.vws_exceptions.TargetStatusNotSuccessError: The
-                target is not in the success state.
-            ~vws.exceptions.vws_exceptions.UnknownTargetError: The given target
-                ID does not match a target in the database.
-            ~vws.exceptions.custom_exceptions.ServerError: There is an error
-                with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
-                rate limiting access.
-        """
-        request_path = f"/targets/{target_id}/instances"
-        content_type = "application/json"
-        request_data = json.dumps(obj={"instance_id": instance_id}).encode(
-            encoding="utf-8",
-        )
-
-        response = self.make_request(
-            method=HTTPMethod.POST,
-            data=request_data,
-            request_path=request_path,
-            expected_result_code=None,
-            content_type=content_type,
-            extra_headers={"Accept": accept},
-        )
-
-        return response.content
