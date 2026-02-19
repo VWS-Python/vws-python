@@ -1,12 +1,9 @@
 AuthenticationFailure
 BadImage
-BadRequest
 ConnectionErrorPossiblyImageTooLarge
 DateRangeError
 ImageTooLarge
 InactiveProject
-InvalidAcceptHeader
-InvalidInstanceId
 JSONDecodeError
 MatchProcessing
 MaxNumResultsOutOfRange

@@ -174,14 +174,14 @@ class TooManyRequestsError(VWSError):  # pragma: no cover
 @beartype
 class InvalidAcceptHeaderError(VWSError):  # pragma: no cover
     """Exception raised when Vuforia returns a response with a result code
-    'InvalidAcceptHeader'.
+    ``InvalidAcceptHeader``.
     """
 
 
 @beartype
 class InvalidInstanceIdError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
-    'InvalidInstanceId'.
+    ``InvalidInstanceId``.
     """
 
 
@@ -190,5 +190,5 @@ class InvalidInstanceIdError(VWSError):
 @beartype
 class BadRequestError(VWSError):  # pragma: no cover
     """Exception raised when Vuforia returns a response with a result code
-    'BadRequest'.
+    ``BadRequest``.
     """
