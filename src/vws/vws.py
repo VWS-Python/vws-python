@@ -73,6 +73,7 @@ def _target_api_request(
     request_path: str,
     base_vws_url: str,
     request_timeout_seconds: float | tuple[float, float],
+    extra_headers: dict[str, str] | None = None,
 ) -> Response:
     """Make a request to the Vuforia Target API.
 
@@ -90,6 +91,7 @@ def _target_api_request(
         request_timeout_seconds: The timeout for the request, as used by
             ``requests.request``. This can be a float to set both the
             connect and read timeouts, or a (connect, read) tuple.
+        extra_headers: Additional headers to include in the request.
 
     Returns:
         The response to the request made by `requests`.
@@ -110,6 +112,7 @@ def _target_api_request(
         "Authorization": signature_string,
         "Date": date_string,
         "Content-Type": content_type,
+        **(extra_headers or {}),
     }
 
     url = urljoin(base=base_vws_url, url=request_path)
@@ -129,6 +132,7 @@ def _target_api_request(
         headers=dict(requests_response.headers),
         request_body=requests_response.request.body,
         tell_position=requests_response.raw.tell(),
+        content=bytes(requests_response.content),
     )
 
 
@@ -752,54 +756,29 @@ class VWS:
         request_data = json.dumps(obj={"instance_id": instance_id}).encode(
             encoding="utf-8",
         )
-        date_string = rfc_1123_date()
 
-        signature_string = authorization_header(
-            access_key=self._server_access_key,
-            secret_key=self._server_secret_key,
-            method=HTTPMethod.POST,
-            content=request_data,
+        response = _target_api_request(
             content_type=content_type,
-            date=date_string,
-            request_path=request_path,
-        )
-
-        headers = {
-            "Authorization": signature_string,
-            "Date": date_string,
-            "Content-Type": content_type,
-            "Accept": accept,
-        }
-
-        url = urljoin(base=self._base_vws_url, url=request_path)
-
-        requests_response = requests.request(
+            server_access_key=self._server_access_key,
+            server_secret_key=self._server_secret_key,
             method=HTTPMethod.POST,
-            url=url,
-            headers=headers,
             data=request_data,
-            timeout=self._request_timeout_seconds,
+            request_path=request_path,
+            base_vws_url=self._base_vws_url,
+            request_timeout_seconds=self._request_timeout_seconds,
+            extra_headers={"Accept": accept},
         )
 
-        if requests_response.status_code == HTTPStatus.OK:
-            return bytes(requests_response.content)
-
-        response = Response(
-            text=requests_response.text,
-            url=requests_response.url,
-            status_code=requests_response.status_code,
-            headers=dict(requests_response.headers),
-            request_body=requests_response.request.body,
-            tell_position=requests_response.raw.tell(),
-        )
+        if response.status_code == HTTPStatus.OK:
+            return response.content
 
         if (
-            requests_response.status_code == HTTPStatus.TOO_MANY_REQUESTS
+            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
         ):  # pragma: no cover
             raise TooManyRequestsError(response=response)
 
         if (
-            requests_response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
         ):  # pragma: no cover
             raise ServerError(response=response)
 
