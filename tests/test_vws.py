@@ -13,7 +13,7 @@ from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
-from vws import VWS, CloudRecoService
+from vws import VWS, CloudRecoService, VuMarkService
 from vws.exceptions.custom_exceptions import TargetProcessingTimeoutError
 from vws.reports import (
     DatabaseSummaryReport,
@@ -745,13 +745,13 @@ class TestGenerateVumarkInstance:
         ],
     )
     def test_generate_vumark_instance(
-        vumark_vws_client: VWS,
+        vumark_service_client: VuMarkService,
         vumark_target_id: str,
         accept: VuMarkAccept,
         expected_prefix: bytes,
     ) -> None:
         """The returned bytes match the requested format."""
-        result = vumark_vws_client.generate_vumark_instance(
+        result = vumark_service_client.generate_vumark_instance(
             target_id=vumark_target_id,
             instance_id="12345",
             accept=accept,
