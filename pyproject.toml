@@ -363,9 +363,6 @@ ignore_names = [
     "pytest_plugins",
     # pytest fixtures - we name fixtures like this for this purpose
     "fixture_*",
-    # Enum members used dynamically
-    "PDF",
-    "SVG",
     # Sphinx
     "autoclass_content",
     "autoclass_content",
