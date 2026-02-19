@@ -745,22 +745,14 @@ class TestGenerateVumarkInstance:
         ],
     )
     def test_generate_vumark_instance(
-        vws_client: VWS,
-        high_quality_image: io.BytesIO,
+        vumark_vws_client: VWS,
+        vumark_target_id: str,
         accept: VuMarkAccept,
         expected_prefix: bytes,
     ) -> None:
         """The returned bytes match the requested format."""
-        target_id = vws_client.add_target(
-            name="x",
-            width=1,
-            image=high_quality_image,
-            active_flag=True,
-            application_metadata=None,
-        )
-        vws_client.wait_for_target_processed(target_id=target_id)
-        result = vws_client.generate_vumark_instance(
-            target_id=target_id,
+        result = vumark_vws_client.generate_vumark_instance(
+            target_id=vumark_target_id,
             instance_id="12345",
             accept=accept,
         )

@@ -24,9 +24,10 @@ class UnknownTargetError(VWSError):
     def target_id(self) -> str:
         """The unknown target ID."""
         path = urlparse(url=self.response.url).path
-        # Every HTTP path which can raise this error is in the format
-        # `/something/{target_id}`.
-        return path.split(sep="/", maxsplit=2)[-1]
+        # Every HTTP path which can raise this error has the target ID as the
+        # second path segment, e.g. `/something/{target_id}` or
+        # `/something/{target_id}/more`.
+        return path.split(sep="/")[2]
 
 
 @beartype
@@ -68,9 +69,10 @@ class TargetStatusProcessingError(VWSError):
     def target_id(self) -> str:
         """The processing target ID."""
         path = urlparse(url=self.response.url).path
-        # Every HTTP path which can raise this error is in the format
-        # `/something/{target_id}`.
-        return path.split(sep="/", maxsplit=2)[-1]
+        # Every HTTP path which can raise this error has the target ID as the
+        # second path segment, e.g. `/something/{target_id}` or
+        # `/something/{target_id}/more`.
+        return path.split(sep="/")[2]
 
 
 # This is not simulated by the mock.
@@ -157,9 +159,10 @@ class TargetStatusNotSuccessError(VWSError):
     def target_id(self) -> str:
         """The unknown target ID."""
         path = urlparse(url=self.response.url).path
-        # Every HTTP path which can raise this error is in the format
-        # `/something/{target_id}`.
-        return path.split(sep="/", maxsplit=2)[-1]
+        # Every HTTP path which can raise this error has the target ID as the
+        # second path segment, e.g. `/something/{target_id}` or
+        # `/something/{target_id}/more`.
+        return path.split(sep="/")[2]
 
 
 @beartype
@@ -191,4 +194,11 @@ class InvalidInstanceIdError(VWSError):
 class BadRequestError(VWSError):  # pragma: no cover
     """Exception raised when Vuforia returns a response with a result code
     ``BadRequest``.
+    """
+
+
+@beartype
+class InvalidTargetTypeError(VWSError):
+    """Exception raised when Vuforia returns a response with a result code
+    ``InvalidTargetType``.
     """

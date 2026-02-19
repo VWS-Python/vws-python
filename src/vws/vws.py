@@ -26,6 +26,7 @@ from vws.exceptions.vws_exceptions import (
     ImageTooLargeError,
     InvalidAcceptHeaderError,
     InvalidInstanceIdError,
+    InvalidTargetTypeError,
     MetadataTooLargeError,
     ProjectHasNoAPIAccessError,
     ProjectInactiveError,
@@ -244,6 +245,7 @@ class VWS:
             "ImageTooLarge": ImageTooLargeError,
             "InvalidAcceptHeader": InvalidAcceptHeaderError,
             "InvalidInstanceId": InvalidInstanceIdError,
+            "InvalidTargetType": InvalidTargetTypeError,
             "MetadataTooLarge": MetadataTooLargeError,
             "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
             "ProjectInactive": ProjectInactiveError,
@@ -755,6 +757,8 @@ class VWS:
                 Accept header value is not supported.
             ~vws.exceptions.vws_exceptions.InvalidInstanceIdError: The
                 instance ID is invalid. For example, it may be empty.
+            ~vws.exceptions.vws_exceptions.InvalidTargetTypeError: The target
+                is not a VuMark template target.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
                 an error with the time sent to Vuforia.
             ~vws.exceptions.vws_exceptions.TargetStatusNotSuccessError: The

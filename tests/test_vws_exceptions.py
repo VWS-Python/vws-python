@@ -24,6 +24,7 @@ from vws.exceptions.vws_exceptions import (
     ImageTooLargeError,
     InvalidAcceptHeaderError,
     InvalidInstanceIdError,
+    InvalidTargetTypeError,
     MetadataTooLargeError,
     ProjectHasNoAPIAccessError,
     ProjectInactiveError,
@@ -349,6 +350,7 @@ def test_vwsexception_inheritance() -> None:
         ImageTooLargeError,
         InvalidAcceptHeaderError,
         InvalidInstanceIdError,
+        InvalidTargetTypeError,
         MetadataTooLargeError,
         ProjectInactiveError,
         ProjectHasNoAPIAccessError,
@@ -366,12 +368,30 @@ def test_vwsexception_inheritance() -> None:
 
 
 def test_invalid_instance_id(
-    vws_client: VWS,
-    high_quality_image: io.BytesIO,
+    vumark_vws_client: VWS,
+    vumark_target_id: str,
 ) -> None:
     """
     An ``InvalidInstanceId`` exception is raised when an empty instance
     ID is given.
+    """
+    with pytest.raises(expected_exception=InvalidInstanceIdError) as exc:
+        vumark_vws_client.generate_vumark_instance(
+            target_id=vumark_target_id,
+            instance_id="",
+            accept=VuMarkAccept.PNG,
+        )
+
+    assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+def test_invalid_target_type(
+    vws_client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """
+    An ``InvalidTargetType`` exception is raised when trying to generate
+    a VuMark instance from a non-VuMark target.
     """
     target_id = vws_client.add_target(
         name="x",
@@ -381,14 +401,14 @@ def test_invalid_instance_id(
         application_metadata=None,
     )
     vws_client.wait_for_target_processed(target_id=target_id)
-    with pytest.raises(expected_exception=InvalidInstanceIdError) as exc:
+    with pytest.raises(expected_exception=InvalidTargetTypeError) as exc:
         vws_client.generate_vumark_instance(
             target_id=target_id,
-            instance_id="",
+            instance_id="12345",
             accept=VuMarkAccept.PNG,
         )
 
-    assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
 def test_base_exception(
