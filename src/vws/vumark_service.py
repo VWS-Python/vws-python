@@ -5,6 +5,7 @@ from http import HTTPMethod, HTTPStatus
 
 from beartype import BeartypeConf, beartype
 
+from vws._vws_request import target_api_request
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
@@ -20,7 +21,6 @@ from vws.exceptions.vws_exceptions import (
     UnknownTargetError,
 )
 from vws.vumark_accept import VuMarkAccept
-from vws.vws import _target_api_request
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
@@ -99,7 +99,7 @@ class VuMarkService:
             encoding="utf-8",
         )
 
-        response = _target_api_request(
+        response = target_api_request(
             content_type=content_type,
             server_access_key=self._server_access_key,
             server_secret_key=self._server_secret_key,
