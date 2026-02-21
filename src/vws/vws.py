@@ -89,7 +89,7 @@ class VWS:
         method: str,
         data: bytes,
         request_path: str,
-        expected_result_code: str | None,
+        expected_result_code: str,
         content_type: str,
         extra_headers: dict[str, str] | None = None,
     ) -> Response:
@@ -104,9 +104,6 @@ class VWS:
                 request.
             expected_result_code: See "VWS API Result Codes" on
                 https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api.
-                Pass ``None`` for endpoints that return a non-JSON success
-                response (e.g. binary data); success is then determined by an
-                HTTP 200 status code.
             content_type: The content type of the request.
             extra_headers: Additional headers to include in the request.
 
@@ -144,12 +141,6 @@ class VWS:
             response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
         ):  # pragma: no cover
             raise ServerError(response=response)
-
-        if (
-            response.status_code == HTTPStatus.OK
-            and expected_result_code is None
-        ):
-            return response
 
         result_code = json.loads(s=response.text)["result_code"]
 
