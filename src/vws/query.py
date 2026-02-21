@@ -46,6 +46,7 @@ class CloudRecoService:
 
     def __init__(
         self,
+        *,
         client_access_key: str,
         client_secret_key: str,
         base_vwq_url: str = "https://cloudreco.vuforia.com",
@@ -68,6 +69,7 @@ class CloudRecoService:
 
     def query(
         self,
+        *,
         image: _ImageType,
         max_num_results: int = 1,
         include_target_data: CloudRecoIncludeTargetData = (

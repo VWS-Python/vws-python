@@ -63,6 +63,7 @@ class VWS:
 
     def __init__(
         self,
+        *,
         server_access_key: str,
         server_secret_key: str,
         base_vws_url: str = "https://vws.vuforia.com",
@@ -171,11 +172,11 @@ class VWS:
 
     def add_target(
         self,
+        *,
         name: str,
         width: float,
         image: _ImageType,
         application_metadata: str | None,
-        *,
         active_flag: bool,
     ) -> str:
         """Add a target to a Vuforia Web Services database.
@@ -302,6 +303,7 @@ class VWS:
 
     def wait_for_target_processed(
         self,
+        *,
         target_id: str,
         seconds_between_requests: float = 0.2,
         timeout_seconds: float = 60 * 5,
