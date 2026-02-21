@@ -7,7 +7,8 @@ from typing import BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
-from mock_vws.database import CloudDatabase, VuMarkDatabase, VuMarkTarget
+from mock_vws.database import CloudDatabase, VuMarkDatabase
+from mock_vws.target import VuMarkTarget
 
 from vws import VWS, CloudRecoService, VuMarkService
 
