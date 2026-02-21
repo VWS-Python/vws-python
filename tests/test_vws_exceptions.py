@@ -41,6 +41,7 @@ from vws.vumark_accept import VuMarkAccept
 
 
 def test_image_too_large(
+    *,
     vws_client: VWS,
     png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
@@ -75,7 +76,11 @@ def test_invalid_given_id(vws_client: VWS) -> None:
     assert exc.value.target_id == target_id
 
 
-def test_add_bad_name(vws_client: VWS, high_quality_image: io.BytesIO) -> None:
+def test_add_bad_name(
+    *,
+    vws_client: VWS,
+    high_quality_image: io.BytesIO,
+) -> None:
     """
     When a name with a bad character is given, a ``ServerError``
     exception
@@ -143,6 +148,7 @@ def test_bad_image(vws_client: VWS) -> None:
 
 
 def test_target_name_exist(
+    *,
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
@@ -201,6 +207,7 @@ def test_project_inactive(
 
 
 def test_target_status_processing(
+    *,
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
@@ -225,6 +232,7 @@ def test_target_status_processing(
 
 
 def test_metadata_too_large(
+    *,
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
@@ -246,6 +254,7 @@ def test_metadata_too_large(
 
 
 def test_request_time_too_skewed(
+    *,
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
@@ -316,6 +325,7 @@ def test_authentication_failure(
 
 
 def test_target_status_not_success(
+    *,
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:
@@ -368,6 +378,7 @@ def test_vwsexception_inheritance() -> None:
 
 
 def test_invalid_instance_id(
+    *,
     vumark_service_client: VuMarkService,
     vumark_target_id: str,
 ) -> None:
@@ -423,6 +434,7 @@ def test_invalid_target_type(
 
 
 def test_base_exception(
+    *,
     vws_client: VWS,
     high_quality_image: io.BytesIO,
 ) -> None:

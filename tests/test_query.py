@@ -20,6 +20,7 @@ class TestQuery:
 
     @staticmethod
     def test_no_matches(
+        *,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -29,6 +30,7 @@ class TestQuery:
 
     @staticmethod
     def test_match(
+        *,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
@@ -55,8 +57,8 @@ class TestDefaultRequestTimeout:
         argvalues=[(29, False), (31, True)],
     )
     def test_default_timeout(
-        image: io.BytesIO | BinaryIO,
         *,
+        image: io.BytesIO | BinaryIO,
         response_delay_seconds: int,
         expect_timeout: bool,
     ) -> None:
@@ -110,8 +112,8 @@ class TestCustomRequestTimeout:
         ],
     )
     def test_custom_timeout(
-        image: io.BytesIO | BinaryIO,
         *,
+        image: io.BytesIO | BinaryIO,
         custom_timeout: float | tuple[float, float],
         response_delay_seconds: float,
         expect_timeout: bool,
@@ -194,6 +196,7 @@ class TestMaxNumResults:
 
     @staticmethod
     def test_default(
+        *,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
@@ -220,6 +223,7 @@ class TestMaxNumResults:
 
     @staticmethod
     def test_custom(
+        *,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
@@ -262,6 +266,7 @@ class TestIncludeTargetData:
 
     @staticmethod
     def test_default(
+        *,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
@@ -292,6 +297,7 @@ class TestIncludeTargetData:
 
     @staticmethod
     def test_top(
+        *,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
@@ -327,6 +333,7 @@ class TestIncludeTargetData:
 
     @staticmethod
     def test_none(
+        *,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,
@@ -363,6 +370,7 @@ class TestIncludeTargetData:
 
     @staticmethod
     def test_all(
+        *,
         vws_client: VWS,
         cloud_reco_client: CloudRecoService,
         image: io.BytesIO | BinaryIO,

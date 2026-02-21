@@ -34,11 +34,11 @@ class TestAddTarget:
     )
     @pytest.mark.parametrize(argnames="active_flag", argvalues=[True, False])
     def test_add_target(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
         application_metadata: bytes | None,
         cloud_reco_client: CloudRecoService,
-        *,
         active_flag: bool,
     ) -> None:
         """No exception is raised when adding one target."""
@@ -76,6 +76,7 @@ class TestAddTarget:
 
     @staticmethod
     def test_add_two_targets(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -103,8 +104,8 @@ class TestDefaultRequestTimeout:
         argvalues=[(29, False), (31, True)],
     )
     def test_default_timeout(
-        image: io.BytesIO | BinaryIO,
         *,
+        image: io.BytesIO | BinaryIO,
         response_delay_seconds: int,
         expect_timeout: bool,
     ) -> None:
@@ -169,8 +170,8 @@ class TestCustomRequestTimeout:
         ],
     )
     def test_custom_timeout(
-        image: io.BytesIO | BinaryIO,
         *,
+        image: io.BytesIO | BinaryIO,
         custom_timeout: float | tuple[float, float],
         response_delay_seconds: float,
         expect_timeout: bool,
@@ -251,6 +252,7 @@ class TestListTargets:
 
     @staticmethod
     def test_list_targets(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -277,6 +279,7 @@ class TestDelete:
 
     @staticmethod
     def test_delete_target(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -300,6 +303,7 @@ class TestGetTargetSummaryReport:
 
     @staticmethod
     def test_get_target_summary_report(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -398,6 +402,7 @@ class TestGetTargetRecord:
 
     @staticmethod
     def test_get_target_record(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -444,6 +449,7 @@ class TestGetTargetRecord:
 
     @staticmethod
     def test_get_failed(
+        *,
         vws_client: VWS,
         image_file_failed_state: io.BytesIO,
     ) -> None:
@@ -467,6 +473,7 @@ class TestWaitForTargetProcessed:
 
     @staticmethod
     def test_wait_for_target_processed(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -628,6 +635,7 @@ class TestGetDuplicateTargets:
 
     @staticmethod
     def test_get_duplicate_targets(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -658,6 +666,7 @@ class TestUpdateTarget:
 
     @staticmethod
     def test_update_target(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
         different_high_quality_image: io.BytesIO,
@@ -717,6 +726,7 @@ class TestUpdateTarget:
 
     @staticmethod
     def test_no_fields_given(
+        *,
         vws_client: VWS,
         image: io.BytesIO | BinaryIO,
     ) -> None:
@@ -745,6 +755,7 @@ class TestGenerateVumarkInstance:
         ],
     )
     def test_generate_vumark_instance(
+        *,
         vumark_service_client: VuMarkService,
         vumark_target_id: str,
         accept: VuMarkAccept,
