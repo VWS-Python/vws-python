@@ -7,23 +7,23 @@ from typing import BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
-from mock_vws.database import VuforiaDatabase
+from mock_vws.database import CloudDatabase
 
 from vws import VWS, CloudRecoService
 
 
 @pytest.fixture(name="_mock_database")
-def fixture_mock_database() -> Generator[VuforiaDatabase]:
-    """Yield a mock ``VuforiaDatabase``."""
+def fixture_mock_database() -> Generator[CloudDatabase]:
+    """Yield a mock ``CloudDatabase``."""
     # We use a low processing time so that tests run quickly.
     with MockVWS(processing_time_seconds=0.2) as mock:
-        database = VuforiaDatabase()
-        mock.add_database(database=database)
+        database = CloudDatabase()
+        mock.add_cloud_database(cloud_database=database)
         yield database
 
 
 @pytest.fixture
-def vws_client(_mock_database: VuforiaDatabase) -> VWS:
+def vws_client(_mock_database: CloudDatabase) -> VWS:
     """A VWS client which connects to a mock database."""
     return VWS(
         server_access_key=_mock_database.server_access_key,
@@ -32,7 +32,7 @@ def vws_client(_mock_database: VuforiaDatabase) -> VWS:
 
 
 @pytest.fixture
-def cloud_reco_client(_mock_database: VuforiaDatabase) -> CloudRecoService:
+def cloud_reco_client(_mock_database: CloudDatabase) -> CloudRecoService:
     """A ``CloudRecoService`` client which connects to a mock database."""
     return CloudRecoService(
         client_access_key=_mock_database.client_access_key,

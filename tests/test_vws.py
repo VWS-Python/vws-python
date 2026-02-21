@@ -11,7 +11,7 @@ import pytest
 import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
-from mock_vws.database import VuforiaDatabase
+from mock_vws.database import CloudDatabase
 
 from vws import VWS, CloudRecoService
 from vws.exceptions.custom_exceptions import TargetProcessingTimeoutError
@@ -122,8 +122,8 @@ class TestDefaultRequestTimeout:
                 )[1],
             ) as mock,
         ):
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
@@ -187,8 +187,8 @@ class TestCustomRequestTimeout:
                 )[1],
             ) as mock,
         ):
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
@@ -228,8 +228,8 @@ class TestCustomBaseVWSURL:
         """
         base_vws_url = "http://example.com"
         with MockVWS(base_vws_url=base_vws_url) as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
@@ -489,8 +489,8 @@ class TestWaitForTargetProcessed:
     ) -> None:
         """By default, 0.2 seconds are waited between polling requests."""
         with MockVWS(processing_time_seconds=0.5) as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
@@ -541,8 +541,8 @@ class TestWaitForTargetProcessed:
         requests.
         """
         with MockVWS(processing_time_seconds=0.5) as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
@@ -589,8 +589,8 @@ class TestWaitForTargetProcessed:
     def test_custom_timeout(image: io.BytesIO | BinaryIO) -> None:
         """It is possible to set a maximum timeout."""
         with MockVWS(processing_time_seconds=0.5) as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,

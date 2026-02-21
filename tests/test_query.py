@@ -9,7 +9,7 @@ import pytest
 import requests
 from freezegun import freeze_time
 from mock_vws import MockVWS
-from mock_vws.database import VuforiaDatabase
+from mock_vws.database import CloudDatabase
 
 from vws import VWS, CloudRecoService
 from vws.include_target_data import CloudRecoIncludeTargetData
@@ -75,8 +75,8 @@ class TestDefaultRequestTimeout:
                 )[1],
             ) as mock,
         ):
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             cloud_reco_client = CloudRecoService(
                 client_access_key=database.client_access_key,
                 client_secret_key=database.client_secret_key,
@@ -129,8 +129,8 @@ class TestCustomRequestTimeout:
                 )[1],
             ) as mock,
         ):
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             cloud_reco_client = CloudRecoService(
                 client_access_key=database.client_access_key,
                 client_secret_key=database.client_secret_key,
@@ -160,8 +160,8 @@ class TestCustomBaseVWQURL:
         """
         base_vwq_url = "http://example.com"
         with MockVWS(base_vwq_url=base_vwq_url) as mock:
-            database = VuforiaDatabase()
-            mock.add_database(database=database)
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
