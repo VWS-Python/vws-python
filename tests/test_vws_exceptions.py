@@ -7,7 +7,7 @@ from http import HTTPStatus
 import pytest
 from freezegun import freeze_time
 from mock_vws import MockVWS
-from mock_vws.database import VuforiaDatabase
+from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
 from vws import VWS
@@ -175,9 +175,9 @@ def test_project_inactive(
     inactive
     database.
     """
-    database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
+    database = CloudDatabase(state=States.PROJECT_INACTIVE)
     with MockVWS() as mock:
-        mock.add_database(database=database)
+        mock.add_cloud_database(cloud_database=database)
         vws_client = VWS(
             server_access_key=database.server_access_key,
             server_secret_key=database.server_secret_key,
@@ -286,7 +286,7 @@ def test_authentication_failure(
     exists but the server secret key is incorrect, or when a client key is
     incorrect.
     """
-    database = VuforiaDatabase()
+    database = CloudDatabase()
 
     vws_client = VWS(
         server_access_key=database.server_access_key,
@@ -294,7 +294,7 @@ def test_authentication_failure(
     )
 
     with MockVWS() as mock:
-        mock.add_database(database=database)
+        mock.add_cloud_database(cloud_database=database)
 
         with pytest.raises(
             expected_exception=AuthenticationFailureError

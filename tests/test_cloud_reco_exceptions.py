@@ -6,7 +6,7 @@ from http import HTTPStatus
 
 import pytest
 from mock_vws import MockVWS
-from mock_vws.database import VuforiaDatabase
+from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
 from vws import CloudRecoService
@@ -85,13 +85,13 @@ def test_authentication_failure(
     key
     exists but the client secret key is incorrect.
     """
-    database = VuforiaDatabase()
+    database = CloudDatabase()
     cloud_reco_client = CloudRecoService(
         client_access_key=database.client_access_key,
         client_secret_key=uuid.uuid4().hex,
     )
     with MockVWS() as mock:
-        mock.add_database(database=database)
+        mock.add_cloud_database(cloud_database=database)
 
         with pytest.raises(
             expected_exception=AuthenticationFailureError
@@ -108,9 +108,9 @@ def test_inactive_project(
     An ``InactiveProject`` exception is raised when querying an inactive
     database.
     """
-    database = VuforiaDatabase(state=States.PROJECT_INACTIVE)
+    database = CloudDatabase(state=States.PROJECT_INACTIVE)
     with MockVWS() as mock:
-        mock.add_database(database=database)
+        mock.add_cloud_database(cloud_database=database)
         cloud_reco_client = CloudRecoService(
             client_access_key=database.client_access_key,
             client_secret_key=database.client_secret_key,

@@ -78,13 +78,13 @@ To write unit tests for code which uses this library, without using your Vuforia
     import pathlib
 
     from mock_vws import MockVWS
-    from mock_vws.database import VuforiaDatabase
+    from mock_vws.database import CloudDatabase
 
     from vws import VWS, CloudRecoService
 
     with MockVWS() as mock:
-        database = VuforiaDatabase()
-        mock.add_database(database=database)
+        database = CloudDatabase()
+        mock.add_cloud_database(cloud_database=database)
         vws_client = VWS(
             server_access_key=database.server_access_key,
             server_secret_key=database.server_secret_key,
