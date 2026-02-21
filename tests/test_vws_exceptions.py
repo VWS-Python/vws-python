@@ -385,11 +385,41 @@ def test_invalid_instance_id(
     assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
-def test_invalid_target_type() -> None:
+def test_invalid_target_type(
+    high_quality_image: io.BytesIO,
+) -> None:
     """
-    See https://github.com/VWS-Python/vws-python-mock/issues/2961 for
-    writing this test.
+    An ``InvalidTargetType`` exception is raised when trying to generate
+    a VuMark instance from a non-VuMark database.
     """
+    database = CloudDatabase()
+    with MockVWS(processing_time_seconds=0.2) as mock:
+        mock.add_cloud_database(cloud_database=database)
+        vws_client = VWS(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+        )
+        target_id = vws_client.add_target(
+            name="example_target",
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
+        )
+        vumark_service = VuMarkService(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+        )
+        with pytest.raises(
+            expected_exception=InvalidTargetTypeError,
+        ) as exc:
+            vumark_service.generate_vumark_instance(
+                target_id=target_id,
+                instance_id="example_instance_id",
+                accept=VuMarkAccept.PNG,
+            )
+
+    assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
 
 def test_base_exception(
