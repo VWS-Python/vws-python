@@ -207,7 +207,9 @@ class TestCustomBaseVWQURL:
                 base_vwq_url="http://example.com/prefix",
             )
 
-            with pytest.raises(requests.exceptions.ConnectionError):
+            with pytest.raises(
+                expected_exception=requests.exceptions.ConnectionError,
+            ):
                 cloud_reco_client.query(image=image)
 
 

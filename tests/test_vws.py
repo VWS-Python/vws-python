@@ -261,7 +261,9 @@ class TestCustomBaseVWSURL:
                 base_vws_url="http://example.com/prefix",
             )
 
-            with pytest.raises(requests.exceptions.ConnectionError):
+            with pytest.raises(
+                expected_exception=requests.exceptions.ConnectionError,
+            ):
                 vws_client.list_targets()
 
 
