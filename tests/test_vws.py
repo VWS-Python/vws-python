@@ -262,7 +262,7 @@ class TestCustomBaseVWSURL:
                 base_vws_url=base_vws_url,
             )
 
-            assert vws_client.list_targets() == []
+            assert not vws_client.list_targets()
 
 
 class TestListTargets:
