@@ -2,8 +2,6 @@
 API.
 """
 
-from urllib.parse import urljoin
-
 import requests
 from beartype import BeartypeConf, beartype
 from vws_auth_tools import authorization_header, rfc_1123_date
@@ -64,7 +62,7 @@ def target_api_request(
         **extra_headers,
     }
 
-    url = urljoin(base=base_vws_url, url=request_path)
+    url = base_vws_url.rstrip("/") + request_path
 
     requests_response = requests.request(
         method=method,
