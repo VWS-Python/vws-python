@@ -9,7 +9,6 @@ from typing import BinaryIO
 
 import pytest
 import requests
-import responses as responses_mock
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
@@ -248,36 +247,22 @@ class TestCustomBaseVWSURL:
             )
 
     @staticmethod
-    @responses_mock.activate
     def test_custom_base_url_with_path_prefix() -> None:
         """
         A base VWS URL with a path prefix is used as-is, without the
-        prefix
-        being dropped.
+        prefix being dropped.
         """
-        base_vws_url = "http://example.com/prefix"
-        responses_mock.add(
-            method=responses_mock.GET,
-            url="http://example.com/prefix/targets",
-            json={
-                "result_code": "Success",
-                "results": [],
-                "transaction_id": "abc",
-            },
-            status=200,
-        )
-        vws_client = VWS(
-            server_access_key=secrets.token_hex(),
-            server_secret_key=secrets.token_hex(),
-            base_vws_url=base_vws_url,
-        )
+        with MockVWS(base_vws_url="http://example.com") as mock:
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                base_vws_url="http://example.com/prefix",
+            )
 
-        vws_client.list_targets()
-
-        assert len(responses_mock.calls) == 1
-        assert responses_mock.calls[0].request.url == (
-            "http://example.com/prefix/targets"
-        )
+            with pytest.raises(requests.exceptions.ConnectionError):
+                vws_client.list_targets()
 
 
 class TestListTargets:
