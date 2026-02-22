@@ -1,6 +1,7 @@
 """Tests for helper functions for managing a Vuforia database."""
 
 import base64
+import contextlib
 import datetime
 import io
 import secrets
@@ -15,6 +16,7 @@ from mock_vws.database import CloudDatabase
 
 from vws import VWS, CloudRecoService, VuMarkService
 from vws.exceptions.custom_exceptions import TargetProcessingTimeoutError
+from vws.exceptions.vws_exceptions import UnknownTargetError
 from vws.reports import (
     DatabaseSummaryReport,
     TargetRecord,
@@ -252,19 +254,25 @@ class TestCustomBaseVWSURL:
         A base VWS URL with a path prefix is used as-is, without the
         prefix being dropped.
         """
-        with MockVWS(base_vws_url="http://example.com") as mock:
+        base_vws_url = "http://example.com/prefix"
+        with MockVWS(base_vws_url=base_vws_url) as mock:
             database = CloudDatabase()
             mock.add_cloud_database(cloud_database=database)
             vws_client = VWS(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
-                base_vws_url="http://example.com/prefix",
+                base_vws_url=base_vws_url,
             )
 
-            with pytest.raises(
-                expected_exception=requests.exceptions.ConnectionError,
-            ):
-                vws_client.list_targets()
+            # MockVWS's path-length check in validate_target_id_exists
+            # does not account for a base URL path prefix, so it
+            # incorrectly treats the last path segment ("targets") as a
+            # target ID and raises UnknownTargetError.
+            # See https://github.com/VWS-Python/vws-python-mock/issues/2995
+            # The request did reach MockVWS (proving the prefix was
+            # preserved in the URL), so this exception is expected for now.
+            with contextlib.suppress(UnknownTargetError):
+                assert vws_client.list_targets() == []
 
 
 class TestListTargets:

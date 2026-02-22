@@ -2,6 +2,8 @@
 API.
 """
 
+from urllib.parse import urlparse
+
 import requests
 from beartype import BeartypeConf, beartype
 from vws_auth_tools import authorization_header, rfc_1123_date
@@ -45,6 +47,9 @@ def target_api_request(
     """
     date_string = rfc_1123_date()
 
+    base_path = urlparse(url=base_vws_url).path.rstrip("/")
+    full_request_path = base_path + request_path
+
     signature_string = authorization_header(
         access_key=server_access_key,
         secret_key=server_secret_key,
@@ -52,7 +57,7 @@ def target_api_request(
         content=data,
         content_type=content_type,
         date=date_string,
-        request_path=request_path,
+        request_path=full_request_path,
     )
 
     headers = {
