@@ -5,7 +5,6 @@ import io
 import json
 from http import HTTPMethod, HTTPStatus
 from typing import Any, BinaryIO
-from urllib.parse import urlparse
 
 import requests
 from beartype import BeartypeConf, beartype
@@ -127,9 +126,6 @@ class CloudRecoService:
         content, content_type_header = encode_multipart_formdata(fields=body)
         method = HTTPMethod.POST
 
-        base_path = urlparse(url=self._base_vwq_url).path.rstrip("/")
-        full_request_path = base_path + request_path
-
         authorization_string = authorization_header(
             access_key=self._client_access_key,
             secret_key=self._client_secret_key,
@@ -138,7 +134,7 @@ class CloudRecoService:
             # Note that this is not the actual Content-Type header value sent.
             content_type="multipart/form-data",
             date=date,
-            request_path=full_request_path,
+            request_path=request_path,
         )
 
         headers = {
