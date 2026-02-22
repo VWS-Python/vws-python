@@ -246,6 +246,24 @@ class TestCustomBaseVWSURL:
                 application_metadata=None,
             )
 
+    @staticmethod
+    def test_custom_base_url_with_path_prefix() -> None:
+        """
+        A base VWS URL with a path prefix is used as-is, without the
+        prefix being dropped.
+        """
+        base_vws_url = "http://example.com/prefix"
+        with MockVWS(base_vws_url=base_vws_url) as mock:
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                base_vws_url=base_vws_url,
+            )
+
+            assert not vws_client.list_targets()
+
 
 class TestListTargets:
     """Tests for listing targets."""

@@ -5,7 +5,6 @@ import io
 import json
 from http import HTTPMethod, HTTPStatus
 from typing import Any, BinaryIO
-from urllib.parse import urljoin
 
 import requests
 from beartype import BeartypeConf, beartype
@@ -146,7 +145,7 @@ class CloudRecoService:
 
         requests_response = requests.request(
             method=method,
-            url=urljoin(base=self._base_vwq_url, url=request_path),
+            url=self._base_vwq_url.rstrip("/") + request_path,
             headers=headers,
             data=content,
             timeout=self._request_timeout_seconds,

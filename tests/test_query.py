@@ -190,6 +190,39 @@ class TestCustomBaseVWQURL:
             match = matches[0]
             assert match.target_id == target_id
 
+    @staticmethod
+    def test_custom_base_url_with_path_prefix(
+        image: io.BytesIO | BinaryIO,
+    ) -> None:
+        """
+        A base VWQ URL with a path prefix is used as-is, without the
+        prefix being dropped.
+        """
+        base_vwq_url = "http://example.com/prefix"
+        with MockVWS(base_vwq_url=base_vwq_url) as mock:
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+            )
+            target_id = vws_client.add_target(
+                name="x",
+                width=1,
+                image=image,
+                active_flag=True,
+                application_metadata=None,
+            )
+            vws_client.wait_for_target_processed(target_id=target_id)
+            cloud_reco_client = CloudRecoService(
+                client_access_key=database.client_access_key,
+                client_secret_key=database.client_secret_key,
+                base_vwq_url=base_vwq_url,
+            )
+
+            matches = cloud_reco_client.query(image=image)
+            assert len(matches) == 1
+
 
 class TestMaxNumResults:
     """Tests for the ``max_num_results`` parameter of ``query``."""
