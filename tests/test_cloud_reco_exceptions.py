@@ -24,6 +24,7 @@ from vws.exceptions.custom_exceptions import (
 
 
 def test_too_many_max_results(
+    *,
     cloud_reco_client: CloudRecoService,
     high_quality_image: io.BytesIO,
 ) -> None:
@@ -45,6 +46,7 @@ def test_too_many_max_results(
 
 
 def test_image_too_large(
+    *,
     cloud_reco_client: CloudRecoService,
     png_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
