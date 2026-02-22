@@ -2,11 +2,13 @@
 
 import datetime
 import io
+import secrets
 import uuid
 from typing import BinaryIO
 
 import pytest
 import requests
+import responses as responses_mock
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
@@ -189,6 +191,40 @@ class TestCustomBaseVWQURL:
             assert len(matches) == 1
             match = matches[0]
             assert match.target_id == target_id
+
+    @staticmethod
+    @responses_mock.activate
+    def test_custom_base_url_with_path_prefix(
+        image: io.BytesIO | BinaryIO,
+    ) -> None:
+        """
+        A base VWQ URL with a path prefix is used as-is, without the
+        prefix
+        being dropped.
+        """
+        base_vwq_url = "http://example.com/prefix"
+        responses_mock.add(
+            method=responses_mock.POST,
+            url="http://example.com/prefix/v1/query",
+            json={
+                "result_code": "Success",
+                "results": [],
+                "query_id": "abc",
+            },
+            status=200,
+        )
+        cloud_reco_client = CloudRecoService(
+            client_access_key=secrets.token_hex(),
+            client_secret_key=secrets.token_hex(),
+            base_vwq_url=base_vwq_url,
+        )
+
+        cloud_reco_client.query(image=image)
+
+        assert len(responses_mock.calls) == 1
+        assert responses_mock.calls[0].request.url == (
+            "http://example.com/prefix/v1/query"
+        )
 
 
 class TestMaxNumResults:

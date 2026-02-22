@@ -9,6 +9,7 @@ from typing import BinaryIO
 
 import pytest
 import requests
+import responses as responses_mock
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
@@ -245,6 +246,38 @@ class TestCustomBaseVWSURL:
                 active_flag=True,
                 application_metadata=None,
             )
+
+    @staticmethod
+    @responses_mock.activate
+    def test_custom_base_url_with_path_prefix() -> None:
+        """
+        A base VWS URL with a path prefix is used as-is, without the
+        prefix
+        being dropped.
+        """
+        base_vws_url = "http://example.com/prefix"
+        responses_mock.add(
+            method=responses_mock.GET,
+            url="http://example.com/prefix/targets",
+            json={
+                "result_code": "Success",
+                "results": [],
+                "transaction_id": "abc",
+            },
+            status=200,
+        )
+        vws_client = VWS(
+            server_access_key=secrets.token_hex(),
+            server_secret_key=secrets.token_hex(),
+            base_vws_url=base_vws_url,
+        )
+
+        vws_client.list_targets()
+
+        assert len(responses_mock.calls) == 1
+        assert responses_mock.calls[0].request.url == (
+            "http://example.com/prefix/targets"
+        )
 
 
 class TestListTargets:
