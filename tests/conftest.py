@@ -35,6 +35,7 @@ def fixture_mock_vumark_database() -> Generator[VuMarkDatabase]:
 
 @pytest.fixture
 def vumark_service_client(
+    *,
     _mock_vumark_database: VuMarkDatabase,
 ) -> VuMarkService:
     """A ``VuMarkService`` client which connects to a mock VuMark database."""
@@ -45,14 +46,14 @@ def vumark_service_client(
 
 
 @pytest.fixture
-def vumark_target_id(_mock_vumark_database: VuMarkDatabase) -> str:
+def vumark_target_id(*, _mock_vumark_database: VuMarkDatabase) -> str:
     """The ID of the VuMark template target."""
     (target,) = _mock_vumark_database.vumark_targets
     return target.target_id
 
 
 @pytest.fixture
-def vws_client(_mock_database: CloudDatabase) -> VWS:
+def vws_client(*, _mock_database: CloudDatabase) -> VWS:
     """A VWS client which connects to a mock database."""
     return VWS(
         server_access_key=_mock_database.server_access_key,
@@ -61,7 +62,7 @@ def vws_client(_mock_database: CloudDatabase) -> VWS:
 
 
 @pytest.fixture
-def cloud_reco_client(_mock_database: CloudDatabase) -> CloudRecoService:
+def cloud_reco_client(*, _mock_database: CloudDatabase) -> CloudRecoService:
     """A ``CloudRecoService`` client which connects to a mock database."""
     return CloudRecoService(
         client_access_key=_mock_database.client_access_key,
@@ -71,6 +72,7 @@ def cloud_reco_client(_mock_database: CloudDatabase) -> CloudRecoService:
 
 @pytest.fixture(name="image_file", params=["r+b", "rb"])
 def fixture_image_file(
+    *,
     high_quality_image: io.BytesIO,
     tmp_path: Path,
     request: pytest.FixtureRequest,
@@ -86,6 +88,7 @@ def fixture_image_file(
 
 @pytest.fixture(params=["high_quality_image", "image_file"])
 def image(
+    *,
     request: pytest.FixtureRequest,
     high_quality_image: io.BytesIO,
     image_file: BinaryIO,
