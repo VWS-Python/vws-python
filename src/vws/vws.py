@@ -343,7 +343,15 @@ class VWS:
         while True:
             report = self.get_target_summary_report(target_id=target_id)
             if report.status != TargetStatuses.PROCESSING:
-                return
+                # Wait and verify once more to guard against the target
+                # still being seen as processing by other endpoints due
+                # to eventual consistency.
+                time.sleep(seconds_between_requests)
+                report = self.get_target_summary_report(
+                    target_id=target_id,
+                )
+                if report.status != TargetStatuses.PROCESSING:
+                    return
 
             elapsed_time = time.monotonic() - start_time
             if elapsed_time > timeout_seconds:  # pragma: no cover
