@@ -82,7 +82,7 @@ optional-dependencies.dev = [
     "ty==0.0.18",
     "types-requests==2.32.4.20260107",
     "vulture==2.14",
-    "vws-python-mock==2026.2.22.2",
+    "vws-python-mock==2026.2.22.3",
     "vws-test-fixtures==2023.3.5",
     "yamlfix==1.19.1",
     "zizmor==1.22.0",
