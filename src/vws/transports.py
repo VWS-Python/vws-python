@@ -128,7 +128,12 @@ class HTTPXTransport:
                 pool=None,
             )
         else:
-            httpx_timeout = httpx.Timeout(timeout=timeout)
+            httpx_timeout = httpx.Timeout(
+                connect=timeout,
+                read=timeout,
+                write=None,
+                pool=None,
+            )
 
         httpx_response = httpx.request(
             method=method,
