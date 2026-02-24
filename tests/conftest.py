@@ -1,16 +1,24 @@
 """Configuration, plugins and fixtures for `pytest`."""
 
 import io
-from collections.abc import Generator
+from collections.abc import AsyncGenerator, Generator
 from pathlib import Path
 from typing import BinaryIO, Literal
 
 import pytest
+import pytest_asyncio
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase, VuMarkDatabase
 from mock_vws.target import VuMarkTarget
 
-from vws import VWS, CloudRecoService, VuMarkService
+from vws import (
+    VWS,
+    AsyncCloudRecoService,
+    AsyncVuMarkService,
+    AsyncVWS,
+    CloudRecoService,
+    VuMarkService,
+)
 
 
 @pytest.fixture(name="_mock_database")
@@ -68,6 +76,49 @@ def cloud_reco_client(*, _mock_database: CloudDatabase) -> CloudRecoService:
         client_access_key=_mock_database.client_access_key,
         client_secret_key=_mock_database.client_secret_key,
     )
+
+
+@pytest_asyncio.fixture
+async def async_vws_client(
+    *,
+    _mock_database: CloudDatabase,
+) -> AsyncGenerator[AsyncVWS]:
+    """An async VWS client which connects to a mock database."""
+    async with AsyncVWS(
+        server_access_key=_mock_database.server_access_key,
+        server_secret_key=_mock_database.server_secret_key,
+    ) as client:
+        yield client
+
+
+@pytest_asyncio.fixture
+async def async_cloud_reco_client(
+    *,
+    _mock_database: CloudDatabase,
+) -> AsyncGenerator[AsyncCloudRecoService]:
+    """An async ``CloudRecoService`` client which connects to a mock
+    database.
+    """
+    async with AsyncCloudRecoService(
+        client_access_key=_mock_database.client_access_key,
+        client_secret_key=_mock_database.client_secret_key,
+    ) as client:
+        yield client
+
+
+@pytest_asyncio.fixture
+async def async_vumark_service_client(
+    *,
+    _mock_vumark_database: VuMarkDatabase,
+) -> AsyncGenerator[AsyncVuMarkService]:
+    """An async ``VuMarkService`` client which connects to a mock VuMark
+    database.
+    """
+    async with AsyncVuMarkService(
+        server_access_key=_mock_vumark_database.server_access_key,
+        server_secret_key=_mock_vumark_database.server_secret_key,
+    ) as client:
+        yield client
 
 
 @pytest.fixture(name="image_file", params=["r+b", "rb"])

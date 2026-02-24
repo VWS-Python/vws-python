@@ -1,6 +1,7 @@
 """HTTP transport implementations for VWS clients."""
 
-from typing import Protocol, runtime_checkable
+from collections.abc import Awaitable
+from typing import Protocol, Self, runtime_checkable
 
 import httpx
 import requests
@@ -136,6 +137,125 @@ class HTTPXTransport:
             )
 
         httpx_response = httpx.request(
+            method=method,
+            url=url,
+            headers=headers,
+            content=data,
+            timeout=httpx_timeout,
+            follow_redirects=True,
+        )
+
+        content = bytes(httpx_response.content)
+        request_content = httpx_response.request.content
+
+        return Response(
+            text=httpx_response.text,
+            url=str(object=httpx_response.url),
+            status_code=httpx_response.status_code,
+            headers=dict(httpx_response.headers),
+            request_body=bytes(request_content) or None,
+            tell_position=len(content),
+            content=content,
+        )
+
+
+@runtime_checkable
+class AsyncTransport(Protocol):
+    """Protocol for async HTTP transports used by VWS clients.
+
+    An async transport is a callable that makes an HTTP request
+    and returns a ``Response``.
+    """
+
+    def __call__(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        data: bytes,
+        request_timeout: float | tuple[float, float],
+    ) -> Awaitable[Response]:
+        """Make an async HTTP request.
+
+        Args:
+            method: The HTTP method (e.g. "GET", "POST").
+            url: The full URL to request.
+            headers: Headers to send with the request.
+            data: The request body as bytes.
+            request_timeout: The timeout for the request. A float
+                sets both the connect and read timeouts. A
+                (connect, read) tuple sets them individually.
+
+        Returns:
+            A Response populated from the HTTP response.
+        """
+        ...  # pylint: disable=unnecessary-ellipsis
+
+
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
+class AsyncHTTPXTransport:
+    """Async HTTP transport using the ``httpx`` library.
+
+    This is the default transport for async VWS clients.
+    A single ``httpx.AsyncClient`` is reused across requests
+    for connection pooling.
+    """
+
+    def __init__(self) -> None:
+        """Create an ``AsyncHTTPXTransport``."""
+        self._client = httpx.AsyncClient()
+
+    async def aclose(self) -> None:
+        """Close the underlying ``httpx.AsyncClient``."""
+        await self._client.aclose()
+
+    async def __aenter__(self) -> Self:
+        """Enter the async context manager."""
+        return self
+
+    async def __aexit__(self, *_args: object) -> None:
+        """Exit the async context manager and close the client."""
+        await self.aclose()
+
+    async def __call__(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        data: bytes,
+        request_timeout: float | tuple[float, float],
+    ) -> Response:
+        """Make an async HTTP request using ``httpx``.
+
+        Args:
+            method: The HTTP method.
+            url: The full URL.
+            headers: Request headers.
+            data: The request body.
+            request_timeout: The request timeout.
+
+        Returns:
+            A Response populated from the httpx response.
+        """
+        if isinstance(request_timeout, tuple):
+            connect_timeout, read_timeout = request_timeout
+            httpx_timeout = httpx.Timeout(
+                connect=connect_timeout,
+                read=read_timeout,
+                write=None,
+                pool=None,
+            )
+        else:
+            httpx_timeout = httpx.Timeout(
+                connect=request_timeout,
+                read=request_timeout,
+                write=None,
+                pool=None,
+            )
+
+        httpx_response = await self._client.request(
             method=method,
             url=url,
             headers=headers,
