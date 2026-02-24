@@ -1,15 +1,15 @@
 """Tools for interacting with Vuforia APIs."""
 
 import base64
-import io
 import json
 import time
 from datetime import date
 from http import HTTPMethod, HTTPStatus
-from typing import BinaryIO
 
 from beartype import BeartypeConf, beartype
 
+from vws._image_utils import ImageType as _ImageType
+from vws._image_utils import get_image_data as _get_image_data
 from vws._vws_request import target_api_request
 from vws.exceptions.custom_exceptions import (
     ServerError,
@@ -44,18 +44,6 @@ from vws.reports import (
 )
 from vws.response import Response
 from vws.transports import RequestsTransport, Transport
-
-_ImageType = io.BytesIO | BinaryIO
-
-
-@beartype
-def _get_image_data(image: _ImageType) -> bytes:
-    """Get the data of an image file."""
-    original_tell = image.tell()
-    image.seek(0)
-    image_data = image.read()
-    image.seek(original_tell)
-    return image_data
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
