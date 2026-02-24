@@ -358,6 +358,8 @@ ignore_path = [
 # Ideally we would limit the paths to the source code where we want to ignore names,
 # but Vulture does not enable this.
 ignore_names = [
+    # Public API classes imported by users from vws.transports
+    "HTTPXTransport",
     # pytest configuration
     "pytest_collect_file",
     "pytest_collection_modifyitems",
