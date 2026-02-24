@@ -12,8 +12,9 @@ from vws.transports import HTTPXTransport
 class TestHTTPXTransport:
     """Tests for ``HTTPXTransport``."""
 
+    @staticmethod
     @respx.mock
-    def test_float_timeout(self) -> None:
+    def test_float_timeout() -> None:
         """``HTTPXTransport`` works with a float timeout."""
         respx.post(url="https://example.com/test").mock(
             return_value=httpx.Response(
@@ -34,8 +35,9 @@ class TestHTTPXTransport:
         assert response.text == "OK"
         assert response.tell_position == len(b"OK")
 
+    @staticmethod
     @respx.mock
-    def test_tuple_timeout(self) -> None:
+    def test_tuple_timeout() -> None:
         """``HTTPXTransport`` works with a (connect, read) timeout
         tuple.
         """
