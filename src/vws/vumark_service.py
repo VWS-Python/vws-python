@@ -20,6 +20,7 @@ from vws.exceptions.vws_exceptions import (
     TooManyRequestsError,
     UnknownTargetError,
 )
+from vws.transports import RequestsTransport, Transport
 from vws.vumark_accept import VuMarkAccept
 
 
@@ -33,21 +34,26 @@ class VuMarkService:
         server_secret_key: str,
         base_vws_url: str = "https://vws.vuforia.com",
         request_timeout_seconds: float | tuple[float, float] = 30.0,
+        transport: Transport | None = None,
     ) -> None:
         """
         Args:
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
             base_vws_url: The base URL for the VWS API.
-            request_timeout_seconds: The timeout for each HTTP request, as
-                used by ``requests.request``. This can be a float to set
-                both the connect and read timeouts, or a (connect, read)
-                tuple.
+            request_timeout_seconds: The timeout for each
+                HTTP request. This can be a float to set both
+                the connect and read timeouts, or a
+                (connect, read) tuple.
+            transport: The HTTP transport to use for
+                requests. Defaults to
+                ``RequestsTransport()``.
         """
         self._server_access_key = server_access_key
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
         self._request_timeout_seconds = request_timeout_seconds
+        self._transport = transport or RequestsTransport()
 
     def generate_vumark_instance(
         self,
@@ -109,6 +115,7 @@ class VuMarkService:
             base_vws_url=self._base_vws_url,
             request_timeout_seconds=self._request_timeout_seconds,
             extra_headers={"Accept": accept},
+            transport=self._transport,
         )
 
         if (

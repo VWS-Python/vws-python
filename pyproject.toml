@@ -33,6 +33,7 @@ dynamic = [
 ]
 dependencies = [
     "beartype>=0.22.9",
+    "httpx>=0.28.0",
     "requests>=2.32.3",
     "urllib3>=2.2.3",
     "vws-auth-tools>=2024.7.12",
