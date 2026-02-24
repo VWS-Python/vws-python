@@ -152,7 +152,7 @@ class CloudRecoService:
             url=self._base_vwq_url.rstrip("/") + request_path,
             headers=headers,
             data=content,
-            timeout=self._request_timeout_seconds,
+            request_timeout=self._request_timeout_seconds,
         )
 
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:

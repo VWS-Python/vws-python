@@ -72,5 +72,5 @@ def target_api_request(
         url=url,
         headers=headers,
         data=data,
-        timeout=request_timeout_seconds,
+        request_timeout=request_timeout_seconds,
     )
