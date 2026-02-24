@@ -42,7 +42,7 @@ class Transport(Protocol):
         Returns:
             A Response populated from the HTTP response.
         """
-        ...
+        ...  # pylint: disable=unnecessary-ellipsis
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
