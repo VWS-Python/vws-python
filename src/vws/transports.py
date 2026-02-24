@@ -136,14 +136,18 @@ class HTTPXTransport:
             headers=headers,
             content=data,
             timeout=httpx_timeout,
+            follow_redirects=True,
         )
+
+        content = bytes(httpx_response.content)
+        request_content = httpx_response.request.content
 
         return Response(
             text=httpx_response.text,
             url=str(object=httpx_response.url),
             status_code=httpx_response.status_code,
             headers=dict(httpx_response.headers),
-            request_body=bytes(httpx_response.request.content),
-            tell_position=0,
-            content=bytes(httpx_response.content),
+            request_body=bytes(request_content) or None,
+            tell_position=len(content),
+            content=content,
         )

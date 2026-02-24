@@ -32,7 +32,7 @@ class TestHTTPXTransport:
         assert isinstance(response, Response)
         assert response.status_code == HTTPStatus.OK
         assert response.text == "OK"
-        assert response.tell_position == 0
+        assert response.tell_position == len(b"OK")
 
     @respx.mock
     def test_tuple_timeout(self) -> None:
