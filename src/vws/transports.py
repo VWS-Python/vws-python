@@ -24,7 +24,7 @@ class Transport(Protocol):
         url: str,
         headers: dict[str, str],
         data: bytes,
-        timeout: float | tuple[float, float],
+        request_timeout: float | tuple[float, float],
     ) -> Response:
         """Make an HTTP request.
 
@@ -33,7 +33,7 @@ class Transport(Protocol):
             url: The full URL to request.
             headers: Headers to send with the request.
             data: The request body as bytes.
-            timeout: The timeout for the request. A float
+            request_timeout: The timeout for the request. A float
                 sets both the connect and read timeouts. A
                 (connect, read) tuple sets them individually.
 
@@ -57,7 +57,7 @@ class RequestsTransport:
         url: str,
         headers: dict[str, str],
         data: bytes,
-        timeout: float | tuple[float, float],
+        request_timeout: float | tuple[float, float],
     ) -> Response:
         """Make an HTTP request using ``requests``.
 
@@ -66,7 +66,7 @@ class RequestsTransport:
             url: The full URL.
             headers: Request headers.
             data: The request body.
-            timeout: The request timeout.
+            request_timeout: The request timeout.
 
         Returns:
             A Response populated from the requests response.
@@ -76,7 +76,7 @@ class RequestsTransport:
             url=url,
             headers=headers,
             data=data,
-            timeout=timeout,
+            timeout=request_timeout,
         )
 
         return Response(
@@ -105,7 +105,7 @@ class HTTPXTransport:
         url: str,
         headers: dict[str, str],
         data: bytes,
-        timeout: float | tuple[float, float],
+        request_timeout: float | tuple[float, float],
     ) -> Response:
         """Make an HTTP request using ``httpx``.
 
@@ -114,13 +114,13 @@ class HTTPXTransport:
             url: The full URL.
             headers: Request headers.
             data: The request body.
-            timeout: The request timeout.
+            request_timeout: The request timeout.
 
         Returns:
             A Response populated from the httpx response.
         """
-        if isinstance(timeout, tuple):
-            connect_timeout, read_timeout = timeout
+        if isinstance(request_timeout, tuple):
+            connect_timeout, read_timeout = request_timeout
             httpx_timeout = httpx.Timeout(
                 connect=connect_timeout,
                 read=read_timeout,
@@ -129,8 +129,8 @@ class HTTPXTransport:
             )
         else:
             httpx_timeout = httpx.Timeout(
-                connect=timeout,
-                read=timeout,
+                connect=request_timeout,
+                read=request_timeout,
                 write=None,
                 pool=None,
             )

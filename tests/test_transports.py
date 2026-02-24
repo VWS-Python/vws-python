@@ -28,7 +28,7 @@ class TestHTTPXTransport:
             url="https://example.com/test",
             headers={"Content-Type": "text/plain"},
             data=b"hello",
-            timeout=30.0,
+            request_timeout=30.0,
         )
         assert route.called
         assert isinstance(response, Response)
@@ -54,7 +54,7 @@ class TestHTTPXTransport:
             url="https://example.com/test",
             headers={"Content-Type": "text/plain"},
             data=b"hello",
-            timeout=(5.0, 30.0),
+            request_timeout=(5.0, 30.0),
         )
         assert route.called
         assert isinstance(response, Response)
