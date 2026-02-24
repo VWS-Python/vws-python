@@ -1,7 +1,5 @@
 """HTTP transport implementations for VWS clients."""
 
-from __future__ import annotations
-
 from typing import Protocol, runtime_checkable
 
 import httpx
