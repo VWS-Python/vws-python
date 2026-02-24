@@ -43,6 +43,7 @@ from vws.reports import (
     TargetSummaryReport,
 )
 from vws.response import Response
+from vws.transports import RequestsTransport, Transport
 
 _ImageType = io.BytesIO | BinaryIO
 
@@ -68,21 +69,26 @@ class VWS:
         server_secret_key: str,
         base_vws_url: str = "https://vws.vuforia.com",
         request_timeout_seconds: float | tuple[float, float] = 30.0,
+        transport: Transport | None = None,
     ) -> None:
         """
         Args:
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
             base_vws_url: The base URL for the VWS API.
-            request_timeout_seconds: The timeout for each HTTP request, as
-                used by ``requests.request``. This can be a float to set
-                both the connect and read timeouts, or a (connect, read)
-                tuple.
+            request_timeout_seconds: The timeout for each
+                HTTP request. This can be a float to set both
+                the connect and read timeouts, or a
+                (connect, read) tuple.
+            transport: The HTTP transport to use for
+                requests. Defaults to
+                ``RequestsTransport()``.
         """
         self._server_access_key = server_access_key
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
         self._request_timeout_seconds = request_timeout_seconds
+        self._transport = transport or RequestsTransport()
 
     def make_request(
         self,
@@ -96,29 +102,31 @@ class VWS:
     ) -> Response:
         """Make a request to the Vuforia Target API.
 
-        This uses `requests` to make a request against Vuforia.
-
         Args:
-            method: The HTTP method which will be used in the request.
-            data: The request body which will be used in the request.
-            request_path: The path to the endpoint which will be used in the
+            method: The HTTP method which will be used in
+                the request.
+            data: The request body which will be used in the
                 request.
-            expected_result_code: See "VWS API Result Codes" on
+            request_path: The path to the endpoint which
+                will be used in the request.
+            expected_result_code: See
+                "VWS API Result Codes" on
                 https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api.
             content_type: The content type of the request.
-            extra_headers: Additional headers to include in the request.
+            extra_headers: Additional headers to include in
+                the request.
 
         Returns:
-            The response to the request made by `requests`.
+            The response to the request.
 
         Raises:
-            ~vws.exceptions.custom_exceptions.ServerError: There is an error
-                with Vuforia's servers.
-            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
-                rate limiting access.
-            json.JSONDecodeError: The server did not respond with valid JSON.
-                This may happen if the server address is not a valid Vuforia
-                server.
+            ~vws.exceptions.custom_exceptions.ServerError:
+                There is an error with Vuforia's servers.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError:
+                Vuforia is rate limiting access.
+            json.JSONDecodeError: The server did not respond
+                with valid JSON. This may happen if the
+                server address is not a valid Vuforia server.
         """
         response = target_api_request(
             content_type=content_type,
@@ -130,6 +138,7 @@ class VWS:
             base_vws_url=self._base_vws_url,
             request_timeout_seconds=self._request_timeout_seconds,
             extra_headers=extra_headers or {},
+            transport=self._transport,
         )
 
         if (

@@ -6,7 +6,6 @@ import json
 from http import HTTPMethod, HTTPStatus
 from typing import Any, BinaryIO
 
-import requests
 from beartype import BeartypeConf, beartype
 from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
@@ -24,7 +23,7 @@ from vws.exceptions.custom_exceptions import (
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
-from vws.response import Response
+from vws.transports import RequestsTransport, Transport
 
 _ImageType = io.BytesIO | BinaryIO
 
@@ -50,21 +49,26 @@ class CloudRecoService:
         client_secret_key: str,
         base_vwq_url: str = "https://cloudreco.vuforia.com",
         request_timeout_seconds: float | tuple[float, float] = 30.0,
+        transport: Transport | None = None,
     ) -> None:
         """
         Args:
             client_access_key: A VWS client access key.
             client_secret_key: A VWS client secret key.
             base_vwq_url: The base URL for the VWQ API.
-            request_timeout_seconds: The timeout for each HTTP request, as
-                used by ``requests.request``. This can be a float to set
-                both the connect and read timeouts, or a (connect, read)
-                tuple.
+            request_timeout_seconds: The timeout for each
+                HTTP request. This can be a float to set both
+                the connect and read timeouts, or a
+                (connect, read) tuple.
+            transport: The HTTP transport to use for
+                requests. Defaults to
+                ``RequestsTransport()``.
         """
         self._client_access_key = client_access_key
         self._client_secret_key = client_secret_key
         self._base_vwq_url = base_vwq_url
         self._request_timeout_seconds = request_timeout_seconds
+        self._transport = transport or RequestsTransport()
 
     def query(
         self,
@@ -143,21 +147,12 @@ class CloudRecoService:
             "Content-Type": content_type_header,
         }
 
-        requests_response = requests.request(
+        response = self._transport(
             method=method,
             url=self._base_vwq_url.rstrip("/") + request_path,
             headers=headers,
             data=content,
             timeout=self._request_timeout_seconds,
-        )
-        response = Response(
-            text=requests_response.text,
-            url=requests_response.url,
-            status_code=requests_response.status_code,
-            headers=dict(requests_response.headers),
-            request_body=requests_response.request.body,
-            tell_position=requests_response.raw.tell(),
-            content=bytes(requests_response.content),
         )
 
         if response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE:

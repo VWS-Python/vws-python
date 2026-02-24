@@ -20,3 +20,7 @@ API Reference
 .. automodule:: vws.response
    :undoc-members:
    :members:
+
+.. automodule:: vws.transports
+   :undoc-members:
+   :members:

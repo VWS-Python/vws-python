@@ -2,11 +2,11 @@
 API.
 """
 
-import requests
 from beartype import BeartypeConf, beartype
 from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws.response import Response
+from vws.transports import Transport
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
@@ -21,27 +21,30 @@ def target_api_request(
     base_vws_url: str,
     request_timeout_seconds: float | tuple[float, float],
     extra_headers: dict[str, str],
+    transport: Transport,
 ) -> Response:
     """Make a request to the Vuforia Target API.
-
-    This uses `requests` to make a request against https://vws.vuforia.com.
 
     Args:
         content_type: The content type of the request.
         server_access_key: A VWS server access key.
         server_secret_key: A VWS server secret key.
-        method: The HTTP method which will be used in the request.
-        data: The request body which will be used in the request.
-        request_path: The path to the endpoint which will be used in the
+        method: The HTTP method which will be used in the
             request.
+        data: The request body which will be used in the
+            request.
+        request_path: The path to the endpoint which will be
+            used in the request.
         base_vws_url: The base URL for the VWS API.
-        request_timeout_seconds: The timeout for the request, as used by
-            ``requests.request``. This can be a float to set both the
-            connect and read timeouts, or a (connect, read) tuple.
-        extra_headers: Additional headers to include in the request.
+        request_timeout_seconds: The timeout for the request.
+            This can be a float to set both the connect and
+            read timeouts, or a (connect, read) tuple.
+        extra_headers: Additional headers to include in the
+            request.
+        transport: The HTTP transport to use for the request.
 
     Returns:
-        The response to the request made by `requests`.
+        The response to the request.
     """
     date_string = rfc_1123_date()
 
@@ -64,20 +67,10 @@ def target_api_request(
 
     url = base_vws_url.rstrip("/") + request_path
 
-    requests_response = requests.request(
+    return transport(
         method=method,
         url=url,
         headers=headers,
         data=data,
         timeout=request_timeout_seconds,
-    )
-
-    return Response(
-        text=requests_response.text,
-        url=requests_response.url,
-        status_code=requests_response.status_code,
-        headers=dict(requests_response.headers),
-        request_body=requests_response.request.body,
-        tell_position=requests_response.raw.tell(),
-        content=bytes(requests_response.content),
     )
