@@ -199,4 +199,7 @@ class AsyncCloudRecoService:
         result_list = list(
             json.loads(s=response.text)["results"],
         )
-        return [QueryResult.from_response_dict(item) for item in result_list]  # type: ignore[misc]
+        return [
+            QueryResult.from_response_dict(response_dict=item)
+            for item in result_list
+        ]
