@@ -4,17 +4,14 @@ import base64
 import json
 import time
 from datetime import date
-from http import HTTPMethod, HTTPStatus
+from http import HTTPMethod
 
 from beartype import BeartypeConf, beartype
 
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
 from vws._vws_request import target_api_request
-from vws.exceptions.custom_exceptions import (
-    ServerError,
-    TargetProcessingTimeoutError,
-)
+from vws.exceptions.custom_exceptions import TargetProcessingTimeoutError
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
     BadImageError,
@@ -32,7 +29,6 @@ from vws.exceptions.vws_exceptions import (
     TargetQuotaReachedError,
     TargetStatusNotSuccessError,
     TargetStatusProcessingError,
-    TooManyRequestsError,
     UnknownTargetError,
 )
 from vws.reports import (
@@ -128,17 +124,6 @@ class VWS:
             extra_headers=extra_headers or {},
             transport=self._transport,
         )
-
-        if (
-            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
-        ):  # pragma: no cover
-            # The Vuforia API returns a 429 response with no JSON body.
-            raise TooManyRequestsError(response=response)
-
-        if (
-            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-        ):  # pragma: no cover
-            raise ServerError(response=response)
 
         result_code = json.loads(s=response.text)["result_code"]
 

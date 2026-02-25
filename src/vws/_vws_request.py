@@ -2,9 +2,13 @@
 API.
 """
 
+from http import HTTPStatus
+
 from beartype import BeartypeConf, beartype
 from vws_auth_tools import authorization_header, rfc_1123_date
 
+from vws.exceptions.custom_exceptions import ServerError
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.response import Response
 from vws.transports import Transport
 
@@ -45,6 +49,12 @@ def target_api_request(
 
     Returns:
         The response to the request.
+
+    Raises:
+        ~vws.exceptions.custom_exceptions.ServerError:
+            There is an error with Vuforia's servers.
+        ~vws.exceptions.vws_exceptions.TooManyRequestsError:
+            Vuforia is rate limiting access.
     """
     date_string = rfc_1123_date()
 
@@ -67,10 +77,23 @@ def target_api_request(
 
     url = base_vws_url.rstrip("/") + request_path
 
-    return transport(
+    response = transport(
         method=method,
         url=url,
         headers=headers,
         data=data,
         request_timeout=request_timeout_seconds,
     )
+
+    if (
+        response.status_code == HTTPStatus.TOO_MANY_REQUESTS
+    ):  # pragma: no cover
+        # The Vuforia API returns a 429 response with no JSON body.
+        raise TooManyRequestsError(response=response)
+
+    if (
+        response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
+    ):  # pragma: no cover
+        raise ServerError(response=response)
+
+    return response

@@ -6,7 +6,6 @@ from http import HTTPMethod, HTTPStatus
 from beartype import BeartypeConf, beartype
 
 from vws._vws_request import target_api_request
-from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
     BadRequestError,
@@ -17,7 +16,6 @@ from vws.exceptions.vws_exceptions import (
     InvalidTargetTypeError,
     RequestTimeTooSkewedError,
     TargetStatusNotSuccessError,
-    TooManyRequestsError,
     UnknownTargetError,
 )
 from vws.transports import RequestsTransport, Transport
@@ -118,17 +116,6 @@ class VuMarkService:
             extra_headers={"Accept": accept},
             transport=self._transport,
         )
-
-        if (
-            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
-        ):  # pragma: no cover
-            # The Vuforia API returns a 429 response with no JSON body.
-            raise TooManyRequestsError(response=response)
-
-        if (
-            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-        ):  # pragma: no cover
-            raise ServerError(response=response)
 
         if response.status_code == HTTPStatus.OK:
             return response.content
