@@ -5,21 +5,10 @@ from http import HTTPMethod, HTTPStatus
 
 from beartype import BeartypeConf, beartype
 
+from vws._vws_common import raise_for_vumark_result_code
 from vws._vws_request import target_api_request
 from vws.exceptions.custom_exceptions import ServerError
-from vws.exceptions.vws_exceptions import (
-    AuthenticationFailureError,
-    BadRequestError,
-    DateRangeError,
-    FailError,
-    InvalidAcceptHeaderError,
-    InvalidInstanceIdError,
-    InvalidTargetTypeError,
-    RequestTimeTooSkewedError,
-    TargetStatusNotSuccessError,
-    TooManyRequestsError,
-    UnknownTargetError,
-)
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.transports import RequestsTransport, Transport
 from vws.vumark_accept import VuMarkAccept
 
@@ -130,22 +119,7 @@ class VuMarkService:
         ):  # pragma: no cover
             raise ServerError(response=response)
 
-        if response.status_code == HTTPStatus.OK:
-            return response.content
-
-        result_code = json.loads(s=response.text)["result_code"]
-
-        exception = {
-            "AuthenticationFailure": AuthenticationFailureError,
-            "BadRequest": BadRequestError,
-            "DateRangeError": DateRangeError,
-            "Fail": FailError,
-            "InvalidAcceptHeader": InvalidAcceptHeaderError,
-            "InvalidInstanceId": InvalidInstanceIdError,
-            "InvalidTargetType": InvalidTargetTypeError,
-            "RequestTimeTooSkewed": RequestTimeTooSkewedError,
-            "TargetStatusNotSuccess": TargetStatusNotSuccessError,
-            "UnknownTarget": UnknownTargetError,
-        }[result_code]
-
-        raise exception(response=response)
+        if response.status_code != HTTPStatus.OK:
+            result_code = json.loads(s=response.text)["result_code"]
+            raise_for_vumark_result_code(result_code, response)
+        return response.content

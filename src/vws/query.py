@@ -10,13 +10,11 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
-from vws.exceptions.cloud_reco_exceptions import (
-    AuthenticationFailureError,
-    BadImageError,
-    InactiveProjectError,
-    MaxNumResultsOutOfRangeError,
-    RequestTimeTooSkewedError,
+from vws._query_common import (
+    parse_query_results,
+    raise_for_cloud_reco_result_code,
 )
+from vws.exceptions.cloud_reco_exceptions import MaxNumResultsOutOfRangeError
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLargeError,
     ServerError,
@@ -156,13 +154,6 @@ class CloudRecoService:
 
         result_code = json.loads(s=response.text)["result_code"]
         if result_code != "Success":
-            exception = {
-                "AuthenticationFailure": AuthenticationFailureError,
-                "BadImage": BadImageError,
-                "InactiveProject": InactiveProjectError,
-                "RequestTimeTooSkewed": RequestTimeTooSkewedError,
-            }[result_code]
-            raise exception(response=response)
+            raise_for_cloud_reco_result_code(result_code, response)
 
-        result_list = list(json.loads(s=response.text)["results"])
-        return [QueryResult.from_response_dict(item) for item in result_list]  # type: ignore[misc]
+        return parse_query_results(response.text)

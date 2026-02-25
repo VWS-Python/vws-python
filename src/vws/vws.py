@@ -1,6 +1,5 @@
 """Tools for interacting with Vuforia APIs."""
 
-import base64
 import json
 import time
 from http import HTTPMethod, HTTPStatus
@@ -8,32 +7,20 @@ from http import HTTPMethod, HTTPStatus
 from beartype import BeartypeConf, beartype
 
 from vws._image_utils import ImageType as _ImageType
-from vws._image_utils import get_image_data as _get_image_data
+from vws._vws_common import (
+    build_add_target_content,
+    build_update_target_content,
+    parse_database_summary_response,
+    parse_target_record_response,
+    parse_target_summary_response,
+    raise_for_vws_result_code,
+)
 from vws._vws_request import target_api_request
 from vws.exceptions.custom_exceptions import (
     ServerError,
     TargetProcessingTimeoutError,
 )
-from vws.exceptions.vws_exceptions import (
-    AuthenticationFailureError,
-    BadImageError,
-    BadRequestError,
-    DateRangeError,
-    FailError,
-    ImageTooLargeError,
-    MetadataTooLargeError,
-    ProjectHasNoAPIAccessError,
-    ProjectInactiveError,
-    ProjectSuspendedError,
-    RequestQuotaReachedError,
-    RequestTimeTooSkewedError,
-    TargetNameExistError,
-    TargetQuotaReachedError,
-    TargetStatusNotSuccessError,
-    TargetStatusProcessingError,
-    TooManyRequestsError,
-    UnknownTargetError,
-)
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.reports import (
     DatabaseSummaryReport,
     TargetStatusAndRecord,
@@ -140,30 +127,9 @@ class VWS:
 
         result_code = json.loads(s=response.text)["result_code"]
 
-        if result_code == expected_result_code:
-            return response
-
-        exception = {
-            "AuthenticationFailure": AuthenticationFailureError,
-            "BadImage": BadImageError,
-            "BadRequest": BadRequestError,
-            "DateRangeError": DateRangeError,
-            "Fail": FailError,
-            "ImageTooLarge": ImageTooLargeError,
-            "MetadataTooLarge": MetadataTooLargeError,
-            "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
-            "ProjectInactive": ProjectInactiveError,
-            "ProjectSuspended": ProjectSuspendedError,
-            "RequestQuotaReached": RequestQuotaReachedError,
-            "RequestTimeTooSkewed": RequestTimeTooSkewedError,
-            "TargetNameExist": TargetNameExistError,
-            "TargetQuotaReached": TargetQuotaReachedError,
-            "TargetStatusNotSuccess": TargetStatusNotSuccessError,
-            "TargetStatusProcessing": TargetStatusProcessingError,
-            "UnknownTarget": UnknownTargetError,
-        }[result_code]
-
-        raise exception(response=response)
+        if result_code != expected_result_code:
+            raise_for_vws_result_code(result_code, response)
+        return response
 
     def add_target(
         self,
@@ -219,20 +185,13 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        image_data = _get_image_data(image=image)
-        image_data_encoded = base64.b64encode(s=image_data).decode(
-            encoding="ascii",
+        content = build_add_target_content(
+            name=name,
+            width=width,
+            image=image,
+            active_flag=active_flag,
+            application_metadata=application_metadata,
         )
-
-        data = {
-            "name": name,
-            "width": width,
-            "image": image_data_encoded,
-            "active_flag": active_flag,
-            "application_metadata": application_metadata,
-        }
-
-        content = json.dumps(obj=data).encode(encoding="utf-8")
 
         response = self.make_request(
             method=HTTPMethod.POST,
@@ -280,8 +239,7 @@ class VWS:
             content_type="application/json",
         )
 
-        result_data = json.loads(s=response.text)
-        return TargetStatusAndRecord.from_response_dict(result_data)  # type: ignore[misc]
+        return parse_target_record_response(response.text)
 
     def wait_for_target_processed(
         self,
@@ -404,8 +362,7 @@ class VWS:
             content_type="application/json",
         )
 
-        result_data = dict(json.loads(s=response.text))
-        return TargetSummaryReport.from_response_dict(result_data)  # type: ignore[misc]
+        return parse_target_summary_response(response.text)
 
     def get_database_summary_report(self) -> DatabaseSummaryReport:
         """Get a summary report for the database.
@@ -437,8 +394,7 @@ class VWS:
             content_type="application/json",
         )
 
-        response_data = dict(json.loads(s=response.text))
-        return DatabaseSummaryReport.from_response_dict(response_data)  # type: ignore[misc]
+        return parse_database_summary_response(response.text)
 
     def delete_target(self, target_id: str) -> None:
         """Delete a given target.
@@ -568,28 +524,13 @@ class VWS:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
                 rate limiting access.
         """
-        data: dict[str, str | bool | float | int] = {}
-
-        if name is not None:
-            data["name"] = name
-
-        if width is not None:
-            data["width"] = width
-
-        if image is not None:
-            image_data = _get_image_data(image=image)
-            image_data_encoded = base64.b64encode(s=image_data).decode(
-                encoding="ascii",
-            )
-            data["image"] = image_data_encoded
-
-        if active_flag is not None:
-            data["active_flag"] = active_flag
-
-        if application_metadata is not None:
-            data["application_metadata"] = application_metadata
-
-        content = json.dumps(obj=data).encode(encoding="utf-8")
+        content = build_update_target_content(
+            name=name,
+            width=width,
+            image=image,
+            active_flag=active_flag,
+            application_metadata=application_metadata,
+        )
 
         self.make_request(
             method=HTTPMethod.PUT,

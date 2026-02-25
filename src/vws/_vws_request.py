@@ -9,6 +9,45 @@ from vws.response import Response
 from vws.transports import Transport
 
 
+def build_vws_request_args(
+    *,
+    content_type: str,
+    server_access_key: str,
+    server_secret_key: str,
+    method: str,
+    data: bytes,
+    request_path: str,
+    base_vws_url: str,
+    extra_headers: dict[str, str],
+) -> tuple[str, dict[str, str]]:
+    """Build the URL and headers for a Vuforia Target API request.
+
+    Returns:
+        A tuple of (url, headers).
+    """
+    date_string = rfc_1123_date()
+
+    signature_string = authorization_header(
+        access_key=server_access_key,
+        secret_key=server_secret_key,
+        method=method,
+        content=data,
+        content_type=content_type,
+        date=date_string,
+        request_path=request_path,
+    )
+
+    headers = {
+        "Authorization": signature_string,
+        "Date": date_string,
+        "Content-Type": content_type,
+        **extra_headers,
+    }
+
+    url = base_vws_url.rstrip("/") + request_path
+    return url, headers
+
+
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
 def target_api_request(
     *,
@@ -46,26 +85,16 @@ def target_api_request(
     Returns:
         The response to the request.
     """
-    date_string = rfc_1123_date()
-
-    signature_string = authorization_header(
-        access_key=server_access_key,
-        secret_key=server_secret_key,
-        method=method,
-        content=data,
+    url, headers = build_vws_request_args(
         content_type=content_type,
-        date=date_string,
+        server_access_key=server_access_key,
+        server_secret_key=server_secret_key,
+        method=method,
+        data=data,
         request_path=request_path,
+        base_vws_url=base_vws_url,
+        extra_headers=extra_headers,
     )
-
-    headers = {
-        "Authorization": signature_string,
-        "Date": date_string,
-        "Content-Type": content_type,
-        **extra_headers,
-    }
-
-    url = base_vws_url.rstrip("/") + request_path
 
     return transport(
         method=method,

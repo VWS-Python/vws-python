@@ -3,8 +3,8 @@ Vuforia Target API.
 """
 
 from beartype import BeartypeConf, beartype
-from vws_auth_tools import authorization_header, rfc_1123_date
 
+from vws._vws_request import build_vws_request_args
 from vws.response import Response
 from vws.transports import AsyncTransport
 
@@ -47,26 +47,16 @@ async def async_target_api_request(
     Returns:
         The response to the request.
     """
-    date_string = rfc_1123_date()
-
-    signature_string = authorization_header(
-        access_key=server_access_key,
-        secret_key=server_secret_key,
-        method=method,
-        content=data,
+    url, headers = build_vws_request_args(
         content_type=content_type,
-        date=date_string,
+        server_access_key=server_access_key,
+        server_secret_key=server_secret_key,
+        method=method,
+        data=data,
         request_path=request_path,
+        base_vws_url=base_vws_url,
+        extra_headers=extra_headers,
     )
-
-    headers = {
-        "Authorization": signature_string,
-        "Date": date_string,
-        "Content-Type": content_type,
-        **extra_headers,
-    }
-
-    url = base_vws_url.rstrip("/") + request_path
 
     return await transport(
         method=method,
