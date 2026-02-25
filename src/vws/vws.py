@@ -281,7 +281,9 @@ class VWS:
         )
 
         result_data = json.loads(s=response.text)
-        return TargetStatusAndRecord.from_response_dict(result_data)  # type: ignore[misc]
+        return TargetStatusAndRecord.from_response_dict(
+            response_dict=result_data,
+        )
 
     def wait_for_target_processed(
         self,
@@ -405,7 +407,9 @@ class VWS:
         )
 
         result_data = dict(json.loads(s=response.text))
-        return TargetSummaryReport.from_response_dict(result_data)  # type: ignore[misc]
+        return TargetSummaryReport.from_response_dict(
+            response_dict=result_data,
+        )
 
     def get_database_summary_report(self) -> DatabaseSummaryReport:
         """Get a summary report for the database.
@@ -438,7 +442,9 @@ class VWS:
         )
 
         response_data = dict(json.loads(s=response.text))
-        return DatabaseSummaryReport.from_response_dict(response_data)  # type: ignore[misc]
+        return DatabaseSummaryReport.from_response_dict(
+            response_dict=response_data,
+        )
 
     def delete_target(self, target_id: str) -> None:
         """Delete a given target.
