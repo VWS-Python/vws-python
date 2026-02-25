@@ -2,7 +2,6 @@
 Web APIs.
 """
 
-import datetime
 import json
 from http import HTTPMethod, HTTPStatus
 from typing import Any, Self
@@ -25,7 +24,7 @@ from vws.exceptions.custom_exceptions import (
     ServerError,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
-from vws.reports import QueryResult, TargetData
+from vws.reports import QueryResult
 from vws.transports import AsyncHTTPXTransport, AsyncTransport
 
 
@@ -197,30 +196,7 @@ class AsyncCloudRecoService:
             }[result_code]
             raise exception(response=response)
 
-        result: list[QueryResult] = []
         result_list = list(
             json.loads(s=response.text)["results"],
         )
-        for item in result_list:
-            target_data: TargetData | None = None
-            if "target_data" in item:
-                target_data_dict = item["target_data"]
-                metadata = target_data_dict["application_metadata"]
-                timestamp_string = target_data_dict["target_timestamp"]
-                target_timestamp = datetime.datetime.fromtimestamp(
-                    timestamp=timestamp_string,
-                    tz=datetime.UTC,
-                )
-                target_data = TargetData(
-                    name=target_data_dict["name"],
-                    application_metadata=metadata,
-                    target_timestamp=target_timestamp,
-                )
-
-            query_result = QueryResult(
-                target_id=item["target_id"],
-                target_data=target_data,
-            )
-
-            result.append(query_result)
-        return result
+        return [QueryResult.from_response_dict(item) for item in result_list]

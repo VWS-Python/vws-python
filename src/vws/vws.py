@@ -3,7 +3,6 @@
 import base64
 import json
 import time
-from datetime import date
 from http import HTTPMethod, HTTPStatus
 
 from beartype import BeartypeConf, beartype
@@ -37,7 +36,6 @@ from vws.exceptions.vws_exceptions import (
 )
 from vws.reports import (
     DatabaseSummaryReport,
-    TargetRecord,
     TargetStatusAndRecord,
     TargetStatuses,
     TargetSummaryReport,
@@ -283,20 +281,7 @@ class VWS:
         )
 
         result_data = json.loads(s=response.text)
-        status = TargetStatuses(value=result_data["status"])
-        target_record_dict = dict(result_data["target_record"])
-        target_record = TargetRecord(
-            target_id=target_record_dict["target_id"],
-            active_flag=bool(target_record_dict["active_flag"]),
-            name=target_record_dict["name"],
-            width=float(target_record_dict["width"]),
-            tracking_rating=int(target_record_dict["tracking_rating"]),
-            reco_rating=target_record_dict["reco_rating"],
-        )
-        return TargetStatusAndRecord(
-            status=status,
-            target_record=target_record,
-        )
+        return TargetStatusAndRecord.from_response_dict(result_data)
 
     def wait_for_target_processed(
         self,
@@ -420,17 +405,7 @@ class VWS:
         )
 
         result_data = dict(json.loads(s=response.text))
-        return TargetSummaryReport(
-            status=TargetStatuses(value=result_data["status"]),
-            database_name=result_data["database_name"],
-            target_name=result_data["target_name"],
-            upload_date=date.fromisoformat(result_data["upload_date"]),
-            active_flag=bool(result_data["active_flag"]),
-            tracking_rating=int(result_data["tracking_rating"]),
-            total_recos=int(result_data["total_recos"]),
-            current_month_recos=int(result_data["current_month_recos"]),
-            previous_month_recos=int(result_data["previous_month_recos"]),
-        )
+        return TargetSummaryReport.from_response_dict(result_data)
 
     def get_database_summary_report(self) -> DatabaseSummaryReport:
         """Get a summary report for the database.
@@ -463,20 +438,7 @@ class VWS:
         )
 
         response_data = dict(json.loads(s=response.text))
-        return DatabaseSummaryReport(
-            active_images=int(response_data["active_images"]),
-            current_month_recos=int(response_data["current_month_recos"]),
-            failed_images=int(response_data["failed_images"]),
-            inactive_images=int(response_data["inactive_images"]),
-            name=str(object=response_data["name"]),
-            previous_month_recos=int(response_data["previous_month_recos"]),
-            processing_images=int(response_data["processing_images"]),
-            reco_threshold=int(response_data["reco_threshold"]),
-            request_quota=int(response_data["request_quota"]),
-            request_usage=int(response_data["request_usage"]),
-            target_quota=int(response_data["target_quota"]),
-            total_recos=int(response_data["total_recos"]),
-        )
+        return DatabaseSummaryReport.from_response_dict(response_data)
 
     def delete_target(self, target_id: str) -> None:
         """Delete a given target.
