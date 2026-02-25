@@ -186,6 +186,9 @@ class AsyncCloudRecoService:
 
         result_code = json.loads(s=response.text)["result_code"]
         if result_code != "Success":
-            raise_for_cloud_reco_result_code(result_code, response)
+            raise_for_cloud_reco_result_code(
+                result_code=result_code,
+                response=response,
+            )
 
-        return parse_query_results(response.text)
+        return parse_query_results(text=response.text)

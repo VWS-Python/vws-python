@@ -140,5 +140,8 @@ class AsyncVuMarkService:
 
         if response.status_code != HTTPStatus.OK:
             result_code = json.loads(s=response.text)["result_code"]
-            raise_for_vumark_result_code(result_code, response)
+            raise_for_vumark_result_code(
+                result_code=result_code,
+                response=response,
+            )
         return response.content

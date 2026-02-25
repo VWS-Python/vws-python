@@ -143,7 +143,10 @@ class AsyncVWS:
         result_code = json.loads(s=response.text)["result_code"]
 
         if result_code != expected_result_code:
-            raise_for_vws_result_code(result_code, response)
+            raise_for_vws_result_code(
+                result_code=result_code,
+                response=response,
+            )
         return response
 
     async def add_target(
@@ -254,7 +257,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return parse_target_record_response(response.text)
+        return parse_target_record_response(text=response.text)
 
     async def wait_for_target_processed(
         self,
@@ -388,7 +391,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return parse_target_summary_response(response.text)
+        return parse_target_summary_response(text=response.text)
 
     async def get_database_summary_report(
         self,
@@ -422,7 +425,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return parse_database_summary_response(response.text)
+        return parse_database_summary_response(text=response.text)
 
     async def delete_target(self, target_id: str) -> None:
         """Delete a given target.
