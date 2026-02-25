@@ -27,6 +27,8 @@ admin
 api
 args
 ascii
+async
+asyncio
 beartype
 bool
 boolean
