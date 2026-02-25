@@ -34,18 +34,18 @@ class DatabaseSummaryReport:
     def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
         """Construct from a VWS API response dict."""
         return cls(
-            active_images=int(response_dict["active_images"]),  # type: ignore[arg-type]
-            current_month_recos=int(response_dict["current_month_recos"]),  # type: ignore[arg-type]
-            failed_images=int(response_dict["failed_images"]),  # type: ignore[arg-type]
-            inactive_images=int(response_dict["inactive_images"]),  # type: ignore[arg-type]
-            name=response_dict["name"],  # type: ignore[arg-type]
-            previous_month_recos=int(response_dict["previous_month_recos"]),  # type: ignore[arg-type]
-            processing_images=int(response_dict["processing_images"]),  # type: ignore[arg-type]
-            reco_threshold=int(response_dict["reco_threshold"]),  # type: ignore[arg-type]
-            request_quota=int(response_dict["request_quota"]),  # type: ignore[arg-type]
-            request_usage=int(response_dict["request_usage"]),  # type: ignore[arg-type]
-            target_quota=int(response_dict["target_quota"]),  # type: ignore[arg-type]
-            total_recos=int(response_dict["total_recos"]),  # type: ignore[arg-type]
+            active_images=int(response_dict["active_images"]),
+            current_month_recos=int(response_dict["current_month_recos"]),
+            failed_images=int(response_dict["failed_images"]),
+            inactive_images=int(response_dict["inactive_images"]),
+            name=response_dict["name"],
+            previous_month_recos=int(response_dict["previous_month_recos"]),
+            processing_images=int(response_dict["processing_images"]),
+            reco_threshold=int(response_dict["reco_threshold"]),
+            request_quota=int(response_dict["request_quota"]),
+            request_usage=int(response_dict["request_usage"]),
+            target_quota=int(response_dict["target_quota"]),
+            total_recos=int(response_dict["total_recos"]),
         )
 
 
@@ -83,20 +83,20 @@ class TargetSummaryReport:
     previous_month_recos: int
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # type: ignore[name-defined]
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
         """Construct from a VWS API response dict."""
-        return cls(  # type: ignore[arg-type]
-            status=TargetStatuses(value=response_dict["status"]),  # type: ignore[arg-type]
-            database_name=response_dict["database_name"],  # type: ignore[arg-type]
-            target_name=response_dict["target_name"],  # type: ignore[arg-type]
+        return cls(
+            status=TargetStatuses(value=response_dict["status"]),
+            database_name=response_dict["database_name"],
+            target_name=response_dict["target_name"],
             upload_date=datetime.date.fromisoformat(
                 response_dict["upload_date"]
-            ),  # type: ignore[arg-type]
-            active_flag=bool(response_dict["active_flag"]),  # type: ignore[arg-type]
-            tracking_rating=int(response_dict["tracking_rating"]),  # type: ignore[arg-type]
-            total_recos=int(response_dict["total_recos"]),  # type: ignore[arg-type]
-            current_month_recos=int(response_dict["current_month_recos"]),  # type: ignore[arg-type]
-            previous_month_recos=int(response_dict["previous_month_recos"]),  # type: ignore[arg-type]
+            ),
+            active_flag=bool(response_dict["active_flag"]),
+            tracking_rating=int(response_dict["tracking_rating"]),
+            total_recos=int(response_dict["total_recos"]),
+            current_month_recos=int(response_dict["current_month_recos"]),
+            previous_month_recos=int(response_dict["previous_month_recos"]),
         )
 
 
@@ -140,22 +140,22 @@ class QueryResult:
     target_data: TargetData | None
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # type: ignore[name-defined]
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
         """Construct from a VWS API query result item dict."""
         target_data: TargetData | None = None
         if "target_data" in response_dict:
             target_data_dict = response_dict["target_data"]
             target_timestamp = datetime.datetime.fromtimestamp(
-                timestamp=target_data_dict["target_timestamp"],  # type: ignore[arg-type]
+                timestamp=target_data_dict["target_timestamp"],
                 tz=datetime.UTC,
             )
             target_data = TargetData(
-                name=target_data_dict["name"],  # type: ignore[arg-type]
-                application_metadata=target_data_dict["application_metadata"],  # type: ignore[arg-type]
+                name=target_data_dict["name"],
+                application_metadata=target_data_dict["application_metadata"],
                 target_timestamp=target_timestamp,
             )
-        return cls(  # type: ignore[arg-type]
-            target_id=response_dict["target_id"],  # type: ignore[arg-type]
+        return cls(
+            target_id=response_dict["target_id"],
             target_data=target_data,
         )
 
@@ -173,16 +173,16 @@ class TargetStatusAndRecord:
     target_record: TargetRecord
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # type: ignore[name-defined]
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
         """Construct from a VWS API response dict."""
-        status = TargetStatuses(value=response_dict["status"])  # type: ignore[arg-type]
+        status = TargetStatuses(value=response_dict["status"])
         target_record_dict = dict(response_dict["target_record"])
         target_record = TargetRecord(
-            target_id=target_record_dict["target_id"],  # type: ignore[arg-type]
-            active_flag=bool(target_record_dict["active_flag"]),  # type: ignore[arg-type]
-            name=target_record_dict["name"],  # type: ignore[arg-type]
-            width=float(target_record_dict["width"]),  # type: ignore[arg-type]
-            tracking_rating=int(target_record_dict["tracking_rating"]),  # type: ignore[arg-type]
-            reco_rating=target_record_dict["reco_rating"],  # type: ignore[arg-type]
+            target_id=target_record_dict["target_id"],
+            active_flag=bool(target_record_dict["active_flag"]),
+            name=target_record_dict["name"],
+            width=float(target_record_dict["width"]),
+            tracking_rating=int(target_record_dict["tracking_rating"]),
+            reco_rating=target_record_dict["reco_rating"],
         )
-        return cls(status=status, target_record=target_record)  # type: ignore[arg-type]
+        return cls(status=status, target_record=target_record)
