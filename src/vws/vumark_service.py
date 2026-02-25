@@ -6,20 +6,9 @@ from http import HTTPMethod, HTTPStatus
 from beartype import BeartypeConf, beartype
 
 from vws._vws_request import target_api_request
+from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import ServerError
-from vws.exceptions.vws_exceptions import (
-    AuthenticationFailureError,
-    BadRequestError,
-    DateRangeError,
-    FailError,
-    InvalidAcceptHeaderError,
-    InvalidInstanceIdError,
-    InvalidTargetTypeError,
-    RequestTimeTooSkewedError,
-    TargetStatusNotSuccessError,
-    TooManyRequestsError,
-    UnknownTargetError,
-)
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.transports import RequestsTransport, Transport
 from vws.vumark_accept import VuMarkAccept
 
@@ -135,17 +124,7 @@ class VuMarkService:
 
         result_code = json.loads(s=response.text)["result_code"]
 
-        exception = {
-            "AuthenticationFailure": AuthenticationFailureError,
-            "BadRequest": BadRequestError,
-            "DateRangeError": DateRangeError,
-            "Fail": FailError,
-            "InvalidAcceptHeader": InvalidAcceptHeaderError,
-            "InvalidInstanceId": InvalidInstanceIdError,
-            "InvalidTargetType": InvalidTargetTypeError,
-            "RequestTimeTooSkewed": RequestTimeTooSkewedError,
-            "TargetStatusNotSuccess": TargetStatusNotSuccessError,
-            "UnknownTarget": UnknownTargetError,
-        }[result_code]
-
-        raise exception(response=response)
+        raise VWSError.from_result_code(
+            result_code=result_code,
+            response=response,
+        )

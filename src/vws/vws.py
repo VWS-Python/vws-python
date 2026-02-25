@@ -10,30 +10,12 @@ from beartype import BeartypeConf, beartype
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
 from vws._vws_request import target_api_request
+from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import (
     ServerError,
     TargetProcessingTimeoutError,
 )
-from vws.exceptions.vws_exceptions import (
-    AuthenticationFailureError,
-    BadImageError,
-    BadRequestError,
-    DateRangeError,
-    FailError,
-    ImageTooLargeError,
-    MetadataTooLargeError,
-    ProjectHasNoAPIAccessError,
-    ProjectInactiveError,
-    ProjectSuspendedError,
-    RequestQuotaReachedError,
-    RequestTimeTooSkewedError,
-    TargetNameExistError,
-    TargetQuotaReachedError,
-    TargetStatusNotSuccessError,
-    TargetStatusProcessingError,
-    TooManyRequestsError,
-    UnknownTargetError,
-)
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.reports import (
     DatabaseSummaryReport,
     TargetStatusAndRecord,
@@ -143,27 +125,10 @@ class VWS:
         if result_code == expected_result_code:
             return response
 
-        exception = {
-            "AuthenticationFailure": AuthenticationFailureError,
-            "BadImage": BadImageError,
-            "BadRequest": BadRequestError,
-            "DateRangeError": DateRangeError,
-            "Fail": FailError,
-            "ImageTooLarge": ImageTooLargeError,
-            "MetadataTooLarge": MetadataTooLargeError,
-            "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
-            "ProjectInactive": ProjectInactiveError,
-            "ProjectSuspended": ProjectSuspendedError,
-            "RequestQuotaReached": RequestQuotaReachedError,
-            "RequestTimeTooSkewed": RequestTimeTooSkewedError,
-            "TargetNameExist": TargetNameExistError,
-            "TargetQuotaReached": TargetQuotaReachedError,
-            "TargetStatusNotSuccess": TargetStatusNotSuccessError,
-            "TargetStatusProcessing": TargetStatusProcessingError,
-            "UnknownTarget": UnknownTargetError,
-        }[result_code]
-
-        raise exception(response=response)
+        raise VWSError.from_result_code(
+            result_code=result_code,
+            response=response,
+        )
 
     def add_target(
         self,

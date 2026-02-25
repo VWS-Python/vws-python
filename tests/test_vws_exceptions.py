@@ -37,6 +37,7 @@ from vws.exceptions.vws_exceptions import (
     TargetStatusProcessingError,
     UnknownTargetError,
 )
+from vws.response import Response
 from vws.vumark_accept import VuMarkAccept
 
 
@@ -451,3 +452,24 @@ def test_base_exception(
         active_flag=True,
         application_metadata=None,
     )
+
+
+def test_vwserror_from_result_code() -> None:
+    """``VWSError.from_result_code`` returns the mapped exception."""
+    response = Response(
+        text='{"result_code":"UnknownTarget"}',
+        url="https://example.com/targets/123",
+        status_code=HTTPStatus.NOT_FOUND,
+        headers={},
+        request_body=None,
+        tell_position=0,
+        content=b"",
+    )
+
+    exception = VWSError.from_result_code(
+        result_code="UnknownTarget",
+        response=response,
+    )
+
+    assert isinstance(exception, UnknownTargetError)
+    assert exception.response is response
