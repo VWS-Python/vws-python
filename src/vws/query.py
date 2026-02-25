@@ -1,15 +1,16 @@
 """Tools for interacting with the Vuforia Cloud Recognition Web APIs."""
 
 import datetime
-import io
 import json
 from http import HTTPMethod, HTTPStatus
-from typing import Any, BinaryIO
+from typing import Any
 
 from beartype import BeartypeConf, beartype
 from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
+from vws._image_utils import ImageType as _ImageType
+from vws._image_utils import get_image_data as _get_image_data
 from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailureError,
     BadImageError,
@@ -24,18 +25,6 @@ from vws.exceptions.custom_exceptions import (
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult, TargetData
 from vws.transports import RequestsTransport, Transport
-
-_ImageType = io.BytesIO | BinaryIO
-
-
-@beartype
-def _get_image_data(image: _ImageType) -> bytes:
-    """Get the data of an image file."""
-    original_tell = image.tell()
-    image.seek(0)
-    image_data = image.read()
-    image.seek(original_tell)
-    return image_data
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
