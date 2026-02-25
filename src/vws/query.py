@@ -165,4 +165,4 @@ class CloudRecoService:
             raise exception(response=response)
 
         result_list = list(json.loads(s=response.text)["results"])
-        return [QueryResult.from_response_dict(item) for item in result_list]
+        return [QueryResult.from_response_dict(item) for item in result_list]  # type: ignore[arg-type]
