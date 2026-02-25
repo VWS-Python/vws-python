@@ -12,10 +12,7 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
-from vws._query_common import (
-    parse_query_results,
-    raise_for_cloud_reco_result_code,
-)
+from vws._query_common import raise_for_cloud_reco_result_code
 from vws.exceptions.cloud_reco_exceptions import MaxNumResultsOutOfRangeError
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLargeError,
@@ -191,4 +188,8 @@ class AsyncCloudRecoService:
                 response=response,
             )
 
-        return parse_query_results(text=response.text)
+        result_items = list(json.loads(s=response.text)["results"])
+        return [
+            QueryResult.from_response_dict(response_dict=result_item)
+            for result_item in result_items
+        ]

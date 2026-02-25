@@ -12,9 +12,6 @@ from vws._image_utils import ImageType as _ImageType
 from vws._vws_common import (
     build_add_target_content,
     build_update_target_content,
-    parse_database_summary_response,
-    parse_target_record_response,
-    parse_target_summary_response,
     raise_for_vws_result_code,
 )
 from vws.exceptions.custom_exceptions import (
@@ -257,7 +254,9 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return parse_target_record_response(text=response.text)
+        return TargetStatusAndRecord.from_response_dict(
+            response_dict=dict(json.loads(s=response.text)),
+        )
 
     async def wait_for_target_processed(
         self,
@@ -391,7 +390,9 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return parse_target_summary_response(text=response.text)
+        return TargetSummaryReport.from_response_dict(
+            response_dict=dict(json.loads(s=response.text)),
+        )
 
     async def get_database_summary_report(
         self,
@@ -425,7 +426,9 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return parse_database_summary_response(text=response.text)
+        return DatabaseSummaryReport.from_response_dict(
+            response_dict=dict(json.loads(s=response.text)),
+        )
 
     async def delete_target(self, target_id: str) -> None:
         """Delete a given target.
