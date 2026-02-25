@@ -202,3 +202,29 @@ class InvalidTargetTypeError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     ``InvalidTargetType``.
     """
+
+
+VWSError.register_exceptions_by_result_code(
+    exceptions_by_result_code={
+        "AuthenticationFailure": AuthenticationFailureError,
+        "BadImage": BadImageError,
+        "BadRequest": BadRequestError,
+        "DateRangeError": DateRangeError,
+        "Fail": FailError,
+        "ImageTooLarge": ImageTooLargeError,
+        "InvalidAcceptHeader": InvalidAcceptHeaderError,
+        "InvalidInstanceId": InvalidInstanceIdError,
+        "InvalidTargetType": InvalidTargetTypeError,
+        "MetadataTooLarge": MetadataTooLargeError,
+        "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
+        "ProjectInactive": ProjectInactiveError,
+        "ProjectSuspended": ProjectSuspendedError,
+        "RequestQuotaReached": RequestQuotaReachedError,
+        "RequestTimeTooSkewed": RequestTimeTooSkewedError,
+        "TargetNameExist": TargetNameExistError,
+        "TargetQuotaReached": TargetQuotaReachedError,
+        "TargetStatusNotSuccess": TargetStatusNotSuccessError,
+        "TargetStatusProcessing": TargetStatusProcessingError,
+        "UnknownTarget": UnknownTargetError,
+    },
+)
