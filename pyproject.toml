@@ -81,7 +81,7 @@ optional-dependencies.dev = [
     # See: https://vws-python.github.io/vws-python-mock/installation.html#faster-installation
     "torch>=2.5.1",
     "torchvision>=0.20.1",
-    "ty==0.0.18",
+    "ty==0.0.19",
     "types-requests==2.32.4.20260107",
     "vulture==2.14",
     "vws-python-mock==2026.2.22.3",
