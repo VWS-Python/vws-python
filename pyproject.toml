@@ -43,7 +43,7 @@ optional-dependencies.dev = [
     "check-manifest==0.51",
     "deptry==0.24.0",
     "doc8==2.0.0",
-    "doccmd==2026.2.27",
+    "doccmd==2026.3.1",
     "freezegun==1.5.5",
     "furo==2025.12.19",
     "interrogate==1.7.0",
