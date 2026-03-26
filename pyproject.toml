@@ -75,7 +75,7 @@ optional-dependencies.dev = [
     "sphinx-pyproject==0.3.0",
     "sphinx-substitution-extensions==2026.1.12",
     "sphinxcontrib-spelling==8.0.2",
-    "sybil==9.3.0",
+    "sybil==10.0.1",
     # Listed explicitly (despite being transitive via vws-python-mock) so that
     # [tool.uv.sources] can redirect to the CPU-only PyTorch index.
     # See: https://vws-python.github.io/vws-python-mock/installation.html#faster-installation
