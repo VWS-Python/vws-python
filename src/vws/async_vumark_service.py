@@ -50,9 +50,7 @@ class AsyncVuMarkService:
 
     async def aclose(self) -> None:
         """Close the underlying transport if it supports closing."""
-        close = getattr(self._transport, "aclose", None)
-        if close is not None:
-            await close()
+        await self._transport.aclose()
 
     async def __aenter__(self) -> Self:
         """Enter the async context manager."""
