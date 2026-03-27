@@ -167,6 +167,10 @@ class AsyncTransport(Protocol):
     and returns a ``Response``.
     """
 
+    async def aclose(self) -> None:
+        """Close the transport and release resources."""
+        ...  # pylint: disable=unnecessary-ellipsis
+
     def __call__(
         self,
         *,
