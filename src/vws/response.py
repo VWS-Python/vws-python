@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from beartype import beartype
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 @beartype
 class Response:
     """A response from a request."""

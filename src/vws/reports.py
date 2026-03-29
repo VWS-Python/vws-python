@@ -9,7 +9,7 @@ from beartype import BeartypeConf, beartype
 
 
 @beartype
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class DatabaseSummaryReport:
     """A database summary report.
 
@@ -64,7 +64,7 @@ class TargetStatuses(Enum):
 
 
 @beartype
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class TargetSummaryReport:
     """A target summary report.
 
@@ -101,7 +101,7 @@ class TargetSummaryReport:
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class TargetRecord:
     """A target record.
 
