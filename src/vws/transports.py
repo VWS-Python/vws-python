@@ -97,7 +97,25 @@ class HTTPXTransport:
 
     Use this transport for environments where ``httpx`` is
     preferred over ``requests``.
+    A single ``httpx.Client`` is reused across requests
+    for connection pooling.
     """
+
+    def __init__(self) -> None:
+        """Create an ``HTTPXTransport``."""
+        self._client = httpx.Client()
+
+    def close(self) -> None:
+        """Close the underlying ``httpx.Client``."""
+        self._client.close()
+
+    def __enter__(self) -> Self:
+        """Enter the context manager."""
+        return self
+
+    def __exit__(self, *_args: object) -> None:
+        """Exit the context manager and close the client."""
+        self.close()
 
     def __call__(
         self,
@@ -136,7 +154,7 @@ class HTTPXTransport:
                 pool=None,
             )
 
-        httpx_response = httpx.request(
+        httpx_response = self._client.request(
             method=method,
             url=url,
             headers=headers,
