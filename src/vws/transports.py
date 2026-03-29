@@ -18,6 +18,10 @@ class Transport(Protocol):
     returns a ``Response``.
     """
 
+    def close(self) -> None:
+        """Close the transport and release resources."""
+        ...  # pylint: disable=unnecessary-ellipsis
+
     def __call__(
         self,
         *,
@@ -50,6 +54,13 @@ class RequestsTransport:
 
     This is the default transport.
     """
+
+    def close(self) -> None:
+        """Close the transport.
+
+        This is a no-op for ``RequestsTransport`` as it does not
+        hold persistent connections.
+        """
 
     def __call__(
         self,
