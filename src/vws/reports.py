@@ -118,7 +118,7 @@ class TargetRecord:
 
 
 @beartype
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class TargetData:
     """The target data optionally included with a query match."""
 
@@ -128,7 +128,7 @@ class TargetData:
 
 
 @beartype
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class QueryResult:
     """One query match result.
 
@@ -161,7 +161,7 @@ class QueryResult:
 
 
 @beartype
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class TargetStatusAndRecord:
     """The target status and a target record.
 
