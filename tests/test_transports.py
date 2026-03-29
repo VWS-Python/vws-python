@@ -61,6 +61,28 @@ class TestHTTPXTransport:
         assert isinstance(response, Response)
         assert response.status_code == HTTPStatus.OK
 
+    @staticmethod
+    @respx.mock
+    def test_context_manager() -> None:
+        """``HTTPXTransport`` can be used as a context manager."""
+        route = respx.post(url="https://example.com/test").mock(
+            return_value=httpx.Response(
+                status_code=HTTPStatus.OK,
+                text="OK",
+            ),
+        )
+        with HTTPXTransport() as transport:
+            response = transport(
+                method="POST",
+                url="https://example.com/test",
+                headers={"Content-Type": "text/plain"},
+                data=b"hello",
+                request_timeout=30.0,
+            )
+        assert route.called
+        assert isinstance(response, Response)
+        assert response.status_code == HTTPStatus.OK
+
 
 class TestAsyncHTTPXTransport:
     """Tests for ``AsyncHTTPXTransport``."""
