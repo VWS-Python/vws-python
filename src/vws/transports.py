@@ -1,7 +1,7 @@
 """HTTP transport implementations for VWS clients."""
 
 from collections.abc import Awaitable
-from typing import Protocol, Self, runtime_checkable
+from typing import Protocol, Self, assert_never, runtime_checkable
 
 import httpx
 import requests
@@ -30,9 +30,8 @@ def _httpx_timeout(
                 write=None,
                 pool=None,
             )
-        case _:  # pragma: no cover
-            msg = f"Unexpected timeout type: {type(request_timeout)}"
-            raise TypeError(msg)
+        case _ as unreachable:
+            assert_never(unreachable)
 
 
 @runtime_checkable
