@@ -30,6 +30,9 @@ def _httpx_timeout(
                 write=None,
                 pool=None,
             )
+        case _:  # pragma: no cover
+            msg = f"Unexpected timeout type: {type(request_timeout)}"
+            raise TypeError(msg)
 
 
 @runtime_checkable
