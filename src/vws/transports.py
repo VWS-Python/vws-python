@@ -31,7 +31,7 @@ def _httpx_timeout(
                 pool=None,
             )
         case _ as unreachable:
-            assert_never(unreachable)
+            assert_never(unreachable)  # pyrefly: ignore[bad-argument-type]  # ty: ignore[type-assertion-failure]
 
 
 @runtime_checkable
