@@ -10,6 +10,28 @@ from beartype import BeartypeConf, beartype
 from vws.response import Response
 
 
+@beartype(conf=BeartypeConf(is_pep484_tower=True))
+def _httpx_timeout(
+    request_timeout: float | tuple[float, float],
+) -> httpx.Timeout:
+    """Build an ``httpx.Timeout`` from a request timeout value."""
+    match request_timeout:
+        case (connect, read):
+            return httpx.Timeout(
+                connect=connect,
+                read=read,
+                write=None,
+                pool=None,
+            )
+        case float() | int() as timeout:
+            return httpx.Timeout(
+                connect=timeout,
+                read=timeout,
+                write=None,
+                pool=None,
+            )
+
+
 @runtime_checkable
 class Transport(Protocol):
     """Protocol for HTTP transports used by VWS clients.
@@ -149,21 +171,7 @@ class HTTPXTransport:
         Returns:
             A Response populated from the httpx response.
         """
-        if isinstance(request_timeout, tuple):
-            connect_timeout, read_timeout = request_timeout
-            httpx_timeout = httpx.Timeout(
-                connect=connect_timeout,
-                read=read_timeout,
-                write=None,
-                pool=None,
-            )
-        else:
-            httpx_timeout = httpx.Timeout(
-                connect=request_timeout,
-                read=request_timeout,
-                write=None,
-                pool=None,
-            )
+        httpx_timeout = _httpx_timeout(request_timeout=request_timeout)
 
         httpx_response = self._client.request(
             method=method,
@@ -272,21 +280,7 @@ class AsyncHTTPXTransport:
         Returns:
             A Response populated from the httpx response.
         """
-        if isinstance(request_timeout, tuple):
-            connect_timeout, read_timeout = request_timeout
-            httpx_timeout = httpx.Timeout(
-                connect=connect_timeout,
-                read=read_timeout,
-                write=None,
-                pool=None,
-            )
-        else:
-            httpx_timeout = httpx.Timeout(
-                connect=request_timeout,
-                read=request_timeout,
-                write=None,
-                pool=None,
-            )
+        httpx_timeout = _httpx_timeout(request_timeout=request_timeout)
 
         httpx_response = await self._client.request(
             method=method,
