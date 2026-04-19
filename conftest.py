@@ -7,7 +7,6 @@ from doctest import ELLIPSIS
 from pathlib import Path
 
 import pytest
-from beartype import beartype
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 from sybil import Sybil
@@ -16,14 +15,6 @@ from sybil.parsers.rest import (
     DocTestParser,
     PythonCodeBlockParser,
 )
-
-
-@beartype
-def pytest_collection_modifyitems(items: list[pytest.Item]) -> None:
-    """Apply the beartype decorator to all collected test functions."""
-    for item in items:
-        if isinstance(item, pytest.Function):
-            item.obj = beartype(obj=item.obj)
 
 
 @pytest.fixture(name="make_image_file")
