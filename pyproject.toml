@@ -61,6 +61,7 @@ optional-dependencies.dev = [
     "pyroma==5.0.1",
     "pytest==9.0.3",
     "pytest-asyncio==1.3.0",
+    "pytest-beartype-tests",
     "pytest-cov==7.1.0",
     "pyyaml==6.0.3",
     "ruff==0.15.11",
@@ -93,6 +94,9 @@ optional-dependencies.release = [ "check-wheel-contents==0.6.3" ]
 urls.Documentation = "https://vws-python.github.io/vws-python/"
 urls.Source = "https://github.com/VWS-Python/vws-python"
 
+[dependency-groups]
+dev = []
+
 [tool.setuptools]
 zip-safe = false
 package-data.vws = [
@@ -114,6 +118,7 @@ bdist_wheel.universal = true
 version_scheme = "post-release"
 
 [tool.uv]
+sources.pytest-beartype-tests = { git = "https://github.com/adamtheturtle/pytest-beartype-tests.git", rev = "bc81d99" }
 sources.torch = { index = "pytorch-cpu" }
 sources.torchvision = { index = "pytorch-cpu" }
 index = [ { name = "pytorch-cpu", url = "https://download.pytorch.org/whl/cpu", explicit = true } ]
@@ -364,7 +369,6 @@ ignore_names = [
     "HTTPXTransport",
     # pytest configuration
     "pytest_collect_file",
-    "pytest_collection_modifyitems",
     "pytest_plugins",
     # pytest fixtures - we name fixtures like this for this purpose
     "fixture_*",
