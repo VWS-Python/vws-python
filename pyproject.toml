@@ -38,7 +38,8 @@ dependencies = [
     "urllib3>=2.2.3",
     "vws-auth-tools>=2024.7.12",
 ]
-optional-dependencies.dev = [    "actionlint-py==1.7.12.24",
+optional-dependencies.dev = [
+    "actionlint-py==1.7.12.24",
     "check-manifest==0.51",
     "deptry==0.25.1",
     "doc8==2.0.0",
