@@ -10,29 +10,6 @@ from beartype import BeartypeConf, beartype
 from vws.response import Response
 
 
-def _httpx_timeout(
-    request_timeout: float | tuple[float, float],
-) -> httpx.Timeout:
-    """Convert a VWS request timeout to an ``httpx`` timeout."""
-    match request_timeout:
-        case (connect_timeout, read_timeout):
-            return httpx.Timeout(
-                connect=connect_timeout,
-                read=read_timeout,
-                write=None,
-                pool=None,
-            )
-        case float() | int() as timeout:
-            return httpx.Timeout(
-                connect=timeout,
-                read=timeout,
-                write=None,
-                pool=None,
-            )
-        case _:  # pragma: no cover
-            raise AssertionError
-
-
 @runtime_checkable
 class Transport(Protocol):
     """Protocol for HTTP transports used by VWS clients.
@@ -172,12 +149,30 @@ class HTTPXTransport:
         Returns:
             A Response populated from the httpx response.
         """
+        match request_timeout:
+            case (connect_timeout, read_timeout):
+                httpx_timeout = httpx.Timeout(
+                    connect=connect_timeout,
+                    read=read_timeout,
+                    write=None,
+                    pool=None,
+                )
+            case float() | int() as timeout:
+                httpx_timeout = httpx.Timeout(
+                    connect=timeout,
+                    read=timeout,
+                    write=None,
+                    pool=None,
+                )
+            case _:  # pragma: no cover
+                raise AssertionError
+
         httpx_response = self._client.request(
             method=method,
             url=url,
             headers=headers,
             content=data,
-            timeout=_httpx_timeout(request_timeout=request_timeout),
+            timeout=httpx_timeout,
             follow_redirects=True,
         )
 
@@ -279,12 +274,30 @@ class AsyncHTTPXTransport:
         Returns:
             A Response populated from the httpx response.
         """
+        match request_timeout:
+            case (connect_timeout, read_timeout):
+                httpx_timeout = httpx.Timeout(
+                    connect=connect_timeout,
+                    read=read_timeout,
+                    write=None,
+                    pool=None,
+                )
+            case float() | int() as timeout:
+                httpx_timeout = httpx.Timeout(
+                    connect=timeout,
+                    read=timeout,
+                    write=None,
+                    pool=None,
+                )
+            case _:  # pragma: no cover
+                raise AssertionError
+
         httpx_response = await self._client.request(
             method=method,
             url=url,
             headers=headers,
             content=data,
-            timeout=_httpx_timeout(request_timeout=request_timeout),
+            timeout=httpx_timeout,
             follow_redirects=True,
         )
 
