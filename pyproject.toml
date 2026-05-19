@@ -333,7 +333,6 @@ log_cli = true
 [tool.coverage]
 run.branch = true
 report.exclude_also = [
-    "case _ as unreachable:\n\\s*assert_never\\(",
     "if TYPE_CHECKING:",
 ]
 report.show_missing = true

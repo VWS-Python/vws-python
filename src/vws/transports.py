@@ -1,7 +1,7 @@
 """HTTP transport implementations for VWS clients."""
 
 from collections.abc import Awaitable
-from typing import Protocol, Self, assert_never, runtime_checkable
+from typing import Protocol, Self, runtime_checkable
 
 import httpx
 import requests
@@ -150,22 +150,21 @@ class HTTPXTransport:
             A Response populated from the httpx response.
         """
         match request_timeout:
-            case (connect_timeout, read_timeout):
+            case tuple() as timeout:
+                connect_timeout, read_timeout = timeout
                 httpx_timeout = httpx.Timeout(
                     connect=connect_timeout,
                     read=read_timeout,
                     write=None,
                     pool=None,
                 )
-            case float() | int() as timeout:
+            case timeout:
                 httpx_timeout = httpx.Timeout(
                     connect=timeout,
                     read=timeout,
                     write=None,
                     pool=None,
                 )
-            case _ as unreachable:
-                assert_never(unreachable)  # pyrefly: ignore[bad-argument-type]  # ty: ignore[type-assertion-failure]
 
         httpx_response = self._client.request(
             method=method,
@@ -275,22 +274,21 @@ class AsyncHTTPXTransport:
             A Response populated from the httpx response.
         """
         match request_timeout:
-            case (connect_timeout, read_timeout):
+            case tuple() as timeout:
+                connect_timeout, read_timeout = timeout
                 httpx_timeout = httpx.Timeout(
                     connect=connect_timeout,
                     read=read_timeout,
                     write=None,
                     pool=None,
                 )
-            case float() | int() as timeout:
+            case timeout:
                 httpx_timeout = httpx.Timeout(
                     connect=timeout,
                     read=timeout,
                     write=None,
                     pool=None,
                 )
-            case _ as unreachable:
-                assert_never(unreachable)  # pyrefly: ignore[bad-argument-type]  # ty: ignore[type-assertion-failure]
 
         httpx_response = await self._client.request(
             method=method,

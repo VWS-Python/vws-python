@@ -79,7 +79,6 @@ plugins
 png
 pragma
 py
-pyrefly
 pyright
 pytest
 readme
@@ -98,7 +97,6 @@ todo
 traceback
 travis
 txt
-ty
 unmocked
 untyped
 url

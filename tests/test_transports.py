@@ -63,6 +63,28 @@ class TestHTTPXTransport:
 
     @staticmethod
     @respx.mock
+    def test_int_timeout() -> None:
+        """``HTTPXTransport`` works with an int timeout."""
+        route = respx.post(url="https://example.com/test").mock(
+            return_value=httpx.Response(
+                status_code=HTTPStatus.OK,
+                text="OK",
+            ),
+        )
+        transport = HTTPXTransport()
+        response = transport(
+            method="POST",
+            url="https://example.com/test",
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30,
+        )
+        assert route.called
+        assert isinstance(response, Response)
+        assert response.status_code == HTTPStatus.OK
+
+    @staticmethod
+    @respx.mock
     def test_context_manager() -> None:
         """``HTTPXTransport`` can be used as a context manager."""
         route = respx.post(url="https://example.com/test").mock(
@@ -132,6 +154,29 @@ class TestAsyncHTTPXTransport:
             headers={"Content-Type": "text/plain"},
             data=b"hello",
             request_timeout=(5.0, 30.0),
+        )
+        assert route.called
+        assert isinstance(response, Response)
+        assert response.status_code == HTTPStatus.OK
+
+    @staticmethod
+    @pytest.mark.asyncio
+    @respx.mock
+    async def test_int_timeout() -> None:
+        """``AsyncHTTPXTransport`` works with an int timeout."""
+        route = respx.post(url="https://example.com/test").mock(
+            return_value=httpx.Response(
+                status_code=HTTPStatus.OK,
+                text="OK",
+            ),
+        )
+        transport = AsyncHTTPXTransport()
+        response = await transport(
+            method="POST",
+            url="https://example.com/test",
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30,
         )
         assert route.called
         assert isinstance(response, Response)
