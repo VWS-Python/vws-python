@@ -29,7 +29,7 @@ def _httpx_timeout(
                 write=None,
                 pool=None,
             )
-        case _:
+        case _:  # pragma: no cover
             raise AssertionError
 
 
