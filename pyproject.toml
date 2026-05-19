@@ -76,7 +76,7 @@ optional-dependencies.dev = [
     "sphinx-pyproject==0.3.0",
     "sphinx-substitution-extensions==2026.1.12",
     "sphinxcontrib-spelling==8.0.2",
-    "strict-kwargs==2026.5.19.post1",
+    "strict-kwargs==2026.5.19.post3",
     "sybil==9.3.0",
     # Listed explicitly (despite being transitive via vws-python-mock) so that
     # [tool.uv.sources] can redirect to the CPU-only PyTorch index.
