@@ -1,7 +1,7 @@
 """HTTP transport implementations for VWS clients."""
 
 from collections.abc import Awaitable
-from typing import Protocol, Self, runtime_checkable
+from typing import Protocol, Self, assert_never, runtime_checkable
 
 import httpx
 import requests
@@ -164,8 +164,8 @@ class HTTPXTransport:
                     write=None,
                     pool=None,
                 )
-            case _:  # pragma: no cover
-                raise AssertionError
+            case _ as unreachable:
+                assert_never(unreachable)  # pyrefly: ignore[bad-argument-type]  # ty: ignore[type-assertion-failure]
 
         httpx_response = self._client.request(
             method=method,
@@ -289,8 +289,8 @@ class AsyncHTTPXTransport:
                     write=None,
                     pool=None,
                 )
-            case _:  # pragma: no cover
-                raise AssertionError
+            case _ as unreachable:
+                assert_never(unreachable)  # pyrefly: ignore[bad-argument-type]  # ty: ignore[type-assertion-failure]
 
         httpx_response = await self._client.request(
             method=method,
