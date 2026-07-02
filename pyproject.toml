@@ -87,7 +87,7 @@ optional-dependencies.dev = [
     "torch>=2.5.1",
     "torchvision>=0.20.1",
     "towncrier==25.8.0",
-    "ty==0.0.55",
+    "ty==0.0.56",
     "types-requests==2.33.0.20260518",
     "vulture==2.16",
     "vws-python-mock==2026.2.22.3",
