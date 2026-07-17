@@ -51,9 +51,8 @@ class AuthenticationFailureError(VWSError):
     """
 
 
-# See https://github.com/VWS-Python/vws-python/issues/822.
 @beartype
-class RequestQuotaReachedError(VWSError):  # pragma: no cover
+class RequestQuotaReachedError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'RequestQuotaReached'.
     """
