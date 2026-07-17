@@ -1,6 +1,7 @@
 """Tests for VWS exceptions raised from async clients."""
 
 import io
+import json
 import uuid
 from http import HTTPStatus
 
@@ -10,21 +11,26 @@ from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
 from vws import AsyncVuMarkService, AsyncVWS
+from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import (
     ServerError,
 )
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
+    AuthorizationFailedError,
     BadImageError,
     FailError,
     ImageTooLargeError,
     InvalidInstanceIdError,
+    LicenseCheckFailedError,
     MetadataTooLargeError,
     ProjectInactiveError,
+    QuotaExceededError,
     TargetNameExistError,
     TargetStatusProcessingError,
     UnknownTargetError,
 )
+from vws.response import Response
 from vws.vumark_accept import VuMarkAccept
 
 
@@ -302,3 +308,76 @@ async def test_invalid_instance_id(
         )
 
     assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("result_code", "exception_type", "status_code"),
+    argvalues=[
+        ("QuotaExceeded", QuotaExceededError, HTTPStatus.FORBIDDEN),
+        ("LicenseCheckFailed", LicenseCheckFailedError, HTTPStatus.FORBIDDEN),
+        (
+            "AuthorizationFailed",
+            AuthorizationFailedError,
+            HTTPStatus.UNAUTHORIZED,
+        ),
+    ],
+)
+async def test_documented_vumark_error_codes(
+    *,
+    result_code: str,
+    exception_type: type[VWSError],
+    status_code: HTTPStatus,
+) -> None:
+    """
+    Documented VuMark Generation API error result codes raise matching
+    exceptions.
+    """
+
+    class _AsyncVuMarkErrorTransport:
+        """Async transport that returns a documented VuMark error result
+        code.
+        """
+
+        async def aclose(self) -> None:
+            """Close the transport."""
+
+        async def __call__(
+            self,
+            *,
+            method: str,
+            url: str,
+            headers: dict[str, str],
+            data: bytes,
+            request_timeout: float | tuple[float, float],
+        ) -> Response:
+            """Return a VuMark error response."""
+            del method, headers, request_timeout
+            body = {
+                "transaction_id": uuid.uuid4().hex,
+                "result_code": result_code,
+            }
+            text = json.dumps(obj=body)
+            return Response(
+                text=text,
+                url=url,
+                status_code=status_code,
+                headers={"Content-Type": "application/json"},
+                request_body=data,
+                tell_position=0,
+                content=text.encode(),
+            )
+
+    async with AsyncVuMarkService(
+        server_access_key=uuid.uuid4().hex,
+        server_secret_key=uuid.uuid4().hex,
+        transport=_AsyncVuMarkErrorTransport(),
+    ) as vumark_service:
+        with pytest.raises(expected_exception=exception_type) as exc:
+            await vumark_service.generate_vumark_instance(
+                target_id="example_target_id",
+                instance_id="example_instance_id",
+                accept=VuMarkAccept.PNG,
+            )
+
+    assert exc.value.response.status_code == status_code
