@@ -29,7 +29,7 @@ def _target_id_from_url(*, url: str) -> str:
             continue
         return parts[marker_index + 1]
     message = f"Could not find a target ID in URL path {path!r}"
-    raise ValueError(message)  # pragma: no cover
+    raise ValueError(message)
 
 
 @beartype

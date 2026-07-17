@@ -526,3 +526,21 @@ def test_target_id_with_base_url_prefixes(
         content=b"",
     )
     assert exception_type(response=response).target_id == "abc"
+
+
+def test_target_id_missing_from_url() -> None:
+    """A clear error is raised when the response URL has no target ID."""
+    response = Response(
+        text="{}",
+        url="https://example.com/no-target-here",
+        status_code=HTTPStatus.NOT_FOUND,
+        headers={},
+        request_body=None,
+        tell_position=0,
+        content=b"",
+    )
+    with pytest.raises(
+        expected_exception=ValueError,
+        match="Could not find a target ID",
+    ):
+        _ = UnknownTargetError(response=response).target_id
