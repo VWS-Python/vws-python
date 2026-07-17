@@ -473,3 +473,56 @@ def test_vwserror_from_result_code() -> None:
 
     assert isinstance(exception, UnknownTargetError)
     assert exception.response is response
+
+
+@pytest.mark.parametrize(
+    argnames=("exception_type", "url"),
+    argvalues=[
+        (UnknownTargetError, "https://vws.vuforia.com/targets/abc"),
+        (UnknownTargetError, "https://example.com/prefix/targets/abc"),
+        (UnknownTargetError, "https://example.com/prefix/summary/abc"),
+        (UnknownTargetError, "https://example.com/prefix/duplicates/abc"),
+        (
+            TargetStatusProcessingError,
+            "https://vws.vuforia.com/targets/abc",
+        ),
+        (
+            TargetStatusProcessingError,
+            "https://example.com/prefix/targets/abc",
+        ),
+        (
+            TargetStatusNotSuccessError,
+            "https://vws.vuforia.com/targets/abc",
+        ),
+        (
+            TargetStatusNotSuccessError,
+            "https://example.com/prefix/targets/abc",
+        ),
+        (
+            TargetStatusNotSuccessError,
+            "https://example.com/prefix/targets/abc/instances",
+        ),
+    ],
+)
+def test_target_id_with_base_url_prefixes(
+    *,
+    exception_type: type[
+        UnknownTargetError
+        | TargetStatusProcessingError
+        | TargetStatusNotSuccessError
+    ],
+    url: str,
+) -> None:
+    """``target_id`` is correct even when ``base_vws_url`` has a path
+    prefix.
+    """
+    response = Response(
+        text="{}",
+        url=url,
+        status_code=HTTPStatus.NOT_FOUND,
+        headers={},
+        request_body=None,
+        tell_position=0,
+        content=b"",
+    )
+    assert exception_type(response=response).target_id == "abc"

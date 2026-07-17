@@ -14,6 +14,24 @@ from beartype import beartype
 from vws.exceptions.base_exceptions import VWSError
 
 
+def _target_id_from_url(*, url: str) -> str:
+    """Return the target ID from a VWS response URL.
+
+    Paths may include a custom base URL prefix. The target ID is the
+    path segment after ``targets``, ``summary``, or ``duplicates``.
+    """
+    path = urlparse(url=url).path
+    parts = [part for part in path.split(sep="/") if part]
+    for marker in ("targets", "summary", "duplicates"):
+        try:
+            marker_index = parts.index(marker)
+        except ValueError:
+            continue
+        return parts[marker_index + 1]
+    message = f"Could not find a target ID in URL path {path!r}"
+    raise ValueError(message)  # pragma: no cover
+
+
 @beartype
 class UnknownTargetError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
@@ -23,11 +41,7 @@ class UnknownTargetError(VWSError):
     @property
     def target_id(self) -> str:
         """The unknown target ID."""
-        path = urlparse(url=self.response.url).path
-        # Every HTTP path which can raise this error has the target ID as the
-        # second path segment, e.g. `/something/{target_id}` or
-        # `/something/{target_id}/more`.
-        return path.split(sep="/")[2]
+        return _target_id_from_url(url=self.response.url)
 
 
 @beartype
@@ -68,11 +82,7 @@ class TargetStatusProcessingError(VWSError):
     @property
     def target_id(self) -> str:
         """The processing target ID."""
-        path = urlparse(url=self.response.url).path
-        # Every HTTP path which can raise this error has the target ID as the
-        # second path segment, e.g. `/something/{target_id}` or
-        # `/something/{target_id}/more`.
-        return path.split(sep="/")[2]
+        return _target_id_from_url(url=self.response.url)
 
 
 # This is not simulated by the mock.
@@ -158,11 +168,7 @@ class TargetStatusNotSuccessError(VWSError):
     @property
     def target_id(self) -> str:
         """The unknown target ID."""
-        path = urlparse(url=self.response.url).path
-        # Every HTTP path which can raise this error has the target ID as the
-        # second path segment, e.g. `/something/{target_id}` or
-        # `/something/{target_id}/more`.
-        return path.split(sep="/")[2]
+        return _target_id_from_url(url=self.response.url)
 
 
 @beartype
