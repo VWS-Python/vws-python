@@ -340,6 +340,7 @@ def test_falsy_sync_transport_is_retained(
     access_key = uuid.uuid4().hex
     secret_key = uuid.uuid4().hex
     transport = _FalsyTransport()
+    assert not transport
 
     targets = VWS(
         server_access_key=access_key,
@@ -375,6 +376,7 @@ async def test_falsy_async_transport_is_retained(
     access_key = uuid.uuid4().hex
     secret_key = uuid.uuid4().hex
     transport = _FalsyAsyncTransport()
+    assert not transport
 
     async with AsyncVWS(
         server_access_key=access_key,
