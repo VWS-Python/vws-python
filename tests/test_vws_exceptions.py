@@ -68,7 +68,7 @@ class _RequestQuotaReachedTransport:
             "transaction_id": uuid.uuid4().hex,
             "result_code": "RequestQuotaReached",
         }
-        text = json.dumps(body)
+        text = json.dumps(obj=body)
         return Response(
             text=text,
             url=url,
