@@ -60,7 +60,9 @@ class AsyncCloudRecoService:
         self._client_secret_key = client_secret_key
         self._base_vwq_url = base_vwq_url
         self._request_timeout_seconds = request_timeout_seconds
-        self._transport = transport or AsyncHTTPXTransport()
+        self._transport = (
+            transport if transport is not None else AsyncHTTPXTransport()
+        )
 
     async def aclose(self) -> None:
         """Close the underlying transport if it supports closing."""

@@ -56,7 +56,9 @@ class CloudRecoService:
         self._client_secret_key = client_secret_key
         self._base_vwq_url = base_vwq_url
         self._request_timeout_seconds = request_timeout_seconds
-        self._transport = transport or RequestsTransport()
+        self._transport = (
+            transport if transport is not None else RequestsTransport()
+        )
 
     def query(
         self,

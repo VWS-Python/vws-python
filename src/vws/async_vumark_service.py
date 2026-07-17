@@ -46,7 +46,9 @@ class AsyncVuMarkService:
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
         self._request_timeout_seconds = request_timeout_seconds
-        self._transport = transport or AsyncHTTPXTransport()
+        self._transport = (
+            transport if transport is not None else AsyncHTTPXTransport()
+        )
 
     async def aclose(self) -> None:
         """Close the underlying transport if it supports closing."""
