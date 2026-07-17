@@ -341,34 +341,30 @@ def test_falsy_sync_transport_is_retained(
     secret_key = uuid.uuid4().hex
     transport = _FalsyTransport()
 
-    assert (
-        VWS(
-            server_access_key=access_key,
-            server_secret_key=secret_key,
-            transport=transport,
-        ).list_targets()
-        == []
+    targets = VWS(
+        server_access_key=access_key,
+        server_secret_key=secret_key,
+        transport=transport,
+    ).list_targets()
+    assert targets == []
+
+    query_results = CloudRecoService(
+        client_access_key=access_key,
+        client_secret_key=secret_key,
+        transport=transport,
+    ).query(image=high_quality_image)
+    assert query_results == []
+
+    vumark_bytes = VuMarkService(
+        server_access_key=access_key,
+        server_secret_key=secret_key,
+        transport=transport,
+    ).generate_vumark_instance(
+        target_id="target",
+        instance_id="instance",
+        accept=VuMarkAccept.PNG,
     )
-    assert (
-        CloudRecoService(
-            client_access_key=access_key,
-            client_secret_key=secret_key,
-            transport=transport,
-        ).query(image=high_quality_image)
-        == []
-    )
-    assert (
-        VuMarkService(
-            server_access_key=access_key,
-            server_secret_key=secret_key,
-            transport=transport,
-        ).generate_vumark_instance(
-            target_id="target",
-            instance_id="instance",
-            accept=VuMarkAccept.PNG,
-        )
-        == b"vumark-bytes"
-    )
+    assert vumark_bytes == b"vumark-bytes"
 
 
 @pytest.mark.asyncio

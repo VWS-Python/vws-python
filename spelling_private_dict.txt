@@ -2,6 +2,7 @@ AuthenticationFailure
 BadImage
 ConnectionErrorPossiblyImageTooLarge
 DateRangeError
+Falsy
 ImageTooLarge
 InactiveProject
 JSONDecodeError
@@ -45,6 +46,7 @@ dev
 dict
 docstring
 enum
+falsy
 filename
 foo
 formdata
