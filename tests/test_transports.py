@@ -346,14 +346,14 @@ def test_falsy_sync_transport_is_retained(
         server_secret_key=secret_key,
         transport=transport,
     ).list_targets()
-    assert targets == []
+    assert not targets
 
     query_results = CloudRecoService(
         client_access_key=access_key,
         client_secret_key=secret_key,
         transport=transport,
     ).query(image=high_quality_image)
-    assert query_results == []
+    assert not query_results
 
     vumark_bytes = VuMarkService(
         server_access_key=access_key,
@@ -381,14 +381,14 @@ async def test_falsy_async_transport_is_retained(
         server_secret_key=secret_key,
         transport=transport,
     ) as vws_client:
-        assert await vws_client.list_targets() == []
+        assert not await vws_client.list_targets()
 
     async with AsyncCloudRecoService(
         client_access_key=access_key,
         client_secret_key=secret_key,
         transport=transport,
     ) as cloud_reco_client:
-        assert await cloud_reco_client.query(image=high_quality_image) == []
+        assert not await cloud_reco_client.query(image=high_quality_image)
 
     async with AsyncVuMarkService(
         server_access_key=access_key,
