@@ -1,6 +1,7 @@
 """Tests for VWS exceptions."""
 
 import io
+import json
 import uuid
 from http import HTTPStatus
 
@@ -39,6 +40,44 @@ from vws.exceptions.vws_exceptions import (
 )
 from vws.response import Response
 from vws.vumark_accept import VuMarkAccept
+
+
+class _RequestQuotaReachedTransport:
+    """Transport that always returns ``RequestQuotaReached``.
+
+    ``vws-python-mock`` does not yet simulate this result code (see
+    https://github.com/VWS-Python/vws-python-mock/issues/53), so tests
+    use a custom transport instead of ``MockVWS``.
+    """
+
+    def close(self) -> None:
+        """Close the transport."""
+
+    def __call__(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        data: bytes,
+        request_timeout: float | tuple[float, float],
+    ) -> Response:
+        """Return a ``RequestQuotaReached`` response."""
+        del method, headers, request_timeout
+        body = {
+            "transaction_id": uuid.uuid4().hex,
+            "result_code": "RequestQuotaReached",
+        }
+        text = json.dumps(body)
+        return Response(
+            text=text,
+            url=url,
+            status_code=HTTPStatus.FORBIDDEN,
+            headers={"Content-Type": "application/json"},
+            request_body=data,
+            tell_position=0,
+            content=text.encode(),
+        )
 
 
 def test_image_too_large(
@@ -106,9 +145,19 @@ def test_add_bad_name(
 
 def test_request_quota_reached() -> None:
     """
-    See https://github.com/VWS-Python/vws-python/issues/822 for writing
-    this test.
+    A ``RequestQuotaReached`` exception is raised when Vuforia reports
+    that the request quota has been reached.
     """
+    vws_client = VWS(
+        server_access_key=uuid.uuid4().hex,
+        server_secret_key=uuid.uuid4().hex,
+        transport=_RequestQuotaReachedTransport(),
+    )
+
+    with pytest.raises(expected_exception=RequestQuotaReachedError) as exc:
+        vws_client.list_targets()
+
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
 def test_fail(high_quality_image: io.BytesIO) -> None:
