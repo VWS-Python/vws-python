@@ -69,6 +69,8 @@ class VuMarkService:
         Raises:
             ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
                 secret key is not correct.
+            ~vws.exceptions.vws_exceptions.AuthorizationFailedError: There was
+                a general authentication problem.
             ~vws.exceptions.vws_exceptions.FailError: There was an error with
                 the request. For example, the given access key does not match a
                 known database.
@@ -78,6 +80,10 @@ class VuMarkService:
                 instance ID is invalid. For example, it may be empty.
             ~vws.exceptions.vws_exceptions.InvalidTargetTypeError: The target
                 is not a VuMark template target.
+            ~vws.exceptions.vws_exceptions.LicenseCheckFailedError: The
+                license state and/or type does not allow this request.
+            ~vws.exceptions.vws_exceptions.QuotaExceededError: No more
+                instances can be created for the associated license.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
                 an error with the time sent to Vuforia.
             ~vws.exceptions.vws_exceptions.TargetStatusNotSuccessError: The

@@ -1,10 +1,12 @@
 AuthenticationFailure
+AuthorizationFailed
 BadImage
 ConnectionErrorPossiblyImageTooLarge
 DateRangeError
 ImageTooLarge
 InactiveProject
 JSONDecodeError
+LicenseCheckFailed
 MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
@@ -13,6 +15,7 @@ OopsAnErrorOccurredPossiblyBadNameError
 ProjectHasNoAPIAccess
 ProjectInactive
 ProjectSuspended
+QuotaExceeded
 RequestQuotaReached
 RequestTimeTooSkewed
 TargetNameExist
