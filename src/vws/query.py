@@ -20,6 +20,7 @@ from vws.exceptions.cloud_reco_exceptions import (
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLargeError,
     ServerError,
+    UnexpectedQueryResponseError,
 )
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.reports import QueryResult
@@ -99,6 +100,8 @@ class CloudRecoService:
                 given image is too large.
             ~vws.exceptions.custom_exceptions.ServerError: There is an
                 error with Vuforia's servers.
+            ~vws.exceptions.custom_exceptions.UnexpectedQueryResponseError:
+                The response body is empty or is not valid JSON.
 
         Returns:
             An ordered list of target details of matching targets.
@@ -154,7 +157,12 @@ class CloudRecoService:
         ):  # pragma: no cover
             raise ServerError(response=response)
 
-        result_code = json.loads(s=response.text)["result_code"]
+        try:
+            response_dict = json.loads(s=response.text)
+        except json.JSONDecodeError as exc:
+            raise UnexpectedQueryResponseError(response=response) from exc
+
+        result_code = response_dict["result_code"]
         if result_code != "Success":
             exception = {
                 "AuthenticationFailure": AuthenticationFailureError,
@@ -164,7 +172,7 @@ class CloudRecoService:
             }[result_code]
             raise exception(response=response)
 
-        result_list = list(json.loads(s=response.text)["results"])
+        result_list = list(response_dict["results"])
         return [
             QueryResult.from_response_dict(response_dict=item)
             for item in result_list

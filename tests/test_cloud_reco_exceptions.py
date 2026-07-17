@@ -20,7 +20,9 @@ from vws.exceptions.cloud_reco_exceptions import (
 )
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLargeError,
+    UnexpectedQueryResponseError,
 )
+from vws.response import Response
 
 
 def test_too_many_max_results(
@@ -126,3 +128,59 @@ def test_inactive_project(
         # We need one test which checks tell position
         # and so we choose this one almost at random.
         assert response.tell_position != 0
+
+
+@pytest.mark.parametrize(
+    argnames="response_text",
+    argvalues=["", "not-json"],
+)
+def test_unexpected_query_response(
+    *,
+    high_quality_image: io.BytesIO,
+    response_text: str,
+) -> None:
+    """
+    An ``UnexpectedQueryResponseError`` is raised for empty or non-JSON
+    4xx Cloud Query responses.
+    """
+
+    class _NonJSONTransport:
+        """Transport that returns a non-JSON 4xx response."""
+
+        def close(self) -> None:
+            """Close the transport."""
+
+        def __call__(
+            self,
+            *,
+            method: str,
+            url: str,
+            headers: dict[str, str],
+            data: bytes,
+            request_timeout: float | tuple[float, float],
+        ) -> Response:
+            """Return a non-JSON error response."""
+            del method, headers, request_timeout
+            return Response(
+                text=response_text,
+                url=url,
+                status_code=HTTPStatus.BAD_REQUEST,
+                headers={},
+                request_body=data,
+                tell_position=0,
+                content=response_text.encode(),
+            )
+
+    cloud_reco_client = CloudRecoService(
+        client_access_key=uuid.uuid4().hex,
+        client_secret_key=uuid.uuid4().hex,
+        transport=_NonJSONTransport(),
+    )
+
+    with pytest.raises(
+        expected_exception=UnexpectedQueryResponseError,
+    ) as exc:
+        cloud_reco_client.query(image=high_quality_image)
+
+    assert exc.value.response.status_code == HTTPStatus.BAD_REQUEST
+    assert exc.value.response.text == response_text

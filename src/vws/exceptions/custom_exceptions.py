@@ -50,3 +50,25 @@ class ServerError(Exception):  # pragma: no cover
     def response(self) -> Response:
         """The response returned by Vuforia which included this error."""
         return self._response
+
+
+@beartype
+class UnexpectedQueryResponseError(Exception):
+    """Exception raised when a Cloud Query response body is not valid JSON.
+
+    Vuforia documents that failed Cloud Query requests may return an
+    arbitrary body or no body at all.
+    """
+
+    def __init__(self, response: Response) -> None:
+        """
+        Args:
+            response: The response returned by Vuforia.
+        """
+        super().__init__(response.text)
+        self._response = response
+
+    @property
+    def response(self) -> Response:
+        """The response returned by Vuforia which included this error."""
+        return self._response
