@@ -43,7 +43,9 @@ class VuMarkService:
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
         self._request_timeout_seconds = request_timeout_seconds
-        self._transport = transport or RequestsTransport()
+        self._transport = (
+            transport if transport is not None else RequestsTransport()
+        )
 
     def generate_vumark_instance(
         self,
