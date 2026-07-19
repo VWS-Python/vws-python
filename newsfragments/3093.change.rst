@@ -1,0 +1,1 @@
+Raise ``UnexpectedQueryResponseError`` for empty or non-JSON Cloud Query error responses.

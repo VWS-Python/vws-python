@@ -23,6 +23,7 @@ TargetStatusNotSuccess
 TargetStatusProcessing
 TooManyRequests
 Ubuntu
+UnexpectedQueryResponse
 UnknownTarget
 admin
 api
