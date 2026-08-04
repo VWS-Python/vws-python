@@ -1,6 +1,6 @@
 """Tests for exceptions raised when using the CloudRecoService."""
 
-import io
+import io  # noqa: TC003
 import uuid
 from http import HTTPStatus
 

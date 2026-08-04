@@ -1,8 +1,8 @@
 """Configuration, plugins and fixtures for `pytest`."""
 
-import io
-from collections.abc import AsyncGenerator, Generator
-from pathlib import Path
+import io  # noqa: TC003
+from collections.abc import AsyncGenerator, Generator  # noqa: TC003
+from pathlib import Path  # noqa: TC003
 from typing import BinaryIO, Literal
 
 import pytest

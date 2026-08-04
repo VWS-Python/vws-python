@@ -1,8 +1,8 @@
 """Setup for Sybil."""
 
-import io
+import io  # noqa: TC003
 import uuid
-from collections.abc import Generator
+from collections.abc import Generator  # noqa: TC003
 from doctest import ELLIPSIS
 from pathlib import Path
 

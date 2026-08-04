@@ -22,7 +22,7 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
-from vws.response import Response
+from vws.response import Response  # noqa: TC001
 from vws.transports import RequestsTransport, Transport
 
 

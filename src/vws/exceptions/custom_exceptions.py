@@ -6,7 +6,7 @@ https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#res
 
 from beartype import beartype
 
-from vws.response import Response
+from vws.response import Response  # noqa: TC001
 
 
 @beartype

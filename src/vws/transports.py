@@ -1,13 +1,15 @@
 """HTTP transport implementations for VWS clients."""
 
-from collections.abc import Awaitable
-from typing import Protocol, Self, runtime_checkable
+from typing import TYPE_CHECKING, Protocol, Self, runtime_checkable
 
 import httpx
 import requests
 from beartype import BeartypeConf, beartype
 
 from vws.response import Response
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable
 
 
 @runtime_checkable
