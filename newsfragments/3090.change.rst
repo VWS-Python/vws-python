@@ -1,0 +1,1 @@
+Add ``QuotaExceededError``, ``LicenseCheckFailedError``, and ``AuthorizationFailedError`` for documented VuMark Generation API result codes.

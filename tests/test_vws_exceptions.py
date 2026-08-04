@@ -6,7 +6,7 @@ from http import HTTPStatus
 
 import pytest
 from freezegun import freeze_time
-from mock_vws import MockVWS
+from mock_vws import MockVWS, VuMarkGenerationFailure
 from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
@@ -17,6 +17,7 @@ from vws.exceptions.custom_exceptions import (
 )
 from vws.exceptions.vws_exceptions import (
     AuthenticationFailureError,
+    AuthorizationFailedError,
     BadImageError,
     BadRequestError,
     DateRangeError,
@@ -25,10 +26,12 @@ from vws.exceptions.vws_exceptions import (
     InvalidAcceptHeaderError,
     InvalidInstanceIdError,
     InvalidTargetTypeError,
+    LicenseCheckFailedError,
     MetadataTooLargeError,
     ProjectHasNoAPIAccessError,
     ProjectInactiveError,
     ProjectSuspendedError,
+    QuotaExceededError,
     RequestQuotaReachedError,
     RequestTimeTooSkewedError,
     TargetNameExistError,
@@ -412,6 +415,7 @@ def test_vwsexception_inheritance() -> None:
     """VWS-related exceptions should inherit from VWSException."""
     subclasses = [
         AuthenticationFailureError,
+        AuthorizationFailedError,
         BadImageError,
         BadRequestError,
         DateRangeError,
@@ -420,10 +424,12 @@ def test_vwsexception_inheritance() -> None:
         InvalidAcceptHeaderError,
         InvalidInstanceIdError,
         InvalidTargetTypeError,
+        LicenseCheckFailedError,
         MetadataTooLargeError,
         ProjectInactiveError,
         ProjectHasNoAPIAccessError,
         ProjectSuspendedError,
+        QuotaExceededError,
         RequestQuotaReachedError,
         RequestTimeTooSkewedError,
         TargetNameExistError,
@@ -490,6 +496,50 @@ def test_invalid_target_type(
             )
 
     assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
+
+
+@pytest.mark.parametrize(
+    argnames=("failure", "exception_type", "status_code"),
+    argvalues=[
+        (
+            VuMarkGenerationFailure.QUOTA_EXCEEDED,
+            QuotaExceededError,
+            HTTPStatus.FORBIDDEN,
+        ),
+        (
+            VuMarkGenerationFailure.LICENSE_CHECK_FAILED,
+            LicenseCheckFailedError,
+            HTTPStatus.FORBIDDEN,
+        ),
+        (
+            VuMarkGenerationFailure.AUTHORIZATION_FAILED,
+            AuthorizationFailedError,
+            HTTPStatus.UNAUTHORIZED,
+        ),
+    ],
+)
+def test_documented_vumark_error_codes(
+    *,
+    failure: VuMarkGenerationFailure,
+    exception_type: type[VWSError],
+    status_code: HTTPStatus,
+) -> None:
+    """Documented VuMark failures raise matching exceptions."""
+    with MockVWS(vumark_generation_failure=failure):
+        vumark_service = VuMarkService(
+            server_access_key=uuid.uuid4().hex,
+            server_secret_key=uuid.uuid4().hex,
+        )
+
+        with pytest.raises(expected_exception=exception_type) as exc:
+            vumark_service.generate_vumark_instance(
+                target_id="exampletargetid",
+                instance_id="example_instance_id",
+                accept=VuMarkAccept.PNG,
+            )
+
+    assert exc.value.response.status_code == status_code
+    assert failure.value in exc.value.response.text
 
 
 def test_base_exception(

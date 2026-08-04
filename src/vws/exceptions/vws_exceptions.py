@@ -206,9 +206,31 @@ class InvalidTargetTypeError(VWSError):
     """
 
 
+@beartype
+class QuotaExceededError(VWSError):
+    """Exception raised when Vuforia returns a response with a result code
+    ``QuotaExceeded``.
+    """
+
+
+@beartype
+class LicenseCheckFailedError(VWSError):
+    """Exception raised when Vuforia returns a response with a result code
+    ``LicenseCheckFailed``.
+    """
+
+
+@beartype
+class AuthorizationFailedError(VWSError):
+    """Exception raised when Vuforia returns a response with a result code
+    ``AuthorizationFailed``.
+    """
+
+
 VWSError.register_exceptions_by_result_code(
     exceptions_by_result_code={
         "AuthenticationFailure": AuthenticationFailureError,
+        "AuthorizationFailed": AuthorizationFailedError,
         "BadImage": BadImageError,
         "BadRequest": BadRequestError,
         "DateRangeError": DateRangeError,
@@ -217,10 +239,12 @@ VWSError.register_exceptions_by_result_code(
         "InvalidAcceptHeader": InvalidAcceptHeaderError,
         "InvalidInstanceId": InvalidInstanceIdError,
         "InvalidTargetType": InvalidTargetTypeError,
+        "LicenseCheckFailed": LicenseCheckFailedError,
         "MetadataTooLarge": MetadataTooLargeError,
         "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
         "ProjectInactive": ProjectInactiveError,
         "ProjectSuspended": ProjectSuspendedError,
+        "QuotaExceeded": QuotaExceededError,
         "RequestQuotaReached": RequestQuotaReachedError,
         "RequestTimeTooSkewed": RequestTimeTooSkewedError,
         "TargetNameExist": TargetNameExistError,
