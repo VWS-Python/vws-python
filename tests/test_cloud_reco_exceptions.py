@@ -1,6 +1,7 @@
 """Tests for exceptions raised when using the CloudRecoService."""
 
 import io  # noqa: TC003
+import json
 import uuid
 from http import HTTPStatus
 
@@ -174,3 +175,25 @@ def test_non_json_client_error(
     }
     assert response_headers["x-query-failure"] == headers["X-Query-Failure"]
     assert response.request_body
+
+
+def test_non_json_success_response(
+    *,
+    high_quality_image: io.BytesIO,
+) -> None:
+    """Malformed successful responses retain the JSON parsing error."""
+    database = CloudDatabase()
+    failure_response = CloudQueryFailureResponse(
+        status_code=HTTPStatus.OK,
+        headers={"Content-Type": "application/json"},
+        body="Not JSON",
+    )
+    cloud_reco_client = CloudRecoService(
+        client_access_key=database.client_access_key,
+        client_secret_key=database.client_secret_key,
+    )
+
+    with MockVWS(cloud_query_failure_response=failure_response) as mock:
+        mock.add_cloud_database(cloud_database=database)
+        with pytest.raises(expected_exception=json.JSONDecodeError):
+            cloud_reco_client.query(image=high_quality_image)

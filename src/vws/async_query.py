@@ -122,6 +122,8 @@ class AsyncCloudRecoService:
                 error with Vuforia's servers.
             ~vws.exceptions.base_exceptions.CloudRecoError: Vuforia returned
                 a client error without a recognized JSON body.
+            json.JSONDecodeError: Vuforia returned a successful response with
+                an invalid JSON body.
 
         Returns:
             An ordered list of target details of matching
