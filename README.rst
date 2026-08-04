@@ -73,4 +73,4 @@ See the `full documentation <https://vws-python.github.io/vws-python/>`__.
    :target: https://github.com/VWS-Python/vws-python/actions
 .. |PyPI| image:: https://badge.fury.io/py/VWS-Python.svg
    :target: https://badge.fury.io/py/VWS-Python
-.. |minimum-python-version| replace:: 3.13
+.. |minimum-python-version| replace:: 3.14

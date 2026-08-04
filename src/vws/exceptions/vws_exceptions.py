@@ -65,9 +65,8 @@ class AuthenticationFailureError(VWSError):
     """
 
 
-# See https://github.com/VWS-Python/vws-python/issues/822.
 @beartype
-class RequestQuotaReachedError(VWSError):  # pragma: no cover
+class RequestQuotaReachedError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'RequestQuotaReached'.
     """
@@ -93,25 +92,22 @@ class DateRangeError(VWSError):  # pragma: no cover
     """
 
 
-# This is not simulated by the mock.
 @beartype
-class TargetQuotaReachedError(VWSError):  # pragma: no cover
+class TargetQuotaReachedError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'TargetQuotaReached'.
     """
 
 
-# This is not simulated by the mock.
 @beartype
-class ProjectSuspendedError(VWSError):  # pragma: no cover
+class ProjectSuspendedError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'ProjectSuspended'.
     """
 
 
-# This is not simulated by the mock.
 @beartype
-class ProjectHasNoAPIAccessError(VWSError):  # pragma: no cover
+class ProjectHasNoAPIAccessError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'ProjectHasNoAPIAccess'.
     """

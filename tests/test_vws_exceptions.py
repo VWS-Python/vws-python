@@ -105,10 +105,68 @@ def test_add_bad_name(
 
 
 def test_request_quota_reached() -> None:
-    """
-    See https://github.com/VWS-Python/vws-python/issues/822 for writing
-    this test.
-    """
+    """A ``RequestQuotaReached`` exception is raised at the quota."""
+    database = CloudDatabase(request_quota=0)
+    with MockVWS() as mock:
+        mock.add_cloud_database(cloud_database=database)
+        vws_client = VWS(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+        )
+
+        with pytest.raises(expected_exception=RequestQuotaReachedError) as exc:
+            vws_client.list_targets()
+
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
+
+
+def test_target_quota_reached(high_quality_image: io.BytesIO) -> None:
+    """A ``TargetQuotaReached`` exception is raised at the quota."""
+    database = CloudDatabase(target_quota=0)
+    with MockVWS() as mock:
+        mock.add_cloud_database(cloud_database=database)
+        vws_client = VWS(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+        )
+
+        with pytest.raises(expected_exception=TargetQuotaReachedError) as exc:
+            vws_client.add_target(
+                name="x",
+                width=1,
+                image=high_quality_image,
+                active_flag=True,
+                application_metadata=None,
+            )
+
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
+
+
+@pytest.mark.parametrize(
+    argnames=("state", "expected_exception"),
+    argvalues=[
+        (States.PROJECT_SUSPENDED, ProjectSuspendedError),
+        (States.PROJECT_HAS_NO_API_ACCESS, ProjectHasNoAPIAccessError),
+    ],
+)
+def test_project_state_error(
+    *,
+    state: States,
+    expected_exception: type[VWSError],
+) -> None:
+    """Configured project states raise their matching exceptions."""
+    database = CloudDatabase(state=state)
+    with MockVWS() as mock:
+        mock.add_cloud_database(cloud_database=database)
+        vws_client = VWS(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+        )
+
+        with pytest.raises(expected_exception=expected_exception) as exc:
+            vws_client.list_targets()
+
+    assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
 def test_fail(high_quality_image: io.BytesIO) -> None:
