@@ -38,7 +38,7 @@ class VWSError(Exception):
     https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes.
     """
 
-    _exceptions_by_result_code: ClassVar[dict[str, type["VWSError"]]] = {}
+    _exceptions_by_result_code: ClassVar[dict[str, type[VWSError]]] = {}
 
     def __init__(self, response: Response) -> None:
         """
@@ -52,7 +52,7 @@ class VWSError(Exception):
     def register_exceptions_by_result_code(
         cls,
         *,
-        exceptions_by_result_code: Mapping[str, type["VWSError"]],
+        exceptions_by_result_code: Mapping[str, type[VWSError]],
     ) -> None:
         """Register ``result_code`` to exception mappings."""
         cls._exceptions_by_result_code.update(exceptions_by_result_code)
@@ -63,7 +63,7 @@ class VWSError(Exception):
         *,
         result_code: str,
         response: Response,
-    ) -> "VWSError":
+    ) -> VWSError:
         """Create the mapped exception for a VWS ``result_code``."""
         exception_type = cls._exceptions_by_result_code[result_code]
         return exception_type(response=response)
