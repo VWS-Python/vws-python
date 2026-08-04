@@ -4,12 +4,12 @@ Vuforia
 Cloud Recognition Web API.
 """
 
-from collections.abc import Mapping
+from collections.abc import Mapping  # noqa: TC003
 from typing import ClassVar
 
 from beartype import beartype
 
-from vws.response import Response
+from vws.response import Response  # noqa: TC001
 
 
 @beartype

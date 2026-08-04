@@ -1,7 +1,7 @@
 """Tests for the ``CloudRecoService`` querying functionality."""
 
 import datetime
-import io
+import io  # noqa: TC003
 import uuid
 from typing import BinaryIO
 

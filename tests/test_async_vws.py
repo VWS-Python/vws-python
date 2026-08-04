@@ -1,7 +1,7 @@
 """Tests for async helper functions for managing a Vuforia database."""
 
 import base64
-import io
+import io  # noqa: TC003
 import uuid
 from typing import BinaryIO
 

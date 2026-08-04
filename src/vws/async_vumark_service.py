@@ -11,7 +11,7 @@ from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.transports import AsyncHTTPXTransport, AsyncTransport
-from vws.vumark_accept import VuMarkAccept
+from vws.vumark_accept import VuMarkAccept  # noqa: TC001
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))

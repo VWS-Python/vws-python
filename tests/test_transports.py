@@ -1,6 +1,6 @@
 """Tests for HTTP transport implementations."""
 
-import io
+import io  # noqa: TC003
 import uuid
 from http import HTTPStatus
 

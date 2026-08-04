@@ -2,7 +2,7 @@
 
 import base64
 import datetime
-import io
+import io  # noqa: TC003
 import secrets
 import uuid
 from typing import BinaryIO
