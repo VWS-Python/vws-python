@@ -12,6 +12,7 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
+from vws.exceptions.base_exceptions import CloudRecoError
 from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailureError,
     BadImageError,
@@ -119,6 +120,8 @@ class AsyncCloudRecoService:
                 given image is too large.
             ~vws.exceptions.custom_exceptions.ServerError: There is an
                 error with Vuforia's servers.
+            ~vws.exceptions.base_exceptions.CloudRecoError: Vuforia returned
+                a client error without a recognized JSON body.
 
         Returns:
             An ordered list of target details of matching
@@ -186,7 +189,23 @@ class AsyncCloudRecoService:
         ):  # pragma: no cover
             raise ServerError(response=response)
 
-        result_code = json.loads(s=response.text)["result_code"]
+        content_type = {
+            key.lower(): value for key, value in response.headers.items()
+        }.get("content-type", "")
+        if (
+            response.status_code >= HTTPStatus.BAD_REQUEST
+            and not content_type.lower().startswith("application/json")
+        ):
+            raise CloudRecoError(response=response)
+
+        try:
+            response_body = json.loads(s=response.text)
+        except json.JSONDecodeError as exc:
+            if response.status_code >= HTTPStatus.BAD_REQUEST:
+                raise CloudRecoError(response=response) from exc
+            raise
+
+        result_code = response_body["result_code"]
         if result_code != "Success":
             exception = {
                 "AuthenticationFailure": (AuthenticationFailureError),
@@ -196,9 +215,7 @@ class AsyncCloudRecoService:
             }[result_code]
             raise exception(response=response)
 
-        result_list = list(
-            json.loads(s=response.text)["results"],
-        )
+        result_list = list(response_body["results"])
         return [
             QueryResult.from_response_dict(response_dict=item)
             for item in result_list

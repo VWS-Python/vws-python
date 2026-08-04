@@ -1,0 +1,1 @@
+Raise a response-carrying ``CloudRecoError`` when Cloud Query returns a documented empty or non-JSON 4xx response instead of leaking ``JSONDecodeError``.

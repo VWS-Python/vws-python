@@ -5,7 +5,7 @@ import uuid
 from http import HTTPStatus
 
 import pytest
-from mock_vws import MockVWS
+from mock_vws import CloudQueryFailureResponse, MockVWS
 from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
@@ -126,3 +126,51 @@ def test_inactive_project(
         # We need one test which checks tell position
         # and so we choose this one almost at random.
         assert response.tell_position != 0
+
+
+@pytest.mark.parametrize(
+    argnames=("body", "headers"),
+    argvalues=[
+        ("", {"X-Query-Failure": "empty"}),
+        (
+            "Arbitrary upstream failure",
+            {
+                "Content-Type": "application/json",
+                "X-Query-Failure": "text",
+            },
+        ),
+    ],
+    ids=["empty", "arbitrary-text"],
+)
+def test_non_json_client_error(
+    *,
+    high_quality_image: io.BytesIO,
+    body: str,
+    headers: dict[str, str],
+) -> None:
+    """Non-JSON 4xx responses raise a response-carrying error."""
+    database = CloudDatabase()
+    failure_response = CloudQueryFailureResponse(
+        status_code=HTTPStatus.BAD_REQUEST,
+        headers=headers,
+        body=body,
+    )
+    cloud_reco_client = CloudRecoService(
+        client_access_key=database.client_access_key,
+        client_secret_key=database.client_secret_key,
+    )
+
+    with MockVWS(cloud_query_failure_response=failure_response) as mock:
+        mock.add_cloud_database(cloud_database=database)
+        with pytest.raises(expected_exception=CloudRecoError) as exc:
+            cloud_reco_client.query(image=high_quality_image)
+
+    response = exc.value.response
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.text == body
+    assert response.content == body.encode()
+    response_headers = {
+        key.lower(): value for key, value in response.headers.items()
+    }
+    assert response_headers["x-query-failure"] == headers["X-Query-Failure"]
+    assert response.request_body
