@@ -411,16 +411,17 @@ async def test_documented_vumark_error_codes(
 ) -> None:
     """Documented VuMark failures raise matching exceptions."""
     with MockVWS(vumark_generation_failure=failure):
-        async with AsyncVuMarkService(
+        vumark_service = AsyncVuMarkService(
             server_access_key=uuid.uuid4().hex,
             server_secret_key=uuid.uuid4().hex,
-        ) as vumark_service:
-            with pytest.raises(expected_exception=exception_type) as exc:
-                await vumark_service.generate_vumark_instance(
-                    target_id="exampletargetid",
-                    instance_id="example_instance_id",
-                    accept=VuMarkAccept.PNG,
-                )
+        )
+        with pytest.raises(expected_exception=exception_type) as exc:
+            await vumark_service.generate_vumark_instance(
+                target_id="exampletargetid",
+                instance_id="example_instance_id",
+                accept=VuMarkAccept.PNG,
+            )
+        await vumark_service.aclose()
 
     assert exc.value.response.status_code == status_code
     assert failure.value in exc.value.response.text
