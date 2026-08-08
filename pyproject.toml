@@ -31,7 +31,7 @@ dynamic = [
     "version",
 ]
 dependencies = [
-    "beartype>=0.22.9",
+    "beartype==0.23.0rc0",
     "httpx>=0.28.0",
     "requests>=2.32.3",
     "urllib3>=2.2.3",
