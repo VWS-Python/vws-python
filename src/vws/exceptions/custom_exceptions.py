@@ -4,9 +4,12 @@ errors given by the cloud recognition service.
 https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api#result-codes
 """
 
+from typing import TYPE_CHECKING
+
 from beartype import beartype
 
-from vws.response import Response  # noqa: TC001
+if TYPE_CHECKING:
+    from vws.response import Response
 
 
 @beartype

@@ -1,9 +1,6 @@
 """Configuration, plugins and fixtures for `pytest`."""
 
-import io  # noqa: TC003
-from collections.abc import AsyncGenerator, Generator  # noqa: TC003
-from pathlib import Path  # noqa: TC003
-from typing import BinaryIO, Literal
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 import pytest_asyncio
@@ -19,6 +16,11 @@ from vws import (
     CloudRecoService,
     VuMarkService,
 )
+
+if TYPE_CHECKING:
+    import io
+    from collections.abc import AsyncGenerator, Generator
+    from pathlib import Path
 
 
 @pytest.fixture(name="_mock_database")

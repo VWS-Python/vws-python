@@ -4,7 +4,7 @@ import asyncio
 import base64
 import json
 from http import HTTPMethod, HTTPStatus
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from beartype import BeartypeConf, beartype
 
@@ -23,8 +23,10 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
-from vws.response import Response  # noqa: TC001
 from vws.transports import AsyncHTTPXTransport, AsyncTransport
+
+if TYPE_CHECKING:
+    from vws.response import Response
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))

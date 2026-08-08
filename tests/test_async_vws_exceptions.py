@@ -3,6 +3,7 @@
 import io
 import uuid
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from mock_vws import MockVWS, VuMarkGenerationFailure
@@ -10,7 +11,6 @@ from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
 from vws import AsyncVuMarkService, AsyncVWS
-from vws.exceptions.base_exceptions import VWSError  # noqa: TC001
 from vws.exceptions.custom_exceptions import (
     ServerError,
 )
@@ -34,6 +34,9 @@ from vws.exceptions.vws_exceptions import (
     UnknownTargetError,
 )
 from vws.vumark_accept import VuMarkAccept
+
+if TYPE_CHECKING:
+    from vws.exceptions.base_exceptions import VWSError
 
 
 @pytest.mark.asyncio

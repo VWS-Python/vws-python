@@ -2,10 +2,9 @@
 
 import base64
 import datetime
-import io  # noqa: TC003
 import secrets
 import uuid
-from typing import BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 import pytest
 import requests
@@ -22,6 +21,9 @@ from vws.reports import (
     TargetSummaryReport,
 )
 from vws.vumark_accept import VuMarkAccept
+
+if TYPE_CHECKING:
+    import io
 
 
 class TestAddTarget:

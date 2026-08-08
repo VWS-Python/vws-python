@@ -2,7 +2,7 @@
 
 import json
 from http import HTTPMethod, HTTPStatus
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from beartype import BeartypeConf, beartype
 
@@ -11,7 +11,9 @@ from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.transports import AsyncHTTPXTransport, AsyncTransport
-from vws.vumark_accept import VuMarkAccept  # noqa: TC001
+
+if TYPE_CHECKING:
+    from vws.vumark_accept import VuMarkAccept
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))

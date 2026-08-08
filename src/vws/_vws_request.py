@@ -2,11 +2,14 @@
 API.
 """
 
+from typing import TYPE_CHECKING
+
 from beartype import BeartypeConf, beartype
 from vws_auth_tools import authorization_header, rfc_1123_date
 
-from vws.response import Response  # noqa: TC001
-from vws.transports import Transport  # noqa: TC001
+if TYPE_CHECKING:
+    from vws.response import Response
+    from vws.transports import Transport
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))

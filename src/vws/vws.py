@@ -4,6 +4,7 @@ import base64
 import json
 import time
 from http import HTTPMethod, HTTPStatus
+from typing import TYPE_CHECKING
 
 from beartype import BeartypeConf, beartype
 
@@ -22,8 +23,10 @@ from vws.reports import (
     TargetStatuses,
     TargetSummaryReport,
 )
-from vws.response import Response  # noqa: TC001
 from vws.transports import RequestsTransport, Transport
+
+if TYPE_CHECKING:
+    from vws.response import Response
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))

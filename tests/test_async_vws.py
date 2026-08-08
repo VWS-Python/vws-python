@@ -1,9 +1,8 @@
 """Tests for async helper functions for managing a Vuforia database."""
 
 import base64
-import io  # noqa: TC003
 import uuid
-from typing import BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 import pytest
 from mock_vws import MockVWS
@@ -19,6 +18,9 @@ from vws.reports import (
     TargetStatuses,
 )
 from vws.vumark_accept import VuMarkAccept
+
+if TYPE_CHECKING:
+    import io
 
 
 class TestAddTarget:

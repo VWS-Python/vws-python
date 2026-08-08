@@ -1,8 +1,7 @@
 """Tests for the ``AsyncCloudRecoService`` querying functionality."""
 
-import io  # noqa: TC003
 import uuid
-from typing import BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 import pytest
 from mock_vws import MockVWS
@@ -10,6 +9,9 @@ from mock_vws.database import CloudDatabase
 
 from vws import AsyncCloudRecoService, AsyncVWS
 from vws.include_target_data import CloudRecoIncludeTargetData
+
+if TYPE_CHECKING:
+    import io
 
 
 class TestQuery:
