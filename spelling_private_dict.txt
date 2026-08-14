@@ -11,6 +11,7 @@ LicenseCheckFailed
 MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
+OAuth
 OopsAnErrorOccurredPossiblyBadName
 OopsAnErrorOccurredPossiblyBadNameError
 ProjectHasNoApiAccess
@@ -33,6 +34,7 @@ args
 ascii
 async
 asyncio
+balancer
 beartype
 bool
 boolean
@@ -71,6 +73,7 @@ json
 keyring
 kib
 kwargs
+lifecycle
 linters
 linting
 login

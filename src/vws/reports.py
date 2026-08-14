@@ -218,6 +218,138 @@ class RecoCountsReportRequest:
 
 
 @beartype
+@unique
+class ModelTargetDatasetStatuses(Enum):
+    """Constants representing Model Target dataset generation statuses.
+
+    See the 'status' field of the dataset status response at
+    https://developer.vuforia.com/library/vuforia-engine/web-api/model-target-web-api/.
+    """
+
+    PROCESSING = "processing"
+    DONE = "done"
+    FAILED = "failed"
+
+
+@beartype
+@dataclass(frozen=True, kw_only=True)
+class ModelTargetGenerationDetail:
+    """One detail of a Model Target dataset generation warning."""
+
+    code: str
+    message: str
+
+
+@beartype
+@dataclass(frozen=True, kw_only=True)
+class ModelTargetGenerationError:
+    """The reason a Model Target dataset failed to generate."""
+
+    code: str
+    message: str
+
+
+@beartype
+@dataclass(frozen=True, kw_only=True)
+class ModelTargetGenerationWarning:
+    """A warning about a generated Model Target dataset.
+
+    A dataset with a warning is generated, and can be downloaded.
+    """
+
+    code: str
+    message: str
+    target: str
+    details: Sequence[ModelTargetGenerationDetail]
+
+
+@beartype
+@dataclass(frozen=True, kw_only=True)
+class ModelTargetDatasetStatusReport:
+    """The status of a Model Target dataset.
+
+    See
+    https://developer.vuforia.com/library/vuforia-engine/web-api/model-target-web-api/.
+    """
+
+    status: ModelTargetDatasetStatuses
+    dataset_uuid: str
+    created_at: datetime.datetime
+    eta: datetime.datetime | None
+    """When Vuforia expects to finish generating the dataset.
+
+    This is given only while the dataset is processing.
+    """
+
+    completed_at: datetime.datetime | None
+    """When Vuforia finished generating the dataset.
+
+    This is given only once the dataset is no longer processing.
+    """
+
+    error: ModelTargetGenerationError | None
+    """Why the dataset failed to generate.
+
+    This is given only for a failed dataset.
+    """
+
+    warning: ModelTargetGenerationWarning | None
+    """A warning about the generated dataset.
+
+    This is given only for a generated dataset which has a warning.
+    """
+
+    @classmethod
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+        """Construct from a Model Target Web API response dict."""
+        error: ModelTargetGenerationError | None = None
+        if "error" in response_dict:
+            error_dict = dict(response_dict["error"])
+            error = ModelTargetGenerationError(
+                code=error_dict["code"],
+                message=error_dict["message"],
+            )
+
+        warning: ModelTargetGenerationWarning | None = None
+        if "warning" in response_dict:
+            warning_dict = dict(response_dict["warning"])
+            warning = ModelTargetGenerationWarning(
+                code=warning_dict["code"],
+                message=warning_dict["message"],
+                target=warning_dict["target"],
+                details=[
+                    ModelTargetGenerationDetail(
+                        code=detail["code"],
+                        message=detail["message"],
+                    )
+                    for detail in warning_dict["details"]
+                ],
+            )
+
+        eta: datetime.datetime | None = None
+        if "eta" in response_dict:
+            eta = datetime.datetime.fromisoformat(response_dict["eta"])
+
+        completed_at: datetime.datetime | None = None
+        if "completedAt" in response_dict:
+            completed_at = datetime.datetime.fromisoformat(
+                response_dict["completedAt"],
+            )
+
+        return cls(
+            status=ModelTargetDatasetStatuses(value=response_dict["status"]),
+            dataset_uuid=response_dict["uuid"],
+            created_at=datetime.datetime.fromisoformat(
+                response_dict["createdAt"],
+            ),
+            eta=eta,
+            completed_at=completed_at,
+            error=error,
+            warning=warning,
+        )
+
+
+@beartype
 @dataclass(frozen=True, kw_only=True)
 class RecoCount:
     """The number of recognitions of one target in a reco counts

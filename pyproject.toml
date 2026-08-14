@@ -322,14 +322,26 @@ exclude = [ ".venv" ]
 # Ideally we would limit the paths to the source code where we want to ignore names,
 # but Vulture does not enable this.
 ignore_names = [
+    # Model Target model option values which this library does not use
+    # itself, from vws.model_target_datasets
+    "ADAPTIVE",
+    "ALWAYS",
+    "AR_CONTROLLER",
     # Public API classes imported by users from vws.transports
     "AsyncHTTPXTransport",
+    "AUTO",
     # Sphinx
     "autoclass_content",
     "autoclass_content",
     "autodoc_member_order",
+    "CAR",
     "copybutton_exclude",
+    "DAE",
+    "DEFAULT",
+    "DYNAMIC",
     "extensions",
+    "FALSE",
+    "FBX",
     # pytest fixtures - we name fixtures like this for this purpose
     "fixture_*",
     "html_show_copyright",
@@ -340,25 +352,34 @@ ignore_names = [
     "html_title",
     "htmlhelp_basename",
     "HTTPXTransport",
+    "IGES",
     "intersphinx_mapping",
     "language",
     "linkcheck_ignore",
     "linkcheck_retries",
+    "LOW_FEATURE_OBJECTS",
     "master_doc",
+    "NEVER",
     "nitpick_ignore",
     "nitpicky",
+    "OBJ",
     "project_copyright",
+    "PVZ",
     "pygments_style",
     # pytest configuration
     "pytest_collect_file",
     "pytest_plugins",
     "rst_prolog",
+    "SCAN",
     "source_suffix",
     "spelling_word_list_filename",
+    "STATIC",
+    "STL",
     "templates_path",
     "towncrier_draft_autoversion_mode",
     "towncrier_draft_include_empty",
     "towncrier_draft_working_directory",
+    "VRML",
     "warning_is_error",
 ]
 
