@@ -584,6 +584,35 @@ def test_vwserror_from_result_code() -> None:
 
 
 @pytest.mark.parametrize(
+    argnames="result_code",
+    argvalues=["ProjectHasNoApiAccess", "ProjectHasNoAPIAccess"],
+)
+def test_project_has_no_api_access_casings(result_code: str) -> None:
+    """Both casings of the ``ProjectHasNoApiAccess`` result code map to
+    ``ProjectHasNoAPIAccessError``.
+
+    Vuforia's result codes table uses ``ProjectHasNoApiAccess``, but no
+    real response with either casing has been observed.
+    """
+    response = Response(
+        text=f'{{"result_code":"{result_code}"}}',
+        url="https://example.com/targets",
+        status_code=HTTPStatus.FORBIDDEN,
+        headers={},
+        request_body=None,
+        tell_position=0,
+        content=b"",
+    )
+
+    exception = VWSError.from_result_code(
+        result_code=result_code,
+        response=response,
+    )
+
+    assert isinstance(exception, ProjectHasNoAPIAccessError)
+
+
+@pytest.mark.parametrize(
     argnames=("exception_type", "url"),
     argvalues=[
         (UnknownTargetError, "https://vws.vuforia.com/targets/abc"),
