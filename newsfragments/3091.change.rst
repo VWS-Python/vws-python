@@ -1,1 +1,0 @@
-Fix ``target_id`` on target exceptions when ``base_vws_url`` includes a path prefix.

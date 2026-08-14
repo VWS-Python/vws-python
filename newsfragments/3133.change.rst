@@ -1,2 +1,0 @@
-Add support for the Database Reco Counts report.
-``VWS`` and ``AsyncVWS`` take an optional ``database_id``, and have new ``request_database_reco_counts_report``, ``download_reco_counts_report`` and ``wait_for_reco_counts_report`` methods.

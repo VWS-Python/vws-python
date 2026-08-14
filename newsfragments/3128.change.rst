@@ -1,1 +1,0 @@
-Map the ``ProjectHasNoApiAccess`` result code, as spelled in Vuforia's result codes table, to ``ProjectHasNoAPIAccessError``. The previously mapped ``ProjectHasNoAPIAccess`` casing, which Vuforia does not document, is no longer mapped.

@@ -3,6 +3,27 @@ Changelog
 
 .. towncrier release notes start
 
+2026.08.14
+----------
+
+- Drop Python 3.13 support, update VWS Python Mock, and test quota and project-state error responses against the mock.
+
+- Add ``QuotaExceededError``, ``LicenseCheckFailedError``, and ``AuthorizationFailedError`` for documented VuMark Generation API result codes.
+
+- Fix ``target_id`` on target exceptions when ``base_vws_url`` includes a path prefix.
+
+- Retain explicitly provided falsy custom transports instead of replacing them with defaults.
+
+- Raise a response-carrying ``CloudRecoError`` when Cloud Query returns a documented empty or non-JSON 4xx response instead of leaking ``JSONDecodeError``.
+
+- Add support for the Model Target Web API.
+  ``ModelTargetService`` and ``AsyncModelTargetService`` create standard and advanced Model Target datasets, wait for them to be generated, download them and delete them.
+
+- Map the ``ProjectHasNoApiAccess`` result code, as spelled in Vuforia's result codes table, to ``ProjectHasNoAPIAccessError``. The previously mapped ``ProjectHasNoAPIAccess`` casing, which Vuforia does not document, is no longer mapped.
+
+- Add support for the Database Reco Counts report.
+  ``VWS`` and ``AsyncVWS`` take an optional ``database_id``, and have new ``request_database_reco_counts_report``, ``download_reco_counts_report`` and ``wait_for_reco_counts_report`` methods.
+
 2026.02.25.1
 ------------
 

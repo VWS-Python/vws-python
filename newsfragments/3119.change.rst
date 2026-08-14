@@ -1,2 +1,0 @@
-Add support for the Model Target Web API.
-``ModelTargetService`` and ``AsyncModelTargetService`` create standard and advanced Model Target datasets, wait for them to be generated, download them and delete them.
