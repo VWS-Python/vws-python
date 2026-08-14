@@ -1,6 +1,7 @@
 """Tests for async helper functions for managing a Vuforia database."""
 
 import base64
+import calendar
 import datetime  # noqa: TC003
 import io  # noqa: TC003
 import time
@@ -516,7 +517,7 @@ class TestRecoCountsReport:
         client = async_vws_client
         report_request = await client.request_database_reco_counts_report(
             year=report_month.year,
-            month=report_month.month,
+            month=calendar.Month(value=report_month.month),
         )
         assert report_request.transaction_id
         assert report_request.presigned_url
@@ -546,7 +547,7 @@ class TestRecoCountsReport:
                 report_request = (
                     await client.request_database_reco_counts_report(
                         year=current_month.year,
-                        month=current_month.month,
+                        month=calendar.Month(value=current_month.month),
                     )
                 )
 
@@ -576,7 +577,7 @@ class TestRecoCountsReport:
                 report_request = (
                     await client.request_database_reco_counts_report(
                         year=current_month.year,
-                        month=current_month.month,
+                        month=calendar.Month(value=current_month.month),
                     )
                 )
 
@@ -600,15 +601,19 @@ class TestRecoCountsReport:
     @pytest.mark.parametrize(
         argnames=("year", "month"),
         argvalues=[
-            pytest.param(1999, 1, id="month-in-the-past"),
-            pytest.param(1999, 13, id="month-out-of-range"),
+            pytest.param(1999, calendar.Month.JANUARY, id="year-in-the-past"),
+            pytest.param(
+                1999,
+                calendar.Month.DECEMBER,
+                id="year-in-the-past-december",
+            ),
         ],
     )
     async def test_month_not_accepted(
         *,
         async_vws_client: AsyncVWS,
         year: int,
-        month: int,
+        month: calendar.Month,
     ) -> None:
         """Months other than the current and previous month are
         rejected.
@@ -643,7 +648,7 @@ class TestRecoCountsReport:
                 ) as exc:
                     await client.request_database_reco_counts_report(
                         year=current_month.year,
-                        month=current_month.month,
+                        month=calendar.Month(value=current_month.month),
                     )
 
                 assert (
@@ -681,7 +686,7 @@ class TestRecoCountsReport:
             with pytest.raises(expected_exception=DatabaseIdNotSetError):
                 await client.request_database_reco_counts_report(
                     year=current_month.year,
-                    month=current_month.month,
+                    month=calendar.Month(value=current_month.month),
                 )
 
 
