@@ -4,7 +4,9 @@ import base64
 import datetime
 import io  # noqa: TC003
 import secrets
+import time
 import uuid
+from http import HTTPStatus
 from typing import BinaryIO
 
 import pytest
@@ -14,13 +16,26 @@ from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
 from vws import VWS, CloudRecoService, VuMarkService
-from vws.exceptions.custom_exceptions import TargetProcessingTimeoutError
+from vws.exceptions.custom_exceptions import (
+    DatabaseIdNotSetError,
+    RecoCountsReportDownloadError,
+    RecoCountsReportNotReadyError,
+    RecoCountsReportTimeoutError,
+    TargetProcessingTimeoutError,
+)
+from vws.exceptions.vws_exceptions import (
+    AuthenticationFailureError,
+    FailError,
+)
 from vws.reports import (
     DatabaseSummaryReport,
+    RecoCount,
+    RecoCountsReport,
     TargetRecord,
     TargetStatuses,
     TargetSummaryReport,
 )
+from vws.response import Response
 from vws.vumark_accept import VuMarkAccept
 
 
@@ -758,6 +773,222 @@ class TestUpdateTarget:
         )
         vws_client.wait_for_target_processed(target_id=target_id)
         vws_client.update_target(target_id=target_id)
+
+
+class _ForbiddenDownloadTransport:
+    """A transport which refuses to serve a report, as an expired URL
+    would.
+    """
+
+    def close(self) -> None:
+        """Close the transport."""
+
+    def __call__(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        data: bytes,
+        request_timeout: float | tuple[float, float],
+    ) -> Response:
+        """Return a "forbidden" response."""
+        del method, headers, request_timeout
+        body = "<Error><Code>AccessDenied</Code></Error>"
+        return Response(
+            text=body,
+            url=url,
+            status_code=HTTPStatus.FORBIDDEN,
+            headers={},
+            request_body=data,
+            tell_position=0,
+            content=body.encode(encoding="utf-8"),
+        )
+
+
+class TestRecoCountsReport:
+    """Tests for database reco counts reports."""
+
+    @staticmethod
+    def test_reco_counts_report(
+        *,
+        vws_client: VWS,
+        report_month: str,
+    ) -> None:
+        """A report can be requested, waited for and downloaded."""
+        report_request = vws_client.request_database_reco_counts_report(
+            month=report_month,
+        )
+        assert report_request.transaction_id
+        assert report_request.presigned_url
+
+        report = vws_client.wait_for_reco_counts_report(
+            presigned_url=report_request.presigned_url,
+        )
+
+        # No targets have been recognized, so the report has no rows.
+        assert not report.reco_counts
+        assert report.raw_csv.startswith(b"target_id,reco_count")
+
+    @staticmethod
+    def test_not_ready(*, current_month: str) -> None:
+        """Downloading a report before Vuforia has generated it raises an
+        error.
+        """
+        with MockVWS(processing_time_seconds=60) as mock:
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                database_id=database.database_id,
+            )
+            report_request = vws_client.request_database_reco_counts_report(
+                month=current_month,
+            )
+
+            with pytest.raises(
+                expected_exception=RecoCountsReportNotReadyError,
+            ) as exc:
+                vws_client.download_reco_counts_report(
+                    presigned_url=report_request.presigned_url,
+                )
+
+        assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
+
+    @staticmethod
+    def test_wait_timeout(*, current_month: str) -> None:
+        """Waiting for a report which is not generated in time raises an
+        error.
+        """
+        with MockVWS(processing_time_seconds=60) as mock:
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                database_id=database.database_id,
+            )
+            report_request = vws_client.request_database_reco_counts_report(
+                month=current_month,
+            )
+
+            maximum_wait_seconds = 5
+            start_time = time.monotonic()
+
+            with pytest.raises(
+                expected_exception=RecoCountsReportTimeoutError,
+            ):
+                vws_client.wait_for_reco_counts_report(
+                    presigned_url=report_request.presigned_url,
+                    seconds_between_requests=0.01,
+                    timeout_seconds=0.05,
+                )
+
+            elapsed_time = time.monotonic() - start_time
+            assert elapsed_time < maximum_wait_seconds
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        argnames="month",
+        argvalues=["1999-01", "not-a-month"],
+    )
+    def test_month_not_accepted(*, vws_client: VWS, month: str) -> None:
+        """Months other than the current and previous month are
+        rejected.
+        """
+        with pytest.raises(expected_exception=FailError) as exc:
+            vws_client.request_database_reco_counts_report(month=month)
+
+        assert exc.value.response.status_code == HTTPStatus.BAD_REQUEST
+
+    @staticmethod
+    def test_database_id_does_not_match_keys(*, current_month: str) -> None:
+        """A database ID which does not match the given keys is
+        rejected.
+        """
+        with MockVWS() as mock:
+            database = CloudDatabase()
+            mock.add_cloud_database(cloud_database=database)
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                database_id=uuid.uuid4().hex,
+            )
+
+            with pytest.raises(
+                expected_exception=AuthenticationFailureError,
+            ) as exc:
+                vws_client.request_database_reco_counts_report(
+                    month=current_month,
+                )
+
+        assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
+
+    @staticmethod
+    def test_download_error() -> None:
+        """An error response from the report's URL raises an error."""
+        vws_client = VWS(
+            server_access_key=uuid.uuid4().hex,
+            server_secret_key=uuid.uuid4().hex,
+            transport=_ForbiddenDownloadTransport(),
+        )
+
+        with pytest.raises(
+            expected_exception=RecoCountsReportDownloadError,
+        ) as exc:
+            vws_client.download_reco_counts_report(
+                presigned_url="https://example.com/reports/recoCounts/x",
+            )
+
+        assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
+
+    @staticmethod
+    def test_no_database_id(*, current_month: str) -> None:
+        """A client which was given no database ID cannot request a
+        report.
+        """
+        vws_client = VWS(
+            server_access_key=uuid.uuid4().hex,
+            server_secret_key=uuid.uuid4().hex,
+        )
+
+        with pytest.raises(expected_exception=DatabaseIdNotSetError):
+            vws_client.request_database_reco_counts_report(month=current_month)
+
+
+class TestRecoCountsReportParsing:
+    """Tests for parsing downloaded reco counts reports."""
+
+    @staticmethod
+    def test_rows() -> None:
+        """Each row of the CSV becomes a ``RecoCount``."""
+        csv_bytes = b"target_id,reco_count\r\nabc,3\r\ndef,0\r\n"
+
+        report = RecoCountsReport.from_csv(csv_bytes=csv_bytes)
+
+        assert report.reco_counts == [
+            RecoCount(target_id="abc", reco_count=3),
+            RecoCount(target_id="def", reco_count=0),
+        ]
+        assert report.raw_csv == csv_bytes
+
+    @staticmethod
+    def test_unknown_columns_ignored() -> None:
+        """Columns which are not known are not exposed in
+        ``reco_counts``.
+        """
+        expected_reco_count = 3
+        header = "target_id,reco_count,new_column\r\n"
+        csv_text = f"{header}abc,{expected_reco_count},x\r\n"
+
+        report = RecoCountsReport.from_csv(
+            csv_bytes=csv_text.encode(encoding="utf-8"),
+        )
+
+        (item,) = report.reco_counts
+        assert item.target_id == "abc"
+        assert item.reco_count == expected_reco_count
 
 
 class TestGenerateVumarkInstance:

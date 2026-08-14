@@ -60,6 +60,55 @@ See the :doc:`api-reference` for full usage details.
 
    assert matching_targets[0].target_id == target_id
 
+Recognition counts
+------------------
+
+Vuforia can generate a report of the number of recognitions of each target in a database in a month.
+Only the current month and the previous month can be requested.
+
+This needs the ID of the database, which is shown in the Vuforia target manager.
+
+The report is generated in the background, and the URL it is served from expires just under seven days after it is requested.
+
+.. clear-namespace
+
+.. code-block:: python
+
+   """Get the number of recognitions of each target this month."""
+
+   import datetime
+   import os
+
+   from vws import VWS
+
+   server_access_key = os.environ["VWS_SERVER_ACCESS_KEY"]
+   server_secret_key = os.environ["VWS_SERVER_SECRET_KEY"]
+   database_id = os.environ["VWS_DATABASE_ID"]
+
+   vws_client = VWS(
+       server_access_key=server_access_key,
+       server_secret_key=server_secret_key,
+       database_id=database_id,
+   )
+
+   now = datetime.datetime.now(tz=datetime.UTC)
+   this_month = now.strftime(format="%Y-%m")
+
+   report_request = vws_client.request_database_reco_counts_report(
+       month=this_month,
+   )
+
+   report = vws_client.wait_for_reco_counts_report(
+       presigned_url=report_request.presigned_url,
+   )
+
+   reco_counts_by_target_id = {
+       item.target_id: item.reco_count for item in report.reco_counts
+   }
+
+   # This database has no targets, so nothing has been recognized.
+   assert not reco_counts_by_target_id
+
 Testing
 -------
 
