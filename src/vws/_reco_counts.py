@@ -39,16 +39,18 @@ def reco_counts_report_path(*, database_id: str | None) -> str:
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def reco_counts_report_body(*, month: str) -> bytes:
+def reco_counts_report_body(*, year: int, month: int) -> bytes:
     """Get the request body for requesting a reco counts report.
 
     Args:
-        month: The month to request the report for, in ``YYYY-mm`` form.
+        year: The year to request the report for.
+        month: The month of the year to request the report for.
 
     Returns:
         The body of the request.
     """
-    return json.dumps(obj={"month": month}).encode(encoding="utf-8")
+    month_string = f"{year:04d}-{month:02d}"
+    return json.dumps(obj={"month": month_string}).encode(encoding="utf-8")
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
