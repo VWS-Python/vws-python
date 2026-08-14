@@ -241,9 +241,6 @@ VWSError.register_exceptions_by_result_code(
         "InvalidTargetType": InvalidTargetTypeError,
         "LicenseCheckFailed": LicenseCheckFailedError,
         "MetadataTooLarge": MetadataTooLargeError,
-        # This casing comes from Vuforia's result codes table.  No real
-        # response with this result code has been observed, with this or any
-        # other casing.
         "ProjectHasNoApiAccess": ProjectHasNoAPIAccessError,
         "ProjectInactive": ProjectInactiveError,
         "ProjectSuspended": ProjectSuspendedError,
