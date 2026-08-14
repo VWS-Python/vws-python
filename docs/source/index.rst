@@ -92,10 +92,10 @@ The report is generated in the background, and the URL it is served from expires
    )
 
    now = datetime.datetime.now(tz=datetime.UTC)
-   this_month = now.strftime(format="%Y-%m")
 
    report_request = vws_client.request_database_reco_counts_report(
-       month=this_month,
+       year=now.year,
+       month=now.month,
    )
 
    report = vws_client.wait_for_reco_counts_report(

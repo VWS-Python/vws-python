@@ -458,7 +458,8 @@ class AsyncVWS:
     async def request_database_reco_counts_report(
         self,
         *,
-        month: str,
+        year: int,
+        month: int,
     ) -> RecoCountsReportRequest:
         """Request a per-target recognition count report for the database.
 
@@ -467,8 +468,9 @@ class AsyncVWS:
         :meth:`wait_for_reco_counts_report` to wait for it.
 
         Args:
-            month: The month to get recognition counts for, in ``YYYY-mm``
-                form. Vuforia accepts only the current month and the previous
+            year: The year to get recognition counts for.
+            month: The month of the year to get recognition counts for.
+                Vuforia accepts only the current month and the previous
                 month.
 
         Returns:
@@ -482,8 +484,8 @@ class AsyncVWS:
                 secret key is not correct, or the client's ``database_id`` is
                 not the ID of the database which the client's keys belong to.
             ~vws.exceptions.vws_exceptions.FailError: There was an error with
-                the request. For example, the given month is not the current
-                month or the previous month.
+                the request. For example, the given year and month are not
+                the current month or the previous month.
             ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
                 an error with the time sent to Vuforia.
             ~vws.exceptions.custom_exceptions.ServerError: There is an error
@@ -493,7 +495,7 @@ class AsyncVWS:
         """
         response = await self.make_request(
             method=HTTPMethod.POST,
-            data=reco_counts_report_body(month=month),
+            data=reco_counts_report_body(year=year, month=month),
             request_path=reco_counts_report_path(
                 database_id=self._database_id,
             ),

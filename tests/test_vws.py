@@ -813,11 +813,12 @@ class TestRecoCountsReport:
     def test_reco_counts_report(
         *,
         vws_client: VWS,
-        report_month: str,
+        report_month: datetime.date,
     ) -> None:
         """A report can be requested, waited for and downloaded."""
         report_request = vws_client.request_database_reco_counts_report(
-            month=report_month,
+            year=report_month.year,
+            month=report_month.month,
         )
         assert report_request.transaction_id
         assert report_request.presigned_url
@@ -831,7 +832,7 @@ class TestRecoCountsReport:
         assert report.raw_csv.startswith(b"target_id,reco_count")
 
     @staticmethod
-    def test_not_ready(*, current_month: str) -> None:
+    def test_not_ready(*, current_month: datetime.date) -> None:
         """Downloading a report before Vuforia has generated it raises an
         error.
         """
@@ -844,7 +845,8 @@ class TestRecoCountsReport:
                 database_id=database.database_id,
             )
             report_request = vws_client.request_database_reco_counts_report(
-                month=current_month,
+                year=current_month.year,
+                month=current_month.month,
             )
 
             with pytest.raises(
@@ -857,7 +859,7 @@ class TestRecoCountsReport:
         assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
 
     @staticmethod
-    def test_wait_timeout(*, current_month: str) -> None:
+    def test_wait_timeout(*, current_month: datetime.date) -> None:
         """Waiting for a report which is not generated in time raises an
         error.
         """
@@ -870,7 +872,8 @@ class TestRecoCountsReport:
                 database_id=database.database_id,
             )
             report_request = vws_client.request_database_reco_counts_report(
-                month=current_month,
+                year=current_month.year,
+                month=current_month.month,
             )
 
             maximum_wait_seconds = 5
@@ -890,20 +893,34 @@ class TestRecoCountsReport:
 
     @staticmethod
     @pytest.mark.parametrize(
-        argnames="month",
-        argvalues=["1999-01", "not-a-month"],
+        argnames=("year", "month"),
+        argvalues=[
+            pytest.param(1999, 1, id="month-in-the-past"),
+            pytest.param(1999, 13, id="month-out-of-range"),
+        ],
     )
-    def test_month_not_accepted(*, vws_client: VWS, month: str) -> None:
+    def test_month_not_accepted(
+        *,
+        vws_client: VWS,
+        year: int,
+        month: int,
+    ) -> None:
         """Months other than the current and previous month are
         rejected.
         """
         with pytest.raises(expected_exception=FailError) as exc:
-            vws_client.request_database_reco_counts_report(month=month)
+            vws_client.request_database_reco_counts_report(
+                year=year,
+                month=month,
+            )
 
         assert exc.value.response.status_code == HTTPStatus.BAD_REQUEST
 
     @staticmethod
-    def test_database_id_does_not_match_keys(*, current_month: str) -> None:
+    def test_database_id_does_not_match_keys(
+        *,
+        current_month: datetime.date,
+    ) -> None:
         """A database ID which does not match the given keys is
         rejected.
         """
@@ -920,7 +937,8 @@ class TestRecoCountsReport:
                 expected_exception=AuthenticationFailureError,
             ) as exc:
                 vws_client.request_database_reco_counts_report(
-                    month=current_month,
+                    year=current_month.year,
+                    month=current_month.month,
                 )
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
@@ -944,7 +962,7 @@ class TestRecoCountsReport:
         assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
     @staticmethod
-    def test_no_database_id(*, current_month: str) -> None:
+    def test_no_database_id(*, current_month: datetime.date) -> None:
         """A client which was given no database ID cannot request a
         report.
         """
@@ -954,7 +972,10 @@ class TestRecoCountsReport:
         )
 
         with pytest.raises(expected_exception=DatabaseIdNotSetError):
-            vws_client.request_database_reco_counts_report(month=current_month)
+            vws_client.request_database_reco_counts_report(
+                year=current_month.year,
+                month=current_month.month,
+            )
 
 
 class TestRecoCountsReportParsing:

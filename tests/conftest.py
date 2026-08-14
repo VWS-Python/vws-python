@@ -125,24 +125,24 @@ async def async_vumark_service_client(
 
 
 @pytest.fixture(name="current_month")
-def fixture_current_month() -> str:
-    """The current month, in the form which reco counts reports use."""
+def fixture_current_month() -> datetime.date:
+    """The current month, as the first day of that month."""
     now = datetime.datetime.now(tz=datetime.UTC)
-    return now.strftime(format="%Y-%m")
+    return now.date().replace(day=1)
 
 
 @pytest.fixture(name="report_month", params=["current", "previous"])
-def fixture_report_month(*, request: pytest.FixtureRequest) -> str:
+def fixture_report_month(*, request: pytest.FixtureRequest) -> datetime.date:
     """A month which a reco counts report can be requested for.
 
     Vuforia accepts only the current month and the previous month.
     """
     now = datetime.datetime.now(tz=datetime.UTC)
+    first_of_month = now.date().replace(day=1)
     if request.param == "current":
-        return now.strftime(format="%Y-%m")
+        return first_of_month
 
-    last_of_previous_month = now.replace(day=1) - datetime.timedelta(days=1)
-    return last_of_previous_month.strftime(format="%Y-%m")
+    return first_of_month - datetime.timedelta(days=1)
 
 
 @pytest.fixture(name="image_file", params=["r+b", "rb"])
