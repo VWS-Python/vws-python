@@ -61,6 +61,16 @@ def fixture_mock_vws(
     monkeypatch.setenv(name="VWS_CLIENT_ACCESS_KEY", value=client_access_key)
     monkeypatch.setenv(name="VWS_CLIENT_SECRET_KEY", value=client_secret_key)
     monkeypatch.setenv(name="VWS_DATABASE_ID", value=database_id)
+    # The mock accepts one hard-coded pair of Model Target Web API OAuth2
+    # credentials, which it does not expose.
+    monkeypatch.setenv(
+        name="VWS_MODEL_TARGET_CLIENT_ID",
+        value="client-id",
+    )
+    monkeypatch.setenv(
+        name="VWS_MODEL_TARGET_CLIENT_SECRET",
+        value="client-secret",
+    )
     # We use a low processing time so that tests run quickly.
     with MockVWS(processing_time_seconds=0.2) as mock:
         mock.add_cloud_database(cloud_database=database)

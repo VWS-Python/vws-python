@@ -110,6 +110,82 @@ The report is generated in the background, and the URL it is served from expires
    # This database has no targets, so nothing has been recognized.
    assert not reco_counts_by_target_id
 
+Model Targets
+-------------
+
+Vuforia generates Model Target datasets from CAD models.
+This uses OAuth2 client credentials, which are separate from the VWS server keys.
+
+Dataset generation happens in the background, and the generated dataset is downloaded as a zip file.
+
+.. clear-namespace
+
+.. code-block:: python
+
+   """Generate a Model Target dataset and download it."""
+
+   import os
+
+   from vws import ModelTargetService
+   from vws.model_target_datasets import (
+       CadDataFormat,
+       GuideViewPosition,
+       ModelTargetDatasetType,
+       ModelTargetModel,
+       ModelTargetView,
+   )
+   from vws.reports import ModelTargetDatasetStatuses
+
+   client_id = os.environ["VWS_MODEL_TARGET_CLIENT_ID"]
+   client_secret = os.environ["VWS_MODEL_TARGET_CLIENT_SECRET"]
+
+   model_target_client = ModelTargetService(
+       client_id=client_id,
+       client_secret=client_secret,
+   )
+
+   model = ModelTargetModel(
+       name="my_model",
+       cad_data_url="https://example.com/my_model.zip",
+       cad_data_format=CadDataFormat.ZIP,
+       views=[
+           ModelTargetView(
+               name="front",
+               guide_view_position=GuideViewPosition(
+                   rotation=[0.0, 0.0, 0.0, 1.0],
+                   translation=[0.0, 0.0, 1.0],
+               ),
+           ),
+       ],
+   )
+
+   dataset_uuid = model_target_client.create_dataset(
+       name="my_dataset",
+       target_sdk="11.0",
+       models=[model],
+       dataset_type=ModelTargetDatasetType.STANDARD,
+   )
+
+   report = model_target_client.wait_for_dataset_generated(
+       dataset_uuid=dataset_uuid,
+       dataset_type=ModelTargetDatasetType.STANDARD,
+   )
+
+   assert report.status == ModelTargetDatasetStatuses.DONE
+
+   dataset = model_target_client.download_dataset(
+       dataset_uuid=dataset_uuid,
+       dataset_type=ModelTargetDatasetType.STANDARD,
+   )
+
+   # The dataset is a zip file.
+   assert dataset.startswith(b"PK")
+
+   model_target_client.delete_dataset(
+       dataset_uuid=dataset_uuid,
+       dataset_type=ModelTargetDatasetType.STANDARD,
+   )
+
 Testing
 -------
 

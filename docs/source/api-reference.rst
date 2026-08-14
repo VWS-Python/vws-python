@@ -17,6 +17,18 @@ API Reference
    :undoc-members:
    :members:
 
+.. automodule:: vws.model_target_service
+   :undoc-members:
+   :members:
+
+.. automodule:: vws.async_model_target_service
+   :undoc-members:
+   :members:
+
+.. automodule:: vws.model_target_datasets
+   :undoc-members:
+   :members:
+
 .. automodule:: vws.reports
    :undoc-members:
    :members:

@@ -28,6 +28,15 @@ CloudRecoService exceptions
    :inherited-members: Exception
    :exclude-members: errno, filename, filename2, strerror
 
+ModelTargetService exceptions
+-----------------------------
+
+.. automodule:: vws.exceptions.model_target_exceptions
+   :members:
+   :show-inheritance:
+   :inherited-members: Exception
+   :exclude-members: errno, filename, filename2, strerror
+
 Custom exceptions
 -----------------
 
