@@ -110,10 +110,6 @@ class ProjectSuspendedError(VWSError):
 class ProjectHasNoAPIAccessError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'ProjectHasNoApiAccess'.
-
-    Vuforia's result codes table spells this result code
-    'ProjectHasNoApiAccess', but no real response with either casing has
-    been observed, so 'ProjectHasNoAPIAccess' raises this exception too.
     """
 
 
@@ -245,11 +241,9 @@ VWSError.register_exceptions_by_result_code(
         "InvalidTargetType": InvalidTargetTypeError,
         "LicenseCheckFailed": LicenseCheckFailedError,
         "MetadataTooLarge": MetadataTooLargeError,
-        # Vuforia's result codes table spells this ``ProjectHasNoApiAccess``.
-        # ``ProjectHasNoAPIAccess`` was mapped first, from a hand-written list
-        # rather than an observed response.  No real response with either
-        # casing has been observed, so both are mapped.
-        "ProjectHasNoAPIAccess": ProjectHasNoAPIAccessError,
+        # This casing comes from Vuforia's result codes table.  No real
+        # response with this result code has been observed, with this or any
+        # other casing.
         "ProjectHasNoApiAccess": ProjectHasNoAPIAccessError,
         "ProjectInactive": ProjectInactiveError,
         "ProjectSuspended": ProjectSuspendedError,

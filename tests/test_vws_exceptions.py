@@ -583,17 +583,11 @@ def test_vwserror_from_result_code() -> None:
     assert exception.response is response
 
 
-@pytest.mark.parametrize(
-    argnames="result_code",
-    argvalues=["ProjectHasNoApiAccess", "ProjectHasNoAPIAccess"],
-)
-def test_project_has_no_api_access_casings(result_code: str) -> None:
-    """Both casings of the ``ProjectHasNoApiAccess`` result code map to
-    ``ProjectHasNoAPIAccessError``.
-
-    Vuforia's result codes table uses ``ProjectHasNoApiAccess``, but no
-    real response with either casing has been observed.
+def test_project_has_no_api_access_casing() -> None:
+    """The ``ProjectHasNoApiAccess`` result code, as spelled in Vuforia's
+    result codes table, maps to ``ProjectHasNoAPIAccessError``.
     """
+    result_code = "ProjectHasNoApiAccess"
     response = Response(
         text=f'{{"result_code":"{result_code}"}}',
         url="https://example.com/targets",
