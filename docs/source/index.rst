@@ -76,6 +76,7 @@ The report is generated in the background, and the URL it is served from expires
 
    """Get the number of recognitions of each target this month."""
 
+   import calendar
    import datetime
    import os
 
@@ -95,7 +96,7 @@ The report is generated in the background, and the URL it is served from expires
 
    report_request = vws_client.request_database_reco_counts_report(
        year=now.year,
-       month=now.month,
+       month=calendar.Month(value=now.month),
    )
 
    report = vws_client.wait_for_reco_counts_report(

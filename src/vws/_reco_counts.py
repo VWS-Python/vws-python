@@ -1,5 +1,6 @@
 """Internal helpers for the database reco counts report endpoints."""
 
+import calendar  # noqa: TC003
 import json
 from http import HTTPStatus
 
@@ -39,7 +40,7 @@ def reco_counts_report_path(*, database_id: str | None) -> str:
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def reco_counts_report_body(*, year: int, month: int) -> bytes:
+def reco_counts_report_body(*, year: int, month: calendar.Month) -> bytes:
     """Get the request body for requesting a reco counts report.
 
     Args:

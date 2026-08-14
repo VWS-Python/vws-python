@@ -2,6 +2,7 @@
 
 import asyncio
 import base64
+import calendar  # noqa: TC003
 import json
 import time
 from http import HTTPMethod, HTTPStatus
@@ -459,7 +460,7 @@ class AsyncVWS:
         self,
         *,
         year: int,
-        month: int,
+        month: calendar.Month,
     ) -> RecoCountsReportRequest:
         """Request a per-target recognition count report for the database.
 
@@ -471,7 +472,8 @@ class AsyncVWS:
             year: The year to get recognition counts for.
             month: The month of the year to get recognition counts for.
                 Vuforia accepts only the current month and the previous
-                month.
+                month. A month taken from a :class:`datetime.datetime` needs
+                wrapping, as in ``calendar.Month(value=now.month)``.
 
         Returns:
             The URL to download the report from, and the transaction ID of

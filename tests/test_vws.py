@@ -1,6 +1,7 @@
 """Tests for helper functions for managing a Vuforia database."""
 
 import base64
+import calendar
 import datetime
 import io  # noqa: TC003
 import secrets
@@ -818,7 +819,7 @@ class TestRecoCountsReport:
         """A report can be requested, waited for and downloaded."""
         report_request = vws_client.request_database_reco_counts_report(
             year=report_month.year,
-            month=report_month.month,
+            month=calendar.Month(value=report_month.month),
         )
         assert report_request.transaction_id
         assert report_request.presigned_url
@@ -846,7 +847,7 @@ class TestRecoCountsReport:
             )
             report_request = vws_client.request_database_reco_counts_report(
                 year=current_month.year,
-                month=current_month.month,
+                month=calendar.Month(value=current_month.month),
             )
 
             with pytest.raises(
@@ -873,7 +874,7 @@ class TestRecoCountsReport:
             )
             report_request = vws_client.request_database_reco_counts_report(
                 year=current_month.year,
-                month=current_month.month,
+                month=calendar.Month(value=current_month.month),
             )
 
             maximum_wait_seconds = 5
@@ -895,15 +896,19 @@ class TestRecoCountsReport:
     @pytest.mark.parametrize(
         argnames=("year", "month"),
         argvalues=[
-            pytest.param(1999, 1, id="month-in-the-past"),
-            pytest.param(1999, 13, id="month-out-of-range"),
+            pytest.param(1999, calendar.Month.JANUARY, id="year-in-the-past"),
+            pytest.param(
+                1999,
+                calendar.Month.DECEMBER,
+                id="year-in-the-past-december",
+            ),
         ],
     )
     def test_month_not_accepted(
         *,
         vws_client: VWS,
         year: int,
-        month: int,
+        month: calendar.Month,
     ) -> None:
         """Months other than the current and previous month are
         rejected.
@@ -938,7 +943,7 @@ class TestRecoCountsReport:
             ) as exc:
                 vws_client.request_database_reco_counts_report(
                     year=current_month.year,
-                    month=current_month.month,
+                    month=calendar.Month(value=current_month.month),
                 )
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
@@ -974,7 +979,7 @@ class TestRecoCountsReport:
         with pytest.raises(expected_exception=DatabaseIdNotSetError):
             vws_client.request_database_reco_counts_report(
                 year=current_month.year,
-                month=current_month.month,
+                month=calendar.Month(value=current_month.month),
             )
 
 
