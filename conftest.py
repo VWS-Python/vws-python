@@ -46,18 +46,21 @@ def fixture_mock_vws(
     server_secret_key = uuid.uuid4().hex
     client_access_key = uuid.uuid4().hex
     client_secret_key = uuid.uuid4().hex
+    database_id = uuid.uuid4().hex
 
     database = CloudDatabase(
         server_access_key=server_access_key,
         server_secret_key=server_secret_key,
         client_access_key=client_access_key,
         client_secret_key=client_secret_key,
+        database_id=database_id,
     )
 
     monkeypatch.setenv(name="VWS_SERVER_ACCESS_KEY", value=server_access_key)
     monkeypatch.setenv(name="VWS_SERVER_SECRET_KEY", value=server_secret_key)
     monkeypatch.setenv(name="VWS_CLIENT_ACCESS_KEY", value=client_access_key)
     monkeypatch.setenv(name="VWS_CLIENT_SECRET_KEY", value=client_secret_key)
+    monkeypatch.setenv(name="VWS_DATABASE_ID", value=database_id)
     # We use a low processing time so that tests run quickly.
     with MockVWS(processing_time_seconds=0.2) as mock:
         mock.add_cloud_database(cloud_database=database)

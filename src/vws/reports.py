@@ -1,6 +1,9 @@
 """Classes for representing Vuforia reports."""
 
+import csv
 import datetime
+import io
+from collections.abc import Sequence  # noqa: TC003
 from dataclasses import dataclass
 from enum import Enum, unique
 from typing import Any, Self
@@ -186,3 +189,71 @@ class TargetStatusAndRecord:
             reco_rating=target_record_dict["reco_rating"],
         )
         return cls(status=status, target_record=target_record)
+
+
+@beartype
+@dataclass(frozen=True, kw_only=True)
+class RecoCountsReportRequest:
+    """A requested database reco counts report.
+
+    See
+    https://developer.vuforia.com/library/web-api/cloud-targets-web-services-api.
+    """
+
+    transaction_id: str
+    presigned_url: str
+    """The URL to download the report from.
+
+    Real Vuforia's URLs expire just under seven days after the report is
+    requested.
+    """
+
+    @classmethod
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+        """Construct from a VWS API response dict."""
+        return cls(
+            transaction_id=response_dict["transaction_id"],
+            presigned_url=response_dict["presigned_url"],
+        )
+
+
+@beartype
+@dataclass(frozen=True, kw_only=True)
+class RecoCount:
+    """The number of recognitions of one target in a reco counts
+    report.
+    """
+
+    target_id: str
+    reco_count: int
+
+
+@beartype
+@dataclass(frozen=True, kw_only=True)
+class RecoCountsReport:
+    """A downloaded database reco counts report.
+
+    A report for a month with no recognitions has no ``reco_counts``.
+    """
+
+    reco_counts: Sequence[RecoCount]
+    raw_csv: bytes
+    """The downloaded CSV, before it was parsed.
+
+    Vuforia does not document the format of the report, so it may include
+    columns which ``reco_counts`` does not expose.
+    """
+
+    @classmethod
+    def from_csv(cls, csv_bytes: bytes) -> Self:
+        """Construct from the CSV content of a downloaded report."""
+        text = csv_bytes.decode(encoding="utf-8")
+        reader = csv.DictReader(f=io.StringIO(initial_value=text, newline=""))
+        reco_counts = [
+            RecoCount(
+                target_id=row["target_id"],
+                reco_count=int(row["reco_count"]),
+            )
+            for row in reader
+        ]
+        return cls(reco_counts=reco_counts, raw_csv=csv_bytes)

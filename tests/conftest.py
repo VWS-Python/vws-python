@@ -1,5 +1,6 @@
 """Configuration, plugins and fixtures for `pytest`."""
 
+import datetime
 import io  # noqa: TC003
 from collections.abc import AsyncGenerator, Generator  # noqa: TC003
 from pathlib import Path  # noqa: TC003
@@ -66,6 +67,7 @@ def vws_client(*, _mock_database: CloudDatabase) -> VWS:
     return VWS(
         server_access_key=_mock_database.server_access_key,
         server_secret_key=_mock_database.server_secret_key,
+        database_id=_mock_database.database_id,
     )
 
 
@@ -87,6 +89,7 @@ async def async_vws_client(
     async with AsyncVWS(
         server_access_key=_mock_database.server_access_key,
         server_secret_key=_mock_database.server_secret_key,
+        database_id=_mock_database.database_id,
     ) as client:
         yield client
 
@@ -119,6 +122,27 @@ async def async_vumark_service_client(
         server_secret_key=_mock_vumark_database.server_secret_key,
     ) as client:
         yield client
+
+
+@pytest.fixture(name="current_month")
+def fixture_current_month() -> str:
+    """The current month, in the form which reco counts reports use."""
+    now = datetime.datetime.now(tz=datetime.UTC)
+    return now.strftime(format="%Y-%m")
+
+
+@pytest.fixture(name="report_month", params=["current", "previous"])
+def fixture_report_month(*, request: pytest.FixtureRequest) -> str:
+    """A month which a reco counts report can be requested for.
+
+    Vuforia accepts only the current month and the previous month.
+    """
+    now = datetime.datetime.now(tz=datetime.UTC)
+    if request.param == "current":
+        return now.strftime(format="%Y-%m")
+
+    last_of_previous_month = now.replace(day=1) - datetime.timedelta(days=1)
+    return last_of_previous_month.strftime(format="%Y-%m")
 
 
 @pytest.fixture(name="image_file", params=["r+b", "rb"])

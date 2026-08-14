@@ -3,6 +3,7 @@
 import asyncio
 import base64
 import json
+import time
 from http import HTTPMethod, HTTPStatus
 from typing import Self
 
@@ -11,14 +12,23 @@ from beartype import BeartypeConf, beartype
 from vws._async_vws_request import async_target_api_request
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
+from vws._reco_counts import (
+    reco_counts_report_body,
+    reco_counts_report_path,
+    report_from_download_response,
+)
 from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import (
+    RecoCountsReportNotReadyError,
+    RecoCountsReportTimeoutError,
     ServerError,
     TargetProcessingTimeoutError,
 )
 from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.reports import (
     DatabaseSummaryReport,
+    RecoCountsReport,
+    RecoCountsReportRequest,
     TargetStatusAndRecord,
     TargetStatuses,
     TargetSummaryReport,
@@ -37,6 +47,7 @@ class AsyncVWS:
         server_access_key: str,
         server_secret_key: str,
         base_vws_url: str = "https://vws.vuforia.com",
+        database_id: str | None = None,
         request_timeout_seconds: float | tuple[float, float] = 30.0,
         transport: AsyncTransport | None = None,
     ) -> None:
@@ -45,6 +56,10 @@ class AsyncVWS:
             server_access_key: A VWS server access key.
             server_secret_key: A VWS server secret key.
             base_vws_url: The base URL for the VWS API.
+            database_id: The ID of the database which the
+                given keys belong to. This is shown in the
+                target manager. It is needed only by
+                :meth:`request_database_reco_counts_report`.
             request_timeout_seconds: The timeout for each
                 HTTP request. This can be a float to set both
                 the connect and read timeouts, or a
@@ -56,6 +71,7 @@ class AsyncVWS:
         self._server_access_key = server_access_key
         self._server_secret_key = server_secret_key
         self._base_vws_url = base_vws_url
+        self._database_id = database_id
         self._request_timeout_seconds = request_timeout_seconds
         self._transport = (
             transport if transport is not None else AsyncHTTPXTransport()
@@ -438,6 +454,133 @@ class AsyncVWS:
         return DatabaseSummaryReport.from_response_dict(
             response_dict=response_data,
         )
+
+    async def request_database_reco_counts_report(
+        self,
+        *,
+        month: str,
+    ) -> RecoCountsReportRequest:
+        """Request a per-target recognition count report for the database.
+
+        Vuforia generates the report in the background, so the report is not
+        available to download immediately. Use
+        :meth:`wait_for_reco_counts_report` to wait for it.
+
+        Args:
+            month: The month to get recognition counts for, in ``YYYY-mm``
+                form. Vuforia accepts only the current month and the previous
+                month.
+
+        Returns:
+            The URL to download the report from, and the transaction ID of
+            the request.
+
+        Raises:
+            ~vws.exceptions.custom_exceptions.DatabaseIdNotSetError: No
+                ``database_id`` was given to the client.
+            ~vws.exceptions.vws_exceptions.AuthenticationFailureError: The
+                secret key is not correct, or the client's ``database_id`` is
+                not the ID of the database which the client's keys belong to.
+            ~vws.exceptions.vws_exceptions.FailError: There was an error with
+                the request. For example, the given month is not the current
+                month or the previous month.
+            ~vws.exceptions.vws_exceptions.RequestTimeTooSkewedError: There is
+                an error with the time sent to Vuforia.
+            ~vws.exceptions.custom_exceptions.ServerError: There is an error
+                with Vuforia's servers.
+            ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
+                rate limiting access.
+        """
+        response = await self.make_request(
+            method=HTTPMethod.POST,
+            data=reco_counts_report_body(month=month),
+            request_path=reco_counts_report_path(
+                database_id=self._database_id,
+            ),
+            expected_result_code="Success",
+            content_type="application/json",
+        )
+
+        response_data = dict(json.loads(s=response.text))
+        return RecoCountsReportRequest.from_response_dict(
+            response_dict=response_data,
+        )
+
+    async def download_reco_counts_report(
+        self,
+        *,
+        presigned_url: str,
+    ) -> RecoCountsReport:
+        """Download a requested reco counts report.
+
+        The report's URL is not part of the VWS API, so this request is not
+        authorized with the client's keys.
+
+        Args:
+            presigned_url: The URL of the report, as given by
+                :meth:`request_database_reco_counts_report`.
+
+        Returns:
+            The downloaded report.
+
+        Raises:
+            ~vws.exceptions.custom_exceptions.RecoCountsReportNotReadyError:
+                Vuforia has not finished generating the report.
+            ~vws.exceptions.custom_exceptions.RecoCountsReportDownloadError:
+                The report could not be downloaded. For example, the report's
+                URL may have expired.
+        """
+        response = await self._transport(
+            method=HTTPMethod.GET,
+            url=presigned_url,
+            headers={},
+            data=b"",
+            request_timeout=self._request_timeout_seconds,
+        )
+
+        return report_from_download_response(response=response)
+
+    async def wait_for_reco_counts_report(
+        self,
+        *,
+        presigned_url: str,
+        seconds_between_requests: float = 0.2,
+        timeout_seconds: float = 60 * 5,
+    ) -> RecoCountsReport:
+        """Wait for a requested reco counts report to be generated, then
+        download it.
+
+        Args:
+            presigned_url: The URL of the report, as given by
+                :meth:`request_database_reco_counts_report`.
+            seconds_between_requests: The number of seconds to wait between
+                requests made while polling the report's URL.
+            timeout_seconds: The maximum number of seconds to wait for the
+                report to be generated.
+
+        Returns:
+            The downloaded report.
+
+        Raises:
+            ~vws.exceptions.custom_exceptions.RecoCountsReportTimeoutError:
+                The report was not generated within ``timeout_seconds``
+                seconds.
+            ~vws.exceptions.custom_exceptions.RecoCountsReportDownloadError:
+                The report could not be downloaded. For example, the report's
+                URL may have expired.
+        """
+        start_time = time.monotonic()
+        while True:
+            try:
+                return await self.download_reco_counts_report(
+                    presigned_url=presigned_url,
+                )
+            except RecoCountsReportNotReadyError:
+                elapsed_time = time.monotonic() - start_time
+                if elapsed_time > timeout_seconds:
+                    raise RecoCountsReportTimeoutError from None
+
+                await asyncio.sleep(delay=seconds_between_requests)
 
     async def delete_target(self, target_id: str) -> None:
         """Delete a given target.

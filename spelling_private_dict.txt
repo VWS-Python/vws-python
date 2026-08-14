@@ -41,6 +41,7 @@ changelog
 chunked
 cmyk
 connectionerror
+csv
 customizable
 dataclasses
 datetime
@@ -88,6 +89,7 @@ pyright
 pytest
 readme
 readthedocs
+reco
 recognitions
 refactoring
 regex
