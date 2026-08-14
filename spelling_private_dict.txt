@@ -13,7 +13,6 @@ MaxNumResultsOutOfRange
 MetadataTooLarge
 OopsAnErrorOccurredPossiblyBadName
 OopsAnErrorOccurredPossiblyBadNameError
-ProjectHasNoAPIAccess
 ProjectHasNoApiAccess
 ProjectInactive
 ProjectSuspended
