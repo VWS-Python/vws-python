@@ -1,5 +1,6 @@
 """Tests for VWS exceptions raised from async clients."""
 
+import base64
 import io
 import uuid
 from http import HTTPStatus
@@ -312,10 +313,17 @@ async def test_metadata_too_large(
     *,
     async_vws_client: AsyncVWS,
     high_quality_image: io.BytesIO,
+    application_metadata_near_size_limit: str,
 ) -> None:
     """A ``MetadataTooLarge`` exception is raised if the metadata
     given is too large.
     """
+    decoded_metadata = base64.b64decode(
+        s=application_metadata_near_size_limit.encode(encoding="ascii"),
+    )
+    over_limit_metadata = base64.b64encode(
+        s=decoded_metadata + b"x",
+    ).decode(encoding="ascii")
     with pytest.raises(
         expected_exception=MetadataTooLargeError,
     ) as exc:
@@ -324,7 +332,7 @@ async def test_metadata_too_large(
             width=1,
             image=high_quality_image,
             active_flag=True,
-            application_metadata="a" * 1024 * 1024 * 10,
+            application_metadata=over_limit_metadata,
         )
 
     assert exc.value.response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
