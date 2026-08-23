@@ -53,7 +53,7 @@ async def test_too_many_max_results(
 async def test_image_too_large(
     *,
     async_cloud_reco_client: AsyncCloudRecoService,
-    png_too_large: io.BytesIO | io.BufferedRandom,
+    jpeg_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """A ``RequestEntityTooLarge`` exception is raised if an
     image which is too large is given.
@@ -62,7 +62,7 @@ async def test_image_too_large(
         expected_exception=RequestEntityTooLargeError,
     ) as exc:
         await async_cloud_reco_client.query(
-            image=png_too_large,
+            image=jpeg_too_large,
         )
 
     assert (

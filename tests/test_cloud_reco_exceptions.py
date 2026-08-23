@@ -49,7 +49,7 @@ def test_too_many_max_results(
 def test_image_too_large(
     *,
     cloud_reco_client: CloudRecoService,
-    png_too_large: io.BytesIO | io.BufferedRandom,
+    jpeg_too_large: io.BytesIO | io.BufferedRandom,
 ) -> None:
     """
     A ``RequestEntityTooLarge`` exception is raised if an image which is
@@ -57,7 +57,7 @@ def test_image_too_large(
     large is given.
     """
     with pytest.raises(expected_exception=RequestEntityTooLargeError) as exc:
-        cloud_reco_client.query(image=png_too_large)
+        cloud_reco_client.query(image=jpeg_too_large)
 
     assert (
         exc.value.response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
