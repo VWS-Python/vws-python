@@ -473,4 +473,5 @@ per_file_enforcement."tests/**" = "all"
 ignore_names = [
     "beartype._decor.decorcache.beartype",
     "_pytest.fixtures.fixture",
+    "pytest_asyncio.plugin.fixture",
 ]
