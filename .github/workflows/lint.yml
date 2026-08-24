@@ -38,6 +38,7 @@ jobs:
         uses: j178/prek-action@v3.0.0
         with:
           prek-version: 0.4.11
+          cache: false
           extra-args: >-
             --all-files --hook-stage ${{ matrix.hook-stage }} --verbose
         env:
