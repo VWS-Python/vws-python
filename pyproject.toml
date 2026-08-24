@@ -472,4 +472,5 @@ per_file_enforcement."tests/**" = "all"
 [tool.mypy_strict_kwargs]
 ignore_names = [
     "beartype._decor.decorcache.beartype",
+    "_pytest.fixtures.fixture",
 ]
