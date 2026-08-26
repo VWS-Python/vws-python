@@ -3,6 +3,12 @@ Changelog
 
 .. towncrier release notes start
 
+2026.08.26
+----------
+
+- Test synchronous and asynchronous Model Target error responses through the
+  public mock API, and include rate-limit and server-error branches in coverage.
+
 2026.08.14
 ----------
 
