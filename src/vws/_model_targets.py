@@ -269,15 +269,11 @@ def raise_for_error(*, response: Response) -> None:
         ~vws.exceptions.vws_exceptions.TooManyRequestsError: Vuforia is
             rate limiting access.
     """
-    if (
-        response.status_code == HTTPStatus.TOO_MANY_REQUESTS
-    ):  # pragma: no cover
+    if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
         # The Vuforia API returns a 429 response with no JSON body.
         raise TooManyRequestsError(response=response)
 
-    if (
-        response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-    ):  # pragma: no cover
+    if response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR:
         raise ServerError(response=response)
 
     if response.status_code < HTTPStatus.BAD_REQUEST:

@@ -1,0 +1,2 @@
+Test synchronous and asynchronous Model Target error responses through the
+public mock API, and include rate-limit and server-error branches in coverage.

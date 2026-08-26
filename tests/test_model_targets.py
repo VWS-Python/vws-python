@@ -11,11 +11,13 @@ from beartype import beartype
 from freezegun import freeze_time
 from mock_vws import (
     MockVWS,
+    ModelTargetFailureResponse,
     ModelTargetGenerationFailure,
     ModelTargetGenerationWarning,
 )
 
 from vws import ModelTargetService
+from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.model_target_exceptions import (
     ModelTargetAuthenticationError,
     ModelTargetDatasetNotDoneError,
@@ -25,6 +27,7 @@ from vws.exceptions.model_target_exceptions import (
     ModelTargetValidationError,
     UnknownModelTargetDatasetError,
 )
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.model_target_datasets import (
     CadDataFormat,
     GuideViewPosition,
@@ -112,58 +115,6 @@ class _CountingTransport:
             method=method,
             url=url,
             headers=headers,
-            data=data,
-            request_timeout=request_timeout,
-        )
-
-
-@beartype
-class _BadTokenTransport:
-    """A transport which replaces each bearer token with an invalid
-    one.
-    """
-
-    def __init__(self, *, transport: Transport) -> None:
-        """
-        Args:
-            transport: The transport to make requests with.
-        """
-        self._transport = transport
-
-    def close(self) -> None:
-        """Close the wrapped transport."""
-        self._transport.close()
-
-    def __call__(
-        self,
-        *,
-        method: str,
-        url: str,
-        headers: dict[str, str],
-        data: bytes,
-        request_timeout: float | tuple[float, float],
-    ) -> Response:
-        """Make a request with an invalid bearer token.
-
-        Args:
-            method: The HTTP method.
-            url: The full URL.
-            headers: Request headers.
-            data: The request body.
-            request_timeout: The request timeout.
-
-        Returns:
-            A Response populated from the HTTP response.
-        """
-        given_headers = dict(headers)
-        authorization = given_headers.get("Authorization", "")
-        if authorization.startswith("Bearer "):
-            given_headers["Authorization"] = "Bearer not-a-json-web-token"
-
-        return self._transport(
-            method=method,
-            url=url,
-            headers=given_headers,
             data=data,
             request_timeout=request_timeout,
         )
@@ -262,24 +213,64 @@ class TestAccessToken:
         assert not exc.value.error_description
 
     @staticmethod
-    @pytest.mark.usefixtures("_mock_model_targets")
-    def test_invalid_bearer_token(
+    @pytest.mark.parametrize(
+        argnames=("status_code", "body", "expected_exception"),
+        argvalues=[
+            pytest.param(
+                HTTPStatus.UNAUTHORIZED,
+                '{"error":{"code":"AUTHENTICATION_ERROR","message":"No"}}',
+                ModelTargetAuthenticationError,
+                id="authentication",
+            ),
+            pytest.param(
+                HTTPStatus.FORBIDDEN,
+                '{"error":{"code":"FORBIDDEN","message":"Denied"}}',
+                ModelTargetError,
+                id="generic-json",
+            ),
+            pytest.param(
+                HTTPStatus.CONFLICT,
+                "not json",
+                ModelTargetError,
+                id="generic-non-json",
+            ),
+            pytest.param(
+                HTTPStatus.TOO_MANY_REQUESTS,
+                "rate limited",
+                TooManyRequestsError,
+                id="rate-limit",
+            ),
+            pytest.param(
+                HTTPStatus.BAD_GATEWAY,
+                "server error",
+                ServerError,
+                id="server-error",
+            ),
+        ],
+    )
+    def test_dataset_error_response(
         *,
         model_target_model: ModelTargetModel,
+        status_code: HTTPStatus,
+        body: str,
+        expected_exception: (
+            type[ModelTargetError | TooManyRequestsError | ServerError]
+        ),
     ) -> None:
-        """An exception is raised when the bearer token is not
-        accepted.
-        """
-        transport = _BadTokenTransport(transport=RequestsTransport())
+        """Dataset failures map to exceptions through the mock."""
+        failure = ModelTargetFailureResponse(
+            status_code=status_code,
+            body=body,
+        )
         client = ModelTargetService(
             client_id=_CLIENT_ID,
             client_secret=_CLIENT_SECRET,
-            transport=transport,
         )
 
-        with pytest.raises(
-            expected_exception=ModelTargetAuthenticationError,
-        ) as exc:
+        with (
+            MockVWS(model_target_failure_response=failure),
+            pytest.raises(expected_exception=expected_exception) as exc,
+        ):
             client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
@@ -287,10 +278,9 @@ class TestAccessToken:
                 dataset_type=ModelTargetDatasetType.STANDARD,
             )
 
-        assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
-        assert exc.value.target == "jwt"
-        assert exc.value.message
-        transport.close()
+        assert isinstance(exc.value, expected_exception)
+        assert exc.value.response.status_code == status_code
+        assert exc.value.response.text == body
 
 
 class TestDatasetLifecycle:
@@ -336,10 +326,7 @@ class TestDatasetLifecycle:
         with zipfile.ZipFile(
             file=io.BytesIO(initial_bytes=dataset)
         ) as archive:
-            dataset_json = json.loads(s=archive.read(name="dataset.json"))
-
-        assert dataset_json["uuid"] == dataset_uuid
-        assert dataset_json["type"] == dataset_type.value
+            assert archive.namelist() == ["MTDataset.dat", "MTDataset.xml"]
 
         model_target_client.delete_dataset(
             dataset_uuid=dataset_uuid,
@@ -405,12 +392,12 @@ class TestDatasetLifecycle:
         assert exc.value.target == dataset_uuid
 
     @staticmethod
-    def test_dataset_types_are_separate(
+    def test_dataset_is_visible_to_other_type(
         *,
         model_target_client: ModelTargetService,
         model_target_model: ModelTargetModel,
     ) -> None:
-        """A dataset is not visible to requests for the other type."""
+        """Standard and advanced routes share datasets by UUID."""
         dataset_uuid = model_target_client.create_dataset(
             name="dataset",
             target_sdk="11.0",
@@ -418,11 +405,12 @@ class TestDatasetLifecycle:
             dataset_type=ModelTargetDatasetType.STANDARD,
         )
 
-        with pytest.raises(expected_exception=UnknownModelTargetDatasetError):
-            model_target_client.get_dataset_status(
-                dataset_uuid=dataset_uuid,
-                dataset_type=ModelTargetDatasetType.ADVANCED,
-            )
+        report = model_target_client.get_dataset_status(
+            dataset_uuid=dataset_uuid,
+            dataset_type=ModelTargetDatasetType.ADVANCED,
+        )
+
+        assert report.dataset_uuid == dataset_uuid
 
     @staticmethod
     def test_advanced_dataset_takes_multiple_models(
@@ -436,6 +424,7 @@ class TestDatasetLifecycle:
             cad_data_blob="ZmFrZS1jYWQtZGF0YQ==",
             cad_data_format=CadDataFormat.GLB,
             realistic_appearance=RealisticAppearance.TRUE,
+            views=[],
         )
 
         dataset_uuid = model_target_client.create_dataset(
@@ -532,7 +521,7 @@ class TestValidation:
             model_target_client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
-                models=[ModelTargetModel(name="model")],
+                models=[ModelTargetModel(name="model", views=[])],
                 dataset_type=ModelTargetDatasetType.STANDARD,
             )
 

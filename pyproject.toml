@@ -86,7 +86,7 @@ optional-dependencies.dev = [
     "types-requests==2.33.0.20260712",
     "vale==3.18.0.0",
     "vulture==2.16",
-    "vws-python-mock==2026.8.14",
+    "vws-python-mock==2026.8.26.1",
     "vws-test-fixtures==2026.8.23",
     "yamlfix==1.19.1",
     "zizmor==1.29.0",

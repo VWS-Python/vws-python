@@ -1,7 +1,6 @@
 """Tests for the async Model Target Web API client."""
 
 import io
-import json
 import uuid
 import zipfile
 from http import HTTPStatus
@@ -9,18 +8,23 @@ from http import HTTPStatus
 import pytest
 from mock_vws import (
     MockVWS,
+    ModelTargetFailureResponse,
     ModelTargetGenerationFailure,
     ModelTargetGenerationWarning,
 )
 
 from vws import AsyncModelTargetService
+from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.model_target_exceptions import (
+    ModelTargetAuthenticationError,
     ModelTargetDatasetNotDoneError,
     ModelTargetDatasetTimeoutError,
+    ModelTargetError,
     ModelTargetOAuth2Error,
     ModelTargetValidationError,
     UnknownModelTargetDatasetError,
 )
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.model_target_datasets import (
     CadDataFormat,
     ModelTargetDatasetType,
@@ -38,6 +42,39 @@ _DATASET_TYPES = [
     ModelTargetDatasetType.STANDARD,
     ModelTargetDatasetType.ADVANCED,
 ]
+
+
+async def _assert_dataset_error_response(
+    *,
+    model_target_model: ModelTargetModel,
+    status_code: HTTPStatus,
+    body: str,
+    expected_exception: (
+        type[ModelTargetError | TooManyRequestsError | ServerError]
+    ),
+) -> None:
+    """Assert that a mocked dataset failure maps to an exception."""
+    async with AsyncModelTargetService(
+        client_id=_CLIENT_ID,
+        client_secret=_CLIENT_SECRET,
+    ) as client:
+        with pytest.raises(
+            expected_exception=(
+                ModelTargetError,
+                TooManyRequestsError,
+                ServerError,
+            )
+        ) as exc:
+            await client.create_dataset(
+                name="dataset",
+                target_sdk="11.0",
+                models=[model_target_model],
+                dataset_type=ModelTargetDatasetType.STANDARD,
+            )
+
+    assert isinstance(exc.value, expected_exception)
+    assert exc.value.response.status_code == status_code
+    assert exc.value.response.text == body
 
 
 class TestAccessToken:
@@ -68,6 +105,66 @@ class TestAccessToken:
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
         assert exc.value.error == "invalid_client"
+
+    @staticmethod
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        argnames=("status_code", "body", "expected_exception"),
+        argvalues=[
+            pytest.param(
+                HTTPStatus.UNAUTHORIZED,
+                '{"error":{"code":"AUTHENTICATION_ERROR","message":"No"}}',
+                ModelTargetAuthenticationError,
+                id="authentication",
+            ),
+            pytest.param(
+                HTTPStatus.FORBIDDEN,
+                '{"error":{"code":"FORBIDDEN","message":"Denied"}}',
+                ModelTargetError,
+                id="generic-json",
+            ),
+            pytest.param(
+                HTTPStatus.CONFLICT,
+                "not json",
+                ModelTargetError,
+                id="generic-non-json",
+            ),
+            pytest.param(
+                HTTPStatus.TOO_MANY_REQUESTS,
+                "rate limited",
+                TooManyRequestsError,
+                id="rate-limit",
+            ),
+            pytest.param(
+                HTTPStatus.BAD_GATEWAY,
+                "server error",
+                ServerError,
+                id="server-error",
+            ),
+        ],
+    )
+    async def test_dataset_error_response(
+        *,
+        model_target_model: ModelTargetModel,
+        status_code: HTTPStatus,
+        body: str,
+        expected_exception: (
+            type[ModelTargetError | TooManyRequestsError | ServerError]
+        ),
+    ) -> None:
+        """Dataset failures map to exceptions through the mock."""
+        failure = ModelTargetFailureResponse(
+            status_code=status_code,
+            body=body,
+        )
+
+        with MockVWS(model_target_failure_response=failure):
+            await _assert_dataset_error_response(
+                model_target_model=model_target_model,
+                status_code=status_code,
+                body=body,
+                expected_exception=expected_exception,
+            )
 
 
 class TestDatasetLifecycle:
@@ -113,10 +210,7 @@ class TestDatasetLifecycle:
         with zipfile.ZipFile(
             file=io.BytesIO(initial_bytes=dataset)
         ) as archive:
-            dataset_json = json.loads(s=archive.read(name="dataset.json"))
-
-        assert dataset_json["uuid"] == dataset_uuid
-        assert dataset_json["type"] == dataset_type.value
+            assert archive.namelist() == ["MTDataset.dat", "MTDataset.xml"]
 
         await async_model_target_client.delete_dataset(
             dataset_uuid=dataset_uuid,
@@ -183,12 +277,12 @@ class TestDatasetLifecycle:
 
     @staticmethod
     @pytest.mark.asyncio
-    async def test_dataset_types_are_separate(
+    async def test_dataset_is_visible_to_other_type(
         *,
         async_model_target_client: AsyncModelTargetService,
         model_target_model: ModelTargetModel,
     ) -> None:
-        """A dataset is not visible to requests for the other type."""
+        """Standard and advanced routes share datasets by UUID."""
         dataset_uuid = await async_model_target_client.create_dataset(
             name="dataset",
             target_sdk="11.0",
@@ -196,11 +290,12 @@ class TestDatasetLifecycle:
             dataset_type=ModelTargetDatasetType.ADVANCED,
         )
 
-        with pytest.raises(expected_exception=UnknownModelTargetDatasetError):
-            await async_model_target_client.get_dataset_status(
-                dataset_uuid=dataset_uuid,
-                dataset_type=ModelTargetDatasetType.STANDARD,
-            )
+        report = await async_model_target_client.get_dataset_status(
+            dataset_uuid=dataset_uuid,
+            dataset_type=ModelTargetDatasetType.STANDARD,
+        )
+
+        assert report.dataset_uuid == dataset_uuid
 
     @staticmethod
     @pytest.mark.asyncio
@@ -215,6 +310,7 @@ class TestDatasetLifecycle:
             cad_data_blob="ZmFrZS1jYWQtZGF0YQ==",
             cad_data_format=CadDataFormat.GLB,
             realistic_appearance=RealisticAppearance.TRUE,
+            views=[],
         )
 
         assert await async_model_target_client.create_dataset(
