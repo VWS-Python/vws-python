@@ -186,6 +186,44 @@ Dataset generation happens in the background, and the generated dataset is downl
        dataset_type=ModelTargetDatasetType.STANDARD,
    )
 
+HTTP transports
+---------------
+
+By default, the synchronous clients make requests with `requests`_ and the asynchronous clients make requests with `httpx`_.
+To use another HTTP library, pass a transport from :mod:`vws.transports` to a client.
+
+Transports are available for `requests`_, `httpx`_ and `HTTPX2`_.
+``httpx`` and ``httpx2`` are separate packages with separate client, response and exception classes.
+``HTTPXTransport`` and ``AsyncHTTPXTransport`` use ``httpx`` and raise ``httpx`` exceptions.
+``HTTPX2Transport`` and ``AsyncHTTPX2Transport`` use ``httpx2`` and raise ``httpx2`` exceptions.
+
+.. clear-namespace
+
+.. code-block:: python
+
+   """List targets using HTTPX2."""
+
+   import os
+
+   from vws import VWS
+   from vws.transports import HTTPX2Transport
+
+   server_access_key = os.environ["VWS_SERVER_ACCESS_KEY"]
+   server_secret_key = os.environ["VWS_SERVER_SECRET_KEY"]
+
+   vws_client = VWS(
+       server_access_key=server_access_key,
+       server_secret_key=server_secret_key,
+       transport=HTTPX2Transport(),
+   )
+
+   # This database has no targets.
+   assert not vws_client.list_targets()
+
+.. _requests: https://pypi.org/project/requests/
+.. _httpx: https://pypi.org/project/httpx/
+.. _HTTPX2: https://httpx2.pydantic.dev/
+
 Testing
 -------
 
