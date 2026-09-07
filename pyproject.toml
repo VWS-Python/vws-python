@@ -33,6 +33,7 @@ dynamic = [
 dependencies = [
     "beartype>=0.22.9",
     "httpx>=0.28.0",
+    "httpx2>=2.12",
     "requests>=2.32.3",
     "urllib3>=2.2.3",
     "vws-auth-tools>=2024.7.12",
@@ -86,7 +87,7 @@ optional-dependencies.dev = [
     "types-requests==2.33.0.20260712",
     "vale==3.20.0.0",
     "vulture==2.16",
-    "vws-python-mock==2026.8.26.1",
+    "vws-python-mock==2026.9.6",
     "vws-test-fixtures==2026.8.26",
     "yamlfix==1.19.1",
     "zizmor==1.30.0",
@@ -330,6 +331,7 @@ ignore_names = [
     "ALWAYS",
     "AR_CONTROLLER",
     # Public API classes imported by users from vws.transports
+    "AsyncHTTPX2Transport",
     "AsyncHTTPXTransport",
     "AUTO",
     # Sphinx
@@ -353,6 +355,7 @@ ignore_names = [
     "html_theme_options",
     "html_title",
     "htmlhelp_basename",
+    "HTTPX2Transport",
     "HTTPXTransport",
     "IGES",
     "intersphinx_mapping",

@@ -4,6 +4,7 @@ BadImage
 ConnectionErrorPossiblyImageTooLarge
 DateRangeError
 Falsy
+HTTPX2
 ImageTooLarge
 InactiveProject
 JSONDecodeError
@@ -17,6 +18,7 @@ OopsAnErrorOccurredPossiblyBadNameError
 ProjectHasNoApiAccess
 ProjectInactive
 ProjectSuspended
+Pydantic
 QuotaExceeded
 RequestQuotaReached
 RequestTimeTooSkewed
@@ -65,6 +67,7 @@ html
 http
 https
 httpx
+httpx2
 iff
 io
 issuecomment
