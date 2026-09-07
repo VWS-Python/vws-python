@@ -3,6 +3,11 @@ Changelog
 
 .. towncrier release notes start
 
+2026.09.07
+----------
+
+- Add ``HTTPX2Transport`` and ``AsyncHTTPX2Transport``, which make requests with ``httpx2``, the continuation of ``httpx`` maintained by Pydantic. The ``requests`` and ``httpx`` transports are unchanged. ``httpx`` and ``httpx2`` objects are never mixed: the ``httpx`` transports raise ``httpx`` exceptions and the ``httpx2`` transports raise ``httpx2`` exceptions.
+
 2026.08.26
 ----------
 
