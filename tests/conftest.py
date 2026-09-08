@@ -225,7 +225,14 @@ def fixture_image_file(
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
     _ = file.write_bytes(data=buffer)
-    mode: Literal["r+b", "rb"] = request.param  # ty: ignore[unsound-assignment]
+    raw_mode: object = request.param
+    if raw_mode == "r+b":
+        mode: Literal["r+b", "rb"] = "r+b"
+    elif raw_mode == "rb":
+        mode = "rb"
+    else:
+        msg = "pytest supplied an unsupported image file mode"
+        raise ValueError(msg)
     with file.open(mode=mode) as file_obj:
         yield file_obj
 
