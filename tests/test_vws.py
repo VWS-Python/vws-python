@@ -4,6 +4,7 @@ import base64
 import calendar
 import datetime
 import io  # noqa: TC003
+import json
 import secrets
 import time
 import uuid
@@ -38,6 +39,39 @@ from vws.reports import (
 )
 from vws.response import Response
 from vws.vumark_accept import VuMarkAccept
+
+
+class _JSONResponseTransport:
+    """A transport which returns one JSON response body."""
+
+    def __init__(self, *, body: object) -> None:
+        """Create a transport for the given JSON body."""
+        self._text = json.dumps(obj=body)
+
+    def close(self) -> None:
+        """Close the transport."""
+
+    def __call__(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        data: bytes,
+        request_timeout: float | tuple[float, float],
+    ) -> Response:
+        """Return the configured response body."""
+        del method, headers, data, request_timeout
+        content = self._text.encode()
+        return Response(
+            text=self._text,
+            url=url,
+            status_code=HTTPStatus.OK,
+            headers={"Content-Type": "application/json"},
+            request_body=None,
+            tell_position=len(content),
+            content=content,
+        )
 
 
 class TestAddTarget:
@@ -693,6 +727,47 @@ class TestGetDuplicateTargets:
         vws_client.wait_for_target_processed(target_id=similar_target_id)
         duplicates = vws_client.get_duplicate_targets(target_id=target_id)
         assert duplicates == [similar_target_id]
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        argnames="similar_targets",
+        argvalues=[1, ["target-id", 1]],
+    )
+    def test_invalid_duplicate_target_response(
+        *, similar_targets: object
+    ) -> None:
+        """Duplicate target IDs in responses must be a list of strings."""
+        transport = _JSONResponseTransport(
+            body={
+                "result_code": "Success",
+                "similar_targets": similar_targets,
+            }
+        )
+        client = VWS(
+            server_access_key="access-key",
+            server_secret_key=secrets.token_hex(),
+            transport=transport,
+        )
+
+        with pytest.raises(expected_exception=TypeError):
+            _ = client.get_duplicate_targets(target_id="target-id")
+
+
+@pytest.mark.parametrize(
+    argnames="body",
+    argvalues=[[], {"result_code": 1}],
+)
+def test_invalid_vws_response_envelope(*, body: object) -> None:
+    """VWS responses must be objects with a string result code."""
+    transport = _JSONResponseTransport(body=body)
+    client = VWS(
+        server_access_key="access-key",
+        server_secret_key=secrets.token_hex(),
+        transport=transport,
+    )
+
+    with pytest.raises(expected_exception=TypeError):
+        client.delete_target(target_id="target-id")
 
 
 class TestUpdateTarget:

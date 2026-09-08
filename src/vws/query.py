@@ -10,6 +10,7 @@ from vws_auth_tools import authorization_header, rfc_1123_date
 
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
+from vws._json_utils import json_object, object_list_field, string_field
 from vws.exceptions.base_exceptions import CloudRecoError
 from vws.exceptions.cloud_reco_exceptions import (
     AuthenticationFailureError,
@@ -171,13 +172,16 @@ class CloudRecoService:
             raise CloudRecoError(response=response)
 
         try:
-            response_body = json.loads(s=response.text)
+            response_body = json_object(value=response.text)
         except json.JSONDecodeError as exc:
             if response.status_code >= HTTPStatus.BAD_REQUEST:
                 raise CloudRecoError(response=response) from exc
             raise
 
-        result_code = response_body["result_code"]  # pyrefly: ignore [unknown-variable-type]
+        result_code = string_field(
+            value=response_body,
+            name="result_code",
+        )
         if result_code != "Success":
             exception = {
                 "AuthenticationFailure": AuthenticationFailureError,
@@ -187,8 +191,11 @@ class CloudRecoService:
             }[result_code]
             raise exception(response=response)
 
-        result_list = list(response_body["results"])  # pyrefly: ignore [unknown-argument-type]
+        result_list = object_list_field(
+            value=response_body,
+            name="results",
+        )
         return [
-            QueryResult.from_response_dict(response_dict=item)  # pyrefly: ignore [unknown-argument-type]
+            QueryResult.from_response_dict(response_dict=item)
             for item in result_list
         ]

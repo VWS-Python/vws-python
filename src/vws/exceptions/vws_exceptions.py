@@ -6,11 +6,11 @@ https://developer.vuforia.com/library/web-api/cloud-targets-web-services-
 api#result-codes.
 """
 
-import json
 from urllib.parse import urlparse
 
 from beartype import beartype
 
+from vws._json_utils import json_object, string_field
 from vws.exceptions.base_exceptions import VWSError
 
 
@@ -147,8 +147,8 @@ class TargetNameExistError(VWSError):
         if not isinstance(response_body, str | bytes):  # pragma: no cover
             msg = "A target-name error response must have a request body."
             raise TypeError(msg)
-        request_json = json.loads(s=response_body)
-        return str(object=request_json["name"])  # pyrefly: ignore [unknown-argument-type]
+        request_json = json_object(value=response_body)
+        return string_field(value=request_json, name="name")
 
 
 @beartype

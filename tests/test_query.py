@@ -2,7 +2,10 @@
 
 import datetime
 import io  # noqa: TC003
+import json
+import secrets
 import uuid
+from http import HTTPStatus
 from typing import BinaryIO
 
 import pytest
@@ -13,6 +16,40 @@ from mock_vws.database import CloudDatabase
 
 from vws import VWS, CloudRecoService
 from vws.include_target_data import CloudRecoIncludeTargetData
+from vws.response import Response
+
+
+class _JSONResponseTransport:
+    """A transport which returns one JSON response body."""
+
+    def __init__(self, *, body: object) -> None:
+        """Create a transport for the given JSON body."""
+        self._text = json.dumps(obj=body)
+
+    def close(self) -> None:
+        """Close the transport."""
+
+    def __call__(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        data: bytes,
+        request_timeout: float | tuple[float, float],
+    ) -> Response:
+        """Return the configured response body."""
+        del method, headers, data, request_timeout
+        content = self._text.encode()
+        return Response(
+            text=self._text,
+            url=url,
+            status_code=HTTPStatus.OK,
+            headers={"Content-Type": "application/json"},
+            request_body=None,
+            tell_position=len(content),
+            content=content,
+        )
 
 
 class TestQuery:
@@ -46,6 +83,21 @@ class TestQuery:
         vws_client.wait_for_target_processed(target_id=target_id)
         [matching_target] = cloud_reco_client.query(image=image)
         assert matching_target.target_id == target_id
+
+    @staticmethod
+    def test_invalid_results(*, image: io.BytesIO | BinaryIO) -> None:
+        """Query results in responses must be a list of objects."""
+        transport = _JSONResponseTransport(
+            body={"result_code": "Success", "results": 1}
+        )
+        client = CloudRecoService(
+            client_access_key="access-key",
+            client_secret_key=secrets.token_hex(),
+            transport=transport,
+        )
+
+        with pytest.raises(expected_exception=TypeError):
+            _ = client.query(image=image)
 
 
 class TestDefaultRequestTimeout:

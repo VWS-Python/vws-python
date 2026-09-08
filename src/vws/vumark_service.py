@@ -5,6 +5,7 @@ from http import HTTPMethod, HTTPStatus
 
 from beartype import BeartypeConf, beartype
 
+from vws._json_utils import json_object, string_field
 from vws._vws_request import target_api_request
 from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import ServerError
@@ -130,8 +131,11 @@ class VuMarkService:
         if response.status_code == HTTPStatus.OK:
             return response.content
 
-        result_code = json.loads(s=response.text)["result_code"]  # pyrefly: ignore [unknown-variable-type]
+        result_code = string_field(
+            value=json_object(value=response.text),
+            name="result_code",
+        )
         raise VWSError.from_result_code(
-            result_code=result_code,  # pyrefly: ignore [unknown-argument-type]
+            result_code=result_code,
             response=response,
         )

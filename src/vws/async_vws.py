@@ -13,6 +13,7 @@ from beartype import BeartypeConf, beartype
 from vws._async_vws_request import async_target_api_request
 from vws._image_utils import ImageType as _ImageType
 from vws._image_utils import get_image_data as _get_image_data
+from vws._json_utils import json_object, string_field, string_list_field
 from vws._reco_counts import (
     reco_counts_report_body,
     reco_counts_report_path,
@@ -152,12 +153,15 @@ class AsyncVWS:
         ):  # pragma: no cover
             raise ServerError(response=response)
 
-        result_code = json.loads(s=response.text)["result_code"]  # pyrefly: ignore [unknown-variable-type]
+        result_code = string_field(
+            value=json_object(value=response.text),
+            name="result_code",
+        )
         if result_code == expected_result_code:
             return response
 
         raise VWSError.from_result_code(
-            result_code=result_code,  # pyrefly: ignore [unknown-argument-type]
+            result_code=result_code,
             response=response,
         )
 
@@ -238,7 +242,10 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return str(object=json.loads(s=response.text)["target_id"])  # pyrefly: ignore [unknown-argument-type]
+        return string_field(
+            value=json_object(value=response.text),
+            name="target_id",
+        )
 
     async def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
         """Get a given target's target record from the Target
@@ -276,7 +283,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        result_data = json.loads(s=response.text)
+        result_data = json_object(value=response.text)
         return TargetStatusAndRecord.from_response_dict(
             response_dict=result_data,
         )
@@ -373,7 +380,10 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return list(json.loads(s=response.text)["results"])  # pyrefly: ignore [unknown-argument-type]
+        return string_list_field(
+            value=json_object(value=response.text),
+            name="results",
+        )
 
     async def get_target_summary_report(
         self, target_id: str
@@ -413,7 +423,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        result_data = dict(json.loads(s=response.text))
+        result_data = json_object(value=response.text)
         return TargetSummaryReport.from_response_dict(
             response_dict=result_data,
         )
@@ -450,7 +460,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        response_data = dict(json.loads(s=response.text))
+        response_data = json_object(value=response.text)
         return DatabaseSummaryReport.from_response_dict(
             response_dict=response_data,
         )
@@ -504,7 +514,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        response_data = dict(json.loads(s=response.text))
+        response_data = json_object(value=response.text)
         return RecoCountsReportRequest.from_response_dict(
             response_dict=response_data,
         )
@@ -657,8 +667,9 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return list(
-            json.loads(s=response.text)["similar_targets"],  # pyrefly: ignore [unknown-argument-type]
+        return string_list_field(
+            value=json_object(value=response.text),
+            name="similar_targets",
         )
 
     async def update_target(
