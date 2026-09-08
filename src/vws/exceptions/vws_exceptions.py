@@ -7,6 +7,7 @@ api#result-codes.
 """
 
 import json
+from typing import cast
 from urllib.parse import urlparse
 
 from beartype import beartype
@@ -143,9 +144,7 @@ class TargetNameExistError(VWSError):
     @property
     def target_name(self) -> str:
         """The target name which already exists."""
-        response_body = self.response.request_body
-        if response_body is None or response_body in {"", b""}:
-            response_body = b""
+        response_body = cast("str | bytes", self.response.request_body)
         request_json = json.loads(s=response_body)
         return str(object=request_json["name"])  # pyrefly: ignore [unknown-argument-type]
 

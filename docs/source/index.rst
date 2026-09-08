@@ -218,7 +218,7 @@ Transports are available for `requests`_, `httpx`_ and `HTTPX2`_.
    )
 
    # This database has no targets.
-   assert vws_client.list_targets() == []
+   assert len(vws_client.list_targets()) == 0
 
 .. _requests: https://pypi.org/project/requests/
 .. _httpx: https://pypi.org/project/httpx/
