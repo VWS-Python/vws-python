@@ -83,8 +83,15 @@ def access_token_from_response(*, response: Response) -> tuple[str, float]:
     if response.status_code != HTTPStatus.OK:
         raise ModelTargetOAuth2Error(response=response)
 
-    response_data = dict(json.loads(s=response.text))
-    return response_data["access_token"], float(response_data["expires_in"])  # ty: ignore[unsound-return-statement]
+    response_data = dict[str, object](json.loads(s=response.text))
+    access_token = response_data.get("access_token")
+    expires_in = response_data.get("expires_in")
+    if not isinstance(access_token, str) or not isinstance(
+        expires_in,
+        str | int | float,
+    ):
+        raise ModelTargetOAuth2Error(response=response)
+    return access_token, float(expires_in)
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))

@@ -35,6 +35,11 @@ _MODEL_TARGET_CLIENT_ID = "client-id"
 _MODEL_TARGET_CLIENT_SECRET = "client-secret"  # noqa: S105
 
 
+def _image_file_mode(*, value: Literal["r+b", "rb"]) -> Literal["r+b", "rb"]:
+    """Type a file mode supplied by the pytest parameter API."""
+    return value
+
+
 @pytest.fixture(name="_mock_database")
 def fixture_mock_database() -> Generator[CloudDatabase]:
     """Yield a mock ``CloudDatabase``."""
@@ -225,7 +230,7 @@ def fixture_image_file(
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
     _ = file.write_bytes(data=buffer)
-    mode: Literal["r+b", "rb"] = request.param  # ty: ignore[unsound-assignment]
+    mode = _image_file_mode(value=request.param)
     with file.open(mode=mode) as file_obj:
         yield file_obj
 

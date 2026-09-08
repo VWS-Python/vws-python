@@ -17,6 +17,7 @@ from mock_vws import (
 )
 
 from vws import ModelTargetService
+from vws._model_targets import access_token_from_response
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.model_target_exceptions import (
     ModelTargetAuthenticationError,
@@ -52,11 +53,16 @@ _DATASET_TYPES = [
 
 
 @beartype
-def _response(*, text: str) -> Response:
+def _response_with_status(
+    *,
+    text: str,
+    status_code: HTTPStatus,
+) -> Response:
     """Get a response with a given body.
 
     Args:
         text: The body of the response.
+        status_code: The response status code.
 
     Returns:
         A response with the given body.
@@ -65,11 +71,20 @@ def _response(*, text: str) -> Response:
     return Response(
         text=text,
         url="https://vws.vuforia.com/modeltargets/datasets",
-        status_code=HTTPStatus.BAD_REQUEST,
+        status_code=status_code,
         headers={},
         request_body=None,
         tell_position=len(content),
         content=content,
+    )
+
+
+@beartype
+def _response(*, text: str) -> Response:
+    """Get a bad-request response with a given body."""
+    return _response_with_status(
+        text=text,
+        status_code=HTTPStatus.BAD_REQUEST,
     )
 
 
@@ -757,6 +772,26 @@ class TestErrorEnvelope:
 
         assert error.error == "invalid_request"
         assert error.error_description == description
+
+
+@pytest.mark.parametrize(
+    argnames="payload",
+    argvalues=[
+        {"access_token": 1, "expires_in": 3600},
+        {"access_token": "token", "expires_in": []},
+    ],
+)
+def test_invalid_oauth2_token_response_values(
+    *, payload: dict[str, object]
+) -> None:
+    """OAuth token responses must contain correctly typed values."""
+    response = _response_with_status(
+        text=json.dumps(obj=payload),
+        status_code=HTTPStatus.OK,
+    )
+
+    with pytest.raises(expected_exception=ModelTargetOAuth2Error):
+        _ = access_token_from_response(response=response)
 
 
 class TestBaseVWSURL:
