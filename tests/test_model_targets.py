@@ -132,7 +132,7 @@ class TestAccessToken:
             client_secret=_CLIENT_SECRET,
         )
 
-        assert client.get_access_token()
+        assert bool(client.get_access_token())
 
     @staticmethod
     @pytest.mark.usefixtures("_mock_model_targets")
@@ -149,7 +149,7 @@ class TestAccessToken:
         )
 
         for _ in range(2):
-            client.create_dataset(
+            _ = client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
                 models=[model_target_model],
@@ -175,15 +175,15 @@ class TestAccessToken:
         )
 
         with freeze_time(time_to_freeze="2026-01-01") as frozen_time:
-            client.create_dataset(
+            _ = client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
                 models=[model_target_model],
                 dataset_type=ModelTargetDatasetType.STANDARD,
             )
             # Mock tokens last an hour.
-            frozen_time.tick(delta=60 * 60 + 1)
-            client.create_dataset(
+            _ = frozen_time.tick(delta=60 * 60 + 1)
+            _ = client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
                 models=[model_target_model],
@@ -206,11 +206,11 @@ class TestAccessToken:
         with pytest.raises(
             expected_exception=ModelTargetOAuth2Error,
         ) as exc:
-            client.get_access_token()
+            _ = client.get_access_token()
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
         assert exc.value.error == "invalid_client"
-        assert not exc.value.error_description
+        assert not bool(exc.value.error_description)
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -271,7 +271,7 @@ class TestAccessToken:
             MockVWS(model_target_failure_response=failure),
             pytest.raises(expected_exception=expected_exception) as exc,
         ):
-            client.create_dataset(
+            _ = client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
                 models=[model_target_model],
@@ -334,7 +334,7 @@ class TestDatasetLifecycle:
         )
 
         with pytest.raises(expected_exception=UnknownModelTargetDatasetError):
-            model_target_client.get_dataset_status(
+            _ = model_target_client.get_dataset_status(
                 dataset_uuid=dataset_uuid,
                 dataset_type=dataset_type,
             )
@@ -380,7 +380,7 @@ class TestDatasetLifecycle:
         with pytest.raises(
             expected_exception=ModelTargetDatasetNotDoneError,
         ) as exc:
-            model_target_client.download_dataset(
+            _ = model_target_client.download_dataset(
                 dataset_uuid=dataset_uuid,
                 dataset_type=ModelTargetDatasetType.STANDARD,
             )
@@ -434,7 +434,7 @@ class TestDatasetLifecycle:
             dataset_type=ModelTargetDatasetType.ADVANCED,
         )
 
-        assert dataset_uuid
+        assert bool(dataset_uuid)
 
     @staticmethod
     def test_state_based_model(
@@ -460,11 +460,13 @@ class TestDatasetLifecycle:
             ],
         )
 
-        assert model_target_client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model],
-            dataset_type=ModelTargetDatasetType.STANDARD,
+        assert bool(
+            model_target_client.create_dataset(
+                name="dataset",
+                target_sdk="11.0",
+                models=[model],
+                dataset_type=ModelTargetDatasetType.STANDARD,
+            )
         )
 
 
@@ -478,7 +480,7 @@ class TestUnknownDataset:
         with pytest.raises(
             expected_exception=UnknownModelTargetDatasetError,
         ) as exc:
-            model_target_client.get_dataset_status(
+            _ = model_target_client.get_dataset_status(
                 dataset_uuid=dataset_uuid,
                 dataset_type=ModelTargetDatasetType.STANDARD,
             )
@@ -491,7 +493,7 @@ class TestUnknownDataset:
     def test_download(*, model_target_client: ModelTargetService) -> None:
         """An exception is raised for an unknown dataset."""
         with pytest.raises(expected_exception=UnknownModelTargetDatasetError):
-            model_target_client.download_dataset(
+            _ = model_target_client.download_dataset(
                 dataset_uuid=uuid.uuid4().hex,
                 dataset_type=ModelTargetDatasetType.STANDARD,
             )
@@ -518,7 +520,7 @@ class TestValidation:
         with pytest.raises(
             expected_exception=ModelTargetValidationError,
         ) as exc:
-            model_target_client.create_dataset(
+            _ = model_target_client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
                 models=[ModelTargetModel(name="model", views=[])],
@@ -544,7 +546,7 @@ class TestValidation:
         )
 
         with pytest.raises(expected_exception=ModelTargetValidationError):
-            model_target_client.create_dataset(
+            _ = model_target_client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
                 models=[model],
@@ -561,7 +563,7 @@ class TestValidation:
         with pytest.raises(
             expected_exception=ModelTargetValidationError,
         ) as exc:
-            model_target_client.create_dataset(
+            _ = model_target_client.create_dataset(
                 name="dataset",
                 target_sdk="11.0",
                 models=[model_target_model, model_target_model],
@@ -611,7 +613,7 @@ class TestGenerationResult:
             with pytest.raises(
                 expected_exception=ModelTargetDatasetNotDoneError,
             ):
-                client.download_dataset(
+                _ = client.download_dataset(
                     dataset_uuid=dataset_uuid,
                     dataset_type=ModelTargetDatasetType.STANDARD,
                 )
@@ -653,9 +655,11 @@ class TestGenerationResult:
             (detail,) = report.warning.details
             assert detail.code == "LOW_RECOGNITION_QUALITY"
 
-            assert client.download_dataset(
-                dataset_uuid=dataset_uuid,
-                dataset_type=ModelTargetDatasetType.STANDARD,
+            assert bool(
+                client.download_dataset(
+                    dataset_uuid=dataset_uuid,
+                    dataset_type=ModelTargetDatasetType.STANDARD,
+                )
             )
 
 
@@ -680,7 +684,7 @@ class TestWaitForDatasetGenerated:
             with pytest.raises(
                 expected_exception=ModelTargetDatasetTimeoutError,
             ):
-                client.wait_for_dataset_generated(
+                _ = client.wait_for_dataset_generated(
                     dataset_uuid=dataset_uuid,
                     dataset_type=ModelTargetDatasetType.STANDARD,
                     seconds_between_requests=0.01,
@@ -711,10 +715,10 @@ class TestErrorEnvelope:
         """
         error = ModelTargetError(response=_response(text=text))
 
-        assert not error.code
-        assert not error.message
-        assert not error.target
-        assert not error.details
+        assert not bool(error.code)
+        assert not bool(error.message)
+        assert not bool(error.target)
+        assert not bool(error.details)
 
     @staticmethod
     def test_error_without_details() -> None:
@@ -724,8 +728,8 @@ class TestErrorEnvelope:
 
         assert error.code == "ERROR"
         assert error.message == "No"
-        assert not error.target
-        assert not error.details
+        assert not bool(error.target)
+        assert not bool(error.details)
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -736,8 +740,8 @@ class TestErrorEnvelope:
         """An OAuth2 error without an error code gives empty values."""
         error = ModelTargetOAuth2Error(response=_response(text=text))
 
-        assert not error.error
-        assert not error.error_description
+        assert not bool(error.error)
+        assert not bool(error.error_description)
 
     @staticmethod
     def test_oauth2_error_description() -> None:

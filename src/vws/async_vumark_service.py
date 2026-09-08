@@ -147,9 +147,8 @@ class AsyncVuMarkService:
         if response.status_code == HTTPStatus.OK:
             return response.content
 
-        result_code = json.loads(s=response.text)["result_code"]
-
+        result_code = json.loads(s=response.text)["result_code"]  # pyrefly: ignore [unknown-variable-type]
         raise VWSError.from_result_code(
-            result_code=result_code,
+            result_code=result_code,  # pyrefly: ignore [unknown-argument-type]
             response=response,
         )

@@ -165,9 +165,10 @@ class AsyncModelTargetService:
                 Vuforia is rate limiting access.
         """
         access_token = await self.get_access_token()
+        request_headers = extra_headers if extra_headers is not None else {}
         headers = {
             "Authorization": f"Bearer {access_token}",
-            **(extra_headers or {}),
+            **request_headers,
         }
 
         response = await self._transport(

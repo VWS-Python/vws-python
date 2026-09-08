@@ -150,9 +150,10 @@ class ModelTargetService:
             ~vws.exceptions.vws_exceptions.TooManyRequestsError:
                 Vuforia is rate limiting access.
         """
+        request_headers = extra_headers if extra_headers is not None else {}
         headers = {
             "Authorization": f"Bearer {self.get_access_token()}",
-            **(extra_headers or {}),
+            **request_headers,
         }
 
         response = self._transport(
@@ -356,7 +357,7 @@ class ModelTargetService:
             ~vws.exceptions.model_target_exceptions.ModelTargetOAuth2Error:
                 Vuforia did not give an access token.
         """
-        self.make_request(
+        _ = self.make_request(
             method=HTTPMethod.DELETE,
             data=b"",
             request_path=dataset_path(

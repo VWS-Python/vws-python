@@ -102,7 +102,7 @@ class TestAddTarget:
         This demonstrates that the image seek position is not changed.
         """
         for name in ("a", "b"):
-            vws_client.add_target(
+            _ = vws_client.add_target(
                 name=name,
                 width=1,
                 image=image,
@@ -151,7 +151,7 @@ class TestDefaultRequestTimeout:
                 with pytest.raises(
                     expected_exception=requests.exceptions.Timeout,
                 ):
-                    vws_client.add_target(
+                    _ = vws_client.add_target(
                         name="x",
                         width=1,
                         image=image,
@@ -159,7 +159,7 @@ class TestDefaultRequestTimeout:
                         application_metadata=None,
                     )
             else:
-                vws_client.add_target(
+                _ = vws_client.add_target(
                     name="x",
                     width=1,
                     image=image,
@@ -217,7 +217,7 @@ class TestCustomRequestTimeout:
                 with pytest.raises(
                     expected_exception=requests.exceptions.Timeout,
                 ):
-                    vws_client.add_target(
+                    _ = vws_client.add_target(
                         name="x",
                         width=1,
                         image=image,
@@ -225,7 +225,7 @@ class TestCustomRequestTimeout:
                         application_metadata=None,
                     )
             else:
-                vws_client.add_target(
+                _ = vws_client.add_target(
                     name="x",
                     width=1,
                     image=image,
@@ -254,7 +254,7 @@ class TestCustomBaseVWSURL:
                 base_vws_url=base_vws_url,
             )
 
-            vws_client.add_target(
+            _ = vws_client.add_target(
                 name="x",
                 width=1,
                 image=image,
@@ -278,7 +278,7 @@ class TestCustomBaseVWSURL:
                 base_vws_url=base_vws_url,
             )
 
-            assert not vws_client.list_targets()
+            assert not bool(vws_client.list_targets())
 
 
 class TestListTargets:
@@ -821,15 +821,15 @@ class TestRecoCountsReport:
             year=report_month.year,
             month=calendar.Month(value=report_month.month),
         )
-        assert report_request.transaction_id
-        assert report_request.presigned_url
+        assert bool(report_request.transaction_id)
+        assert bool(report_request.presigned_url)
 
         report = vws_client.wait_for_reco_counts_report(
             presigned_url=report_request.presigned_url,
         )
 
         # No targets have been recognized, so the report has no rows.
-        assert not report.reco_counts
+        assert not bool(report.reco_counts)
         assert report.raw_csv.startswith(b"target_id,reco_count")
 
     @staticmethod
@@ -853,7 +853,7 @@ class TestRecoCountsReport:
             with pytest.raises(
                 expected_exception=RecoCountsReportNotReadyError,
             ) as exc:
-                vws_client.download_reco_counts_report(
+                _ = vws_client.download_reco_counts_report(
                     presigned_url=report_request.presigned_url,
                 )
 
@@ -883,7 +883,7 @@ class TestRecoCountsReport:
             with pytest.raises(
                 expected_exception=RecoCountsReportTimeoutError,
             ):
-                vws_client.wait_for_reco_counts_report(
+                _ = vws_client.wait_for_reco_counts_report(
                     presigned_url=report_request.presigned_url,
                     seconds_between_requests=0.01,
                     timeout_seconds=0.05,
@@ -914,7 +914,7 @@ class TestRecoCountsReport:
         rejected.
         """
         with pytest.raises(expected_exception=FailError) as exc:
-            vws_client.request_database_reco_counts_report(
+            _ = vws_client.request_database_reco_counts_report(
                 year=year,
                 month=month,
             )
@@ -941,7 +941,7 @@ class TestRecoCountsReport:
             with pytest.raises(
                 expected_exception=AuthenticationFailureError,
             ) as exc:
-                vws_client.request_database_reco_counts_report(
+                _ = vws_client.request_database_reco_counts_report(
                     year=current_month.year,
                     month=calendar.Month(value=current_month.month),
                 )
@@ -960,7 +960,7 @@ class TestRecoCountsReport:
         with pytest.raises(
             expected_exception=RecoCountsReportDownloadError,
         ) as exc:
-            vws_client.download_reco_counts_report(
+            _ = vws_client.download_reco_counts_report(
                 presigned_url="https://example.com/reports/recoCounts/x",
             )
 
@@ -977,7 +977,7 @@ class TestRecoCountsReport:
         )
 
         with pytest.raises(expected_exception=DatabaseIdNotSetError):
-            vws_client.request_database_reco_counts_report(
+            _ = vws_client.request_database_reco_counts_report(
                 year=current_month.year,
                 month=calendar.Month(value=current_month.month),
             )

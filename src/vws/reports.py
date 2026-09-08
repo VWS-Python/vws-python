@@ -34,7 +34,7 @@ class DatabaseSummaryReport:
     total_recos: int
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
         """Construct from a VWS API response dict."""
         return cls(
             active_images=int(response_dict["active_images"]),
@@ -86,7 +86,7 @@ class TargetSummaryReport:
     previous_month_recos: int
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
         """Construct from a VWS API response dict."""
         return cls(
             status=TargetStatuses(value=response_dict["status"]),
@@ -143,17 +143,18 @@ class QueryResult:
     target_data: TargetData | None
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
         """Construct from a VWS API query result item dict."""
         target_data: TargetData | None = None
         if "target_data" in response_dict:
             target_data_dict = response_dict["target_data"]
             target_timestamp = datetime.datetime.fromtimestamp(
-                timestamp=target_data_dict["target_timestamp"],
+                timestamp=target_data_dict["target_timestamp"],  # pyrefly: ignore [unknown-argument-type]
                 tz=datetime.UTC,
             )
             target_data = TargetData(
-                name=target_data_dict["name"],
+                name=target_data_dict["name"],  # pyrefly: ignore [unknown-argument-type]
+                # pyrefly: ignore [unknown-argument-type]
                 application_metadata=target_data_dict["application_metadata"],
                 target_timestamp=target_timestamp,
             )
@@ -176,7 +177,7 @@ class TargetStatusAndRecord:
     target_record: TargetRecord
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
         """Construct from a VWS API response dict."""
         status = TargetStatuses(value=response_dict["status"])
         target_record_dict = dict(response_dict["target_record"])
@@ -209,7 +210,7 @@ class RecoCountsReportRequest:
     """
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
         """Construct from a VWS API response dict."""
         return cls(
             transaction_id=response_dict["transaction_id"],
@@ -300,7 +301,7 @@ class ModelTargetDatasetStatusReport:
     """
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:
+    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
         """Construct from a Model Target Web API response dict."""
         error: ModelTargetGenerationError | None = None
         if "error" in response_dict:
@@ -319,7 +320,8 @@ class ModelTargetDatasetStatusReport:
                 target=warning_dict["target"],
                 details=[
                     ModelTargetGenerationDetail(
-                        code=detail["code"],
+                        code=detail["code"],  # pyrefly: ignore [unknown-argument-type]
+                        # pyrefly: ignore [unknown-argument-type]
                         message=detail["message"],
                     )
                     for detail in warning_dict["details"]

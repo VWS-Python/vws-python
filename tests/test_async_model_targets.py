@@ -87,7 +87,7 @@ class TestAccessToken:
         async_model_target_client: AsyncModelTargetService,
     ) -> None:
         """An access token is given for valid credentials."""
-        assert await async_model_target_client.get_access_token()
+        assert bool(await async_model_target_client.get_access_token())
 
     @staticmethod
     @pytest.mark.asyncio
@@ -313,11 +313,13 @@ class TestDatasetLifecycle:
             views=[],
         )
 
-        assert await async_model_target_client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model_target_model, other_model],
-            dataset_type=ModelTargetDatasetType.ADVANCED,
+        assert bool(
+            await async_model_target_client.create_dataset(
+                name="dataset",
+                target_sdk="11.0",
+                models=[model_target_model, other_model],
+                dataset_type=ModelTargetDatasetType.ADVANCED,
+            )
         )
 
 

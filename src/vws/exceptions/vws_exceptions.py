@@ -21,7 +21,7 @@ def _target_id_from_url(*, url: str) -> str:
     path segment after ``targets``, ``summary``, or ``duplicates``.
     """
     path = urlparse(url=url).path
-    parts = [part for part in path.split(sep="/") if part]
+    parts = [part for part in path.split(sep="/") if bool(part)]
     for marker in ("targets", "summary", "duplicates"):
         try:
             marker_index = parts.index(marker)
@@ -143,9 +143,11 @@ class TargetNameExistError(VWSError):
     @property
     def target_name(self) -> str:
         """The target name which already exists."""
-        response_body = self.response.request_body or b""
+        response_body = self.response.request_body
+        if response_body is None or response_body in {"", b""}:
+            response_body = b""
         request_json = json.loads(s=response_body)
-        return str(object=request_json["name"])
+        return str(object=request_json["name"])  # pyrefly: ignore [unknown-argument-type]
 
 
 @beartype

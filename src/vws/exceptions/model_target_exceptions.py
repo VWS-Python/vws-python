@@ -27,7 +27,7 @@ def _is_json_object(*, value: object) -> bool:
 
 
 @beartype
-def _json_object(*, value: str) -> dict[str, Any]:
+def _json_object(*, value: str) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
     """Get a JSON object from a string.
 
     Args:
@@ -38,19 +38,19 @@ def _json_object(*, value: str) -> dict[str, Any]:
         JSON object.
     """
     try:
-        loaded: Any = json.loads(s=value)
+        loaded: Any = json.loads(s=value)  # pyrefly: ignore [explicit-any]
     except json.JSONDecodeError:
         return {}
 
     if not _is_json_object(value=loaded):
         return {}
 
-    json_object: dict[str, Any] = loaded
+    json_object: dict[str, Any] = loaded  # pyrefly: ignore [explicit-any]
     return json_object
 
 
 @beartype
-def _error_dict(*, response: Response) -> dict[str, Any]:
+def _error_dict(*, response: Response) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
     """Get the error object of a Model Target Web API error response.
 
     Args:
@@ -66,11 +66,11 @@ def _error_dict(*, response: Response) -> dict[str, Any]:
     if "error" not in body:
         return {}
 
-    error: Any = body["error"]
+    error: Any = body["error"]  # pyrefly: ignore [explicit-any]
     if not _is_json_object(value=error):
         return {}
 
-    error_dict: dict[str, Any] = error
+    error_dict: dict[str, Any] = error  # pyrefly: ignore [explicit-any]
     return error_dict
 
 
@@ -122,7 +122,8 @@ class ModelTargetError(Exception):
 
         return [
             ModelTargetGenerationDetail(
-                code=detail["code"],
+                code=detail["code"],  # pyrefly: ignore [unknown-argument-type]
+                # pyrefly: ignore [unknown-argument-type]
                 message=detail["message"],
             )
             for detail in error["details"]

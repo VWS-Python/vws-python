@@ -57,7 +57,7 @@ def test_image_too_large(
     raised.
     """
     with pytest.raises(expected_exception=ImageTooLargeError) as exc:
-        vws_client.add_target(
+        _ = vws_client.add_target(
             name="x",
             width=1,
             image=png_too_large,
@@ -97,7 +97,7 @@ def test_add_bad_name(
     with pytest.raises(
         expected_exception=ServerError,
     ) as exc:
-        vws_client.add_target(
+        _ = vws_client.add_target(
             name=bad_name,
             width=1,
             image=high_quality_image,
@@ -119,7 +119,7 @@ def test_request_quota_reached() -> None:
         )
 
         with pytest.raises(expected_exception=RequestQuotaReachedError) as exc:
-            vws_client.list_targets()
+            _ = vws_client.list_targets()
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
@@ -135,7 +135,7 @@ def test_target_quota_reached(high_quality_image: io.BytesIO) -> None:
         )
 
         with pytest.raises(expected_exception=TargetQuotaReachedError) as exc:
-            vws_client.add_target(
+            _ = vws_client.add_target(
                 name="x",
                 width=1,
                 image=high_quality_image,
@@ -168,7 +168,7 @@ def test_project_state_error(
         )
 
         with pytest.raises(expected_exception=expected_exception) as exc:
-            vws_client.list_targets()
+            _ = vws_client.list_targets()
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
@@ -184,7 +184,7 @@ def test_fail(high_quality_image: io.BytesIO) -> None:
         )
 
         with pytest.raises(expected_exception=FailError) as exc:
-            vws_client.add_target(
+            _ = vws_client.add_target(
                 name="x",
                 width=1,
                 image=high_quality_image,
@@ -199,7 +199,7 @@ def test_bad_image(vws_client: VWS) -> None:
     """A ``BadImage`` exception is raised when a non-image is given."""
     not_an_image = io.BytesIO(initial_bytes=b"Not an image")
     with pytest.raises(expected_exception=BadImageError) as exc:
-        vws_client.add_target(
+        _ = vws_client.add_target(
             name="x",
             width=1,
             image=not_an_image,
@@ -221,7 +221,7 @@ def test_target_name_exist(
     the
     same name.
     """
-    vws_client.add_target(
+    _ = vws_client.add_target(
         name="x",
         width=1,
         image=high_quality_image,
@@ -229,7 +229,7 @@ def test_target_name_exist(
         application_metadata=None,
     )
     with pytest.raises(expected_exception=TargetNameExistError) as exc:
-        vws_client.add_target(
+        _ = vws_client.add_target(
             name="x",
             width=1,
             image=high_quality_image,
@@ -258,7 +258,7 @@ def test_project_inactive(
         )
 
         with pytest.raises(expected_exception=ProjectInactiveError) as exc:
-            vws_client.add_target(
+            _ = vws_client.add_target(
                 name="x",
                 width=1,
                 image=high_quality_image,
@@ -312,7 +312,7 @@ def test_metadata_too_large(
         s=decoded_metadata + b"x",
     ).decode(encoding="ascii")
     with pytest.raises(expected_exception=MetadataTooLargeError) as exc:
-        vws_client.add_target(
+        _ = vws_client.add_target(
             name="x",
             width=1,
             image=high_quality_image,
@@ -355,7 +355,7 @@ def test_request_time_too_skewed(
         freeze_time(auto_tick_seconds=time_difference_from_now),
         pytest.raises(expected_exception=RequestTimeTooSkewedError) as exc,
     ):
-        vws_client.get_target_record(target_id=target_id)
+        _ = vws_client.get_target_record(target_id=target_id)
 
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
@@ -383,7 +383,7 @@ def test_authentication_failure(
         with pytest.raises(
             expected_exception=AuthenticationFailureError
         ) as exc:
-            vws_client.add_target(
+            _ = vws_client.add_target(
                 name="x",
                 width=1,
                 image=high_quality_image,
@@ -460,7 +460,7 @@ def test_invalid_instance_id(
     ID is given.
     """
     with pytest.raises(expected_exception=InvalidInstanceIdError) as exc:
-        vumark_service_client.generate_vumark_instance(
+        _ = vumark_service_client.generate_vumark_instance(
             target_id=vumark_target_id,
             instance_id="",
             accept=VuMarkAccept.PNG,
@@ -497,7 +497,7 @@ def test_invalid_target_type(
         with pytest.raises(
             expected_exception=InvalidTargetTypeError,
         ) as exc:
-            vumark_service.generate_vumark_instance(
+            _ = vumark_service.generate_vumark_instance(
                 target_id=target_id,
                 instance_id="example_instance_id",
                 accept=VuMarkAccept.PNG,
@@ -540,7 +540,7 @@ def test_documented_vumark_error_codes(
         )
 
         with pytest.raises(expected_exception=exception_type) as exc:
-            vumark_service.generate_vumark_instance(
+            _ = vumark_service.generate_vumark_instance(
                 target_id="exampletargetid",
                 instance_id="example_instance_id",
                 accept=VuMarkAccept.PNG,
@@ -557,11 +557,11 @@ def test_base_exception(
 ) -> None:
     """``VWSException``s has a response property."""
     with pytest.raises(expected_exception=VWSError) as exc:
-        vws_client.get_target_record(target_id="a")
+        _ = vws_client.get_target_record(target_id="a")
 
     assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
 
-    vws_client.add_target(
+    _ = vws_client.add_target(
         name="x",
         width=1,
         image=high_quality_image,

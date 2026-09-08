@@ -519,15 +519,15 @@ class TestRecoCountsReport:
             year=report_month.year,
             month=calendar.Month(value=report_month.month),
         )
-        assert report_request.transaction_id
-        assert report_request.presigned_url
+        assert bool(report_request.transaction_id)
+        assert bool(report_request.presigned_url)
 
         report = await client.wait_for_reco_counts_report(
             presigned_url=report_request.presigned_url,
         )
 
         # No targets have been recognized, so the report has no rows.
-        assert not report.reco_counts
+        assert not bool(report.reco_counts)
         assert report.raw_csv.startswith(b"target_id,reco_count")
 
     @staticmethod
