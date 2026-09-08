@@ -88,10 +88,10 @@ class TestDefaultRequestTimeout:
                 with pytest.raises(
                     expected_exception=requests.exceptions.Timeout,
                 ):
-                    cloud_reco_client.query(image=image)
+                    _ = cloud_reco_client.query(image=image)
             else:
                 matches = cloud_reco_client.query(image=image)
-                assert not matches
+                assert not bool(matches)
 
 
 class TestCustomRequestTimeout:
@@ -143,10 +143,10 @@ class TestCustomRequestTimeout:
                 with pytest.raises(
                     expected_exception=requests.exceptions.Timeout,
                 ):
-                    cloud_reco_client.query(image=image)
+                    _ = cloud_reco_client.query(image=image)
             else:
                 matches = cloud_reco_client.query(image=image)
-                assert not matches
+                assert not bool(matches)
 
 
 class TestCustomBaseVWQURL:

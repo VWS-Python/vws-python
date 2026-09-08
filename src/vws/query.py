@@ -111,9 +111,9 @@ class CloudRecoService:
             An ordered list of target details of matching targets.
         """
         image_content = _get_image_data(image=image)
-        body: dict[str, Any] = {
+        body: dict[str, Any] = {  # pyrefly: ignore [explicit-any]
             "image": ("image.jpeg", image_content, "image/jpeg"),
-            "max_num_results": (None, int(max_num_results), "text/plain"),
+            "max_num_results": (None, max_num_results, "text/plain"),
             "include_target_data": (
                 None,
                 include_target_data.value,
@@ -177,7 +177,7 @@ class CloudRecoService:
                 raise CloudRecoError(response=response) from exc
             raise
 
-        result_code = response_body["result_code"]
+        result_code = response_body["result_code"]  # pyrefly: ignore [unknown-variable-type]
         if result_code != "Success":
             exception = {
                 "AuthenticationFailure": AuthenticationFailureError,
@@ -187,8 +187,8 @@ class CloudRecoService:
             }[result_code]
             raise exception(response=response)
 
-        result_list = list(response_body["results"])
+        result_list = list(response_body["results"])  # pyrefly: ignore [unknown-argument-type]
         return [
-            QueryResult.from_response_dict(response_dict=item)
+            QueryResult.from_response_dict(response_dict=item)  # pyrefly: ignore [unknown-argument-type]
             for item in result_list
         ]

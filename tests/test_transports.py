@@ -356,21 +356,21 @@ def test_falsy_sync_transport_is_retained(
     access_key = uuid.uuid4().hex
     secret_key = uuid.uuid4().hex
     transport = _FalsyTransport()
-    assert not transport
+    assert not bool(transport)
 
     targets = VWS(
         server_access_key=access_key,
         server_secret_key=secret_key,
         transport=transport,
     ).list_targets()
-    assert not targets
+    assert not bool(targets)
 
     query_results = CloudRecoService(
         client_access_key=access_key,
         client_secret_key=secret_key,
         transport=transport,
     ).query(image=high_quality_image)
-    assert not query_results
+    assert not bool(query_results)
 
     vumark_bytes = VuMarkService(
         server_access_key=access_key,
@@ -392,21 +392,23 @@ async def test_falsy_async_transport_is_retained(
     access_key = uuid.uuid4().hex
     secret_key = uuid.uuid4().hex
     transport = _FalsyAsyncTransport()
-    assert not transport
+    assert not bool(transport)
 
     async with AsyncVWS(
         server_access_key=access_key,
         server_secret_key=secret_key,
         transport=transport,
     ) as vws_client:
-        assert not await vws_client.list_targets()
+        assert not bool(await vws_client.list_targets())
 
     async with AsyncCloudRecoService(
         client_access_key=access_key,
         client_secret_key=secret_key,
         transport=transport,
     ) as cloud_reco_client:
-        assert not await cloud_reco_client.query(image=high_quality_image)
+        assert not bool(
+            await cloud_reco_client.query(image=high_quality_image)
+        )
 
     async with AsyncVuMarkService(
         server_access_key=access_key,
@@ -606,7 +608,7 @@ class TestHTTPX2Transport:
             expected_exception=RuntimeError,
             match="client has been closed",
         ):
-            transport(
+            _ = transport(
                 method="POST",
                 url=_HTTPX2_URL,
                 headers={"Content-Type": "text/plain"},
@@ -623,14 +625,14 @@ class TestHTTPX2Transport:
             expected_exception=RuntimeError,
             match="client has been closed",
         ):
-            transport(
+            _ = transport(
                 method="POST",
                 url=_HTTPX2_URL,
                 headers={"Content-Type": "text/plain"},
                 data=b"hello",
                 request_timeout=30.0,
             )
-        assert not httpx2_requests
+        assert not bool(httpx2_requests)
 
     @staticmethod
     def test_httpx2_exceptions(httpx2_requests: list[httpx2.Request]) -> None:
@@ -639,7 +641,7 @@ class TestHTTPX2Transport:
         """
         transport = HTTPX2Transport()
         with pytest.raises(expected_exception=httpx2.ConnectError) as exc:
-            transport(
+            _ = transport(
                 method="GET",
                 url=_HTTPX2_REFUSED_URL,
                 headers={},
@@ -806,7 +808,7 @@ class TestAsyncHTTPX2Transport:
                 data=b"hello",
                 request_timeout=30.0,
             )
-        assert not httpx2_requests
+        assert not bool(httpx2_requests)
 
     @staticmethod
     @pytest.mark.asyncio
@@ -943,7 +945,7 @@ class TestHTTPX2TransportWithMock:
                     transport=transport,
                 )
                 with pytest.raises(expected_exception=httpx2.ReadTimeout):
-                    vws_client.list_targets()
+                    _ = vws_client.list_targets()
                 # The mock sleeps for the read timeout before raising.
                 assert sleeps == [0.1]
 

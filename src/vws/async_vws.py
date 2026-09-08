@@ -137,7 +137,7 @@ class AsyncVWS:
             request_path=request_path,
             base_vws_url=self._base_vws_url,
             request_timeout_seconds=self._request_timeout_seconds,
-            extra_headers=extra_headers or {},
+            extra_headers=(extra_headers if extra_headers is not None else {}),
             transport=self._transport,
         )
 
@@ -152,13 +152,12 @@ class AsyncVWS:
         ):  # pragma: no cover
             raise ServerError(response=response)
 
-        result_code = json.loads(s=response.text)["result_code"]
-
+        result_code = json.loads(s=response.text)["result_code"]  # pyrefly: ignore [unknown-variable-type]
         if result_code == expected_result_code:
             return response
 
         raise VWSError.from_result_code(
-            result_code=result_code,
+            result_code=result_code,  # pyrefly: ignore [unknown-argument-type]
             response=response,
         )
 
@@ -239,7 +238,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return str(object=json.loads(s=response.text)["target_id"])
+        return str(object=json.loads(s=response.text)["target_id"])  # pyrefly: ignore [unknown-argument-type]
 
     async def get_target_record(self, target_id: str) -> TargetStatusAndRecord:
         """Get a given target's target record from the Target
@@ -374,7 +373,7 @@ class AsyncVWS:
             content_type="application/json",
         )
 
-        return list(json.loads(s=response.text)["results"])
+        return list(json.loads(s=response.text)["results"])  # pyrefly: ignore [unknown-argument-type]
 
     async def get_target_summary_report(
         self, target_id: str
@@ -659,7 +658,7 @@ class AsyncVWS:
         )
 
         return list(
-            json.loads(s=response.text)["similar_targets"],
+            json.loads(s=response.text)["similar_targets"],  # pyrefly: ignore [unknown-argument-type]
         )
 
     async def update_target(

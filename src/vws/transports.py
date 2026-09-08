@@ -194,15 +194,16 @@ class HTTPXTransport:
             follow_redirects=True,
         )
 
-        content = bytes(httpx_response.content)
+        content = httpx_response.content
         request_content = httpx_response.request.content
+        request_body = request_content
 
         return Response(
             text=httpx_response.text,
             url=str(object=httpx_response.url),
             status_code=httpx_response.status_code,
             headers=dict(httpx_response.headers),
-            request_body=bytes(request_content) or None,
+            request_body=request_body if request_body != b"" else None,
             tell_position=len(content),
             content=content,
         )
@@ -248,15 +249,16 @@ def _response_from_httpx2(*, httpx2_response: httpx2.Response) -> Response:
     Returns:
         A Response populated from the ``httpx2`` response.
     """
-    content = bytes(httpx2_response.content)
+    content = httpx2_response.content
     request_content = httpx2_response.request.content
+    request_body = request_content
 
     return Response(
         text=httpx2_response.text,
         url=str(object=httpx2_response.url),
         status_code=httpx2_response.status_code,
         headers=dict(httpx2_response.headers),
-        request_body=bytes(request_content) or None,
+        request_body=request_body if request_body != b"" else None,
         tell_position=len(content),
         content=content,
     )
@@ -432,15 +434,16 @@ class AsyncHTTPXTransport:
             follow_redirects=True,
         )
 
-        content = bytes(httpx_response.content)
+        content = httpx_response.content
         request_content = httpx_response.request.content
+        request_body = request_content
 
         return Response(
             text=httpx_response.text,
             url=str(object=httpx_response.url),
             status_code=httpx_response.status_code,
             headers=dict(httpx_response.headers),
-            request_body=bytes(request_content) or None,
+            request_body=request_body if request_body != b"" else None,
             tell_position=len(content),
             content=content,
         )

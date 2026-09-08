@@ -162,7 +162,7 @@ def dataset_download_path(
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def _view_dict(*, view: ModelTargetView) -> dict[str, Any]:
+def _view_dict(*, view: ModelTargetView) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
     """Get the request representation of a guide view.
 
     Args:
@@ -171,7 +171,7 @@ def _view_dict(*, view: ModelTargetView) -> dict[str, Any]:
     Returns:
         The guide view, as it is sent to Vuforia.
     """
-    view_dict: dict[str, Any] = {
+    view_dict: dict[str, Any] = {  # pyrefly: ignore [explicit-any]
         "name": view.name,
         "guideViewPosition": {
             "rotation": list(view.guide_view_position.rotation),
@@ -185,7 +185,7 @@ def _view_dict(*, view: ModelTargetView) -> dict[str, Any]:
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def _model_dict(*, model: ModelTargetModel) -> dict[str, Any]:
+def _model_dict(*, model: ModelTargetModel) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
     """Get the request representation of a model.
 
     Args:
@@ -194,7 +194,7 @@ def _model_dict(*, model: ModelTargetModel) -> dict[str, Any]:
     Returns:
         The model, as it is sent to Vuforia.
     """
-    model_dict: dict[str, Any] = {"name": model.name}
+    model_dict: dict[str, Any] = {"name": model.name}  # pyrefly: ignore [explicit-any]
     optional_values: dict[str, str | None] = {
         "automaticColoring": model.automatic_coloring,
         "cadDataBlob": model.cad_data_blob,

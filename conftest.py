@@ -28,7 +28,7 @@ def fixture_make_image_file(
     """
     new_image = Path("high_quality_image.jpg")
     buffer = high_quality_image.getvalue()
-    new_image.write_bytes(data=buffer)
+    _ = new_image.write_bytes(data=buffer)
     yield
     new_image.unlink()
 

@@ -108,7 +108,7 @@ The report is generated in the background, and the URL it is served from expires
    }
 
    # This database has no targets, so nothing has been recognized.
-   assert not reco_counts_by_target_id
+   assert reco_counts_by_target_id == {}
 
 Model Targets
 -------------
@@ -218,7 +218,7 @@ Transports are available for `requests`_, `httpx`_ and `HTTPX2`_.
    )
 
    # This database has no targets.
-   assert not vws_client.list_targets()
+   assert len(vws_client.list_targets()) == 0
 
 .. _requests: https://pypi.org/project/requests/
 .. _httpx: https://pypi.org/project/httpx/

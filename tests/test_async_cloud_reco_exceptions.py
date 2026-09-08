@@ -168,7 +168,7 @@ async def test_non_json_client_error(
         key.lower(): value for key, value in response.headers.items()
     }
     assert response_headers["x-query-failure"] == headers["X-Query-Failure"]
-    assert response.request_body
+    assert bool(response.request_body)
 
 
 @pytest.mark.asyncio

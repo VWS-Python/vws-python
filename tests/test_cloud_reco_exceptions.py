@@ -34,7 +34,7 @@ def test_too_many_max_results(
     ``max_num_results`` is out of range.
     """
     with pytest.raises(expected_exception=MaxNumResultsOutOfRangeError) as exc:
-        cloud_reco_client.query(
+        _ = cloud_reco_client.query(
             image=high_quality_image,
             max_num_results=51,
         )
@@ -57,7 +57,7 @@ def test_image_too_large(
     large is given.
     """
     with pytest.raises(expected_exception=RequestEntityTooLargeError) as exc:
-        cloud_reco_client.query(image=jpeg_too_large)
+        _ = cloud_reco_client.query(image=jpeg_too_large)
 
     assert (
         exc.value.response.status_code == HTTPStatus.REQUEST_ENTITY_TOO_LARGE
@@ -99,7 +99,7 @@ def test_authentication_failure(
         with pytest.raises(
             expected_exception=AuthenticationFailureError
         ) as exc:
-            cloud_reco_client.query(image=high_quality_image)
+            _ = cloud_reco_client.query(image=high_quality_image)
 
         assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
 
@@ -120,7 +120,7 @@ def test_inactive_project(
         )
 
         with pytest.raises(expected_exception=InactiveProjectError) as exc:
-            cloud_reco_client.query(image=high_quality_image)
+            _ = cloud_reco_client.query(image=high_quality_image)
 
         response = exc.value.response
         assert response.status_code == HTTPStatus.FORBIDDEN
@@ -164,7 +164,7 @@ def test_non_json_client_error(
     with MockVWS(cloud_query_failure_response=failure_response) as mock:
         mock.add_cloud_database(cloud_database=database)
         with pytest.raises(expected_exception=CloudRecoError) as exc:
-            cloud_reco_client.query(image=high_quality_image)
+            _ = cloud_reco_client.query(image=high_quality_image)
 
     response = exc.value.response
     assert response.status_code == HTTPStatus.BAD_REQUEST
@@ -174,7 +174,7 @@ def test_non_json_client_error(
         key.lower(): value for key, value in response.headers.items()
     }
     assert response_headers["x-query-failure"] == headers["X-Query-Failure"]
-    assert response.request_body
+    assert bool(response.request_body)
 
 
 def test_non_json_success_response(
@@ -196,4 +196,4 @@ def test_non_json_success_response(
     with MockVWS(cloud_query_failure_response=failure_response) as mock:
         mock.add_cloud_database(cloud_database=database)
         with pytest.raises(expected_exception=json.JSONDecodeError):
-            cloud_reco_client.query(image=high_quality_image)
+            _ = cloud_reco_client.query(image=high_quality_image)
