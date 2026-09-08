@@ -7,6 +7,7 @@ from typing import Self
 from beartype import BeartypeConf, beartype
 
 from vws._async_vws_request import async_target_api_request
+from vws._json_utils import json_object, string_field
 from vws.exceptions.base_exceptions import VWSError
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.vws_exceptions import TooManyRequestsError
@@ -147,8 +148,11 @@ class AsyncVuMarkService:
         if response.status_code == HTTPStatus.OK:
             return response.content
 
-        result_code = json.loads(s=response.text)["result_code"]  # pyrefly: ignore [unknown-variable-type]
+        result_code = string_field(
+            value=json_object(value=response.text),
+            name="result_code",
+        )
         raise VWSError.from_result_code(
-            result_code=result_code,  # pyrefly: ignore [unknown-argument-type]
+            result_code=result_code,
             response=response,
         )
