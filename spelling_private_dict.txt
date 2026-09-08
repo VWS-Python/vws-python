@@ -111,6 +111,7 @@ todo
 traceback
 travis
 txt
+ty
 unmocked
 untyped
 url

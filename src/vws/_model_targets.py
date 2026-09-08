@@ -84,7 +84,7 @@ def access_token_from_response(*, response: Response) -> tuple[str, float]:
         raise ModelTargetOAuth2Error(response=response)
 
     response_data = dict(json.loads(s=response.text))
-    return response_data["access_token"], float(response_data["expires_in"])
+    return response_data["access_token"], float(response_data["expires_in"])  # ty: ignore[unsound-return-statement]
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))

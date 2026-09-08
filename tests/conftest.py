@@ -225,7 +225,7 @@ def fixture_image_file(
     file = tmp_path / "image.jpg"
     buffer = high_quality_image.getvalue()
     _ = file.write_bytes(data=buffer)
-    mode: Literal["r+b", "rb"] = request.param
+    mode: Literal["r+b", "rb"] = request.param  # ty: ignore[unsound-assignment]
     with file.open(mode=mode) as file_obj:
         yield file_obj
 
