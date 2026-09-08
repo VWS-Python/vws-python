@@ -37,7 +37,7 @@ jobs:
         run: |
           # We run tests against "." and not the tests directory as we test the README
           # and documentation.
-          uv run --extra=dev --python=${{ matrix.python-version }} pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests/ .
+          uv run --group=dev --python=${{ matrix.python-version }} pytest -s -vvv --cov-fail-under 100 --cov=src/ --cov=tests/ .
 
   completion-ci:
     needs: build
