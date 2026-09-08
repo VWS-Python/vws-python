@@ -6,13 +6,14 @@ Changelog
 2026.09.07
 ----------
 
-- Add ``HTTPX2Transport`` and ``AsyncHTTPX2Transport``, which make requests with ``httpx2``, the continuation of ``httpx`` maintained by Pydantic. The ``requests`` and ``httpx`` transports are unchanged. ``httpx`` and ``httpx2`` objects are never mixed: the ``httpx`` transports raise ``httpx`` exceptions and the ``httpx2`` transports raise ``httpx2`` exceptions.
+- Add ``HTTPX2Transport`` and ``AsyncHTTPX2Transport``, which make requests with ``httpx2``, the continuation of ``httpx`` maintained by Pydantic.
+  The ``requests`` and ``httpx`` transports are unchanged.
+  ``httpx`` and ``httpx2`` objects are never mixed: the ``httpx`` transports raise ``httpx`` exceptions and the ``httpx2`` transports raise ``httpx2`` exceptions.
 
 2026.08.26
 ----------
 
-- Test synchronous and asynchronous Model Target error responses through the
-  public mock API, and include rate-limit and server-error branches in coverage.
+- Test synchronous and asynchronous Model Target error responses through the public mock API, and include rate-limit and server-error branches in coverage.
 
 2026.08.14
 ----------
@@ -30,7 +31,8 @@ Changelog
 - Add support for the Model Target Web API.
   ``ModelTargetService`` and ``AsyncModelTargetService`` create standard and advanced Model Target datasets, wait for them to be generated, download them and delete them.
 
-- Map the ``ProjectHasNoApiAccess`` result code, as spelled in Vuforia's result codes table, to ``ProjectHasNoAPIAccessError``. The previously mapped ``ProjectHasNoAPIAccess`` casing, which Vuforia does not document, is no longer mapped.
+- Map the ``ProjectHasNoApiAccess`` result code, as spelled in Vuforia's result codes table, to ``ProjectHasNoAPIAccessError``.
+  The previously mapped ``ProjectHasNoAPIAccess`` casing, which Vuforia does not document, is no longer mapped.
 
 - Add support for the Database Reco Counts report.
   ``VWS`` and ``AsyncVWS`` take an optional ``database_id``, and have new ``request_database_reco_counts_report``, ``download_reco_counts_report`` and ``wait_for_reco_counts_report`` methods.
@@ -63,7 +65,9 @@ Changelog
 ----------
 
 
-* Add ``request_timeout_seconds`` parameter to ``VWS`` and ``CloudRecoService``, allowing customization of the request timeout. This accepts a float or a ``(connect, read)`` tuple, matching the ``requests`` library's timeout interface. The default remains 30 seconds.
+* Add ``request_timeout_seconds`` parameter to ``VWS`` and ``CloudRecoService``, allowing customization of the request timeout.
+  This accepts a float or a ``(connect, read)`` tuple, matching the ``requests`` library's timeout interface.
+  The default remains 30 seconds.
 
 2025.03.10.1
 ------------
@@ -154,9 +158,7 @@ Changelog
 ------------
 
 * Breaking change: Move exceptions and create base exceptions.
-  It is now possible to, for example, catch
-  ``vws.exceptions.base_exceptions.VWSException`` to catch many of the
-  exceptions raised by the ``VWS`` client.
+  It is now possible to, for example, catch ``vws.exceptions.base_exceptions.VWSException`` to catch many of the exceptions raised by the ``VWS`` client.
   Credit to ``@laymonage`` for this change.
 
 2020.08.21.0
