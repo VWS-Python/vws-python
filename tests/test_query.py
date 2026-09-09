@@ -1,12 +1,13 @@
 """Tests for the ``CloudRecoService`` querying functionality."""
 
+from __future__ import annotations
+
 import datetime
-import io  # noqa: TC003
 import json
 import secrets
 import uuid
 from http import HTTPStatus
-from typing import BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 import pytest
 import requests
@@ -17,6 +18,9 @@ from mock_vws.database import CloudDatabase
 from vws import VWS, CloudRecoService
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.response import Response
+
+if TYPE_CHECKING:
+    import io
 
 
 class _JSONResponseTransport:

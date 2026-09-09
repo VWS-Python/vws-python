@@ -1,5 +1,7 @@
 """Tests for VWS exceptions raised from async clients."""
 
+from __future__ import annotations
+
 import base64
 import io
 import uuid
@@ -11,7 +13,6 @@ from mock_vws.database import CloudDatabase
 from mock_vws.states import States
 
 from vws import AsyncVuMarkService, AsyncVWS
-from vws.exceptions.base_exceptions import VWSError  # noqa: TC001
 from vws.exceptions.custom_exceptions import (
     ServerError,
 )
@@ -156,7 +157,9 @@ async def test_target_quota_reached(
 async def test_project_state_error(
     *,
     state: States,
-    expected_exception: type[VWSError],
+    expected_exception: type[
+        ProjectSuspendedError | ProjectHasNoAPIAccessError
+    ],
 ) -> None:
     """Configured project states raise their matching exceptions."""
     database = CloudDatabase(state=state)
@@ -414,7 +417,9 @@ async def test_invalid_instance_id(
 async def test_documented_vumark_error_codes(
     *,
     failure: VuMarkGenerationFailure,
-    exception_type: type[VWSError],
+    exception_type: type[
+        QuotaExceededError | LicenseCheckFailedError | AuthorizationFailedError
+    ],
     status_code: HTTPStatus,
 ) -> None:
     """Documented VuMark failures raise matching exceptions."""

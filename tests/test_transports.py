@@ -1,8 +1,10 @@
 """Tests for HTTP transport implementations."""
 
-import io  # noqa: TC003
+from __future__ import annotations
+
 import uuid
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import httpx
 import httpx2
@@ -35,6 +37,9 @@ from vws.transports import (
     HTTPXTransport,
 )
 from vws.vumark_accept import VuMarkAccept
+
+if TYPE_CHECKING:
+    import io
 
 
 class TestHTTPXTransport:

@@ -10,7 +10,7 @@ from typing import Any
 from beartype import beartype
 
 from vws.reports import ModelTargetGenerationDetail
-from vws.response import Response  # noqa: TC001
+from vws.response import Response
 
 
 @beartype

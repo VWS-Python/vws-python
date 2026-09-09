@@ -161,6 +161,7 @@ lint.flake8-tidy-imports.banned-api."operator.attrgetter".msg = "operator.attrge
 lint.flake8-tidy-imports.banned-api."typing.cast".msg = """\
     typing.cast is banned: use explicit type narrowing or a typed variable instead.\
     """
+lint.flake8-type-checking.runtime-evaluated-decorators = [ "beartype.beartype" ]
 lint.pydocstyle.convention = "google"
 lint.preview = true
 

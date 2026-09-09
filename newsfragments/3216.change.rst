@@ -1,0 +1,1 @@
+Remove supported inline type-checking comments by teaching Ruff about runtime-evaluated ``beartype`` annotations and postponing test annotations.

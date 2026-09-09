@@ -4,7 +4,7 @@ See
 https://developer.vuforia.com/library/vuforia-engine/web-api/model-target-web-api/.
 """
 
-from collections.abc import Sequence  # noqa: TC003
+from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import StrEnum, unique
 
