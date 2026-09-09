@@ -157,9 +157,7 @@ class CloudRecoService:
         if "Integer out of range" in response.text:
             raise MaxNumResultsOutOfRangeError(response=response)
 
-        if (
-            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-        ):  # pragma: no cover
+        if response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR:
             raise ServerError(response=response)
 
         content_type = {

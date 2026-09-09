@@ -16,6 +16,7 @@ from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
 from vws import VWS, CloudRecoService
+from vws.exceptions.custom_exceptions import ServerError
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.response import Response
 
@@ -26,9 +27,15 @@ if TYPE_CHECKING:
 class _JSONResponseTransport:
     """A transport which returns one JSON response body."""
 
-    def __init__(self, *, body: object) -> None:
+    def __init__(
+        self,
+        *,
+        body: object,
+        status_code: HTTPStatus,
+    ) -> None:
         """Create a transport for the given JSON body."""
         self._text = json.dumps(obj=body)
+        self._status_code = status_code
 
     def close(self) -> None:
         """Close the transport."""
@@ -48,7 +55,7 @@ class _JSONResponseTransport:
         return Response(
             text=self._text,
             url=url,
-            status_code=HTTPStatus.OK,
+            status_code=self._status_code,
             headers={"Content-Type": "application/json"},
             request_body=None,
             tell_position=len(content),
@@ -92,7 +99,8 @@ class TestQuery:
     def test_invalid_results(*, image: io.BytesIO | BinaryIO) -> None:
         """Query results in responses must be a list of objects."""
         transport = _JSONResponseTransport(
-            body={"result_code": "Success", "results": 1}
+            body={"result_code": "Success", "results": 1},
+            status_code=HTTPStatus.OK,
         )
         client = CloudRecoService(
             client_access_key="access-key",
@@ -101,6 +109,22 @@ class TestQuery:
         )
 
         with pytest.raises(expected_exception=TypeError):
+            _ = client.query(image=image)
+
+    @staticmethod
+    def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
+        """Server errors are exposed through the public query client."""
+        transport = _JSONResponseTransport(
+            body={},
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+        )
+        client = CloudRecoService(
+            client_access_key="access-key",
+            client_secret_key=secrets.token_hex(),
+            transport=transport,
+        )
+
+        with pytest.raises(expected_exception=ServerError):
             _ = client.query(image=image)
 
 

@@ -1,0 +1,1 @@
+Cover server errors from synchronous and asynchronous cloud recognition queries.

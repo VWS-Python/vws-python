@@ -187,9 +187,7 @@ class AsyncCloudRecoService:
                 response=response,
             )
 
-        if (
-            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-        ):  # pragma: no cover
+        if response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR:
             raise ServerError(response=response)
 
         content_type = {
