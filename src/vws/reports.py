@@ -3,7 +3,7 @@
 import csv
 import datetime
 import io
-from collections.abc import Sequence  # noqa: TC003
+from collections.abc import Sequence
 from dataclasses import dataclass
 from enum import Enum, unique
 from typing import Any, Self

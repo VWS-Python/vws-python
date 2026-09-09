@@ -1,13 +1,13 @@
 """Tests for async helper functions for managing a Vuforia database."""
 
+from __future__ import annotations
+
 import base64
 import calendar
-import datetime  # noqa: TC003
-import io  # noqa: TC003
 import time
 import uuid
 from http import HTTPStatus
-from typing import BinaryIO
+from typing import TYPE_CHECKING, BinaryIO
 
 import pytest
 from mock_vws import MockVWS
@@ -32,6 +32,10 @@ from vws.reports import (
 )
 from vws.response import Response
 from vws.vumark_accept import VuMarkAccept
+
+if TYPE_CHECKING:
+    import datetime
+    import io
 
 
 class TestAddTarget:

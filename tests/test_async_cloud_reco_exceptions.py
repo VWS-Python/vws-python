@@ -2,10 +2,12 @@
 AsyncCloudRecoService.
 """
 
-import io  # noqa: TC003
+from __future__ import annotations
+
 import json
 import uuid
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 import pytest
 from mock_vws import CloudQueryFailureResponse, MockVWS
@@ -22,6 +24,9 @@ from vws.exceptions.cloud_reco_exceptions import (
 from vws.exceptions.custom_exceptions import (
     RequestEntityTooLargeError,
 )
+
+if TYPE_CHECKING:
+    import io
 
 
 @pytest.mark.asyncio
