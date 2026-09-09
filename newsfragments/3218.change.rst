@@ -1,0 +1,1 @@
+Validate query and Model Target report response values at construction time.
