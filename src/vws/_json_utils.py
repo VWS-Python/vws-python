@@ -28,6 +28,11 @@ def json_object(*, value: str | bytes | bytearray) -> dict[str, object]:
     return _validated_object(value=loaded)
 
 
+def object_field(*, value: dict[str, object], name: str) -> dict[str, object]:
+    """Return a required JSON object field."""
+    return _validated_object(value=value[name])
+
+
 def string_value(*, value: object, name: str) -> str:
     """Return a JSON value after validating that it is a string."""
     if not isinstance(value, str):
