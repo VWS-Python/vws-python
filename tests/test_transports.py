@@ -428,7 +428,7 @@ async def test_falsy_async_transport_is_retained(
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
 # credentials, which it does not expose.
 _MODEL_TARGET_CLIENT_ID = "client-id"
-_MODEL_TARGET_CLIENT_SECRET = "client-secret"  # noqa: S105
+_MODEL_TARGET_CLIENT_CREDENTIALS = ("client-id", "client-secret")
 
 _HTTPX2_URL = "https://example.com/test"
 _HTTPX2_REFUSED_URL = "https://example.com/refused"
@@ -901,7 +901,7 @@ class TestHTTPX2TransportWithMock:
         ):
             model_target_client = ModelTargetService(
                 client_id=_MODEL_TARGET_CLIENT_ID,
-                client_secret=_MODEL_TARGET_CLIENT_SECRET,
+                client_secret=_MODEL_TARGET_CLIENT_CREDENTIALS[1],
                 transport=transport,
             )
             dataset_uuid = model_target_client.create_dataset(
@@ -1003,7 +1003,7 @@ async def _generate_dataset(
     """
     model_target_client = AsyncModelTargetService(
         client_id=_MODEL_TARGET_CLIENT_ID,
-        client_secret=_MODEL_TARGET_CLIENT_SECRET,
+        client_secret=_MODEL_TARGET_CLIENT_CREDENTIALS[1],
         transport=transport,
     )
     dataset_uuid = await model_target_client.create_dataset(

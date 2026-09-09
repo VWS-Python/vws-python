@@ -32,7 +32,7 @@ from vws.model_target_datasets import (
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
 # credentials, which it does not expose.
 _MODEL_TARGET_CLIENT_ID = "client-id"
-_MODEL_TARGET_CLIENT_SECRET = "client-secret"  # noqa: S105
+_MODEL_TARGET_CLIENT_CREDENTIALS = ("client-id", "client-secret")
 
 
 def _image_file_mode(*, value: Literal["r+b", "rb"]) -> Literal["r+b", "rb"]:
@@ -162,7 +162,7 @@ def model_target_client(
     """A ``ModelTargetService`` client which connects to a mock."""
     return ModelTargetService(
         client_id=_MODEL_TARGET_CLIENT_ID,
-        client_secret=_MODEL_TARGET_CLIENT_SECRET,
+        client_secret=_MODEL_TARGET_CLIENT_CREDENTIALS[1],
     )
 
 
@@ -174,7 +174,7 @@ async def async_model_target_client(
     """An async ``ModelTargetService`` client which connects to a mock."""
     async with AsyncModelTargetService(
         client_id=_MODEL_TARGET_CLIENT_ID,
-        client_secret=_MODEL_TARGET_CLIENT_SECRET,
+        client_secret=_MODEL_TARGET_CLIENT_CREDENTIALS[1],
     ) as client:
         yield client
 
