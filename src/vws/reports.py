@@ -3,12 +3,42 @@
 import csv
 import datetime
 import io
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum, unique
-from typing import Any, Self
+from typing import Any, Self, TypeIs
 
 from beartype import BeartypeConf, beartype
+from beartype.door import TypeHint
+
+
+def _checked[T](value: object, hint: type[T], /) -> T:
+    """Return a value after checking its runtime type."""
+    if not _is_type(value, hint):
+        msg = f"Expected {hint!r}, got {value!r}."
+        raise TypeError(msg)
+    return value
+
+
+def _is_type[T](value: object, hint: type[T], /) -> TypeIs[T]:
+    """Return whether a value satisfies a runtime type."""
+    return TypeHint(hint=hint).is_bearable(obj=value)
+
+
+def _number(value: object, /) -> int | float:
+    """Return a runtime-validated JSON number."""
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        msg = f"Expected a number, got {value!r}."
+        raise TypeError(msg)
+    return value
+
+
+def _optional_string(value: object, /) -> str | None:
+    """Return a runtime-validated optional string."""
+    if value is not None and not isinstance(value, str):
+        msg = f"Expected an optional string, got {value!r}."
+        raise TypeError(msg)
+    return value
 
 
 @beartype
@@ -143,23 +173,29 @@ class QueryResult:
     target_data: TargetData | None
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
+    def from_response_dict(
+        cls,
+        response_dict: Mapping[str, object],
+    ) -> Self:
         """Construct from a VWS API query result item dict."""
         target_data: TargetData | None = None
         if "target_data" in response_dict:
-            target_data_dict = response_dict["target_data"]
+            target_data_dict = _checked(
+                response_dict["target_data"], dict[str, object]
+            )
             target_timestamp = datetime.datetime.fromtimestamp(
-                timestamp=target_data_dict["target_timestamp"],  # pyrefly: ignore [unknown-argument-type]
+                timestamp=_number(target_data_dict["target_timestamp"]),
                 tz=datetime.UTC,
             )
             target_data = TargetData(
-                name=target_data_dict["name"],  # pyrefly: ignore [unknown-argument-type]
-                # pyrefly: ignore [unknown-argument-type]
-                application_metadata=target_data_dict["application_metadata"],
+                name=_checked(target_data_dict["name"], str),
+                application_metadata=_optional_string(
+                    target_data_dict["application_metadata"]
+                ),
                 target_timestamp=target_timestamp,
             )
         return cls(
-            target_id=response_dict["target_id"],
+            target_id=_checked(response_dict["target_id"], str),
             target_data=target_data,
         )
 
@@ -301,48 +337,59 @@ class ModelTargetDatasetStatusReport:
     """
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
+    def from_response_dict(
+        cls,
+        response_dict: Mapping[str, object],
+    ) -> Self:
         """Construct from a Model Target Web API response dict."""
         error: ModelTargetGenerationError | None = None
         if "error" in response_dict:
-            error_dict = dict(response_dict["error"])
+            error_dict = _checked(response_dict["error"], dict[str, object])
             error = ModelTargetGenerationError(
-                code=error_dict["code"],
-                message=error_dict["message"],
+                code=_checked(error_dict["code"], str),
+                message=_checked(error_dict["message"], str),
             )
 
         warning: ModelTargetGenerationWarning | None = None
         if "warning" in response_dict:
-            warning_dict = dict(response_dict["warning"])
+            warning_dict = _checked(
+                response_dict["warning"], dict[str, object]
+            )
+            details = _checked(
+                warning_dict["details"], list[dict[str, object]]
+            )
             warning = ModelTargetGenerationWarning(
-                code=warning_dict["code"],
-                message=warning_dict["message"],
-                target=warning_dict["target"],
+                code=_checked(warning_dict["code"], str),
+                message=_checked(warning_dict["message"], str),
+                target=_checked(warning_dict["target"], str),
                 details=[
                     ModelTargetGenerationDetail(
-                        code=detail["code"],  # pyrefly: ignore [unknown-argument-type]
-                        # pyrefly: ignore [unknown-argument-type]
-                        message=detail["message"],
+                        code=_checked(detail["code"], str),
+                        message=_checked(detail["message"], str),
                     )
-                    for detail in warning_dict["details"]
+                    for detail in details
                 ],
             )
 
         eta: datetime.datetime | None = None
         if "eta" in response_dict:
-            eta = datetime.datetime.fromisoformat(response_dict["eta"])
+            eta = datetime.datetime.fromisoformat(
+                _checked(response_dict["eta"], str),
+            )
 
         completed_at: datetime.datetime | None = None
         if "completedAt" in response_dict:
             completed_at = datetime.datetime.fromisoformat(
-                response_dict["completedAt"],
+                _checked(response_dict["completedAt"], str),
             )
 
         return cls(
-            status=ModelTargetDatasetStatuses(value=response_dict["status"]),
-            dataset_uuid=response_dict["uuid"],
+            status=ModelTargetDatasetStatuses(
+                value=_checked(response_dict["status"], str),
+            ),
+            dataset_uuid=_checked(response_dict["uuid"], str),
             created_at=datetime.datetime.fromisoformat(
-                response_dict["createdAt"],
+                _checked(response_dict["createdAt"], str),
             ),
             eta=eta,
             completed_at=completed_at,
