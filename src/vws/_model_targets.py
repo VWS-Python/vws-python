@@ -26,9 +26,9 @@ from vws.model_target_datasets import (
 from vws.reports import ModelTargetDatasetStatusReport
 from vws.response import Response
 
-OAUTH2_TOKEN_PATH = "/oauth2/token"  # noqa: S105
+OAUTH2_ENDPOINT_PATH = "/oauth2/token"
 OAUTH2_TOKEN_BODY = b"grant_type=client_credentials"
-OAUTH2_TOKEN_CONTENT_TYPE = "application/x-www-form-urlencoded"  # noqa: S105
+OAUTH2_MEDIA_TYPE = "application/x-www-form-urlencoded"
 JSON_CONTENT_TYPE = "application/json"
 
 _DATASET_COLLECTION_PATHS = {
@@ -62,7 +62,7 @@ def oauth2_token_headers(
     )
     return {
         "Authorization": f"Basic {encoded_credentials}",
-        "Content-Type": OAUTH2_TOKEN_CONTENT_TYPE,
+        "Content-Type": OAUTH2_MEDIA_TYPE,
     }
 
 

@@ -2,6 +2,7 @@
 
 import io
 import json
+import secrets
 import uuid
 import zipfile
 from http import HTTPStatus
@@ -44,7 +45,7 @@ from vws.transports import RequestsTransport, Transport
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
 # credentials, which it does not expose.
 _CLIENT_ID = "client-id"
-_CLIENT_SECRET = "client-secret"  # noqa: S105
+_CLIENT_CREDENTIALS = ("client-id", "client-secret")
 
 _DATASET_TYPES = [
     ModelTargetDatasetType.STANDARD,
@@ -144,7 +145,7 @@ class TestAccessToken:
         """An access token is given for valid credentials."""
         client = ModelTargetService(
             client_id=_CLIENT_ID,
-            client_secret=_CLIENT_SECRET,
+            client_secret=_CLIENT_CREDENTIALS[1],
         )
 
         assert bool(client.get_access_token())
@@ -159,7 +160,7 @@ class TestAccessToken:
         transport = _CountingTransport(transport=RequestsTransport())
         client = ModelTargetService(
             client_id=_CLIENT_ID,
-            client_secret=_CLIENT_SECRET,
+            client_secret=_CLIENT_CREDENTIALS[1],
             transport=transport,
         )
 
@@ -185,7 +186,7 @@ class TestAccessToken:
         transport = _CountingTransport(transport=RequestsTransport())
         client = ModelTargetService(
             client_id=_CLIENT_ID,
-            client_secret=_CLIENT_SECRET,
+            client_secret=_CLIENT_CREDENTIALS[1],
             transport=transport,
         )
 
@@ -215,7 +216,7 @@ class TestAccessToken:
         """An exception is raised when the credentials are not known."""
         client = ModelTargetService(
             client_id="not-a-client-id",
-            client_secret="not-a-client-secret",  # noqa: S106
+            client_secret=secrets.token_hex(),
         )
 
         with pytest.raises(
@@ -279,7 +280,7 @@ class TestAccessToken:
         )
         client = ModelTargetService(
             client_id=_CLIENT_ID,
-            client_secret=_CLIENT_SECRET,
+            client_secret=_CLIENT_CREDENTIALS[1],
         )
 
         with (
@@ -606,7 +607,7 @@ class TestGenerationResult:
         ):
             client = ModelTargetService(
                 client_id=_CLIENT_ID,
-                client_secret=_CLIENT_SECRET,
+                client_secret=_CLIENT_CREDENTIALS[1],
             )
             dataset_uuid = client.create_dataset(
                 name="dataset",
@@ -648,7 +649,7 @@ class TestGenerationResult:
         ):
             client = ModelTargetService(
                 client_id=_CLIENT_ID,
-                client_secret=_CLIENT_SECRET,
+                client_secret=_CLIENT_CREDENTIALS[1],
             )
             dataset_uuid = client.create_dataset(
                 name="dataset",
@@ -687,7 +688,7 @@ class TestWaitForDatasetGenerated:
         with MockVWS(processing_time_seconds=60):
             client = ModelTargetService(
                 client_id=_CLIENT_ID,
-                client_secret=_CLIENT_SECRET,
+                client_secret=_CLIENT_CREDENTIALS[1],
             )
             dataset_uuid = client.create_dataset(
                 name="dataset",
@@ -812,7 +813,7 @@ class TestBaseVWSURL:
         ):
             client = ModelTargetService(
                 client_id=_CLIENT_ID,
-                client_secret=_CLIENT_SECRET,
+                client_secret=_CLIENT_CREDENTIALS[1],
                 base_vws_url=base_vws_url,
             )
             dataset_uuid = client.create_dataset(

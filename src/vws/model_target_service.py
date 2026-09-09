@@ -8,8 +8,8 @@ from beartype import BeartypeConf, beartype
 
 from vws._model_targets import (
     JSON_CONTENT_TYPE,
+    OAUTH2_ENDPOINT_PATH,
     OAUTH2_TOKEN_BODY,
-    OAUTH2_TOKEN_PATH,
     access_token_from_response,
     dataset_collection_path,
     dataset_download_path,
@@ -101,7 +101,7 @@ class ModelTargetService:
 
         response = self._transport(
             method=HTTPMethod.POST,
-            url=self._base_vws_url.rstrip("/") + OAUTH2_TOKEN_PATH,
+            url=self._base_vws_url.rstrip("/") + OAUTH2_ENDPOINT_PATH,
             headers=oauth2_token_headers(
                 client_id=self._client_id,
                 client_secret=self._client_secret,

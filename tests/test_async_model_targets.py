@@ -1,6 +1,7 @@
 """Tests for the async Model Target Web API client."""
 
 import io
+import secrets
 import uuid
 import zipfile
 from http import HTTPStatus
@@ -36,7 +37,7 @@ from vws.reports import ModelTargetDatasetStatuses
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
 # credentials, which it does not expose.
 _CLIENT_ID = "client-id"
-_CLIENT_SECRET = "client-secret"  # noqa: S105
+_CLIENT_CREDENTIALS = ("client-id", "client-secret")
 
 _DATASET_TYPES = [
     ModelTargetDatasetType.STANDARD,
@@ -56,7 +57,7 @@ async def _assert_dataset_error_response(
     """Assert that a mocked dataset failure maps to an exception."""
     async with AsyncModelTargetService(
         client_id=_CLIENT_ID,
-        client_secret=_CLIENT_SECRET,
+        client_secret=_CLIENT_CREDENTIALS[1],
     ) as client:
         with pytest.raises(
             expected_exception=(
@@ -96,7 +97,7 @@ class TestAccessToken:
         """An exception is raised when the credentials are not known."""
         async with AsyncModelTargetService(
             client_id="not-a-client-id",
-            client_secret="not-a-client-secret",  # noqa: S106
+            client_secret=secrets.token_hex(),
         ) as client:
             with pytest.raises(
                 expected_exception=ModelTargetOAuth2Error,
@@ -415,7 +416,7 @@ class TestGenerationResult:
         ):
             async with AsyncModelTargetService(
                 client_id=_CLIENT_ID,
-                client_secret=_CLIENT_SECRET,
+                client_secret=_CLIENT_CREDENTIALS[1],
             ) as client:
                 dataset_uuid = await client.create_dataset(
                     name="dataset",
@@ -449,7 +450,7 @@ class TestGenerationResult:
         ):
             async with AsyncModelTargetService(
                 client_id=_CLIENT_ID,
-                client_secret=_CLIENT_SECRET,
+                client_secret=_CLIENT_CREDENTIALS[1],
             ) as client:
                 dataset_uuid = await client.create_dataset(
                     name="dataset",
@@ -480,7 +481,7 @@ class TestWaitForDatasetGenerated:
         with MockVWS(processing_time_seconds=60):
             async with AsyncModelTargetService(
                 client_id=_CLIENT_ID,
-                client_secret=_CLIENT_SECRET,
+                client_secret=_CLIENT_CREDENTIALS[1],
             ) as client:
                 dataset_uuid = await client.create_dataset(
                     name="dataset",
