@@ -25,6 +25,11 @@ from vws.model_target_datasets import (
 from vws.reports import ModelTargetDatasetStatusReport
 from vws.response import Response
 
+type _JSONValue = (
+    bool | int | float | str | list[_JSONValue] | dict[str, _JSONValue] | None
+)
+type _JSONObject = dict[str, _JSONValue]
+
 OAUTH2_ENDPOINT_PATH = "/oauth2/token"
 OAUTH2_TOKEN_BODY = b"grant_type=client_credentials"
 OAUTH2_MEDIA_TYPE = "application/x-www-form-urlencoded"
@@ -168,7 +173,7 @@ def dataset_download_path(
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def _view_dict(*, view: ModelTargetView) -> dict[str, object]:
+def _view_dict(*, view: ModelTargetView) -> _JSONObject:
     """Get the request representation of a guide view.
 
     Args:
@@ -177,7 +182,7 @@ def _view_dict(*, view: ModelTargetView) -> dict[str, object]:
     Returns:
         The guide view, as it is sent to Vuforia.
     """
-    view_dict: dict[str, object] = {
+    view_dict: _JSONObject = {
         "name": view.name,
         "guideViewPosition": {
             "rotation": list(view.guide_view_position.rotation),
@@ -185,13 +190,14 @@ def _view_dict(*, view: ModelTargetView) -> dict[str, object]:
         },
     }
     if view.states is not None:
-        view_dict["states"] = list(view.states)
+        states = list[_JSONValue](view.states)
+        view_dict["states"] = states
 
     return view_dict
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def _model_dict(*, model: ModelTargetModel) -> dict[str, object]:
+def _model_dict(*, model: ModelTargetModel) -> _JSONObject:
     """Get the request representation of a model.
 
     Args:
@@ -200,7 +206,7 @@ def _model_dict(*, model: ModelTargetModel) -> dict[str, object]:
     Returns:
         The model, as it is sent to Vuforia.
     """
-    model_dict: dict[str, object] = {"name": model.name}
+    model_dict: _JSONObject = {"name": model.name}
     optional_values: dict[str, str | None] = {
         "automaticColoring": model.automatic_coloring,
         "cadDataBlob": model.cad_data_blob,
