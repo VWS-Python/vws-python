@@ -9,6 +9,7 @@ import json
 from beartype import beartype
 
 from vws._json_utils import (
+    JSONValue,
     json_object,
     object_field,
     object_list_field,
@@ -19,7 +20,7 @@ from vws.response import Response
 
 
 @beartype
-def _json_object(*, value: str) -> dict[str, object]:
+def _json_object(*, value: str) -> dict[str, JSONValue]:
     """Return a decoded JSON object, or an empty object for invalid
     input.
     """
@@ -30,7 +31,7 @@ def _json_object(*, value: str) -> dict[str, object]:
 
 
 @beartype
-def _error_dict(*, response: Response) -> dict[str, object]:
+def _error_dict(*, response: Response) -> dict[str, JSONValue]:
     """Get the error object of a Model Target Web API error response.
 
     Args:

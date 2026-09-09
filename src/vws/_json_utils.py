@@ -3,18 +3,24 @@
 import json
 from typing import TypeGuard
 
+from beartype.door import TypeHint
 
-def _is_json_object(value: object, /) -> TypeGuard[dict[str, object]]:
+type JSONValue = (
+    bool | int | float | str | list[JSONValue] | dict[str, JSONValue] | None
+)
+
+
+def _is_json_object(value: object, /) -> TypeGuard[dict[str, JSONValue]]:
     """Return whether a decoded JSON value is an object."""
-    return isinstance(value, dict)
+    return TypeHint(hint=dict[str, JSONValue]).is_bearable(obj=value)
 
 
-def _is_object_list(value: object, /) -> TypeGuard[list[object]]:
+def _is_object_list(value: object, /) -> TypeGuard[list[JSONValue]]:
     """Return whether a decoded JSON value is an array."""
-    return isinstance(value, list)
+    return TypeHint(hint=list[JSONValue]).is_bearable(obj=value)
 
 
-def _validated_object(*, value: object) -> dict[str, object]:
+def _validated_object(*, value: object) -> dict[str, JSONValue]:
     """Return a decoded JSON object."""
     if not _is_json_object(value):
         msg = "Expected a JSON object."
@@ -22,13 +28,15 @@ def _validated_object(*, value: object) -> dict[str, object]:
     return value
 
 
-def json_object(*, value: str | bytes | bytearray) -> dict[str, object]:
+def json_object(*, value: str | bytes | bytearray) -> dict[str, JSONValue]:
     """Decode and validate a JSON object."""
     loaded: object = json.loads(s=value)
     return _validated_object(value=loaded)
 
 
-def object_field(*, value: dict[str, object], name: str) -> dict[str, object]:
+def object_field(
+    *, value: dict[str, JSONValue], name: str
+) -> dict[str, JSONValue]:
     """Return a required JSON object field."""
     return _validated_object(value=value[name])
 
@@ -41,14 +49,14 @@ def string_value(*, value: object, name: str) -> str:
     return value
 
 
-def string_field(*, value: dict[str, object], name: str) -> str:
+def string_field(*, value: dict[str, JSONValue], name: str) -> str:
     """Return a required string field from a JSON object."""
     return string_value(value=value[name], name=name)
 
 
 def string_list_field(
     *,
-    value: dict[str, object],
+    value: dict[str, JSONValue],
     name: str,
 ) -> list[str]:
     """Return a required list of strings from a JSON object."""
@@ -63,9 +71,9 @@ def string_list_field(
 
 def object_list_field(
     *,
-    value: dict[str, object],
+    value: dict[str, JSONValue],
     name: str,
-) -> list[dict[str, object]]:
+) -> list[dict[str, JSONValue]]:
     """Return a required list of JSON objects."""
     items = value[name]
     if not _is_object_list(items):
