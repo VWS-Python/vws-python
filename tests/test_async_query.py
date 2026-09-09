@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import json
+import secrets
 import uuid
+from http import HTTPStatus
 from typing import TYPE_CHECKING, BinaryIO
 
 import pytest
@@ -10,7 +13,40 @@ from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
 from vws import AsyncCloudRecoService, AsyncVWS
+from vws.exceptions.custom_exceptions import ServerError
 from vws.include_target_data import CloudRecoIncludeTargetData
+from vws.response import Response
+
+
+class _ServerErrorTransport:
+    """An async transport which returns a server error."""
+
+    async def aclose(self) -> None:
+        """Close the transport."""
+
+    async def __call__(
+        self,
+        *,
+        method: str,
+        url: str,
+        headers: dict[str, str],
+        data: bytes,
+        request_timeout: float | tuple[float, float],
+    ) -> Response:
+        """Return a server-error response."""
+        del method, headers, data, request_timeout
+        text = json.dumps(obj={})
+        content = text.encode()
+        return Response(
+            text=text,
+            url=url,
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            headers={"Content-Type": "application/json"},
+            request_body=None,
+            tell_position=len(content),
+            content=content,
+        )
+
 
 if TYPE_CHECKING:
     import io
@@ -55,6 +91,19 @@ class TestQuery:
             image=image,
         )
         assert matching_target.target_id == target_id
+
+    @staticmethod
+    @pytest.mark.asyncio
+    async def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
+        """Server errors are exposed through the public async client."""
+        client = AsyncCloudRecoService(
+            client_access_key="access-key",
+            client_secret_key=secrets.token_hex(),
+            transport=_ServerErrorTransport(),
+        )
+
+        with pytest.raises(expected_exception=ServerError):
+            _ = await client.query(image=image)
 
 
 class TestCustomBaseVWQURL:
