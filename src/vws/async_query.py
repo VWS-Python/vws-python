@@ -4,9 +4,10 @@ Web APIs.
 
 import json
 from http import HTTPMethod, HTTPStatus
-from typing import Any, Self
+from typing import Self
 
 from beartype import BeartypeConf, beartype
+from urllib3.fields import RequestField
 from urllib3.filepost import encode_multipart_formdata
 from vws_auth_tools import authorization_header, rfc_1123_date
 
@@ -131,23 +132,34 @@ class AsyncCloudRecoService:
             targets.
         """
         image_content = _get_image_data(image=image)
-        body: dict[str, Any] = {  # pyrefly: ignore [explicit-any]
-            "image": (
-                "image.jpeg",
-                image_content,
-                "image/jpeg",
+        max_num_results_field = RequestField(
+            name="max_num_results",
+            data=str(object=max_num_results),
+        )
+        max_num_results_field.make_multipart(
+            content_disposition="form-data",
+            content_type="text/plain",
+        )
+        include_target_data_field = RequestField(
+            name="include_target_data",
+            data=include_target_data.value,
+        )
+        include_target_data_field.make_multipart(
+            content_disposition="form-data",
+            content_type="text/plain",
+        )
+        body = [
+            RequestField.from_tuples(
+                fieldname="image",
+                value=(
+                    "image.jpeg",
+                    image_content,
+                    "image/jpeg",
+                ),
             ),
-            "max_num_results": (
-                None,
-                max_num_results,
-                "text/plain",
-            ),
-            "include_target_data": (
-                None,
-                include_target_data.value,
-                "text/plain",
-            ),
-        }
+            max_num_results_field,
+            include_target_data_field,
+        ]
         date = rfc_1123_date()
         request_path = "/v1/query"
         content, content_type_header = encode_multipart_formdata(fields=body)
