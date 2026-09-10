@@ -9,12 +9,12 @@ import json
 from beartype import beartype
 
 from vws._json_utils import (
-    JSONValue,
     json_object,
     object_field,
     object_list_field,
     string_field,
 )
+from vws.json_types import JSONValue
 from vws.reports import ModelTargetGenerationDetail
 from vws.response import Response
 

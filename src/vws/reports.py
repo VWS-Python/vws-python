@@ -11,6 +11,8 @@ from typing import Self, TypeIs
 from beartype import BeartypeConf, beartype
 from beartype.door import TypeHint
 
+from vws.json_types import JSONValue
+
 
 def _checked[T](value: object, hint: type[T], /) -> T:
     """Return a value after checking its runtime type."""
@@ -64,7 +66,9 @@ class DatabaseSummaryReport:
     total_recos: int
 
     @classmethod
-    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
+    def from_response_dict(
+        cls, response_dict: Mapping[str, JSONValue]
+    ) -> Self:
         """Construct from a VWS API response dict."""
         return cls(
             active_images=int(_number(response_dict["active_images"])),
@@ -120,7 +124,9 @@ class TargetSummaryReport:
     previous_month_recos: int
 
     @classmethod
-    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
+    def from_response_dict(
+        cls, response_dict: Mapping[str, JSONValue]
+    ) -> Self:
         """Construct from a VWS API response dict."""
         return cls(
             status=TargetStatuses(
@@ -185,13 +191,13 @@ class QueryResult:
     @classmethod
     def from_response_dict(
         cls,
-        response_dict: Mapping[str, object],
+        response_dict: Mapping[str, JSONValue],
     ) -> Self:
         """Construct from a VWS API query result item dict."""
         target_data: TargetData | None = None
         if "target_data" in response_dict:
             target_data_dict = _checked(
-                response_dict["target_data"], dict[str, object]
+                response_dict["target_data"], dict[str, JSONValue]
             )
             target_timestamp = datetime.datetime.fromtimestamp(
                 timestamp=_number(target_data_dict["target_timestamp"]),
@@ -223,11 +229,13 @@ class TargetStatusAndRecord:
     target_record: TargetRecord
 
     @classmethod
-    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
+    def from_response_dict(
+        cls, response_dict: Mapping[str, JSONValue]
+    ) -> Self:
         """Construct from a VWS API response dict."""
         status = TargetStatuses(value=_checked(response_dict["status"], str))
         target_record_dict = _checked(
-            response_dict["target_record"], dict[str, object]
+            response_dict["target_record"], dict[str, JSONValue]
         )
         target_record = TargetRecord(
             target_id=_checked(target_record_dict["target_id"], str),
@@ -260,7 +268,9 @@ class RecoCountsReportRequest:
     """
 
     @classmethod
-    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
+    def from_response_dict(
+        cls, response_dict: Mapping[str, JSONValue]
+    ) -> Self:
         """Construct from a VWS API response dict."""
         return cls(
             transaction_id=_checked(response_dict["transaction_id"], str),
@@ -353,12 +363,12 @@ class ModelTargetDatasetStatusReport:
     @classmethod
     def from_response_dict(
         cls,
-        response_dict: Mapping[str, object],
+        response_dict: Mapping[str, JSONValue],
     ) -> Self:
         """Construct from a Model Target Web API response dict."""
         error: ModelTargetGenerationError | None = None
         if "error" in response_dict:
-            error_dict = _checked(response_dict["error"], dict[str, object])
+            error_dict = _checked(response_dict["error"], dict[str, JSONValue])
             error = ModelTargetGenerationError(
                 code=_checked(error_dict["code"], str),
                 message=_checked(error_dict["message"], str),
@@ -367,10 +377,10 @@ class ModelTargetDatasetStatusReport:
         warning: ModelTargetGenerationWarning | None = None
         if "warning" in response_dict:
             warning_dict = _checked(
-                response_dict["warning"], dict[str, object]
+                response_dict["warning"], dict[str, JSONValue]
             )
             details = _checked(
-                warning_dict["details"], list[dict[str, object]]
+                warning_dict["details"], list[dict[str, JSONValue]]
             )
             warning = ModelTargetGenerationWarning(
                 code=_checked(warning_dict["code"], str),

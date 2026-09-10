@@ -7,7 +7,7 @@ from http import HTTPStatus
 
 from beartype import BeartypeConf, beartype
 
-from vws._json_utils import JSONValue, json_object
+from vws._json_utils import json_object
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.model_target_exceptions import (
     ModelTargetAuthenticationError,
@@ -18,6 +18,7 @@ from vws.exceptions.model_target_exceptions import (
     UnknownModelTargetDatasetError,
 )
 from vws.exceptions.vws_exceptions import TooManyRequestsError
+from vws.json_types import JSONValue
 from vws.model_target_datasets import (
     ModelTargetDatasetType,
     ModelTargetModel,
