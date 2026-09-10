@@ -5,9 +5,7 @@ from typing import TypeGuard
 
 from beartype.door import TypeHint
 
-type JSONValue = (
-    bool | int | float | str | list[JSONValue] | dict[str, JSONValue] | None
-)
+from vws.json_types import JSONValue
 
 
 def _is_json_object(value: object, /) -> TypeGuard[dict[str, JSONValue]]:

@@ -33,6 +33,10 @@ API Reference
    :undoc-members:
    :members:
 
+.. automodule:: vws.json_types
+   :undoc-members:
+   :members:
+
 .. automodule:: vws.include_target_data
    :undoc-members:
    :members:

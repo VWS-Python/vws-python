@@ -4,6 +4,10 @@ import pytest
 
 from vws.reports import QueryResult
 
+type JSONValue = (
+    bool | int | float | str | list[JSONValue] | dict[str, JSONValue] | None
+)
+
 
 @pytest.mark.parametrize(
     argnames="response",
@@ -28,7 +32,8 @@ from vws.reports import QueryResult
     ],
 )
 def test_query_result_rejects_invalid_response_values(
-    *, response: dict[str, object]
+    *,
+    response: dict[str, JSONValue],
 ) -> None:
     """Query reports reject values of the wrong type."""
     with pytest.raises(expected_exception=TypeError):
