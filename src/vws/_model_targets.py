@@ -7,6 +7,7 @@ from http import HTTPStatus
 
 from beartype import BeartypeConf, beartype
 
+from vws._json_utils import JSONValue, json_object
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.model_target_exceptions import (
     ModelTargetAuthenticationError,
@@ -25,10 +26,7 @@ from vws.model_target_datasets import (
 from vws.reports import ModelTargetDatasetStatusReport
 from vws.response import Response
 
-type _JSONValue = (
-    bool | int | float | str | list[_JSONValue] | dict[str, _JSONValue] | None
-)
-type _JSONObject = dict[str, _JSONValue]
+type _JSONObject = dict[str, JSONValue]
 
 OAUTH2_ENDPOINT_PATH = "/oauth2/token"
 OAUTH2_TOKEN_BODY = b"grant_type=client_credentials"
@@ -87,7 +85,7 @@ def access_token_from_response(*, response: Response) -> tuple[str, float]:
     if response.status_code != HTTPStatus.OK:
         raise ModelTargetOAuth2Error(response=response)
 
-    response_data = dict[str, object](json.loads(s=response.text))
+    response_data = json_object(value=response.text)
     access_token = response_data.get("access_token")
     expires_in = response_data.get("expires_in")
     if not isinstance(access_token, str) or not isinstance(
@@ -190,7 +188,7 @@ def _view_dict(*, view: ModelTargetView) -> _JSONObject:
         },
     }
     if view.states is not None:
-        states = list[_JSONValue](view.states)
+        states = list[JSONValue](view.states)
         view_dict["states"] = states
 
     return view_dict
@@ -308,7 +306,7 @@ def dataset_uuid_from_response(*, response: Response) -> str:
     Returns:
         The UUID of the created dataset.
     """
-    response_data = dict(json.loads(s=response.text))
+    response_data = json_object(value=response.text)
     return str(object=response_data["uuid"])
 
 
@@ -325,7 +323,7 @@ def status_report_from_response(
     Returns:
         The status of the dataset.
     """
-    response_data = dict(json.loads(s=response.text))
+    response_data = json_object(value=response.text)
     return ModelTargetDatasetStatusReport.from_response_dict(
         response_dict=response_data,
     )
