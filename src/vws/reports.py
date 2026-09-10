@@ -6,7 +6,7 @@ import io
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum, unique
-from typing import Any, Self, TypeIs
+from typing import Self, TypeIs
 
 from beartype import BeartypeConf, beartype
 from beartype.door import TypeHint
@@ -64,21 +64,25 @@ class DatabaseSummaryReport:
     total_recos: int
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
+    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
         """Construct from a VWS API response dict."""
         return cls(
-            active_images=int(response_dict["active_images"]),
-            current_month_recos=int(response_dict["current_month_recos"]),
-            failed_images=int(response_dict["failed_images"]),
-            inactive_images=int(response_dict["inactive_images"]),
-            name=response_dict["name"],
-            previous_month_recos=int(response_dict["previous_month_recos"]),
-            processing_images=int(response_dict["processing_images"]),
-            reco_threshold=int(response_dict["reco_threshold"]),
-            request_quota=int(response_dict["request_quota"]),
-            request_usage=int(response_dict["request_usage"]),
-            target_quota=int(response_dict["target_quota"]),
-            total_recos=int(response_dict["total_recos"]),
+            active_images=int(_number(response_dict["active_images"])),
+            current_month_recos=int(
+                _number(response_dict["current_month_recos"])
+            ),
+            failed_images=int(_number(response_dict["failed_images"])),
+            inactive_images=int(_number(response_dict["inactive_images"])),
+            name=_checked(response_dict["name"], str),
+            previous_month_recos=int(
+                _number(response_dict["previous_month_recos"])
+            ),
+            processing_images=int(_number(response_dict["processing_images"])),
+            reco_threshold=int(_number(response_dict["reco_threshold"])),
+            request_quota=int(_number(response_dict["request_quota"])),
+            request_usage=int(_number(response_dict["request_usage"])),
+            target_quota=int(_number(response_dict["target_quota"])),
+            total_recos=int(_number(response_dict["total_recos"])),
         )
 
 
@@ -116,20 +120,26 @@ class TargetSummaryReport:
     previous_month_recos: int
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
+    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
         """Construct from a VWS API response dict."""
         return cls(
-            status=TargetStatuses(value=response_dict["status"]),
-            database_name=response_dict["database_name"],
-            target_name=response_dict["target_name"],
+            status=TargetStatuses(
+                value=_checked(response_dict["status"], str)
+            ),
+            database_name=_checked(response_dict["database_name"], str),
+            target_name=_checked(response_dict["target_name"], str),
             upload_date=datetime.date.fromisoformat(
-                response_dict["upload_date"]
+                _checked(response_dict["upload_date"], str)
             ),
             active_flag=bool(response_dict["active_flag"]),
-            tracking_rating=int(response_dict["tracking_rating"]),
-            total_recos=int(response_dict["total_recos"]),
-            current_month_recos=int(response_dict["current_month_recos"]),
-            previous_month_recos=int(response_dict["previous_month_recos"]),
+            tracking_rating=int(_number(response_dict["tracking_rating"])),
+            total_recos=int(_number(response_dict["total_recos"])),
+            current_month_recos=int(
+                _number(response_dict["current_month_recos"])
+            ),
+            previous_month_recos=int(
+                _number(response_dict["previous_month_recos"])
+            ),
         )
 
 
@@ -213,17 +223,21 @@ class TargetStatusAndRecord:
     target_record: TargetRecord
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
+    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
         """Construct from a VWS API response dict."""
-        status = TargetStatuses(value=response_dict["status"])
-        target_record_dict = dict(response_dict["target_record"])
+        status = TargetStatuses(value=_checked(response_dict["status"], str))
+        target_record_dict = _checked(
+            response_dict["target_record"], dict[str, object]
+        )
         target_record = TargetRecord(
-            target_id=target_record_dict["target_id"],
+            target_id=_checked(target_record_dict["target_id"], str),
             active_flag=bool(target_record_dict["active_flag"]),
-            name=target_record_dict["name"],
-            width=float(target_record_dict["width"]),
-            tracking_rating=int(target_record_dict["tracking_rating"]),
-            reco_rating=target_record_dict["reco_rating"],
+            name=_checked(target_record_dict["name"], str),
+            width=float(_number(target_record_dict["width"])),
+            tracking_rating=int(
+                _number(target_record_dict["tracking_rating"])
+            ),
+            reco_rating=_checked(target_record_dict["reco_rating"], str),
         )
         return cls(status=status, target_record=target_record)
 
@@ -246,11 +260,11 @@ class RecoCountsReportRequest:
     """
 
     @classmethod
-    def from_response_dict(cls, response_dict: dict[str, Any]) -> Self:  # pyrefly: ignore [explicit-any]
+    def from_response_dict(cls, response_dict: Mapping[str, object]) -> Self:
         """Construct from a VWS API response dict."""
         return cls(
-            transaction_id=response_dict["transaction_id"],
-            presigned_url=response_dict["presigned_url"],
+            transaction_id=_checked(response_dict["transaction_id"], str),
+            presigned_url=_checked(response_dict["presigned_url"], str),
         )
 
 

@@ -4,7 +4,6 @@ import base64
 import json
 from collections.abc import Sequence
 from http import HTTPStatus
-from typing import Any
 
 from beartype import BeartypeConf, beartype
 
@@ -25,6 +24,11 @@ from vws.model_target_datasets import (
 )
 from vws.reports import ModelTargetDatasetStatusReport
 from vws.response import Response
+
+type _JSONValue = (
+    bool | int | float | str | list[_JSONValue] | dict[str, _JSONValue] | None
+)
+type _JSONObject = dict[str, _JSONValue]
 
 OAUTH2_ENDPOINT_PATH = "/oauth2/token"
 OAUTH2_TOKEN_BODY = b"grant_type=client_credentials"
@@ -169,7 +173,7 @@ def dataset_download_path(
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def _view_dict(*, view: ModelTargetView) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
+def _view_dict(*, view: ModelTargetView) -> _JSONObject:
     """Get the request representation of a guide view.
 
     Args:
@@ -178,7 +182,7 @@ def _view_dict(*, view: ModelTargetView) -> dict[str, Any]:  # pyrefly: ignore [
     Returns:
         The guide view, as it is sent to Vuforia.
     """
-    view_dict: dict[str, Any] = {  # pyrefly: ignore [explicit-any]
+    view_dict: _JSONObject = {
         "name": view.name,
         "guideViewPosition": {
             "rotation": list(view.guide_view_position.rotation),
@@ -186,13 +190,14 @@ def _view_dict(*, view: ModelTargetView) -> dict[str, Any]:  # pyrefly: ignore [
         },
     }
     if view.states is not None:
-        view_dict["states"] = list(view.states)
+        states = list[_JSONValue](view.states)
+        view_dict["states"] = states
 
     return view_dict
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
-def _model_dict(*, model: ModelTargetModel) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
+def _model_dict(*, model: ModelTargetModel) -> _JSONObject:
     """Get the request representation of a model.
 
     Args:
@@ -201,7 +206,7 @@ def _model_dict(*, model: ModelTargetModel) -> dict[str, Any]:  # pyrefly: ignor
     Returns:
         The model, as it is sent to Vuforia.
     """
-    model_dict: dict[str, Any] = {"name": model.name}  # pyrefly: ignore [explicit-any]
+    model_dict: _JSONObject = {"name": model.name}
     optional_values: dict[str, str | None] = {
         "automaticColoring": model.automatic_coloring,
         "cadDataBlob": model.cad_data_blob,

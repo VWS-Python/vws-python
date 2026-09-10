@@ -5,52 +5,33 @@ https://developer.vuforia.com/library/vuforia-engine/web-api/model-target-web-ap
 """
 
 import json
-from typing import Any
 
 from beartype import beartype
 
+from vws._json_utils import (
+    JSONValue,
+    json_object,
+    object_field,
+    object_list_field,
+    string_field,
+)
 from vws.reports import ModelTargetGenerationDetail
 from vws.response import Response
 
 
 @beartype
-def _is_json_object(*, value: object) -> bool:
-    """Get whether a decoded JSON value is an object.
-
-    Args:
-        value: A decoded JSON value.
-
-    Returns:
-        Whether the value is a JSON object.
-    """
-    return isinstance(value, dict)
-
-
-@beartype
-def _json_object(*, value: str) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
-    """Get a JSON object from a string.
-
-    Args:
-        value: A string which may be a JSON object.
-
-    Returns:
-        The JSON object, or an empty dictionary if the string is not a
-        JSON object.
+def _json_object(*, value: str) -> dict[str, JSONValue]:
+    """Return a decoded JSON object, or an empty object for invalid
+    input.
     """
     try:
-        loaded: Any = json.loads(s=value)  # pyrefly: ignore [explicit-any]
-    except json.JSONDecodeError:
+        return json_object(value=value)
+    except json.JSONDecodeError, TypeError:
         return {}
-
-    if not _is_json_object(value=loaded):
-        return {}
-
-    json_object: dict[str, Any] = loaded  # pyrefly: ignore [explicit-any]
-    return json_object
 
 
 @beartype
-def _error_dict(*, response: Response) -> dict[str, Any]:  # pyrefly: ignore [explicit-any]
+def _error_dict(*, response: Response) -> dict[str, JSONValue]:
     """Get the error object of a Model Target Web API error response.
 
     Args:
@@ -62,16 +43,11 @@ def _error_dict(*, response: Response) -> dict[str, Any]:  # pyrefly: ignore [ex
         balancer in front of Vuforia, are not shaped like Model Target
         Web API errors.
     """
-    body = _json_object(value=response.text)
-    if "error" not in body:
+    try:
+        body = _json_object(value=response.text)
+        return object_field(value=body, name="error")
+    except KeyError, TypeError:
         return {}
-
-    error: Any = body["error"]  # pyrefly: ignore [explicit-any]
-    if not _is_json_object(value=error):
-        return {}
-
-    error_dict: dict[str, Any] = error  # pyrefly: ignore [explicit-any]
-    return error_dict
 
 
 @beartype
@@ -122,11 +98,10 @@ class ModelTargetError(Exception):
 
         return [
             ModelTargetGenerationDetail(
-                code=detail["code"],  # pyrefly: ignore [unknown-argument-type]
-                # pyrefly: ignore [unknown-argument-type]
-                message=detail["message"],
+                code=string_field(value=detail_object, name="code"),
+                message=string_field(value=detail_object, name="message"),
             )
-            for detail in error["details"]
+            for detail_object in object_list_field(value=error, name="details")
         ]
 
 
