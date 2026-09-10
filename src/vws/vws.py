@@ -134,9 +134,7 @@ class VWS:
             # The Vuforia API returns a 429 response with no JSON body.
             raise TooManyRequestsError(response=response)
 
-        if (
-            response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR
-        ):  # pragma: no cover
+        if response.status_code >= HTTPStatus.INTERNAL_SERVER_ERROR:
             raise ServerError(response=response)
 
         result_code = string_field(
@@ -323,7 +321,7 @@ class VWS:
                 return
 
             elapsed_time = time.monotonic() - start_time
-            if elapsed_time > timeout_seconds:  # pragma: no cover
+            if elapsed_time > timeout_seconds:
                 raise TargetProcessingTimeoutError
 
             time.sleep(seconds_between_requests)
