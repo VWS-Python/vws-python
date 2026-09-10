@@ -1,0 +1,1 @@
+Type decoded report response dictionaries as JSON values.
