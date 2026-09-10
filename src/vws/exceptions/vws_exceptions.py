@@ -84,9 +84,8 @@ class TargetStatusProcessingError(VWSError):
         return _target_id_from_url(url=self.response.url)
 
 
-# This is not simulated by the mock.
 @beartype
-class DateRangeError(VWSError):  # pragma: no cover
+class DateRangeError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'DateRangeError'.
     """
@@ -171,16 +170,14 @@ class TargetStatusNotSuccessError(VWSError):
 
 
 @beartype
-class TooManyRequestsError(VWSError):  # pragma: no cover
+class TooManyRequestsError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'TooManyRequests'.
     """
 
 
-# This is not simulated by client code because the accept parameter uses
-# the VuMarkAccept enum, which only allows valid values.
 @beartype
-class InvalidAcceptHeaderError(VWSError):  # pragma: no cover
+class InvalidAcceptHeaderError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     ``InvalidAcceptHeader``.
     """
@@ -193,10 +190,8 @@ class InvalidInstanceIdError(VWSError):
     """
 
 
-# This is not simulated by client code because the request body
-# is always valid JSON when using this client.
 @beartype
-class BadRequestError(VWSError):  # pragma: no cover
+class BadRequestError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     ``BadRequest``.
     """

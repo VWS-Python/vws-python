@@ -90,7 +90,7 @@ class RecoCountsReportTimeoutError(Exception):
 
 
 @beartype
-class ServerError(Exception):  # pragma: no cover
+class ServerError(Exception):
     """Exception raised when VWS returns a server error."""
 
     def __init__(self, response: Response) -> None:
