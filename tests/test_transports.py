@@ -24,6 +24,8 @@ from vws import (
     ModelTargetService,
     VuMarkService,
 )
+from vws.exceptions.custom_exceptions import ServerError
+from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.model_target_datasets import (
     ModelTargetDatasetType,
     ModelTargetModel,
@@ -428,6 +430,118 @@ async def test_falsy_async_transport_is_retained(
             )
             == b"vumark-bytes"
         )
+
+
+@pytest.mark.parametrize(
+    argnames=("status_code", "exception_type"),
+    argvalues=[
+        (HTTPStatus.TOO_MANY_REQUESTS, TooManyRequestsError),
+        (HTTPStatus.INTERNAL_SERVER_ERROR, ServerError),
+    ],
+)
+@respx.mock
+def test_vumark_service_handles_bodyless_http_errors(
+    *,
+    status_code: HTTPStatus,
+    exception_type: type[ServerError | TooManyRequestsError],
+) -> None:
+    """VuMark HTTP errors which have no JSON body remain meaningful."""
+    route = respx.post(
+        url="https://example.com/targets/target/instances"
+    ).mock(return_value=httpx.Response(status_code=status_code))
+
+    with HTTPXTransport() as transport:
+        service = VuMarkService(
+            server_access_key="access-key",
+            server_secret_key=uuid.uuid4().hex,
+            base_vws_url="https://example.com",
+            transport=transport,
+        )
+        with pytest.raises(expected_exception=exception_type):
+            _ = service.generate_vumark_instance(
+                target_id="target",
+                instance_id="instance",
+                accept=VuMarkAccept.PNG,
+            )
+
+    assert route.called
+
+
+@respx.mock
+def test_vws_handles_bodyless_rate_limit_response() -> None:
+    """A body-less target-manager rate limit raises its specific error."""
+    route = respx.get(url="https://example.com/targets").mock(
+        return_value=httpx.Response(status_code=HTTPStatus.TOO_MANY_REQUESTS)
+    )
+
+    with HTTPXTransport() as transport:
+        service = VWS(
+            server_access_key="access-key",
+            server_secret_key=uuid.uuid4().hex,
+            base_vws_url="https://example.com",
+            transport=transport,
+        )
+        with pytest.raises(expected_exception=TooManyRequestsError):
+            _ = service.list_targets()
+
+    assert route.called
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("status_code", "exception_type"),
+    argvalues=[
+        (HTTPStatus.TOO_MANY_REQUESTS, TooManyRequestsError),
+        (HTTPStatus.INTERNAL_SERVER_ERROR, ServerError),
+    ],
+)
+@respx.mock
+async def test_async_vumark_service_handles_bodyless_http_errors(
+    *,
+    status_code: HTTPStatus,
+    exception_type: type[ServerError | TooManyRequestsError],
+) -> None:
+    """Async VuMark HTTP errors without JSON remain meaningful."""
+    route = respx.post(
+        url="https://example.com/targets/target/instances"
+    ).mock(return_value=httpx.Response(status_code=status_code))
+
+    async with AsyncHTTPXTransport() as transport:
+        service = AsyncVuMarkService(
+            server_access_key="access-key",
+            server_secret_key=uuid.uuid4().hex,
+            base_vws_url="https://example.com",
+            transport=transport,
+        )
+        with pytest.raises(expected_exception=exception_type):
+            _ = await service.generate_vumark_instance(
+                target_id="target",
+                instance_id="instance",
+                accept=VuMarkAccept.PNG,
+            )
+
+    assert route.called
+
+
+@pytest.mark.asyncio
+@respx.mock
+async def test_async_vws_handles_bodyless_rate_limit_response() -> None:
+    """An async target-manager rate limit raises its specific error."""
+    route = respx.get(url="https://example.com/targets").mock(
+        return_value=httpx.Response(status_code=HTTPStatus.TOO_MANY_REQUESTS)
+    )
+
+    async with AsyncHTTPXTransport() as transport:
+        service = AsyncVWS(
+            server_access_key="access-key",
+            server_secret_key=uuid.uuid4().hex,
+            base_vws_url="https://example.com",
+            transport=transport,
+        )
+        with pytest.raises(expected_exception=TooManyRequestsError):
+            _ = await service.list_targets()
+
+    assert route.called
 
 
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
