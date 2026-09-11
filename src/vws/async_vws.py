@@ -142,9 +142,7 @@ class AsyncVWS:
             transport=self._transport,
         )
 
-        if (
-            response.status_code == HTTPStatus.TOO_MANY_REQUESTS
-        ):  # pragma: no cover
+        if response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
             # The Vuforia API returns a 429 response with no JSON body.
             raise TooManyRequestsError(response=response)
 
