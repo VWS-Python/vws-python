@@ -143,7 +143,7 @@ class TargetNameExistError(VWSError):
     def target_name(self) -> str:
         """The target name which already exists."""
         response_body = self.response.request_body
-        if not isinstance(response_body, str | bytes):  # pragma: no cover
+        if not isinstance(response_body, str | bytes):
             msg = "A target-name error response must have a request body."
             raise TypeError(msg)
         request_json = json_object(value=response_body)

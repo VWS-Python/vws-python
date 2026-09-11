@@ -241,6 +241,26 @@ def test_target_name_exist(
     assert exc.value.target_name == "x"
 
 
+def test_target_name_exist_requires_request_body() -> None:
+    """A target-name error without a request body is rejected."""
+    response = Response(
+        text="",
+        url="https://vws.vuforia.com/targets",
+        status_code=HTTPStatus.FORBIDDEN,
+        headers={},
+        request_body=None,
+        tell_position=0,
+        content=b"",
+    )
+    error = TargetNameExistError(response=response)
+
+    with pytest.raises(
+        expected_exception=TypeError,
+        match="must have a request body",
+    ):
+        _ = error.target_name
+
+
 def test_project_inactive(
     high_quality_image: io.BytesIO,
 ) -> None:
