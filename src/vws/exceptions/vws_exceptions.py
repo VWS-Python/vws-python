@@ -14,6 +14,7 @@ from vws._json_utils import json_object, string_field
 from vws.exceptions.base_exceptions import VWSError
 
 
+@beartype
 def _target_id_from_url(*, url: str) -> str:
     """Return the target ID from a VWS response URL.
 

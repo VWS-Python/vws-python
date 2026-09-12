@@ -3,21 +3,25 @@
 import json
 from typing import TypeGuard
 
+from beartype import beartype
 from beartype.door import TypeHint
 
 from vws.json_types import JSONValue
 
 
+@beartype
 def _is_json_object(value: object, /) -> TypeGuard[dict[str, JSONValue]]:
     """Return whether a decoded JSON value is an object."""
     return TypeHint(hint=dict[str, JSONValue]).is_bearable(obj=value)
 
 
+@beartype
 def _is_object_list(value: object, /) -> TypeGuard[list[JSONValue]]:
     """Return whether a decoded JSON value is an array."""
     return TypeHint(hint=list[JSONValue]).is_bearable(obj=value)
 
 
+@beartype
 def _validated_object(*, value: object) -> dict[str, JSONValue]:
     """Return a decoded JSON object."""
     if not _is_json_object(value):
@@ -26,12 +30,14 @@ def _validated_object(*, value: object) -> dict[str, JSONValue]:
     return value
 
 
+@beartype
 def json_object(*, value: str | bytes | bytearray) -> dict[str, JSONValue]:
     """Decode and validate a JSON object."""
     loaded: object = json.loads(s=value)
     return _validated_object(value=loaded)
 
 
+@beartype
 def object_field(
     *, value: dict[str, JSONValue], name: str
 ) -> dict[str, JSONValue]:
@@ -39,6 +45,7 @@ def object_field(
     return _validated_object(value=value[name])
 
 
+@beartype
 def string_value(*, value: object, name: str) -> str:
     """Return a JSON value after validating that it is a string."""
     if not isinstance(value, str):
@@ -47,11 +54,13 @@ def string_value(*, value: object, name: str) -> str:
     return value
 
 
+@beartype
 def string_field(*, value: dict[str, JSONValue], name: str) -> str:
     """Return a required string field from a JSON object."""
     return string_value(value=value[name], name=name)
 
 
+@beartype
 def string_list_field(
     *,
     value: dict[str, JSONValue],
@@ -67,6 +76,7 @@ def string_list_field(
     return [item for item in items if isinstance(item, str)]
 
 
+@beartype
 def object_list_field(
     *,
     value: dict[str, JSONValue],
