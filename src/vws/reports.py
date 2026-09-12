@@ -27,6 +27,7 @@ def _is_type[T](value: object, hint: type[T], /) -> TypeIs[T]:
     return TypeHint(hint=hint).is_bearable(obj=value)
 
 
+@beartype
 def _number(value: object, /) -> int | float:
     """Return a runtime-validated JSON number."""
     if isinstance(value, bool) or not isinstance(value, int | float):
@@ -35,6 +36,7 @@ def _number(value: object, /) -> int | float:
     return value
 
 
+@beartype
 def _optional_string(value: object, /) -> str | None:
     """Return a runtime-validated optional string."""
     if value is not None and not isinstance(value, str):
