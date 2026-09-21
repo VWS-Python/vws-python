@@ -365,9 +365,9 @@ class TestDelete:
         )
 
         vws_client.wait_for_target_processed(target_id=target_id)
-        assert target_id in vws_client.list_targets()
+        assert vws_client.list_targets() == [target_id]
         vws_client.delete_target(target_id=target_id)
-        assert target_id not in vws_client.list_targets()
+        assert vws_client.list_targets() == []
 
 
 class TestGetTargetSummaryReport:

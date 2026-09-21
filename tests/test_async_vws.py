@@ -207,12 +207,12 @@ class TestDelete:
             target_id=target_id,
         )
         targets = await async_vws_client.list_targets()
-        assert target_id in targets
+        assert targets == [target_id]
         await async_vws_client.delete_target(
             target_id=target_id,
         )
         targets = await async_vws_client.list_targets()
-        assert target_id not in targets
+        assert targets == []
 
 
 class TestGetTargetSummaryReport:
