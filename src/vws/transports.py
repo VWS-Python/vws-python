@@ -39,7 +39,7 @@ class Transport(Protocol):
 
     def close(self) -> None:
         """Close the transport and release resources."""
-        ...  # pylint: disable=unnecessary-ellipsis
+        ...
 
     def __call__(
         self,
@@ -64,7 +64,7 @@ class Transport(Protocol):
         Returns:
             A Response populated from the HTTP response.
         """
-        ...  # pylint: disable=unnecessary-ellipsis
+        ...
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
@@ -334,7 +334,7 @@ class AsyncTransport(Protocol):
 
     async def aclose(self) -> None:
         """Close the transport and release resources."""
-        ...  # pylint: disable=unnecessary-ellipsis
+        ...
 
     def __call__(
         self,
@@ -359,7 +359,7 @@ class AsyncTransport(Protocol):
         Returns:
             A Response populated from the HTTP response.
         """
-        ...  # pylint: disable=unnecessary-ellipsis
+        ...
 
 
 @beartype(conf=BeartypeConf(is_pep484_tower=True))
