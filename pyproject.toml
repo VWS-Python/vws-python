@@ -44,6 +44,7 @@ urls.Source = "https://github.com/VWS-Python/vws-python"
 [dependency-groups]
 dev = [
     "actionlint-py==1.7.12.25",
+    "beartype==0.23.0rc2",
     "check-manifest==0.51",
     "deptry==0.25.1",
     "doc8==2.0.0",
@@ -66,7 +67,7 @@ dev = [
     "pyroma==5.0.1",
     "pytest==9.1.1",
     "pytest-asyncio==1.4.0",
-    "pytest-beartype-tests==2026.8.16",
+    "pytest-beartype==0.3.0",
     "pytest-cov==7.1.0",
     "pyyaml==6.0.3",
     "ruff==0.16.9",
@@ -423,6 +424,9 @@ analysis.strict-equality-semantics = true
 analysis.strict-generic-narrowing = true
 
 [tool.pytest]
+beartype_packages = [ "vws" ]
+beartype_test_fixtures = true
+beartype_tests = true
 log_cli = true
 xfail_strict = true
 
