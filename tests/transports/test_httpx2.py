@@ -1,15 +1,13 @@
-"""Tests for HTTP transport implementations."""
+"""Tests for `httpx2` transports."""
 
 from __future__ import annotations
 
-import uuid
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
 import httpx
 import httpx2
 import pytest
-import respx
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase, VuMarkDatabase
 from mock_vws.target import VuMarkTarget
@@ -24,8 +22,6 @@ from vws import (
     ModelTargetService,
     VuMarkService,
 )
-from vws.exceptions.custom_exceptions import ServerError
-from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.model_target_datasets import (
     ModelTargetDatasetType,
     ModelTargetModel,
@@ -34,512 +30,12 @@ from vws.reports import ModelTargetDatasetStatuses, TargetStatuses
 from vws.response import Response
 from vws.transports import (
     AsyncHTTPX2Transport,
-    AsyncHTTPXTransport,
     HTTPX2Transport,
-    HTTPXTransport,
 )
 from vws.vumark_accept import VuMarkAccept
 
 if TYPE_CHECKING:
     import io
-
-
-# Tests for ``HTTPXTransport``.
-
-
-@respx.mock
-def test_httpx_transport_float_timeout() -> None:
-    """``HTTPXTransport`` works with a float timeout."""
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    transport = HTTPXTransport()
-    response = transport(
-        method="POST",
-        url="https://example.com/test",
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30.0,
-    )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-    assert response.text == "OK"
-    assert response.tell_position == len(b"OK")
-
-
-@respx.mock
-def test_httpx_transport_tuple_timeout() -> None:
-    """``HTTPXTransport`` works with a (connect, read) timeout
-    tuple.
-    """
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    transport = HTTPXTransport()
-    response = transport(
-        method="POST",
-        url="https://example.com/test",
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=(5.0, 30.0),
-    )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-@respx.mock
-def test_httpx_transport_int_timeout() -> None:
-    """``HTTPXTransport`` works with an int timeout."""
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    transport = HTTPXTransport()
-    response = transport(
-        method="POST",
-        url="https://example.com/test",
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30,
-    )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-@respx.mock
-def test_httpx_transport_context_manager() -> None:
-    """``HTTPXTransport`` can be used as a context manager."""
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    with HTTPXTransport() as transport:
-        response = transport(
-            method="POST",
-            url="https://example.com/test",
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-# Tests for ``AsyncHTTPXTransport``.
-
-
-@pytest.mark.asyncio
-@respx.mock
-async def test_async_httpx_transport_float_timeout() -> None:
-    """``AsyncHTTPXTransport`` works with a float timeout."""
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    transport = AsyncHTTPXTransport()
-    response = await transport(
-        method="POST",
-        url="https://example.com/test",
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30.0,
-    )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-    assert response.text == "OK"
-    assert response.tell_position == len(b"OK")
-
-
-@pytest.mark.asyncio
-@respx.mock
-async def test_async_httpx_transport_tuple_timeout() -> None:
-    """``AsyncHTTPXTransport`` works with a (connect, read)
-    timeout tuple.
-    """
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    transport = AsyncHTTPXTransport()
-    response = await transport(
-        method="POST",
-        url="https://example.com/test",
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=(5.0, 30.0),
-    )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.asyncio
-@respx.mock
-async def test_async_httpx_transport_int_timeout() -> None:
-    """``AsyncHTTPXTransport`` works with an int timeout."""
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    transport = AsyncHTTPXTransport()
-    response = await transport(
-        method="POST",
-        url="https://example.com/test",
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30,
-    )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.asyncio
-@respx.mock
-async def test_async_httpx_transport_context_manager() -> None:
-    """``AsyncHTTPXTransport`` can be used as an async context
-    manager.
-    """
-    route = respx.post(url="https://example.com/test").mock(
-        return_value=httpx.Response(
-            status_code=HTTPStatus.OK,
-            text="OK",
-        ),
-    )
-    async with AsyncHTTPXTransport() as transport:
-        response = await transport(
-            method="POST",
-            url="https://example.com/test",
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-    assert route.called
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-class _FalsyTransport:
-    """A sync transport that is falsy but protocol-conforming."""
-
-    def __bool__(self) -> bool:
-        """Return ``False`` so truthiness checks would skip this
-        transport.
-        """
-        return False
-
-    def close(self) -> None:
-        """Close the transport."""
-
-    def __call__(
-        self,
-        *,
-        method: str,
-        url: str,
-        headers: dict[str, str],
-        data: bytes,
-        request_timeout: float | tuple[float, float],
-    ) -> Response:
-        """Return a successful API response for the requested URL."""
-        del method, headers, request_timeout
-        if url.endswith("/query"):
-            body = '{"result_code":"Success","results":[]}'
-            return Response(
-                text=body,
-                url=url,
-                status_code=HTTPStatus.OK,
-                headers={},
-                request_body=data,
-                tell_position=0,
-                content=body.encode(),
-            )
-        if "/instances" in url:
-            content = b"vumark-bytes"
-            return Response(
-                text="",
-                url=url,
-                status_code=HTTPStatus.OK,
-                headers={},
-                request_body=data,
-                tell_position=0,
-                content=content,
-            )
-        body = '{"result_code":"Success","results":[]}'
-        return Response(
-            text=body,
-            url=url,
-            status_code=HTTPStatus.OK,
-            headers={},
-            request_body=data,
-            tell_position=0,
-            content=body.encode(),
-        )
-
-
-class _FalsyAsyncTransport:
-    """An async transport that is falsy but protocol-conforming."""
-
-    def __bool__(self) -> bool:
-        """Return ``False`` so truthiness checks would skip this
-        transport.
-        """
-        return False
-
-    async def aclose(self) -> None:
-        """Close the transport."""
-
-    async def __call__(
-        self,
-        *,
-        method: str,
-        url: str,
-        headers: dict[str, str],
-        data: bytes,
-        request_timeout: float | tuple[float, float],
-    ) -> Response:
-        """Return a successful API response for the requested URL."""
-        del method, headers, request_timeout
-        if url.endswith("/query"):
-            body = '{"result_code":"Success","results":[]}'
-            return Response(
-                text=body,
-                url=url,
-                status_code=HTTPStatus.OK,
-                headers={},
-                request_body=data,
-                tell_position=0,
-                content=body.encode(),
-            )
-        if "/instances" in url:
-            content = b"vumark-bytes"
-            return Response(
-                text="",
-                url=url,
-                status_code=HTTPStatus.OK,
-                headers={},
-                request_body=data,
-                tell_position=0,
-                content=content,
-            )
-        body = '{"result_code":"Success","results":[]}'
-        return Response(
-            text=body,
-            url=url,
-            status_code=HTTPStatus.OK,
-            headers={},
-            request_body=data,
-            tell_position=0,
-            content=body.encode(),
-        )
-
-
-def test_falsy_sync_transport_is_retained(
-    high_quality_image: io.BytesIO,
-) -> None:
-    """Falsy custom sync transports are not replaced by the default."""
-    access_key = uuid.uuid4().hex
-    secret_key = uuid.uuid4().hex
-    transport = _FalsyTransport()
-    assert not bool(transport)
-
-    targets = VWS(
-        server_access_key=access_key,
-        server_secret_key=secret_key,
-        transport=transport,
-    ).list_targets()
-    assert not bool(targets)
-
-    query_results = CloudRecoService(
-        client_access_key=access_key,
-        client_secret_key=secret_key,
-        transport=transport,
-    ).query(image=high_quality_image)
-    assert not bool(query_results)
-
-    vumark_bytes = VuMarkService(
-        server_access_key=access_key,
-        server_secret_key=secret_key,
-        transport=transport,
-    ).generate_vumark_instance(
-        target_id="target",
-        instance_id="instance",
-        accept=VuMarkAccept.PNG,
-    )
-    assert vumark_bytes == b"vumark-bytes"
-
-
-@pytest.mark.asyncio
-async def test_falsy_async_transport_is_retained(
-    high_quality_image: io.BytesIO,
-) -> None:
-    """Falsy custom async transports are not replaced by the default."""
-    access_key = uuid.uuid4().hex
-    secret_key = uuid.uuid4().hex
-    transport = _FalsyAsyncTransport()
-    assert not bool(transport)
-
-    async with AsyncVWS(
-        server_access_key=access_key,
-        server_secret_key=secret_key,
-        transport=transport,
-    ) as vws_client:
-        assert not bool(await vws_client.list_targets())
-
-    async with AsyncCloudRecoService(
-        client_access_key=access_key,
-        client_secret_key=secret_key,
-        transport=transport,
-    ) as cloud_reco_client:
-        assert not bool(
-            await cloud_reco_client.query(image=high_quality_image)
-        )
-
-    async with AsyncVuMarkService(
-        server_access_key=access_key,
-        server_secret_key=secret_key,
-        transport=transport,
-    ) as vumark_client:
-        assert (
-            await vumark_client.generate_vumark_instance(
-                target_id="target",
-                instance_id="instance",
-                accept=VuMarkAccept.PNG,
-            )
-            == b"vumark-bytes"
-        )
-
-
-@pytest.mark.parametrize(
-    argnames=("status_code", "exception_type"),
-    argvalues=[
-        (HTTPStatus.TOO_MANY_REQUESTS, TooManyRequestsError),
-        (HTTPStatus.INTERNAL_SERVER_ERROR, ServerError),
-    ],
-)
-@respx.mock
-def test_vumark_service_handles_bodyless_http_errors(
-    *,
-    status_code: HTTPStatus,
-    exception_type: type[ServerError | TooManyRequestsError],
-) -> None:
-    """VuMark HTTP errors which have no JSON body remain meaningful."""
-    route = respx.post(
-        url="https://example.com/targets/target/instances"
-    ).mock(return_value=httpx.Response(status_code=status_code))
-
-    with HTTPXTransport() as transport:
-        service = VuMarkService(
-            server_access_key="access-key",
-            server_secret_key=uuid.uuid4().hex,
-            base_vws_url="https://example.com",
-            transport=transport,
-        )
-        with pytest.raises(expected_exception=exception_type):
-            _ = service.generate_vumark_instance(
-                target_id="target",
-                instance_id="instance",
-                accept=VuMarkAccept.PNG,
-            )
-
-    assert route.called
-
-
-@respx.mock
-def test_vws_handles_bodyless_rate_limit_response() -> None:
-    """A body-less target-manager rate limit raises its specific error."""
-    route = respx.get(url="https://example.com/targets").mock(
-        return_value=httpx.Response(status_code=HTTPStatus.TOO_MANY_REQUESTS)
-    )
-
-    with HTTPXTransport() as transport:
-        service = VWS(
-            server_access_key="access-key",
-            server_secret_key=uuid.uuid4().hex,
-            base_vws_url="https://example.com",
-            transport=transport,
-        )
-        with pytest.raises(expected_exception=TooManyRequestsError):
-            _ = service.list_targets()
-
-    assert route.called
-
-
-@pytest.mark.asyncio
-@pytest.mark.parametrize(
-    argnames=("status_code", "exception_type"),
-    argvalues=[
-        (HTTPStatus.TOO_MANY_REQUESTS, TooManyRequestsError),
-        (HTTPStatus.INTERNAL_SERVER_ERROR, ServerError),
-    ],
-)
-@respx.mock
-async def test_async_vumark_service_handles_bodyless_http_errors(
-    *,
-    status_code: HTTPStatus,
-    exception_type: type[ServerError | TooManyRequestsError],
-) -> None:
-    """Async VuMark HTTP errors without JSON remain meaningful."""
-    route = respx.post(
-        url="https://example.com/targets/target/instances"
-    ).mock(return_value=httpx.Response(status_code=status_code))
-
-    async with AsyncHTTPXTransport() as transport:
-        service = AsyncVuMarkService(
-            server_access_key="access-key",
-            server_secret_key=uuid.uuid4().hex,
-            base_vws_url="https://example.com",
-            transport=transport,
-        )
-        with pytest.raises(expected_exception=exception_type):
-            _ = await service.generate_vumark_instance(
-                target_id="target",
-                instance_id="instance",
-                accept=VuMarkAccept.PNG,
-            )
-
-    assert route.called
-
-
-@pytest.mark.asyncio
-@respx.mock
-async def test_async_vws_handles_bodyless_rate_limit_response() -> None:
-    """An async target-manager rate limit raises its specific error."""
-    route = respx.get(url="https://example.com/targets").mock(
-        return_value=httpx.Response(status_code=HTTPStatus.TOO_MANY_REQUESTS)
-    )
-
-    async with AsyncHTTPXTransport() as transport:
-        service = AsyncVWS(
-            server_access_key="access-key",
-            server_secret_key=uuid.uuid4().hex,
-            base_vws_url="https://example.com",
-            transport=transport,
-        )
-        with pytest.raises(expected_exception=TooManyRequestsError):
-            _ = await service.list_targets()
-
-    assert route.called
 
 
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
@@ -607,478 +103,6 @@ def fixture_httpx2_requests(
     monkeypatch.setattr(target=httpx2, name="Client", value=_Client)
     monkeypatch.setattr(target=httpx2, name="AsyncClient", value=_AsyncClient)
     return requests_seen
-
-
-# Tests for ``HTTPX2Transport``.
-
-
-def test_httpx2_transport_float_timeout(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``HTTPX2Transport`` works with a float timeout.
-
-    A float sets both the connect and read timeouts, and the response
-    is converted in full.
-    """
-    transport = HTTPX2Transport()
-    response = transport(
-        method="POST",
-        url=_HTTPX2_URL,
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30.0,
-    )
-    (request,) = httpx2_requests
-    assert request.extensions["timeout"] == {
-        "connect": 30.0,
-        "read": 30.0,
-        "write": None,
-        "pool": None,
-    }
-    assert request.headers["Content-Type"] == "text/plain"
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-    assert response.text == "OK"
-    assert response.url == _HTTPX2_URL
-    assert response.headers["x-example"] == "example"
-    assert response.request_body == b"hello"
-    assert response.content == b"OK"
-    assert response.tell_position == len(b"OK")
-
-
-def test_httpx2_transport_tuple_timeout(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``HTTPX2Transport`` works with a (connect, read) timeout
-    tuple.
-    """
-    transport = HTTPX2Transport()
-    response = transport(
-        method="POST",
-        url=_HTTPX2_URL,
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=(5.0, 30.0),
-    )
-    (request,) = httpx2_requests
-    assert request.extensions["timeout"] == {
-        "connect": 5.0,
-        "read": 30.0,
-        "write": None,
-        "pool": None,
-    }
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-def test_httpx2_transport_int_timeout(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``HTTPX2Transport`` works with an int timeout."""
-    transport = HTTPX2Transport()
-    response = transport(
-        method="POST",
-        url=_HTTPX2_URL,
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30,
-    )
-    (request,) = httpx2_requests
-    assert request.extensions["timeout"] == {
-        "connect": 30,
-        "read": 30,
-        "write": None,
-        "pool": None,
-    }
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-def test_httpx2_transport_empty_body(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """An empty request body is reported as ``None``, as it is for
-    the ``requests`` and ``httpx`` transports.
-    """
-    transport = HTTPX2Transport()
-    response = transport(
-        method="GET",
-        url=_HTTPX2_URL,
-        headers={},
-        data=b"",
-        request_timeout=30.0,
-    )
-    assert len(httpx2_requests) == 1
-    assert response.request_body is None
-
-
-def test_httpx2_transport_context_manager(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``HTTPX2Transport`` can be used as a context manager, and
-    leaving the context closes the client.
-    """
-    with HTTPX2Transport() as transport:
-        response = transport(
-            method="POST",
-            url=_HTTPX2_URL,
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-    assert len(httpx2_requests) == 1
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-    with pytest.raises(
-        expected_exception=RuntimeError,
-        match="client has been closed",
-    ):
-        _ = transport(
-            method="POST",
-            url=_HTTPX2_URL,
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-
-
-def test_close(httpx2_requests: list[httpx2.Request]) -> None:
-    """Closing the transport closes the client."""
-    transport = HTTPX2Transport()
-    transport.close()
-    with pytest.raises(
-        expected_exception=RuntimeError,
-        match="client has been closed",
-    ):
-        _ = transport(
-            method="POST",
-            url=_HTTPX2_URL,
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-    assert not bool(httpx2_requests)
-
-
-def test_httpx2_transport_httpx2_exceptions(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """Errors are raised as ``httpx2`` exceptions, which are not
-    ``httpx`` exceptions.
-    """
-    transport = HTTPX2Transport()
-    with pytest.raises(expected_exception=httpx2.ConnectError) as exc:
-        _ = transport(
-            method="GET",
-            url=_HTTPX2_REFUSED_URL,
-            headers={},
-            data=b"",
-            request_timeout=30.0,
-        )
-    assert len(httpx2_requests) == 1
-    assert not isinstance(exc.value, httpx.HTTPError)
-
-
-# Tests for ``AsyncHTTPX2Transport``.
-
-
-@pytest.mark.asyncio
-async def test_async_httpx2_transport_float_timeout(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``AsyncHTTPX2Transport`` works with a float timeout.
-
-    A float sets both the connect and read timeouts, and the response
-    is converted in full.
-    """
-    transport = AsyncHTTPX2Transport()
-    response = await transport(
-        method="POST",
-        url=_HTTPX2_URL,
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30.0,
-    )
-    (request,) = httpx2_requests
-    assert request.extensions["timeout"] == {
-        "connect": 30.0,
-        "read": 30.0,
-        "write": None,
-        "pool": None,
-    }
-    assert request.headers["Content-Type"] == "text/plain"
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-    assert response.text == "OK"
-    assert response.url == _HTTPX2_URL
-    assert response.headers["x-example"] == "example"
-    assert response.request_body == b"hello"
-    assert response.content == b"OK"
-    assert response.tell_position == len(b"OK")
-
-
-@pytest.mark.asyncio
-async def test_async_httpx2_transport_tuple_timeout(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``AsyncHTTPX2Transport`` works with a (connect, read)
-    timeout tuple.
-    """
-    transport = AsyncHTTPX2Transport()
-    response = await transport(
-        method="POST",
-        url=_HTTPX2_URL,
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=(5.0, 30.0),
-    )
-    (request,) = httpx2_requests
-    assert request.extensions["timeout"] == {
-        "connect": 5.0,
-        "read": 30.0,
-        "write": None,
-        "pool": None,
-    }
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.asyncio
-async def test_async_httpx2_transport_int_timeout(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``AsyncHTTPX2Transport`` works with an int timeout."""
-    transport = AsyncHTTPX2Transport()
-    response = await transport(
-        method="POST",
-        url=_HTTPX2_URL,
-        headers={"Content-Type": "text/plain"},
-        data=b"hello",
-        request_timeout=30,
-    )
-    (request,) = httpx2_requests
-    assert request.extensions["timeout"] == {
-        "connect": 30,
-        "read": 30,
-        "write": None,
-        "pool": None,
-    }
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-
-@pytest.mark.asyncio
-async def test_async_httpx2_transport_empty_body(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """An empty request body is reported as ``None``, as it is for
-    the ``requests`` and ``httpx`` transports.
-    """
-    transport = AsyncHTTPX2Transport()
-    response = await transport(
-        method="GET",
-        url=_HTTPX2_URL,
-        headers={},
-        data=b"",
-        request_timeout=30.0,
-    )
-    assert len(httpx2_requests) == 1
-    assert response.request_body is None
-
-
-@pytest.mark.asyncio
-async def test_async_httpx2_transport_context_manager(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """``AsyncHTTPX2Transport`` can be used as an async context
-    manager, and leaving the context closes the client.
-    """
-    async with AsyncHTTPX2Transport() as transport:
-        response = await transport(
-            method="POST",
-            url=_HTTPX2_URL,
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-    assert len(httpx2_requests) == 1
-    assert isinstance(response, Response)
-    assert response.status_code == HTTPStatus.OK
-
-    with pytest.raises(
-        expected_exception=RuntimeError,
-        match="client has been closed",
-    ):
-        await transport(
-            method="POST",
-            url=_HTTPX2_URL,
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-
-
-@pytest.mark.asyncio
-async def test_aclose(httpx2_requests: list[httpx2.Request]) -> None:
-    """Closing the transport closes the client."""
-    transport = AsyncHTTPX2Transport()
-    await transport.aclose()
-    with pytest.raises(
-        expected_exception=RuntimeError,
-        match="client has been closed",
-    ):
-        await transport(
-            method="POST",
-            url=_HTTPX2_URL,
-            headers={"Content-Type": "text/plain"},
-            data=b"hello",
-            request_timeout=30.0,
-        )
-    assert not bool(httpx2_requests)
-
-
-@pytest.mark.asyncio
-async def test_async_httpx2_transport_httpx2_exceptions(
-    httpx2_requests: list[httpx2.Request],
-) -> None:
-    """Errors are raised as ``httpx2`` exceptions, which are not
-    ``httpx`` exceptions.
-    """
-    transport = AsyncHTTPX2Transport()
-    with pytest.raises(expected_exception=httpx2.ConnectError) as exc:
-        await transport(
-            method="GET",
-            url=_HTTPX2_REFUSED_URL,
-            headers={},
-            data=b"",
-            request_timeout=30.0,
-        )
-    assert len(httpx2_requests) == 1
-    assert not isinstance(exc.value, httpx.HTTPError)
-
-
-# Tests for synchronous clients using ``HTTPX2Transport`` against
-# the mock.
-
-
-def test_httpx2_transport_with_mock_vws_and_cloud_reco(
-    high_quality_image: io.BytesIO,
-) -> None:
-    """A target can be added with ``VWS`` and found with
-    ``CloudRecoService``.
-    """
-    database = CloudDatabase()
-    with (
-        MockVWS(processing_time_seconds=0.2) as mock,
-        HTTPX2Transport() as transport,
-    ):
-        mock.add_cloud_database(cloud_database=database)
-        vws_client = VWS(
-            server_access_key=database.server_access_key,
-            server_secret_key=database.server_secret_key,
-            transport=transport,
-        )
-        cloud_reco_client = CloudRecoService(
-            client_access_key=database.client_access_key,
-            client_secret_key=database.client_secret_key,
-            transport=transport,
-        )
-        target_id = vws_client.add_target(
-            name="example",
-            width=1,
-            image=high_quality_image,
-            active_flag=True,
-            application_metadata=None,
-        )
-        vws_client.wait_for_target_processed(target_id=target_id)
-        target_record = vws_client.get_target_record(target_id=target_id)
-        assert target_record.status == TargetStatuses.SUCCESS
-
-        (match,) = cloud_reco_client.query(image=high_quality_image)
-        assert match.target_id == target_id
-
-
-def test_httpx2_transport_with_mock_vumark() -> None:
-    """A VuMark instance can be generated with ``VuMarkService``."""
-    vumark_target = VuMarkTarget(name="vumark-template")
-    database = VuMarkDatabase(vumark_targets={vumark_target})
-    with MockVWS() as mock, HTTPX2Transport() as transport:
-        mock.add_vumark_database(vumark_database=database)
-        vumark_client = VuMarkService(
-            server_access_key=database.server_access_key,
-            server_secret_key=database.server_secret_key,
-            transport=transport,
-        )
-        vumark_bytes = vumark_client.generate_vumark_instance(
-            target_id=vumark_target.target_id,
-            instance_id="instance",
-            accept=VuMarkAccept.PNG,
-        )
-    assert vumark_bytes.startswith(b"\x89PNG")
-
-
-def test_httpx2_transport_with_mock_model_targets(
-    model_target_model: ModelTargetModel,
-) -> None:
-    """A Model Target dataset can be generated with
-    ``ModelTargetService``.
-    """
-    with (
-        MockVWS(processing_time_seconds=0.2),
-        HTTPX2Transport() as transport,
-    ):
-        model_target_client = ModelTargetService(
-            client_id=_MODEL_TARGET_CLIENT_ID,
-            client_secret=_MODEL_TARGET_CLIENT_CREDENTIALS[1],
-            transport=transport,
-        )
-        dataset_uuid = model_target_client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model_target_model],
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-        report = model_target_client.wait_for_dataset_generated(
-            dataset_uuid=dataset_uuid,
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-        assert report.status == ModelTargetDatasetStatuses.DONE
-        model_target_client.delete_dataset(
-            dataset_uuid=dataset_uuid,
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-
-
-@pytest.mark.parametrize(
-    argnames="custom_timeout",
-    argvalues=[0.1, (5.0, 0.1)],
-    ids=["float", "tuple"],
-)
-def test_httpx2_transport_with_mock_timeout(
-    custom_timeout: float | tuple[float, float],
-) -> None:
-    """A response which takes longer than the read timeout raises an
-    ``httpx2`` timeout.
-    """
-    database = CloudDatabase()
-    sleeps: list[float] = []
-    with MockVWS(
-        response_delay_seconds=0.11,
-        sleep_fn=sleeps.append,
-    ) as mock:
-        mock.add_cloud_database(cloud_database=database)
-        with HTTPX2Transport() as transport:
-            vws_client = VWS(
-                server_access_key=database.server_access_key,
-                server_secret_key=database.server_secret_key,
-                request_timeout_seconds=custom_timeout,
-                transport=transport,
-            )
-            with pytest.raises(expected_exception=httpx2.ReadTimeout):
-                _ = vws_client.list_targets()
-            # The mock sleeps for the read timeout before raising.
-            assert sleeps == [0.1]
 
 
 async def _add_and_query_target(
@@ -1154,12 +178,470 @@ async def _generate_dataset(
     )
 
 
-# Tests for asynchronous clients using ``AsyncHTTPX2Transport``
-# against the mock.
+def test_sync_float_timeout(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``HTTPX2Transport`` works with a float timeout.
+
+    A float sets both the connect and read timeouts, and the response
+    is converted in full.
+    """
+    transport = HTTPX2Transport()
+    response = transport(
+        method="POST",
+        url=_HTTPX2_URL,
+        headers={"Content-Type": "text/plain"},
+        data=b"hello",
+        request_timeout=30.0,
+    )
+    (request,) = httpx2_requests
+    assert request.extensions["timeout"] == {
+        "connect": 30.0,
+        "read": 30.0,
+        "write": None,
+        "pool": None,
+    }
+    assert request.headers["Content-Type"] == "text/plain"
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+    assert response.text == "OK"
+    assert response.url == _HTTPX2_URL
+    assert response.headers["x-example"] == "example"
+    assert response.request_body == b"hello"
+    assert response.content == b"OK"
+    assert response.tell_position == len(b"OK")
+
+
+def test_sync_tuple_timeout(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``HTTPX2Transport`` works with a (connect, read) timeout
+    tuple.
+    """
+    transport = HTTPX2Transport()
+    response = transport(
+        method="POST",
+        url=_HTTPX2_URL,
+        headers={"Content-Type": "text/plain"},
+        data=b"hello",
+        request_timeout=(5.0, 30.0),
+    )
+    (request,) = httpx2_requests
+    assert request.extensions["timeout"] == {
+        "connect": 5.0,
+        "read": 30.0,
+        "write": None,
+        "pool": None,
+    }
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+
+
+def test_sync_int_timeout(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``HTTPX2Transport`` works with an int timeout."""
+    transport = HTTPX2Transport()
+    response = transport(
+        method="POST",
+        url=_HTTPX2_URL,
+        headers={"Content-Type": "text/plain"},
+        data=b"hello",
+        request_timeout=30,
+    )
+    (request,) = httpx2_requests
+    assert request.extensions["timeout"] == {
+        "connect": 30,
+        "read": 30,
+        "write": None,
+        "pool": None,
+    }
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+
+
+def test_sync_empty_body(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """An empty request body is reported as ``None``, as it is for
+    the ``requests`` and ``httpx`` transports.
+    """
+    transport = HTTPX2Transport()
+    response = transport(
+        method="GET",
+        url=_HTTPX2_URL,
+        headers={},
+        data=b"",
+        request_timeout=30.0,
+    )
+    assert len(httpx2_requests) == 1
+    assert response.request_body is None
+
+
+def test_sync_context_manager(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``HTTPX2Transport`` can be used as a context manager, and
+    leaving the context closes the client.
+    """
+    with HTTPX2Transport() as transport:
+        response = transport(
+            method="POST",
+            url=_HTTPX2_URL,
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30.0,
+        )
+    assert len(httpx2_requests) == 1
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+
+    with pytest.raises(
+        expected_exception=RuntimeError,
+        match="client has been closed",
+    ):
+        _ = transport(
+            method="POST",
+            url=_HTTPX2_URL,
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30.0,
+        )
+
+
+def test_close(httpx2_requests: list[httpx2.Request]) -> None:
+    """Closing the transport closes the client."""
+    transport = HTTPX2Transport()
+    transport.close()
+    with pytest.raises(
+        expected_exception=RuntimeError,
+        match="client has been closed",
+    ):
+        _ = transport(
+            method="POST",
+            url=_HTTPX2_URL,
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30.0,
+        )
+    assert not bool(httpx2_requests)
+
+
+def test_sync_httpx2_exceptions(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """Errors are raised as ``httpx2`` exceptions, which are not
+    ``httpx`` exceptions.
+    """
+    transport = HTTPX2Transport()
+    with pytest.raises(expected_exception=httpx2.ConnectError) as exc:
+        _ = transport(
+            method="GET",
+            url=_HTTPX2_REFUSED_URL,
+            headers={},
+            data=b"",
+            request_timeout=30.0,
+        )
+    assert len(httpx2_requests) == 1
+    assert not isinstance(exc.value, httpx.HTTPError)
 
 
 @pytest.mark.asyncio
-async def test_async_httpx2_transport_with_mock_vws_and_cloud_reco(
+async def test_async_float_timeout(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``AsyncHTTPX2Transport`` works with a float timeout.
+
+    A float sets both the connect and read timeouts, and the response
+    is converted in full.
+    """
+    transport = AsyncHTTPX2Transport()
+    response = await transport(
+        method="POST",
+        url=_HTTPX2_URL,
+        headers={"Content-Type": "text/plain"},
+        data=b"hello",
+        request_timeout=30.0,
+    )
+    (request,) = httpx2_requests
+    assert request.extensions["timeout"] == {
+        "connect": 30.0,
+        "read": 30.0,
+        "write": None,
+        "pool": None,
+    }
+    assert request.headers["Content-Type"] == "text/plain"
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+    assert response.text == "OK"
+    assert response.url == _HTTPX2_URL
+    assert response.headers["x-example"] == "example"
+    assert response.request_body == b"hello"
+    assert response.content == b"OK"
+    assert response.tell_position == len(b"OK")
+
+
+@pytest.mark.asyncio
+async def test_async_tuple_timeout(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``AsyncHTTPX2Transport`` works with a (connect, read)
+    timeout tuple.
+    """
+    transport = AsyncHTTPX2Transport()
+    response = await transport(
+        method="POST",
+        url=_HTTPX2_URL,
+        headers={"Content-Type": "text/plain"},
+        data=b"hello",
+        request_timeout=(5.0, 30.0),
+    )
+    (request,) = httpx2_requests
+    assert request.extensions["timeout"] == {
+        "connect": 5.0,
+        "read": 30.0,
+        "write": None,
+        "pool": None,
+    }
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.asyncio
+async def test_async_int_timeout(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``AsyncHTTPX2Transport`` works with an int timeout."""
+    transport = AsyncHTTPX2Transport()
+    response = await transport(
+        method="POST",
+        url=_HTTPX2_URL,
+        headers={"Content-Type": "text/plain"},
+        data=b"hello",
+        request_timeout=30,
+    )
+    (request,) = httpx2_requests
+    assert request.extensions["timeout"] == {
+        "connect": 30,
+        "read": 30,
+        "write": None,
+        "pool": None,
+    }
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+
+
+@pytest.mark.asyncio
+async def test_async_empty_body(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """An empty request body is reported as ``None``, as it is for
+    the ``requests`` and ``httpx`` transports.
+    """
+    transport = AsyncHTTPX2Transport()
+    response = await transport(
+        method="GET",
+        url=_HTTPX2_URL,
+        headers={},
+        data=b"",
+        request_timeout=30.0,
+    )
+    assert len(httpx2_requests) == 1
+    assert response.request_body is None
+
+
+@pytest.mark.asyncio
+async def test_async_context_manager(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """``AsyncHTTPX2Transport`` can be used as an async context
+    manager, and leaving the context closes the client.
+    """
+    async with AsyncHTTPX2Transport() as transport:
+        response = await transport(
+            method="POST",
+            url=_HTTPX2_URL,
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30.0,
+        )
+    assert len(httpx2_requests) == 1
+    assert isinstance(response, Response)
+    assert response.status_code == HTTPStatus.OK
+
+    with pytest.raises(
+        expected_exception=RuntimeError,
+        match="client has been closed",
+    ):
+        await transport(
+            method="POST",
+            url=_HTTPX2_URL,
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30.0,
+        )
+
+
+@pytest.mark.asyncio
+async def test_aclose(httpx2_requests: list[httpx2.Request]) -> None:
+    """Closing the transport closes the client."""
+    transport = AsyncHTTPX2Transport()
+    await transport.aclose()
+    with pytest.raises(
+        expected_exception=RuntimeError,
+        match="client has been closed",
+    ):
+        await transport(
+            method="POST",
+            url=_HTTPX2_URL,
+            headers={"Content-Type": "text/plain"},
+            data=b"hello",
+            request_timeout=30.0,
+        )
+    assert not bool(httpx2_requests)
+
+
+@pytest.mark.asyncio
+async def test_async_httpx2_exceptions(
+    httpx2_requests: list[httpx2.Request],
+) -> None:
+    """Errors are raised as ``httpx2`` exceptions, which are not
+    ``httpx`` exceptions.
+    """
+    transport = AsyncHTTPX2Transport()
+    with pytest.raises(expected_exception=httpx2.ConnectError) as exc:
+        await transport(
+            method="GET",
+            url=_HTTPX2_REFUSED_URL,
+            headers={},
+            data=b"",
+            request_timeout=30.0,
+        )
+    assert len(httpx2_requests) == 1
+    assert not isinstance(exc.value, httpx.HTTPError)
+
+
+def test_sync_mock_vws_and_cloud_reco(
+    high_quality_image: io.BytesIO,
+) -> None:
+    """A target can be added with ``VWS`` and found with
+    ``CloudRecoService``.
+    """
+    database = CloudDatabase()
+    with (
+        MockVWS(processing_time_seconds=0.2) as mock,
+        HTTPX2Transport() as transport,
+    ):
+        mock.add_cloud_database(cloud_database=database)
+        vws_client = VWS(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+            transport=transport,
+        )
+        cloud_reco_client = CloudRecoService(
+            client_access_key=database.client_access_key,
+            client_secret_key=database.client_secret_key,
+            transport=transport,
+        )
+        target_id = vws_client.add_target(
+            name="example",
+            width=1,
+            image=high_quality_image,
+            active_flag=True,
+            application_metadata=None,
+        )
+        vws_client.wait_for_target_processed(target_id=target_id)
+        target_record = vws_client.get_target_record(target_id=target_id)
+        assert target_record.status == TargetStatuses.SUCCESS
+
+        (match,) = cloud_reco_client.query(image=high_quality_image)
+        assert match.target_id == target_id
+
+
+def test_sync_mock_vumark() -> None:
+    """A VuMark instance can be generated with ``VuMarkService``."""
+    vumark_target = VuMarkTarget(name="vumark-template")
+    database = VuMarkDatabase(vumark_targets={vumark_target})
+    with MockVWS() as mock, HTTPX2Transport() as transport:
+        mock.add_vumark_database(vumark_database=database)
+        vumark_client = VuMarkService(
+            server_access_key=database.server_access_key,
+            server_secret_key=database.server_secret_key,
+            transport=transport,
+        )
+        vumark_bytes = vumark_client.generate_vumark_instance(
+            target_id=vumark_target.target_id,
+            instance_id="instance",
+            accept=VuMarkAccept.PNG,
+        )
+    assert vumark_bytes.startswith(b"\x89PNG")
+
+
+def test_sync_mock_model_targets(
+    model_target_model: ModelTargetModel,
+) -> None:
+    """A Model Target dataset can be generated with
+    ``ModelTargetService``.
+    """
+    with (
+        MockVWS(processing_time_seconds=0.2),
+        HTTPX2Transport() as transport,
+    ):
+        model_target_client = ModelTargetService(
+            client_id=_MODEL_TARGET_CLIENT_ID,
+            client_secret=_MODEL_TARGET_CLIENT_CREDENTIALS[1],
+            transport=transport,
+        )
+        dataset_uuid = model_target_client.create_dataset(
+            name="dataset",
+            target_sdk="11.0",
+            models=[model_target_model],
+            dataset_type=ModelTargetDatasetType.STANDARD,
+        )
+        report = model_target_client.wait_for_dataset_generated(
+            dataset_uuid=dataset_uuid,
+            dataset_type=ModelTargetDatasetType.STANDARD,
+        )
+        assert report.status == ModelTargetDatasetStatuses.DONE
+        model_target_client.delete_dataset(
+            dataset_uuid=dataset_uuid,
+            dataset_type=ModelTargetDatasetType.STANDARD,
+        )
+
+
+@pytest.mark.parametrize(
+    argnames="custom_timeout",
+    argvalues=[0.1, (5.0, 0.1)],
+    ids=["float", "tuple"],
+)
+def test_sync_mock_timeout(
+    custom_timeout: float | tuple[float, float],
+) -> None:
+    """A response which takes longer than the read timeout raises an
+    ``httpx2`` timeout.
+    """
+    database = CloudDatabase()
+    sleeps: list[float] = []
+    with MockVWS(
+        response_delay_seconds=0.11,
+        sleep_fn=sleeps.append,
+    ) as mock:
+        mock.add_cloud_database(cloud_database=database)
+        with HTTPX2Transport() as transport:
+            vws_client = VWS(
+                server_access_key=database.server_access_key,
+                server_secret_key=database.server_secret_key,
+                request_timeout_seconds=custom_timeout,
+                transport=transport,
+            )
+            with pytest.raises(expected_exception=httpx2.ReadTimeout):
+                _ = vws_client.list_targets()
+            # The mock sleeps for the read timeout before raising.
+            assert sleeps == [0.1]
+
+
+@pytest.mark.asyncio
+async def test_async_mock_vws_and_cloud_reco(
     high_quality_image: io.BytesIO,
 ) -> None:
     """A target can be added with ``AsyncVWS`` and found with
@@ -1177,7 +659,7 @@ async def test_async_httpx2_transport_with_mock_vws_and_cloud_reco(
 
 
 @pytest.mark.asyncio
-async def test_async_httpx2_transport_with_mock_vumark() -> None:
+async def test_async_mock_vumark() -> None:
     """A VuMark instance can be generated with
     ``AsyncVuMarkService``.
     """
@@ -1200,7 +682,7 @@ async def test_async_httpx2_transport_with_mock_vumark() -> None:
 
 
 @pytest.mark.asyncio
-async def test_async_httpx2_transport_with_mock_model_targets(
+async def test_async_mock_model_targets(
     model_target_model: ModelTargetModel,
 ) -> None:
     """A Model Target dataset can be generated with
@@ -1220,7 +702,7 @@ async def test_async_httpx2_transport_with_mock_model_targets(
     argvalues=[0.1, (5.0, 0.1)],
     ids=["float", "tuple"],
 )
-async def test_async_httpx2_transport_with_mock_timeout(
+async def test_async_mock_timeout(
     custom_timeout: float | tuple[float, float],
 ) -> None:
     """A response which takes longer than the read timeout raises an

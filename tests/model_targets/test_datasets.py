@@ -1,35 +1,32 @@
-"""Tests for the Model Target Web API client."""
+"""Tests for Model Target datasets."""
 
 import io
 import json
-import secrets
 import uuid
 import zipfile
 from http import HTTPStatus
 
 import pytest
-from beartype import beartype
-from freezegun import freeze_time
 from mock_vws import (
     MockVWS,
-    ModelTargetFailureResponse,
     ModelTargetGenerationFailure,
     ModelTargetGenerationWarning,
 )
 
+from tests.model_targets.helpers import (
+    CLIENT_CREDENTIALS,
+    CLIENT_ID,
+    response_with_status,
+)
 from vws import ModelTargetService
 from vws._model_targets import access_token_from_response
-from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.model_target_exceptions import (
-    ModelTargetAuthenticationError,
     ModelTargetDatasetNotDoneError,
     ModelTargetDatasetTimeoutError,
-    ModelTargetError,
     ModelTargetOAuth2Error,
     ModelTargetValidationError,
     UnknownModelTargetDatasetError,
 )
-from vws.exceptions.vws_exceptions import TooManyRequestsError
 from vws.model_target_datasets import (
     CadDataFormat,
     GuideViewPosition,
@@ -39,266 +36,11 @@ from vws.model_target_datasets import (
     RealisticAppearance,
 )
 from vws.reports import ModelTargetDatasetStatuses
-from vws.response import Response
-from vws.transports import RequestsTransport, Transport
-
-# The mock accepts one hard-coded pair of Model Target Web API OAuth2
-# credentials, which it does not expose.
-_CLIENT_ID = "client-id"
-_CLIENT_CREDENTIALS = ("client-id", "client-secret")
 
 _DATASET_TYPES = [
     ModelTargetDatasetType.STANDARD,
     ModelTargetDatasetType.ADVANCED,
 ]
-
-
-@beartype
-def _response_with_status(
-    *,
-    text: str,
-    status_code: HTTPStatus,
-) -> Response:
-    """Get a response with a given body.
-
-    Args:
-        text: The body of the response.
-        status_code: The response status code.
-
-    Returns:
-        A response with the given body.
-    """
-    content = text.encode(encoding="utf-8")
-    return Response(
-        text=text,
-        url="https://vws.vuforia.com/modeltargets/datasets",
-        status_code=status_code,
-        headers={},
-        request_body=None,
-        tell_position=len(content),
-        content=content,
-    )
-
-
-@beartype
-def _response(*, text: str) -> Response:
-    """Get a bad-request response with a given body."""
-    return _response_with_status(
-        text=text,
-        status_code=HTTPStatus.BAD_REQUEST,
-    )
-
-
-@beartype
-class _CountingTransport:
-    """A transport which counts the requests made to each path."""
-
-    def __init__(self, *, transport: Transport) -> None:
-        """
-        Args:
-            transport: The transport to make requests with.
-        """
-        self._transport = transport
-        self.urls: list[str] = []
-
-    def close(self) -> None:
-        """Close the wrapped transport."""
-        self._transport.close()
-
-    def __call__(
-        self,
-        *,
-        method: str,
-        url: str,
-        headers: dict[str, str],
-        data: bytes,
-        request_timeout: float | tuple[float, float],
-    ) -> Response:
-        """Make a request, recording the URL.
-
-        Args:
-            method: The HTTP method.
-            url: The full URL.
-            headers: Request headers.
-            data: The request body.
-            request_timeout: The request timeout.
-
-        Returns:
-            A Response populated from the HTTP response.
-        """
-        self.urls.append(url)
-        return self._transport(
-            method=method,
-            url=url,
-            headers=headers,
-            data=data,
-            request_timeout=request_timeout,
-        )
-
-
-# Tests for getting an access token.
-
-
-@pytest.mark.usefixtures("_mock_model_targets")
-def test_token_is_a_bearer_token() -> None:
-    """An access token is given for valid credentials."""
-    client = ModelTargetService(
-        client_id=_CLIENT_ID,
-        client_secret=_CLIENT_CREDENTIALS[1],
-    )
-
-    assert bool(client.get_access_token())
-
-
-@pytest.mark.usefixtures("_mock_model_targets")
-def test_token_is_reused(
-    *,
-    model_target_model: ModelTargetModel,
-) -> None:
-    """One access token is used for multiple requests."""
-    transport = _CountingTransport(transport=RequestsTransport())
-    client = ModelTargetService(
-        client_id=_CLIENT_ID,
-        client_secret=_CLIENT_CREDENTIALS[1],
-        transport=transport,
-    )
-
-    for _ in range(2):
-        _ = client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model_target_model],
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-
-    token_urls = [url for url in transport.urls if "oauth2" in url]
-    assert len(token_urls) == 1
-    transport.close()
-
-
-@pytest.mark.usefixtures("_mock_model_targets")
-def test_expired_token_is_replaced(
-    *,
-    model_target_model: ModelTargetModel,
-) -> None:
-    """A new access token is requested once the old one expires."""
-    transport = _CountingTransport(transport=RequestsTransport())
-    client = ModelTargetService(
-        client_id=_CLIENT_ID,
-        client_secret=_CLIENT_CREDENTIALS[1],
-        transport=transport,
-    )
-
-    with freeze_time(time_to_freeze="2026-01-01") as frozen_time:
-        _ = client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model_target_model],
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-        # Mock tokens last an hour.
-        _ = frozen_time.tick(delta=60 * 60 + 1)
-        _ = client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model_target_model],
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-
-    token_urls = [url for url in transport.urls if "oauth2" in url]
-    expected_token_request_count = 2
-    assert len(token_urls) == expected_token_request_count
-
-
-@pytest.mark.usefixtures("_mock_model_targets")
-def test_invalid_credentials() -> None:
-    """An exception is raised when the credentials are not known."""
-    client = ModelTargetService(
-        client_id="not-a-client-id",
-        client_secret=secrets.token_hex(),
-    )
-
-    with pytest.raises(
-        expected_exception=ModelTargetOAuth2Error,
-    ) as exc:
-        _ = client.get_access_token()
-
-    assert exc.value.response.status_code == HTTPStatus.UNAUTHORIZED
-    assert exc.value.error == "invalid_client"
-    assert not bool(exc.value.error_description)
-
-
-@pytest.mark.parametrize(
-    argnames=("status_code", "body", "expected_exception"),
-    argvalues=[
-        pytest.param(
-            HTTPStatus.UNAUTHORIZED,
-            '{"error":{"code":"AUTHENTICATION_ERROR","message":"No"}}',
-            ModelTargetAuthenticationError,
-            id="authentication",
-        ),
-        pytest.param(
-            HTTPStatus.FORBIDDEN,
-            '{"error":{"code":"FORBIDDEN","message":"Denied"}}',
-            ModelTargetError,
-            id="generic-json",
-        ),
-        pytest.param(
-            HTTPStatus.CONFLICT,
-            "not json",
-            ModelTargetError,
-            id="generic-non-json",
-        ),
-        pytest.param(
-            HTTPStatus.TOO_MANY_REQUESTS,
-            "rate limited",
-            TooManyRequestsError,
-            id="rate-limit",
-        ),
-        pytest.param(
-            HTTPStatus.BAD_GATEWAY,
-            "server error",
-            ServerError,
-            id="server-error",
-        ),
-    ],
-)
-def test_dataset_error_response(
-    *,
-    model_target_model: ModelTargetModel,
-    status_code: HTTPStatus,
-    body: str,
-    expected_exception: (
-        type[ModelTargetError | TooManyRequestsError | ServerError]
-    ),
-) -> None:
-    """Dataset failures map to exceptions through the mock."""
-    failure = ModelTargetFailureResponse(
-        status_code=status_code,
-        body=body,
-    )
-    client = ModelTargetService(
-        client_id=_CLIENT_ID,
-        client_secret=_CLIENT_CREDENTIALS[1],
-    )
-
-    with (
-        MockVWS(model_target_failure_response=failure),
-        pytest.raises(expected_exception=expected_exception) as exc,
-    ):
-        _ = client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model_target_model],
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-
-    assert isinstance(exc.value, expected_exception)
-    assert exc.value.response.status_code == status_code
-    assert exc.value.response.text == body
-
-
-# Tests for the dataset lifecycle.
 
 
 @pytest.mark.parametrize(
@@ -480,9 +222,6 @@ def test_state_based_model(
     )
 
 
-# Tests for requests for datasets which do not exist.
-
-
 def test_get_status(*, model_target_client: ModelTargetService) -> None:
     """An exception is raised for an unknown dataset."""
     dataset_uuid = uuid.uuid4().hex
@@ -515,9 +254,6 @@ def test_delete(*, model_target_client: ModelTargetService) -> None:
             dataset_uuid=uuid.uuid4().hex,
             dataset_type=ModelTargetDatasetType.STANDARD,
         )
-
-
-# Tests for requests which Vuforia rejects.
 
 
 def test_no_cad_data(
@@ -582,9 +318,6 @@ def test_two_models_in_a_standard_dataset(
     assert detail.message == "exactly one model should be provided"
 
 
-# Tests for datasets which Vuforia does not generate cleanly.
-
-
 def test_generation_failure(
     *,
     model_target_model: ModelTargetModel,
@@ -597,8 +330,8 @@ def test_generation_failure(
         model_target_generation_failure=failure,
     ):
         client = ModelTargetService(
-            client_id=_CLIENT_ID,
-            client_secret=_CLIENT_CREDENTIALS[1],
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_CREDENTIALS[1],
         )
         dataset_uuid = client.create_dataset(
             name="dataset",
@@ -639,8 +372,8 @@ def test_generation_warning(
         model_target_generation_warning=warning,
     ):
         client = ModelTargetService(
-            client_id=_CLIENT_ID,
-            client_secret=_CLIENT_CREDENTIALS[1],
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_CREDENTIALS[1],
         )
         dataset_uuid = client.create_dataset(
             name="dataset",
@@ -670,15 +403,12 @@ def test_generation_warning(
         )
 
 
-# Tests for waiting for a dataset to be generated.
-
-
 def test_timeout(*, model_target_model: ModelTargetModel) -> None:
     """An exception is raised when the wait times out."""
     with MockVWS(processing_time_seconds=60):
         client = ModelTargetService(
-            client_id=_CLIENT_ID,
-            client_secret=_CLIENT_CREDENTIALS[1],
+            client_id=CLIENT_ID,
+            client_secret=CLIENT_CREDENTIALS[1],
         )
         dataset_uuid = client.create_dataset(
             name="dataset",
@@ -698,71 +428,6 @@ def test_timeout(*, model_target_model: ModelTargetModel) -> None:
             )
 
 
-# Tests for reading responses which are not shaped like Model Target
-# Web API errors.
-
-
-@pytest.mark.parametrize(
-    argnames="text",
-    argvalues=[
-        "",
-        "Not JSON",
-        "[]",
-        "{}",
-        '{"error": "not-an-object"}',
-        '{"transaction_id": "abc", "result_code": "Fail"}',
-    ],
-)
-def test_unknown_error_shape(*, text: str) -> None:
-    """An error without a Model Target error object gives empty
-    values.
-    """
-    error = ModelTargetError(response=_response(text=text))
-
-    assert not bool(error.code)
-    assert not bool(error.message)
-    assert not bool(error.target)
-    assert not bool(error.details)
-
-
-def test_error_without_details() -> None:
-    """An error which gives no details has no details."""
-    text = json.dumps(obj={"error": {"code": "ERROR", "message": "No"}})
-    error = ModelTargetError(response=_response(text=text))
-
-    assert error.code == "ERROR"
-    assert error.message == "No"
-    assert not bool(error.target)
-    assert not bool(error.details)
-
-
-@pytest.mark.parametrize(
-    argnames="text",
-    argvalues=["Not JSON", "[]", "{}"],
-)
-def test_unknown_oauth2_error_shape(*, text: str) -> None:
-    """An OAuth2 error without an error code gives empty values."""
-    error = ModelTargetOAuth2Error(response=_response(text=text))
-
-    assert not bool(error.error)
-    assert not bool(error.error_description)
-
-
-def test_oauth2_error_description() -> None:
-    """An OAuth2 error description is given when Vuforia gives one."""
-    description = "Missing or invalid authorization header"
-    text = json.dumps(
-        obj={
-            "error": "invalid_request",
-            "error_description": description,
-        },
-    )
-    error = ModelTargetOAuth2Error(response=_response(text=text))
-
-    assert error.error == "invalid_request"
-    assert error.error_description == description
-
-
 @pytest.mark.parametrize(
     argnames="payload",
     argvalues=[
@@ -774,45 +439,10 @@ def test_invalid_oauth2_token_response_values(
     *, payload: dict[str, object]
 ) -> None:
     """OAuth token responses must contain correctly typed values."""
-    response = _response_with_status(
+    response = response_with_status(
         text=json.dumps(obj=payload),
         status_code=HTTPStatus.OK,
     )
 
     with pytest.raises(expected_exception=ModelTargetOAuth2Error):
         _ = access_token_from_response(response=response)
-
-
-# Tests for using a custom base URL.
-
-
-def test_custom_base_url(
-    *,
-    model_target_model: ModelTargetModel,
-) -> None:
-    """The Model Target Web API can be served from a URL with a
-    path.
-    """
-    base_vws_url = "https://example.com/vws"
-    with MockVWS(
-        base_vws_url=base_vws_url,
-        processing_time_seconds=0.2,
-    ):
-        client = ModelTargetService(
-            client_id=_CLIENT_ID,
-            client_secret=_CLIENT_CREDENTIALS[1],
-            base_vws_url=base_vws_url,
-        )
-        dataset_uuid = client.create_dataset(
-            name="dataset",
-            target_sdk="11.0",
-            models=[model_target_model],
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-
-        report = client.get_dataset_status(
-            dataset_uuid=dataset_uuid,
-            dataset_type=ModelTargetDatasetType.STANDARD,
-        )
-
-    assert report.dataset_uuid == dataset_uuid

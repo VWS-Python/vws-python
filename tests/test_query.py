@@ -63,9 +63,6 @@ class _JSONResponseTransport:
         )
 
 
-# Tests for making image queries.
-
-
 def test_no_matches(
     *,
     cloud_reco_client: CloudRecoService,
@@ -127,9 +124,6 @@ def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
         _ = client.query(image=image)
 
 
-# Tests for the default request timeout.
-
-
 @pytest.mark.parametrize(
     argnames=("response_delay_seconds", "expect_timeout"),
     argvalues=[(29, False), (31, True)],
@@ -170,9 +164,6 @@ def test_default_timeout(
         else:
             matches = cloud_reco_client.query(image=image)
             assert not bool(matches)
-
-
-# Tests for custom request timeout values.
 
 
 @pytest.mark.parametrize(
@@ -224,9 +215,6 @@ def test_custom_timeout(
         else:
             matches = cloud_reco_client.query(image=image)
             assert not bool(matches)
-
-
-# Tests for using a custom base VWQ URL.
 
 
 def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
@@ -300,9 +288,6 @@ def test_custom_base_url_with_path_prefix(
         assert len(matches) == 1
 
 
-# Tests for the ``max_num_results`` parameter of ``query``.
-
-
 def test_max_num_results_default(
     *,
     vws_client: VWS,
@@ -367,9 +352,6 @@ def test_custom(
         max_num_results=max_num_results,
     )
     assert len(matches) == max_num_results
-
-
-# Tests for the ``include_target_data`` parameter of ``query``.
 
 
 def test_include_target_data_default(

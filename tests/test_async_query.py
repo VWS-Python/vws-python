@@ -17,6 +17,9 @@ from vws.exceptions.custom_exceptions import ServerError
 from vws.include_target_data import CloudRecoIncludeTargetData
 from vws.response import Response
 
+if TYPE_CHECKING:
+    import io
+
 
 class _ServerErrorTransport:
     """An async transport which returns a server error."""
@@ -46,13 +49,6 @@ class _ServerErrorTransport:
             tell_position=len(content),
             content=content,
         )
-
-
-if TYPE_CHECKING:
-    import io
-
-
-# Tests for making async image queries.
 
 
 @pytest.mark.asyncio
@@ -105,9 +101,6 @@ async def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
         _ = await client.query(image=image)
 
 
-# Tests for using a custom base VWQ URL.
-
-
 @pytest.mark.asyncio
 async def test_custom_base_url(
     image: io.BytesIO | BinaryIO,
@@ -148,10 +141,6 @@ async def test_custom_base_url(
         assert len(matches) == 1
         match = matches[0]
         assert match.target_id == target_id
-
-
-# Tests for the ``max_num_results`` parameter of
-# ``query``.
 
 
 @pytest.mark.asyncio
@@ -200,10 +189,6 @@ async def test_custom(
         max_num_results=max_num_results,
     )
     assert len(matches) == max_num_results
-
-
-# Tests for the ``include_target_data`` parameter of
-# ``query``.
 
 
 @pytest.mark.asyncio
