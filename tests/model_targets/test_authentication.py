@@ -11,7 +11,7 @@ from mock_vws import (
     ModelTargetFailureResponse,
 )
 
-from tests.model_targets.helpers import CLIENT_CREDENTIALS, CLIENT_ID
+from tests.model_target_credentials import CLIENT_CREDENTIALS, CLIENT_ID
 from vws import ModelTargetService
 from vws.exceptions.custom_exceptions import ServerError
 from vws.exceptions.model_target_exceptions import (

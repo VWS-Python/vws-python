@@ -12,7 +12,7 @@ from mock_vws import (
     ModelTargetGenerationWarning,
 )
 
-from tests.async_model_targets.helpers import CLIENT_CREDENTIALS, CLIENT_ID
+from tests.model_target_credentials import CLIENT_CREDENTIALS, CLIENT_ID
 from vws import AsyncModelTargetService
 from vws.exceptions.model_target_exceptions import (
     ModelTargetDatasetNotDoneError,

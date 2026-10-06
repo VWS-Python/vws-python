@@ -13,11 +13,8 @@ from mock_vws import (
     ModelTargetGenerationWarning,
 )
 
-from tests.model_targets.helpers import (
-    CLIENT_CREDENTIALS,
-    CLIENT_ID,
-    response_with_status,
-)
+from tests.model_target_credentials import CLIENT_CREDENTIALS, CLIENT_ID
+from tests.model_targets.responses import response_with_status
 from vws import ModelTargetService
 from vws._model_targets import access_token_from_response
 from vws.exceptions.model_target_exceptions import (

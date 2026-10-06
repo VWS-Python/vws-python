@@ -6,7 +6,7 @@ from http import HTTPStatus
 import pytest
 from beartype import beartype
 
-from tests.model_targets.helpers import response_with_status
+from tests.model_targets.responses import response_with_status
 from vws.exceptions.model_target_exceptions import (
     ModelTargetError,
     ModelTargetOAuth2Error,
