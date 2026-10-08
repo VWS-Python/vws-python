@@ -12,6 +12,7 @@ LicenseCheckFailed
 MatchProcessing
 MaxNumResultsOutOfRange
 MetadataTooLarge
+MyST
 OAuth
 OopsAnErrorOccurredPossiblyBadName
 OopsAnErrorOccurredPossiblyBadNameError
@@ -28,6 +29,7 @@ TargetQuotaReached
 TargetStatusNotSuccess
 TargetStatusProcessing
 TooManyRequests
+Towncrier
 Ubuntu
 UnknownTarget
 admin
