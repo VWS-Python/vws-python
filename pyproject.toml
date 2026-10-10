@@ -31,7 +31,7 @@ dynamic = [
     "version",
 ]
 dependencies = [
-    "beartype>=0.22.9",
+    "beartype>=0.23.0",
     "httpx>=0.28.0",
     "httpx2>=2.12",
     "requests>=2.32.3",
@@ -44,7 +44,7 @@ urls.Source = "https://github.com/VWS-Python/vws-python"
 [dependency-groups]
 dev = [
     "actionlint-py==1.7.12.25",
-    "beartype==0.23.0rc2",
+    "beartype==0.23.0",
     "check-manifest==0.51",
     "deptry==0.25.1",
     "doc8==2.0.0",
