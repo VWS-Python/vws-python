@@ -3,15 +3,17 @@
 from __future__ import annotations
 
 import calendar
+import datetime
 import time
 import uuid
 from http import HTTPStatus
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import AsyncVWS
 from vws.exceptions.custom_exceptions import (
     DatabaseIdNotSetError,
@@ -29,7 +31,6 @@ from vws.reports import (
 from vws.response import Response
 
 if TYPE_CHECKING:
-    import datetime
     import io
 
 
@@ -65,14 +66,22 @@ class _ForbiddenDownloadTransport:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_get_target_summary_report(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """Details of a target are returned by
     ``get_target_summary_report``.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_name = uuid.uuid4().hex
     target_id = await async_vws_client.add_target(
         name=target_name,
@@ -105,12 +114,21 @@ async def test_get_target(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames="report_period", argvalues=["current", "previous"]
+)
 async def test_reco_counts_report(
     *,
     async_vws_client: AsyncVWS,
-    report_month: datetime.date,
+    current_month: datetime.date,
+    report_period: Literal["current", "previous"],
 ) -> None:
     """A report can be requested, waited for and downloaded."""
+    report_month = (
+        current_month
+        if report_period == "current"
+        else current_month - datetime.timedelta(days=1)
+    )
     client = async_vws_client
     report_request = await client.request_database_reco_counts_report(
         year=report_month.year,

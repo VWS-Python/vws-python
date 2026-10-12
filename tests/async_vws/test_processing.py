@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import AsyncVWS
 from vws.exceptions.custom_exceptions import (
     TargetProcessingTimeoutError,
@@ -21,12 +22,20 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_wait_for_target_processed(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to wait until a target is processed."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name="x",
         width=1,
@@ -48,10 +57,18 @@ async def test_wait_for_target_processed(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_custom_timeout(
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to set a maximum timeout."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with MockVWS(processing_time_seconds=0.5) as mock:
         database = CloudDatabase()
         mock.add_cloud_database(cloud_database=database)

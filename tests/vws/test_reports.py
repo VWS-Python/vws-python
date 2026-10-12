@@ -7,13 +7,14 @@ import datetime
 import time
 import uuid
 from http import HTTPStatus
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import VWS
 from vws.exceptions.custom_exceptions import (
     DatabaseIdNotSetError,
@@ -69,14 +70,22 @@ class _ForbiddenDownloadTransport:
         )
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_get_target_summary_report(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """Details of a target are returned by
     ``get_target_summary_report``.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     date = "2018-04-25"
     target_name = uuid.uuid4().hex
     with freeze_time(time_to_freeze=date):
@@ -152,12 +161,21 @@ def test_get_target(vws_client: VWS) -> None:
     assert report == expected_report
 
 
+@pytest.mark.parametrize(
+    argnames="report_period", argvalues=["current", "previous"]
+)
 def test_reco_counts_report(
     *,
     vws_client: VWS,
-    report_month: datetime.date,
+    current_month: datetime.date,
+    report_period: Literal["current", "previous"],
 ) -> None:
     """A report can be requested, waited for and downloaded."""
+    report_month = (
+        current_month
+        if report_period == "current"
+        else current_month - datetime.timedelta(days=1)
+    )
     report_request = vws_client.request_database_reco_counts_report(
         year=report_month.year,
         month=calendar.Month(value=report_month.month),

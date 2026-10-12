@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 import requests
@@ -11,6 +11,7 @@ from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import VWS
 
 if TYPE_CHECKING:
@@ -21,15 +22,23 @@ if TYPE_CHECKING:
     argnames=("response_delay_seconds", "expect_timeout"),
     argvalues=[(29, False), (31, True)],
 )
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_default_timeout(
     *,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     response_delay_seconds: int,
     expect_timeout: bool,
 ) -> None:
     """At 29 seconds there is no error; at 31 seconds there is a
     timeout.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with (
         freeze_time() as frozen_datetime,
         MockVWS(
@@ -83,14 +92,22 @@ def test_default_timeout(
         ((5.0, 0.1), 0.11, True),
     ],
 )
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_custom_timeout(
     *,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     custom_timeout: float | tuple[float, float],
     response_delay_seconds: float,
     expect_timeout: bool,
 ) -> None:
     """Custom timeouts are honored for both float and tuple forms."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with (
         freeze_time() as frozen_datetime,
         MockVWS(
@@ -132,12 +149,22 @@ def test_custom_timeout(
             )
 
 
-def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
+def test_custom_base_url(
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
+) -> None:
     """
     It is possible to use add a target to a database under a custom
     VWS
     URL.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     base_vws_url = "http://example.com"
     with MockVWS(base_vws_url=base_vws_url) as mock:
         database = CloudDatabase()

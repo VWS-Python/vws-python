@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import VWS
 from vws.exceptions.custom_exceptions import (
     TargetProcessingTimeoutError,
@@ -20,12 +21,20 @@ if TYPE_CHECKING:
     import io
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_wait_for_target_processed(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to wait until a target is processed."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name="x",
         width=1,
@@ -40,10 +49,18 @@ def test_wait_for_target_processed(
     assert report.status != TargetStatuses.PROCESSING
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_default_seconds_between_requests(
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """By default, 0.2 seconds are waited between polling requests."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with MockVWS(processing_time_seconds=0.5) as mock:
         database = CloudDatabase()
         mock.add_cloud_database(cloud_database=database)
@@ -90,12 +107,20 @@ def test_default_seconds_between_requests(
         assert report.request_usage == expected_requests
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_custom_seconds_between_requests(
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to customize the time waited between polling
     requests.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with MockVWS(processing_time_seconds=0.5) as mock:
         database = CloudDatabase()
         mock.add_cloud_database(cloud_database=database)
@@ -142,8 +167,18 @@ def test_custom_seconds_between_requests(
         assert report.request_usage == expected_requests
 
 
-def test_custom_timeout(image: io.BytesIO | BinaryIO) -> None:
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
+def test_custom_timeout(
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
+) -> None:
     """It is possible to set a maximum timeout."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with MockVWS(processing_time_seconds=0.5) as mock:
         database = CloudDatabase()
         mock.add_cloud_database(cloud_database=database)
