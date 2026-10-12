@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, BinaryIO, Literal
+import io
+from collections.abc import AsyncGenerator, Generator
+from contextlib import ExitStack
+from pathlib import Path
 
 import pytest
 import pytest_asyncio
@@ -11,6 +14,7 @@ from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase, VuMarkDatabase
 from mock_vws.target import VuMarkTarget
 
+from tests.image_factory import ImageFactory
 from vws import (
     VWS,
     AsyncCloudRecoService,
@@ -28,20 +32,10 @@ from vws.model_target_datasets import (
     ModelTargetView,
 )
 
-if TYPE_CHECKING:
-    import io
-    from collections.abc import AsyncGenerator, Generator
-    from pathlib import Path
-
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
 # credentials, which it does not expose.
 _MODEL_TARGET_CLIENT_ID = "client-id"
 _MODEL_TARGET_CLIENT_CREDENTIALS = ("client-id", "client-secret")
-
-
-def _image_file_mode(*, value: Literal["r+b", "rb"]) -> Literal["r+b", "rb"]:
-    """Type a file mode supplied by the pytest parameter API."""
-    return value
 
 
 @pytest.fixture(name="_mock_database")
@@ -209,44 +203,16 @@ def fixture_current_month() -> datetime.date:
     return now.date().replace(day=1)
 
 
-@pytest.fixture(name="report_month", params=["current", "previous"])
-def fixture_report_month(*, request: pytest.FixtureRequest) -> datetime.date:
-    """A month which a reco counts report can be requested for.
-
-    Vuforia accepts only the current month and the previous month.
-    """
-    now = datetime.datetime.now(tz=datetime.UTC)
-    first_of_month = now.date().replace(day=1)
-    if request.param == "current":
-        return first_of_month
-
-    return first_of_month - datetime.timedelta(days=1)
-
-
-@pytest.fixture(name="image_file", params=["r+b", "rb"])
-def fixture_image_file(
+@pytest.fixture(name="image_factory")
+def fixture_image_factory(
     *,
     high_quality_image: io.BytesIO,
     tmp_path: Path,
-    request: pytest.FixtureRequest,
-) -> Generator[BinaryIO]:
-    """An image file object."""
-    file = tmp_path / "image.jpg"
-    buffer = high_quality_image.getvalue()
-    _ = file.write_bytes(data=buffer)
-    mode = _image_file_mode(value=request.param)
-    with file.open(mode=mode) as file_obj:
-        yield file_obj
-
-
-@pytest.fixture(params=["high_quality_image", "image_file"])
-def image(
-    *,
-    request: pytest.FixtureRequest,
-    high_quality_image: io.BytesIO,
-    image_file: BinaryIO,
-) -> io.BytesIO | BinaryIO:
-    """An image in any of the types that the API accepts."""
-    if request.param == "high_quality_image":
-        return high_quality_image
-    return image_file
+) -> Generator[ImageFactory]:
+    """Create selected image inputs with scoped file-handle cleanup."""
+    with ExitStack() as stack:
+        yield ImageFactory(
+            high_quality_image=high_quality_image,
+            directory=tmp_path,
+            stack=stack,
+        )

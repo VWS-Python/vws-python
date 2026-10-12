@@ -6,12 +6,13 @@ import json
 import secrets
 import uuid
 from http import HTTPStatus
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import AsyncCloudRecoService, AsyncVWS
 from vws.exceptions.custom_exceptions import ServerError
 from vws.include_target_data import CloudRecoIncludeTargetData
@@ -52,12 +53,20 @@ class _ServerErrorTransport:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_no_matches(
     *,
     async_cloud_reco_client: AsyncCloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """An empty list is returned if there are no matches."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     result = await async_cloud_reco_client.query(
         image=image,
     )
@@ -65,13 +74,21 @@ async def test_no_matches(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_match(
     *,
     async_vws_client: AsyncVWS,
     async_cloud_reco_client: AsyncCloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """Details of matching targets are returned."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name="x",
         width=1,
@@ -89,8 +106,19 @@ async def test_match(
 
 
 @pytest.mark.asyncio
-async def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
+async def test_server_error(
+    *,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
+) -> None:
     """Server errors are exposed through the public async client."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     client = AsyncCloudRecoService(
         client_access_key="access-key",
         client_secret_key=secrets.token_hex(),
@@ -102,12 +130,20 @@ async def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_custom_base_url(
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to query a target in a database under
     a custom VWQ URL.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     base_vwq_url = "http://example.com"
     with MockVWS(base_vwq_url=base_vwq_url) as mock:
         database = CloudDatabase()
@@ -144,15 +180,23 @@ async def test_custom_base_url(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_custom(
     *,
     async_vws_client: AsyncVWS,
     async_cloud_reco_client: AsyncCloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to set a custom
     ``max_num_results``.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,
@@ -192,15 +236,23 @@ async def test_custom(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_none(
     *,
     async_vws_client: AsyncVWS,
     async_cloud_reco_client: AsyncCloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """When ``CloudRecoIncludeTargetData.NONE`` is given,
     target data is not returned in any match.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,
@@ -219,15 +271,23 @@ async def test_none(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_all(
     *,
     async_vws_client: AsyncVWS,
     async_cloud_reco_client: AsyncCloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """When ``CloudRecoIncludeTargetData.ALL`` is given,
     target data is returned in all matches.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,

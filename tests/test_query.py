@@ -7,7 +7,7 @@ import json
 import secrets
 import uuid
 from http import HTTPStatus
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 import requests
@@ -15,6 +15,7 @@ from freezegun import freeze_time
 from mock_vws import MockVWS
 from mock_vws.database import CloudDatabase
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import VWS, CloudRecoService
 from vws.exceptions.custom_exceptions import ServerError
 from vws.include_target_data import CloudRecoIncludeTargetData
@@ -63,23 +64,39 @@ class _JSONResponseTransport:
         )
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_no_matches(
     *,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """An empty list is returned if there are no matches."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     result = cloud_reco_client.query(image=image)
     assert result == []
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_match(
     *,
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """Details of matching targets are returned."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name="x",
         width=1,
@@ -92,8 +109,19 @@ def test_match(
     assert matching_target.target_id == target_id
 
 
-def test_invalid_results(*, image: io.BytesIO | BinaryIO) -> None:
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
+def test_invalid_results(
+    *,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
+) -> None:
     """Query results in responses must be a list of objects."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     transport = _JSONResponseTransport(
         body={"result_code": "Success", "results": 1},
         status_code=HTTPStatus.OK,
@@ -108,8 +136,19 @@ def test_invalid_results(*, image: io.BytesIO | BinaryIO) -> None:
         _ = client.query(image=image)
 
 
-def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
+def test_server_error(
+    *,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
+) -> None:
     """Server errors are exposed through the public query client."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     transport = _JSONResponseTransport(
         body={},
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
@@ -128,15 +167,23 @@ def test_server_error(*, image: io.BytesIO | BinaryIO) -> None:
     argnames=("response_delay_seconds", "expect_timeout"),
     argvalues=[(29, False), (31, True)],
 )
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_default_timeout(
     *,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     response_delay_seconds: int,
     expect_timeout: bool,
 ) -> None:
     """At 29 seconds there is no error; at 31 seconds there is a
     timeout.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with (
         freeze_time() as frozen_datetime,
         MockVWS(
@@ -179,14 +226,22 @@ def test_default_timeout(
         ((5.0, 0.1), 0.11, True),
     ],
 )
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_custom_timeout(
     *,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     custom_timeout: float | tuple[float, float],
     response_delay_seconds: float,
     expect_timeout: bool,
 ) -> None:
     """Custom timeouts are honored for both float and tuple forms."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     with (
         freeze_time() as frozen_datetime,
         MockVWS(
@@ -217,13 +272,23 @@ def test_custom_timeout(
             assert not bool(matches)
 
 
-def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
+def test_custom_base_url(
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
+) -> None:
     """
     It is possible to use query a target to a database under a
     custom
     VWQ
     URL.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     base_vwq_url = "http://example.com"
     with MockVWS(base_vwq_url=base_vwq_url) as mock:
         database = CloudDatabase()
@@ -255,13 +320,21 @@ def test_custom_base_url(image: io.BytesIO | BinaryIO) -> None:
         assert match.target_id == target_id
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_custom_base_url_with_path_prefix(
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """
     A base VWQ URL with a path prefix is used as-is, without the
     prefix being dropped.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     base_vwq_url = "http://example.com/prefix"
     with MockVWS(base_vwq_url=base_vwq_url) as mock:
         database = CloudDatabase()
@@ -288,13 +361,21 @@ def test_custom_base_url_with_path_prefix(
         assert len(matches) == 1
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_max_num_results_default(
     *,
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """By default the maximum number of results is 1."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,
@@ -315,13 +396,21 @@ def test_max_num_results_default(
     assert len(matches) == 1
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_custom(
     *,
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to set a custom ``max_num_results``."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,
@@ -354,13 +443,21 @@ def test_custom(
     assert len(matches) == max_num_results
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_include_target_data_default(
     *,
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """By default, target data is only returned in the top match."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,
@@ -385,17 +482,25 @@ def test_include_target_data_default(
     assert second_match.target_data is None
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_top(
     *,
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """
     When ``CloudRecoIncludeTargetData.TOP`` is given, target data is
     only
     returned in the top match.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,
@@ -421,11 +526,16 @@ def test_top(
     assert second_match.target_data is None
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_none(
     *,
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """
     When ``CloudRecoIncludeTargetData.NONE`` is given, target data
@@ -433,6 +543,9 @@ def test_none(
     not
     returned in any match.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,
@@ -458,16 +571,24 @@ def test_none(
     assert second_match.target_data is None
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_all(
     *,
     vws_client: VWS,
     cloud_reco_client: CloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """
     When ``CloudRecoIncludeTargetData.ALL`` is given, target data is
     returned in all matches.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name=uuid.uuid4().hex,
         width=1,

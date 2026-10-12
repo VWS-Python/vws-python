@@ -10,10 +10,11 @@ import json
 import secrets
 import uuid
 from http import HTTPStatus
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import VWS, CloudRecoService
 from vws.reports import (
     TargetRecord,
@@ -63,15 +64,23 @@ class _JSONResponseTransport:
     argvalues=[None, b"a"],
 )
 @pytest.mark.parametrize(argnames="active_flag", argvalues=[True, False])
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_add_target(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     application_metadata: bytes | None,
     cloud_reco_client: CloudRecoService,
     active_flag: bool,
 ) -> None:
     """No exception is raised when adding one target."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     name = "x"
     width = 1
     if application_metadata is None:
@@ -105,16 +114,24 @@ def test_add_target(
         assert matching_targets == []
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_add_two_targets(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """No exception is raised when adding two targets with different
     names.
 
     This demonstrates that the image seek position is not changed.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     for name in ("a", "b"):
         _ = vws_client.add_target(
             name=name,
@@ -125,12 +142,20 @@ def test_add_two_targets(
         )
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_list_targets(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to get a list of target IDs."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     id_1 = vws_client.add_target(
         name="x",
         width=1,
@@ -148,12 +173,20 @@ def test_list_targets(
     assert sorted(vws_client.list_targets()) == sorted([id_1, id_2])
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_delete_target(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to delete a target."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name="x",
         width=1,
@@ -168,12 +201,20 @@ def test_delete_target(
     assert vws_client.list_targets() == []
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_get_target_record(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """Details of a target are returned by ``get_target_record``."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name="x",
         width=1,
@@ -231,12 +272,20 @@ def test_get_failed(
     assert result.status == TargetStatuses.FAILED
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_get_duplicate_targets(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to get the IDs of similar targets."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name="x",
         width=1,
@@ -297,14 +346,22 @@ def test_invalid_vws_response_envelope(*, body: object) -> None:
         client.delete_target(target_id="target-id")
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_update_target(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     different_high_quality_image: io.BytesIO,
     cloud_reco_client: CloudRecoService,
 ) -> None:
     """It is possible to update a target."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     old_name = uuid.uuid4().hex
     old_width = secrets.choice(seq=range(1, 5000)) / 100
     target_id = vws_client.add_target(
@@ -357,12 +414,20 @@ def test_update_target(
     assert not target_details.target_record.active_flag
 
 
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 def test_no_fields_given(
     *,
     vws_client: VWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to give no update fields."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = vws_client.add_target(
         name="x",
         width=1,

@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import base64
 import uuid
-from typing import TYPE_CHECKING, BinaryIO
+from typing import TYPE_CHECKING, BinaryIO, Literal
 
 import pytest
 
 # pytest-beartype resolves fixture annotations at runtime.
+from tests.image_factory import IMAGE_CASES, ImageFactory
 from vws import AsyncCloudRecoService, AsyncVWS  # noqa: TC001
 from vws.reports import (
     TargetRecord,
@@ -31,15 +32,23 @@ if TYPE_CHECKING:
     argnames="active_flag",
     argvalues=[True, False],
 )
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_add_target(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     application_metadata: bytes | None,
     async_cloud_reco_client: AsyncCloudRecoService,
     active_flag: bool,
 ) -> None:
     """No exception is raised when adding one target."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     name = "x"
     width = 1
     if application_metadata is None:
@@ -84,10 +93,15 @@ async def test_add_target(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_add_two_targets(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """No exception is raised when adding two targets with
     different names.
@@ -95,6 +109,9 @@ async def test_add_two_targets(
     This demonstrates that the image seek position is not
     changed.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     for name in ("a", "b"):
         await async_vws_client.add_target(
             name=name,
@@ -106,12 +123,20 @@ async def test_add_two_targets(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_list_targets(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to get a list of target IDs."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     id_1 = await async_vws_client.add_target(
         name="x",
         width=1,
@@ -131,12 +156,20 @@ async def test_list_targets(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_delete_target(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to delete a target."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name="x",
         width=1,
@@ -158,14 +191,22 @@ async def test_delete_target(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_get_target_record(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """Details of a target are returned by
     ``get_target_record``.
     """
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name="x",
         width=1,
@@ -191,12 +232,20 @@ async def test_get_target_record(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_get_duplicate_targets(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to get the IDs of similar targets."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name="x",
         width=1,
@@ -225,14 +274,22 @@ async def test_get_duplicate_targets(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_update_target(
     *,
     async_vws_client: AsyncVWS,
     async_cloud_reco_client: AsyncCloudRecoService,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
     different_high_quality_image: io.BytesIO,
 ) -> None:
     """It is possible to update a target."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name="x",
         width=1,
@@ -276,12 +333,20 @@ async def test_update_target(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    argnames=("image_source", "image_mode"), argvalues=IMAGE_CASES
+)
 async def test_no_fields_given(
     *,
     async_vws_client: AsyncVWS,
-    image: io.BytesIO | BinaryIO,
+    image_factory: ImageFactory,
+    image_source: Literal["high_quality_image", "image_file"],
+    image_mode: Literal["r+b", "rb"],
 ) -> None:
     """It is possible to give no update fields."""
+    image: io.BytesIO | BinaryIO = image_factory.create(
+        source=image_source, mode=image_mode
+    )
     target_id = await async_vws_client.add_target(
         name="x",
         width=1,
