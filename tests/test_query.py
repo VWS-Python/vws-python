@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 import json
 import secrets
 import uuid
@@ -190,7 +190,7 @@ def test_default_timeout(
             response_delay_seconds=response_delay_seconds,
             sleep_fn=lambda seconds: (
                 frozen_datetime.tick(
-                    delta=datetime.timedelta(seconds=seconds),
+                    delta=dt.timedelta(seconds=seconds),
                 ),
                 None,
             )[1],
@@ -248,7 +248,7 @@ def test_custom_timeout(
             response_delay_seconds=response_delay_seconds,
             sleep_fn=lambda seconds: (
                 frozen_datetime.tick(
-                    delta=datetime.timedelta(seconds=seconds),
+                    delta=dt.timedelta(seconds=seconds),
                 ),
                 None,
             )[1],

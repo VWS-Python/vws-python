@@ -1,7 +1,7 @@
 """Classes for representing Vuforia reports."""
 
 import csv
-import datetime
+import datetime as dt
 import io
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
@@ -118,7 +118,7 @@ class TargetSummaryReport:
     status: TargetStatuses
     database_name: str
     target_name: str
-    upload_date: datetime.date
+    upload_date: dt.date
     active_flag: bool
     tracking_rating: int
     total_recos: int
@@ -136,7 +136,7 @@ class TargetSummaryReport:
             ),
             database_name=_checked(response_dict["database_name"], str),
             target_name=_checked(response_dict["target_name"], str),
-            upload_date=datetime.date.fromisoformat(
+            upload_date=dt.date.fromisoformat(
                 _checked(response_dict["upload_date"], str)
             ),
             active_flag=bool(response_dict["active_flag"]),
@@ -175,7 +175,7 @@ class TargetData:
 
     name: str
     application_metadata: str | None
-    target_timestamp: datetime.datetime
+    target_timestamp: dt.datetime
 
 
 @beartype
@@ -201,9 +201,9 @@ class QueryResult:
             target_data_dict = _checked(
                 response_dict["target_data"], dict[str, JSONValue]
             )
-            target_timestamp = datetime.datetime.fromtimestamp(
+            target_timestamp = dt.datetime.fromtimestamp(
                 timestamp=_number(target_data_dict["target_timestamp"]),
-                tz=datetime.UTC,
+                tz=dt.UTC,
             )
             target_data = TargetData(
                 name=_checked(target_data_dict["name"], str),
@@ -337,14 +337,14 @@ class ModelTargetDatasetStatusReport:
 
     status: ModelTargetDatasetStatuses
     dataset_uuid: str
-    created_at: datetime.datetime
-    eta: datetime.datetime | None
+    created_at: dt.datetime
+    eta: dt.datetime | None
     """When Vuforia expects to finish generating the dataset.
 
     This is given only while the dataset is processing.
     """
 
-    completed_at: datetime.datetime | None
+    completed_at: dt.datetime | None
     """When Vuforia finished generating the dataset.
 
     This is given only once the dataset is no longer processing.
@@ -397,15 +397,15 @@ class ModelTargetDatasetStatusReport:
                 ],
             )
 
-        eta: datetime.datetime | None = None
+        eta: dt.datetime | None = None
         if "eta" in response_dict:
-            eta = datetime.datetime.fromisoformat(
+            eta = dt.datetime.fromisoformat(
                 _checked(response_dict["eta"], str),
             )
 
-        completed_at: datetime.datetime | None = None
+        completed_at: dt.datetime | None = None
         if "completedAt" in response_dict:
-            completed_at = datetime.datetime.fromisoformat(
+            completed_at = dt.datetime.fromisoformat(
                 _checked(response_dict["completedAt"], str),
             )
 
@@ -414,7 +414,7 @@ class ModelTargetDatasetStatusReport:
                 value=_checked(response_dict["status"], str),
             ),
             dataset_uuid=_checked(response_dict["uuid"], str),
-            created_at=datetime.datetime.fromisoformat(
+            created_at=dt.datetime.fromisoformat(
                 _checked(response_dict["createdAt"], str),
             ),
             eta=eta,

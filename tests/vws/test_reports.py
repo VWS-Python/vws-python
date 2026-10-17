@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import calendar
-import datetime
+import datetime as dt
 import time
 import uuid
 from http import HTTPStatus
@@ -103,7 +103,7 @@ def test_get_target_summary_report(
         status=TargetStatuses.SUCCESS,
         database_name=report.database_name,
         target_name=target_name,
-        upload_date=datetime.date(year=2018, month=4, day=25),
+        upload_date=dt.date(year=2018, month=4, day=25),
         active_flag=True,
         tracking_rating=report.tracking_rating,
         total_recos=0,
@@ -167,14 +167,14 @@ def test_get_target(vws_client: VWS) -> None:
 def test_reco_counts_report(
     *,
     vws_client: VWS,
-    current_month: datetime.date,
+    current_month: dt.date,
     report_period: Literal["current", "previous"],
 ) -> None:
     """A report can be requested, waited for and downloaded."""
     report_month = (
         current_month
         if report_period == "current"
-        else current_month - datetime.timedelta(days=1)
+        else current_month - dt.timedelta(days=1)
     )
     report_request = vws_client.request_database_reco_counts_report(
         year=report_month.year,
@@ -192,7 +192,7 @@ def test_reco_counts_report(
     assert report.raw_csv.startswith(b"target_id,reco_count")
 
 
-def test_not_ready(*, current_month: datetime.date) -> None:
+def test_not_ready(*, current_month: dt.date) -> None:
     """Downloading a report before Vuforia has generated it raises an
     error.
     """
@@ -219,7 +219,7 @@ def test_not_ready(*, current_month: datetime.date) -> None:
     assert exc.value.response.status_code == HTTPStatus.NOT_FOUND
 
 
-def test_wait_timeout(*, current_month: datetime.date) -> None:
+def test_wait_timeout(*, current_month: dt.date) -> None:
     """Waiting for a report which is not generated in time raises an
     error.
     """
@@ -283,7 +283,7 @@ def test_month_not_accepted(
 
 def test_database_id_does_not_match_keys(
     *,
-    current_month: datetime.date,
+    current_month: dt.date,
 ) -> None:
     """A database ID which does not match the given keys is
     rejected.
@@ -326,7 +326,7 @@ def test_download_error() -> None:
     assert exc.value.response.status_code == HTTPStatus.FORBIDDEN
 
 
-def test_no_database_id(*, current_month: datetime.date) -> None:
+def test_no_database_id(*, current_month: dt.date) -> None:
     """A client which was given no database ID cannot request a
     report.
     """

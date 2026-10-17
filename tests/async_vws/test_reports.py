@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import calendar
-import datetime
+import datetime as dt
 import time
 import uuid
 from http import HTTPStatus
@@ -120,14 +120,14 @@ async def test_get_target(
 async def test_reco_counts_report(
     *,
     async_vws_client: AsyncVWS,
-    current_month: datetime.date,
+    current_month: dt.date,
     report_period: Literal["current", "previous"],
 ) -> None:
     """A report can be requested, waited for and downloaded."""
     report_month = (
         current_month
         if report_period == "current"
-        else current_month - datetime.timedelta(days=1)
+        else current_month - dt.timedelta(days=1)
     )
     client = async_vws_client
     report_request = await client.request_database_reco_counts_report(
@@ -147,7 +147,7 @@ async def test_reco_counts_report(
 
 
 @pytest.mark.asyncio
-async def test_not_ready(*, current_month: datetime.date) -> None:
+async def test_not_ready(*, current_month: dt.date) -> None:
     """Downloading a report before Vuforia has generated it raises an
     error.
     """
@@ -175,7 +175,7 @@ async def test_not_ready(*, current_month: datetime.date) -> None:
 
 
 @pytest.mark.asyncio
-async def test_wait_timeout(*, current_month: datetime.date) -> None:
+async def test_wait_timeout(*, current_month: dt.date) -> None:
     """Waiting for a report which is not generated in time raises an
     error.
     """
@@ -241,7 +241,7 @@ async def test_month_not_accepted(
 @pytest.mark.asyncio
 async def test_database_id_does_not_match_keys(
     *,
-    current_month: datetime.date,
+    current_month: dt.date,
 ) -> None:
     """A database ID which does not match the given keys is
     rejected.
@@ -284,7 +284,7 @@ async def test_download_error() -> None:
 
 
 @pytest.mark.asyncio
-async def test_no_database_id(*, current_month: datetime.date) -> None:
+async def test_no_database_id(*, current_month: dt.date) -> None:
     """A client which was given no database ID cannot request a
     report.
     """
