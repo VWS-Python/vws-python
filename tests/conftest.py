@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import datetime
+import datetime as dt
 import io
 from collections.abc import AsyncGenerator, Generator
 from contextlib import ExitStack
@@ -197,9 +197,9 @@ def fixture_model_target_model() -> ModelTargetModel:
 
 
 @pytest.fixture(name="current_month")
-def fixture_current_month() -> datetime.date:
+def fixture_current_month() -> dt.date:
     """The current month, as the first day of that month."""
-    now = datetime.datetime.now(tz=datetime.UTC)
+    now = dt.datetime.now(tz=dt.UTC)
     return now.date().replace(day=1)
 
 

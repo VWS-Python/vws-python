@@ -77,7 +77,7 @@ The report is generated in the background, and the URL it is served from expires
    """Get the number of recognitions of each target this month."""
 
    import calendar
-   import datetime
+   import datetime as dt
    import os
 
    from vws import VWS
@@ -92,7 +92,7 @@ The report is generated in the background, and the URL it is served from expires
        database_id=database_id,
    )
 
-   now = datetime.datetime.now(tz=datetime.UTC)
+   now = dt.datetime.now(tz=dt.UTC)
 
    report_request = vws_client.request_database_reco_counts_report(
        year=now.year,
