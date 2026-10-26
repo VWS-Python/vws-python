@@ -80,7 +80,7 @@ dev = [
     "shellcheck-py==0.11.0.1",
     "shfmt-py==4.2.0",
     "snapper-fmt==0.11.10",
-    "sphinx==9.1.1",
+    "sphinx==9.2.0",
     "sphinx-copybutton==0.5.2",
     "sphinx-lint==1.0.2",
     "sphinx-pyproject==0.3.0",
