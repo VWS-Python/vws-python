@@ -10,7 +10,6 @@ from urllib.parse import urlparse
 
 from beartype import beartype
 
-from vws._json_utils import json_object, string_field
 from vws.exceptions.base_exceptions import VWSError
 
 
@@ -53,13 +52,6 @@ class FailError(VWSError):
 
 
 @beartype
-class BadImageError(VWSError):
-    """Exception raised when Vuforia returns a response with a result code
-    'BadImage'.
-    """
-
-
-@beartype
 class AuthenticationFailureError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'AuthenticationFailure'.
@@ -70,32 +62,6 @@ class AuthenticationFailureError(VWSError):
 class RequestQuotaReachedError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'RequestQuotaReached'.
-    """
-
-
-@beartype
-class TargetStatusProcessingError(VWSError):
-    """Exception raised when Vuforia returns a response with a result code
-    'TargetStatusProcessing'.
-    """
-
-    @property
-    def target_id(self) -> str:
-        """The processing target ID."""
-        return _target_id_from_url(url=self.response.url)
-
-
-@beartype
-class DateRangeError(VWSError):
-    """Exception raised when Vuforia returns a response with a result code
-    'DateRangeError'.
-    """
-
-
-@beartype
-class TargetQuotaReachedError(VWSError):
-    """Exception raised when Vuforia returns a response with a result code
-    'TargetQuotaReached'.
     """
 
 
@@ -121,40 +87,9 @@ class ProjectInactiveError(VWSError):
 
 
 @beartype
-class MetadataTooLargeError(VWSError):
-    """Exception raised when Vuforia returns a response with a result code
-    'MetadataTooLarge'.
-    """
-
-
-@beartype
 class RequestTimeTooSkewedError(VWSError):
     """Exception raised when Vuforia returns a response with a result code
     'RequestTimeTooSkewed'.
-    """
-
-
-@beartype
-class TargetNameExistError(VWSError):
-    """Exception raised when Vuforia returns a response with a result code
-    'TargetNameExist'.
-    """
-
-    @property
-    def target_name(self) -> str:
-        """The target name which already exists."""
-        response_body = self.response.request_body
-        if not isinstance(response_body, str | bytes):
-            msg = "A target-name error response must have a request body."
-            raise TypeError(msg)
-        request_json = json_object(value=response_body)
-        return string_field(value=request_json, name="name")
-
-
-@beartype
-class ImageTooLargeError(VWSError):
-    """Exception raised when Vuforia returns a response with a result code
-    'ImageTooLarge'.
     """
 
 
@@ -230,26 +165,19 @@ VWSError.register_exceptions_by_result_code(
     exceptions_by_result_code={
         "AuthenticationFailure": AuthenticationFailureError,
         "AuthorizationFailed": AuthorizationFailedError,
-        "BadImage": BadImageError,
         "BadRequest": BadRequestError,
-        "DateRangeError": DateRangeError,
         "Fail": FailError,
-        "ImageTooLarge": ImageTooLargeError,
         "InvalidAcceptHeader": InvalidAcceptHeaderError,
         "InvalidInstanceId": InvalidInstanceIdError,
         "InvalidTargetType": InvalidTargetTypeError,
         "LicenseCheckFailed": LicenseCheckFailedError,
-        "MetadataTooLarge": MetadataTooLargeError,
         "ProjectHasNoApiAccess": ProjectHasNoAPIAccessError,
         "ProjectInactive": ProjectInactiveError,
         "ProjectSuspended": ProjectSuspendedError,
         "QuotaExceeded": QuotaExceededError,
         "RequestQuotaReached": RequestQuotaReachedError,
         "RequestTimeTooSkewed": RequestTimeTooSkewedError,
-        "TargetNameExist": TargetNameExistError,
-        "TargetQuotaReached": TargetQuotaReachedError,
         "TargetStatusNotSuccess": TargetStatusNotSuccessError,
-        "TargetStatusProcessing": TargetStatusProcessingError,
         "UnknownTarget": UnknownTargetError,
     },
 )

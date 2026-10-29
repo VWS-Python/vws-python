@@ -82,3 +82,17 @@ def test_oauth2_error_description() -> None:
 
     assert error.error == "invalid_request"
     assert error.error_description == description
+
+
+@pytest.mark.parametrize(
+    argnames="body",
+    argvalues=[
+        '{"error": {"details": [{"code": 1, "message": "invalid"}]}}',
+        '{"error": {"details": 1}}',
+    ],
+)
+def test_invalid_error_field_types(body: str) -> None:
+    """Malformed Model Target error fields fail validation."""
+    error = ModelTargetError(response=_response(text=body))
+    with pytest.raises(expected_exception=TypeError):
+        _ = error.details

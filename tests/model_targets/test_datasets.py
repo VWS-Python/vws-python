@@ -32,7 +32,10 @@ from vws.model_target_datasets import (
     ModelTargetView,
     RealisticAppearance,
 )
-from vws.reports import ModelTargetDatasetStatuses
+from vws.reports import (
+    ModelTargetDatasetStatuses,
+    ModelTargetDatasetStatusReport,
+)
 
 _DATASET_TYPES = [
     ModelTargetDatasetType.STANDARD,
@@ -443,3 +446,11 @@ def test_invalid_oauth2_token_response_values(
 
     with pytest.raises(expected_exception=ModelTargetOAuth2Error):
         _ = access_token_from_response(response=response)
+
+
+def test_invalid_status_report_field() -> None:
+    """Model Target status reports reject non-string status values."""
+    with pytest.raises(expected_exception=TypeError):
+        _ = ModelTargetDatasetStatusReport.from_response_dict(
+            response_dict={"status": 1},
+        )

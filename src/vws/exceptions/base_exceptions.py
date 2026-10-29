@@ -1,8 +1,4 @@
-"""
-Base exceptions for errors returned by Vuforia Web Services or the
-Vuforia
-Cloud Recognition Web API.
-"""
+"""Base exceptions for the supported Vuforia Web APIs."""
 
 from collections.abc import Mapping  # noqa: TC003
 from typing import ClassVar
@@ -10,24 +6,6 @@ from typing import ClassVar
 from beartype import beartype
 
 from vws.response import Response  # noqa: TC001
-
-
-@beartype
-class CloudRecoError(Exception):
-    """Base class for Vuforia Cloud Recognition Web API exceptions."""
-
-    def __init__(self, response: Response) -> None:
-        """
-        Args:
-            response: The response to a request to Vuforia.
-        """
-        super().__init__(response.text)
-        self._response = response
-
-    @property
-    def response(self) -> Response:
-        """The response returned by Vuforia which included this error."""
-        return self._response
 
 
 @beartype
