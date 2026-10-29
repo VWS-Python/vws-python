@@ -5,14 +5,6 @@ API Reference
    :undoc-members:
    :members:
 
-.. automodule:: vws.async_vws
-   :undoc-members:
-   :members:
-
-.. automodule:: vws.async_query
-   :undoc-members:
-   :members:
-
 .. automodule:: vws.async_vumark_service
    :undoc-members:
    :members:
@@ -34,10 +26,6 @@ API Reference
    :members:
 
 .. automodule:: vws.json_types
-   :undoc-members:
-   :members:
-
-.. automodule:: vws.include_target_data
    :undoc-members:
    :members:
 

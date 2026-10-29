@@ -3,22 +3,17 @@
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING
 
 import httpx
 import httpx2
 import pytest
 from mock_vws import MockVWS
-from mock_vws.database import CloudDatabase, VuMarkDatabase
+from mock_vws.database import VuMarkDatabase
 from mock_vws.target import VuMarkTarget
 
 from vws import (
-    VWS,
-    AsyncCloudRecoService,
     AsyncModelTargetService,
     AsyncVuMarkService,
-    AsyncVWS,
-    CloudRecoService,
     ModelTargetService,
     VuMarkService,
 )
@@ -26,17 +21,13 @@ from vws.model_target_datasets import (
     ModelTargetDatasetType,
     ModelTargetModel,
 )
-from vws.reports import ModelTargetDatasetStatuses, TargetStatuses
+from vws.reports import ModelTargetDatasetStatuses
 from vws.response import Response
 from vws.transports import (
     AsyncHTTPX2Transport,
     HTTPX2Transport,
 )
 from vws.vumark_accept import VuMarkAccept
-
-if TYPE_CHECKING:
-    import io
-
 
 # The mock accepts one hard-coded pair of Model Target Web API OAuth2
 # credentials, which it does not expose.
@@ -103,45 +94,6 @@ def fixture_httpx2_requests(
     monkeypatch.setattr(target=httpx2, name="Client", value=_Client)
     monkeypatch.setattr(target=httpx2, name="AsyncClient", value=_AsyncClient)
     return requests_seen
-
-
-async def _add_and_query_target(
-    *,
-    database: CloudDatabase,
-    transport: AsyncHTTPX2Transport,
-    image: io.BytesIO,
-) -> None:
-    """Add a target with ``AsyncVWS`` and find it with
-    ``AsyncCloudRecoService``.
-
-    Args:
-        database: The mock database to add the target to.
-        transport: The transport for the clients to use.
-        image: The image to add as a target and then query with.
-    """
-    vws_client = AsyncVWS(
-        server_access_key=database.server_access_key,
-        server_secret_key=database.server_secret_key,
-        transport=transport,
-    )
-    cloud_reco_client = AsyncCloudRecoService(
-        client_access_key=database.client_access_key,
-        client_secret_key=database.client_secret_key,
-        transport=transport,
-    )
-    target_id = await vws_client.add_target(
-        name="example",
-        width=1,
-        image=image,
-        active_flag=True,
-        application_metadata=None,
-    )
-    await vws_client.wait_for_target_processed(target_id=target_id)
-    target_record = await vws_client.get_target_record(target_id=target_id)
-    assert target_record.status == TargetStatuses.SUCCESS
-
-    (match,) = await cloud_reco_client.query(image=image)
-    assert match.target_id == target_id
 
 
 async def _generate_dataset(
@@ -521,43 +473,6 @@ async def test_async_httpx2_exceptions(
     assert not isinstance(exc.value, httpx.HTTPError)
 
 
-def test_sync_mock_vws_and_cloud_reco(
-    high_quality_image: io.BytesIO,
-) -> None:
-    """A target can be added with ``VWS`` and found with
-    ``CloudRecoService``.
-    """
-    database = CloudDatabase()
-    with (
-        MockVWS(processing_time_seconds=0.2) as mock,
-        HTTPX2Transport() as transport,
-    ):
-        mock.add_cloud_database(cloud_database=database)
-        vws_client = VWS(
-            server_access_key=database.server_access_key,
-            server_secret_key=database.server_secret_key,
-            transport=transport,
-        )
-        cloud_reco_client = CloudRecoService(
-            client_access_key=database.client_access_key,
-            client_secret_key=database.client_secret_key,
-            transport=transport,
-        )
-        target_id = vws_client.add_target(
-            name="example",
-            width=1,
-            image=high_quality_image,
-            active_flag=True,
-            application_metadata=None,
-        )
-        vws_client.wait_for_target_processed(target_id=target_id)
-        target_record = vws_client.get_target_record(target_id=target_id)
-        assert target_record.status == TargetStatuses.SUCCESS
-
-        (match,) = cloud_reco_client.query(image=high_quality_image)
-        assert match.target_id == target_id
-
-
 def test_sync_mock_vumark() -> None:
     """A VuMark instance can be generated with ``VuMarkService``."""
     vumark_target = VuMarkTarget(name="vumark-template")
@@ -620,42 +535,28 @@ def test_sync_mock_timeout(
     """A response which takes longer than the read timeout raises an
     ``httpx2`` timeout.
     """
-    database = CloudDatabase()
+    database = VuMarkDatabase()
     sleeps: list[float] = []
     with MockVWS(
         response_delay_seconds=0.11,
         sleep_fn=sleeps.append,
     ) as mock:
-        mock.add_cloud_database(cloud_database=database)
+        mock.add_vumark_database(vumark_database=database)
         with HTTPX2Transport() as transport:
-            vws_client = VWS(
+            vws_client = VuMarkService(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
                 request_timeout_seconds=custom_timeout,
                 transport=transport,
             )
             with pytest.raises(expected_exception=httpx2.ReadTimeout):
-                _ = vws_client.list_targets()
+                _ = vws_client.generate_vumark_instance(
+                    target_id="target",
+                    instance_id="instance",
+                    accept=VuMarkAccept.PNG,
+                )
             # The mock sleeps for the read timeout before raising.
             assert sleeps == [0.1]
-
-
-@pytest.mark.asyncio
-async def test_async_mock_vws_and_cloud_reco(
-    high_quality_image: io.BytesIO,
-) -> None:
-    """A target can be added with ``AsyncVWS`` and found with
-    ``AsyncCloudRecoService``.
-    """
-    database = CloudDatabase()
-    with MockVWS(processing_time_seconds=0.2) as mock:
-        mock.add_cloud_database(cloud_database=database)
-        async with AsyncHTTPX2Transport() as transport:
-            await _add_and_query_target(
-                database=database,
-                transport=transport,
-                image=high_quality_image,
-            )
 
 
 @pytest.mark.asyncio
@@ -708,21 +609,25 @@ async def test_async_mock_timeout(
     """A response which takes longer than the read timeout raises an
     ``httpx2`` timeout.
     """
-    database = CloudDatabase()
+    database = VuMarkDatabase()
     sleeps: list[float] = []
     with MockVWS(
         response_delay_seconds=0.11,
         sleep_fn=sleeps.append,
     ) as mock:
-        mock.add_cloud_database(cloud_database=database)
+        mock.add_vumark_database(vumark_database=database)
         async with AsyncHTTPX2Transport() as transport:
-            vws_client = AsyncVWS(
+            vws_client = AsyncVuMarkService(
                 server_access_key=database.server_access_key,
                 server_secret_key=database.server_secret_key,
                 request_timeout_seconds=custom_timeout,
                 transport=transport,
             )
             with pytest.raises(expected_exception=httpx2.ReadTimeout):
-                await vws_client.list_targets()
+                await vws_client.generate_vumark_instance(
+                    target_id="target",
+                    instance_id="instance",
+                    accept=VuMarkAccept.PNG,
+                )
             # The mock sleeps for the read timeout before raising.
             assert sleeps == [0.1]

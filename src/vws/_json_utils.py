@@ -61,22 +61,6 @@ def string_field(*, value: dict[str, JSONValue], name: str) -> str:
 
 
 @beartype
-def string_list_field(
-    *,
-    value: dict[str, JSONValue],
-    name: str,
-) -> list[str]:
-    """Return a required list of strings from a JSON object."""
-    items = value[name]
-    if not _is_object_list(items) or not all(
-        isinstance(item, str) for item in items
-    ):
-        msg = f"{name} must be a list of strings."
-        raise TypeError(msg)
-    return [item for item in items if isinstance(item, str)]
-
-
-@beartype
 def object_list_field(
     *,
     value: dict[str, JSONValue],

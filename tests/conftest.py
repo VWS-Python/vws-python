@@ -2,26 +2,17 @@
 
 from __future__ import annotations
 
-import datetime as dt
-import io
 from collections.abc import AsyncGenerator, Generator
-from contextlib import ExitStack
-from pathlib import Path
 
 import pytest
 import pytest_asyncio
 from mock_vws import MockVWS
-from mock_vws.database import CloudDatabase, VuMarkDatabase
+from mock_vws.database import VuMarkDatabase
 from mock_vws.target import VuMarkTarget
 
-from tests.image_factory import ImageFactory
 from vws import (
-    VWS,
-    AsyncCloudRecoService,
     AsyncModelTargetService,
     AsyncVuMarkService,
-    AsyncVWS,
-    CloudRecoService,
     ModelTargetService,
     VuMarkService,
 )
@@ -36,16 +27,6 @@ from vws.model_target_datasets import (
 # credentials, which it does not expose.
 _MODEL_TARGET_CLIENT_ID = "client-id"
 _MODEL_TARGET_CLIENT_CREDENTIALS = ("client-id", "client-secret")
-
-
-@pytest.fixture(name="_mock_database")
-def fixture_mock_database() -> Generator[CloudDatabase]:
-    """Yield a mock ``CloudDatabase``."""
-    # We use a low processing time so that tests run quickly.
-    with MockVWS(processing_time_seconds=0.2) as mock:
-        database = CloudDatabase()
-        mock.add_cloud_database(cloud_database=database)
-        yield database
 
 
 @pytest.fixture(name="_mock_vumark_database")
@@ -75,54 +56,6 @@ def vumark_target_id(*, _mock_vumark_database: VuMarkDatabase) -> str:
     """The ID of the VuMark template target."""
     (target,) = _mock_vumark_database.vumark_targets
     return target.target_id
-
-
-@pytest.fixture
-def vws_client(*, _mock_database: CloudDatabase) -> VWS:
-    """A VWS client which connects to a mock database."""
-    return VWS(
-        server_access_key=_mock_database.server_access_key,
-        server_secret_key=_mock_database.server_secret_key,
-        database_id=_mock_database.database_id,
-    )
-
-
-@pytest.fixture
-def cloud_reco_client(*, _mock_database: CloudDatabase) -> CloudRecoService:
-    """A ``CloudRecoService`` client which connects to a mock database."""
-    return CloudRecoService(
-        client_access_key=_mock_database.client_access_key,
-        client_secret_key=_mock_database.client_secret_key,
-    )
-
-
-@pytest_asyncio.fixture
-async def async_vws_client(
-    *,
-    _mock_database: CloudDatabase,
-) -> AsyncGenerator[AsyncVWS]:
-    """An async VWS client which connects to a mock database."""
-    async with AsyncVWS(
-        server_access_key=_mock_database.server_access_key,
-        server_secret_key=_mock_database.server_secret_key,
-        database_id=_mock_database.database_id,
-    ) as client:
-        yield client
-
-
-@pytest_asyncio.fixture
-async def async_cloud_reco_client(
-    *,
-    _mock_database: CloudDatabase,
-) -> AsyncGenerator[AsyncCloudRecoService]:
-    """An async ``CloudRecoService`` client which connects to a mock
-    database.
-    """
-    async with AsyncCloudRecoService(
-        client_access_key=_mock_database.client_access_key,
-        client_secret_key=_mock_database.client_secret_key,
-    ) as client:
-        yield client
 
 
 @pytest_asyncio.fixture
@@ -194,25 +127,3 @@ def fixture_model_target_model() -> ModelTargetModel:
             ),
         ],
     )
-
-
-@pytest.fixture(name="current_month")
-def fixture_current_month() -> dt.date:
-    """The current month, as the first day of that month."""
-    now = dt.datetime.now(tz=dt.UTC)
-    return now.date().replace(day=1)
-
-
-@pytest.fixture(name="image_factory")
-def fixture_image_factory(
-    *,
-    high_quality_image: io.BytesIO,
-    tmp_path: Path,
-) -> Generator[ImageFactory]:
-    """Create selected image inputs with scoped file-handle cleanup."""
-    with ExitStack() as stack:
-        yield ImageFactory(
-            high_quality_image=high_quality_image,
-            directory=tmp_path,
-            stack=stack,
-        )

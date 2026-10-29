@@ -3,7 +3,7 @@
 vws-python
 ==========
 
-Python library for the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
+Python clients for the Vuforia Model Target Web API and VuMark generation.
 
 Installation
 ------------
@@ -20,47 +20,23 @@ Getting Started
 
 .. code-block:: python
 
-   """Add a target to VWS and then query it."""
+   """Generate a VuMark instance."""
 
    import os
-   import pathlib
-   import uuid
 
-   from vws import VWS, CloudRecoService
+   from vws import VuMarkService
+   from vws.vumark_accept import VuMarkAccept
 
-   server_access_key = os.environ["VWS_SERVER_ACCESS_KEY"]
-   server_secret_key = os.environ["VWS_SERVER_SECRET_KEY"]
-   client_access_key = os.environ["VWS_CLIENT_ACCESS_KEY"]
-   client_secret_key = os.environ["VWS_CLIENT_SECRET_KEY"]
-
-   vws_client = VWS(
-       server_access_key=server_access_key,
-       server_secret_key=server_secret_key,
+   client = VuMarkService(
+       server_access_key=os.environ["VWS_SERVER_ACCESS_KEY"],
+       server_secret_key=os.environ["VWS_SERVER_SECRET_KEY"],
    )
-
-   cloud_reco_client = CloudRecoService(
-       client_access_key=client_access_key,
-       client_secret_key=client_secret_key,
+   image = client.generate_vumark_instance(
+       target_id=os.environ["VUMARK_TARGET_ID"],
+       instance_id="123",
+       accept=VuMarkAccept.PNG,
    )
-
-   name = "my_image_name_" + uuid.uuid4().hex
-
-   image = pathlib.Path("high_quality_image.jpg")
-   with image.open(mode="rb") as my_image_file:
-       target_id = vws_client.add_target(
-           name=name,
-           width=1,
-           image=my_image_file,
-           active_flag=True,
-           application_metadata=None,
-       )
-
-   vws_client.wait_for_target_processed(target_id=target_id)
-
-   with image.open(mode="rb") as my_image_file:
-       matching_targets = cloud_reco_client.query(image=my_image_file)
-
-   assert matching_targets[0].target_id == target_id
+   assert image.startswith(b"\x89PNG")
 
 Full Documentation
 ------------------

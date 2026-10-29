@@ -7,7 +7,7 @@ requires = [
 
 [project]
 name = "vws-python"
-description = "Interact with the Vuforia Web Services (VWS) API."
+description = "Clients for Vuforia Model Targets and VuMark generation."
 readme = { file = "README.rst", content-type = "text/x-rst" }
 keywords = [
     "client",
@@ -36,7 +36,6 @@ dependencies = [
     "httpx>=0.28.0",
     "httpx2>=2.12",
     "requests>=2.32.3",
-    "urllib3>=2.2.3",
     "vws-auth-tools>=2024.7.12",
 ]
 urls.Documentation = "https://vws-python.github.io/vws-python/"
@@ -97,7 +96,6 @@ dev = [
     "vale==3.25.1.0",
     "vulture==2.16",
     "vws-python-mock==2026.10.13.1",
-    "vws-test-fixtures==2026.10.8",
     "yamlfix==1.19.1",
     "zizmor==1.31.1",
 ]
