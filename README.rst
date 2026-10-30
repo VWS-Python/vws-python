@@ -3,6 +3,12 @@
 vws-python
 ==========
 
+.. important::
+
+   This project is archived because PTC is retiring the Vuforia Engine Cloud Image Recognition service on May 2, 2027.
+   Existing customers can continue using the service until that date.
+   After that date, Cloud Image Recognition databases and associated services will no longer be available.
+
 Python library for the Vuforia Web Services (VWS) API and the Vuforia Web Query API.
 
 Installation
